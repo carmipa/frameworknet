@@ -500,10 +500,10 @@ public class DiagnosticoService {
         int prefixo = 32;
         if (barra >= 0) {
             String p = digitada.substring(barra + 1);
-            if (!p.matches("\\d{1,2}") || Integer.parseInt(p) > 32) {
+            if (!p.matches("\\d{1,2}") || org.framework.net.shared.NumeroAscii.parseIntEstrito(p) > 32) {
                 throw new DiagnosticoException("O prefixo do IPv4 vai de /0 a /32.");
             }
-            prefixo = Integer.parseInt(p);
+            prefixo = org.framework.net.shared.NumeroAscii.parseIntEstrito(p);
         }
         long mascara = prefixo == 0 ? 0L : (0xFFFFFFFFL << (32 - prefixo)) & 0xFFFFFFFFL;
         return new FaixaIpv4(digitada, ip & mascara, prefixo);
@@ -574,7 +574,7 @@ public class DiagnosticoService {
                 throw new DiagnosticoException("Octeto com zero à esquerda (ex.: 010) é lido como octal por "
                         + "algumas ferramentas; escreva sem o zero.");
             }
-            int n = Integer.parseInt(o);
+            int n = org.framework.net.shared.NumeroAscii.parseIntEstrito(o);
             if (n > 255) {
                 throw new DiagnosticoException("Cada octeto do IPv4 vai de 0 a 255.");
             }

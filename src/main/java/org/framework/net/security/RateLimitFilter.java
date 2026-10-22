@@ -38,8 +38,10 @@ public class RateLimitFilter implements ContainerRequestFilter {
             "/api/informacoes/geo",
             "/informacoes",
             "/calculadora",
-            // Tentativa em serie contra a chave de contingencia da Telemetria.
+            // Tentativa em serie contra a chave de contingencia da Telemetria — e o formulario do painel
+            // administrativo, que testa A MESMA chave e ficava so no limite comum, 4 vezes maior (BACK-05).
             "/login/chave",
+            "/admin/login",
             // Regrava o arquivo de historico a cada chamada.
             "/history/catalog",
             // IPv6: so o que custa. DNS (resolver, dominio) e CPU sobre entrada grande (projetar, engenharia,

@@ -260,7 +260,7 @@ public class DivisaoService {
         if (valor.length() > 10 || !org.framework.net.shared.NumeroAscii.digitosAscii(valor)) {
             throw new CalculadoraException(nomeCampo + " deve ser um número inteiro. Recebido: " + texto);
         }
-        long numero = Long.parseLong(valor);
+        long numero = org.framework.net.shared.NumeroAscii.parseLongEstrito(valor);
         if (numero < 1L) {
             throw new CalculadoraException(nomeCampo + " deve ser pelo menos 1.");
         }

@@ -244,7 +244,7 @@ public class CiscoConfigParser {
             int bps = 0;
             if (tokens.length >= 3) {
                 try {
-                    bps = Integer.parseInt(tokens[2]);
+                    bps = org.framework.net.shared.NumeroAscii.parseIntEstrito(tokens[2]);
                 } catch (NumberFormatException ignored) {
                     bps = 0;
                 }
@@ -457,8 +457,8 @@ public class CiscoConfigParser {
             int ponto = t.indexOf('.');
             long valor;
             if (ponto > 0) {
-                long alto = Long.parseLong(t.substring(0, ponto));
-                long baixo = Long.parseLong(t.substring(ponto + 1));
+                long alto = org.framework.net.shared.NumeroAscii.parseLongEstrito(t.substring(0, ponto));
+                long baixo = org.framework.net.shared.NumeroAscii.parseLongEstrito(t.substring(ponto + 1));
                 if (alto > 65535 || baixo > 65535) {
                     return alternativa;
                 }
@@ -467,7 +467,7 @@ public class CiscoConfigParser {
                 if (t.length() > 10) {
                     return alternativa;
                 }
-                valor = Long.parseLong(t);
+                valor = org.framework.net.shared.NumeroAscii.parseLongEstrito(t);
             }
             return valor >= 0 && valor <= 4294967295L ? valor : alternativa;
         } catch (RuntimeException ex) {
@@ -477,7 +477,7 @@ public class CiscoConfigParser {
 
     private static int inteiroOu(String texto, int alternativa) {
         try {
-            return Integer.parseInt(texto.strip());
+            return org.framework.net.shared.NumeroAscii.parseIntEstrito(texto.strip());
         } catch (RuntimeException ex) {
             return alternativa;
         }

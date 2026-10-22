@@ -301,7 +301,7 @@ public class ConstrutorPacoteService {
         for (String parte : o) {
             int n;
             try {
-                n = Integer.parseInt(parte);
+                n = org.framework.net.shared.NumeroAscii.parseIntEstrito(parte);
             } catch (NumberFormatException e) {
                 return -1;
             }
@@ -315,7 +315,7 @@ public class ConstrutorPacoteService {
 
     private static int intFaixa(String raw, int min, int max) {
         try {
-            int v = Integer.parseInt(raw == null ? "" : raw.trim());
+            int v = org.framework.net.shared.NumeroAscii.parseIntEstrito(raw == null ? "" : raw.trim());
             return (v < min || v > max) ? -1 : v;
         } catch (NumberFormatException e) {
             return -1;
@@ -324,7 +324,7 @@ public class ConstrutorPacoteService {
 
     private static long longFaixa(String raw, long min, long max) {
         try {
-            long v = Long.parseLong(raw == null ? "" : raw.trim());
+            long v = org.framework.net.shared.NumeroAscii.parseLongEstrito(raw == null ? "" : raw.trim());
             return (v < min || v > max) ? -1 : v;
         } catch (NumberFormatException e) {
             return -1;

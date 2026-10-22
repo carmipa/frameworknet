@@ -45,7 +45,7 @@ public class DominioModoService {
             result.setIpP(ipP);
 
             if (cidrRaw != null && !cidrRaw.isBlank()) {
-                int cidrVal = Integer.parseInt(cidrRaw.trim());
+                int cidrVal = org.framework.net.shared.NumeroAscii.parseIntEstrito(cidrRaw.trim());
                 result.setCidrVal(cidrVal);
                 result.setCidrOrigem(
                         "Domínio '" + dominioDigitado + "' resolvido para " + ipP + ". CIDR informado manualmente.");

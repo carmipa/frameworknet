@@ -23,6 +23,12 @@
             <strong class="calc-kpi-valor calc-kpi-mono">{e.prefixoRede}</strong>
         </div>
     </div>
+    {#if e.aviso}
+    <div class="calc-aviso" role="status">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span>
+        <span>{e.aviso}</span>
+    </div>
+    {/if}
     <p class="calc-explicacao">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> {e.passos}
     </p>

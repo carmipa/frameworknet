@@ -84,7 +84,8 @@ public class LoginTelemetriaResource {
     @GET
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance telaDeLogin(@QueryParam("modo") String modo, @QueryParam("erro") String erro) {
-        return montarTela(modo, erro);
+        // Só a query é texto de fora: passa pelo filtro. Chamadas internas (ex.: "Chave inválida.") são do sistema.
+        return montarTela(modo, mensagemDeErro(erro));
     }
 
     /**
@@ -98,7 +99,7 @@ public class LoginTelemetriaResource {
     public Response iniciar() {
         if (!gitHubOAuthService.configurado()) {
             return Response.seeOther(
-                    URI.create("/login/?erro=" + codificar("Login pelo GitHub não configurado."))).build();
+                    URI.create("/login/?erro=" + codificar(ERRO_NAO_CONFIGURADO))).build();
         }
         String state = novoState();
         return Response.seeOther(URI.create(gitHubOAuthService.urlDeAutorizacao(state)))
@@ -120,7 +121,7 @@ public class LoginTelemetriaResource {
         if (esperado.isEmpty() || state == null || !constante(esperado, state)) {
             registrar("warn", "login_github", "state_invalido", "");
             return Response.seeOther(
-                            URI.create("/login/?erro=" + codificar("Sessão de login expirada. Tente de novo.")))
+                            URI.create("/login/?erro=" + codificar(ERRO_SESSAO_EXPIRADA)))
                     .cookie(cookieDeState("", 0))
                     .build();
         }
@@ -198,6 +199,25 @@ public class LoginTelemetriaResource {
     }
 
     // ------------------------------------------------------------------ apoio
+
+    private static final String ERRO_NAO_CONFIGURADO = "Login pelo GitHub não configurado.";
+    private static final String ERRO_SESSAO_EXPIRADA = "Sessão de login expirada. Tente de novo.";
+    private static final String ERRO_GENERICO = "Não foi possível entrar. Tente de novo.";
+
+    /**
+     * Texto da faixa de erro: só mensagem que o próprio sistema escreve. Qualquer outro {@code ?erro=} vira a
+     * mensagem genérica — a faixa oficial não ecoa texto de quem montou o link (BACK-09, CWE-451).
+     */
+    static String mensagemDeErro(String erro) {
+        if (erro == null || erro.isBlank()) {
+            return null;
+        }
+        if (erro.equals(ERRO_NAO_CONFIGURADO) || erro.equals(ERRO_SESSAO_EXPIRADA)
+                || GitHubOAuthService.MOTIVOS_DE_FALHA.contains(erro)) {
+            return erro;
+        }
+        return ERRO_GENERICO;
+    }
 
     private TemplateInstance montarTela(String modo, String erro) {
         return login

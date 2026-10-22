@@ -283,11 +283,66 @@ public class HistoricoStore {
                     it.remove();
                 }
             }
-            while (historyStore.size() > MAX_TOTAL) {
-                historyStore.removeLast();
-            }
+            despejarAcimaDoTeto(sessao);
             LOG.infof("Histórico append modo=%s id=%s", registro.get("modo"), registro.get("id"));
             agendarGravacao();
+        }
+    }
+
+    /**
+     * Teto global do arquivo ({@link #MAX_TOTAL}) sem despejo cego.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o histórico existe para a pessoa reaproveitar o que já consultou. Com FIFO
+     * global, 500 consultas de sessões descartáveis (um POST sem cookie = uma sessão nova) apagavam o histórico de
+     * todos os outros visitantes em ~8 minutos (BACK-14, auditoria de 22/10/2026).</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> a sessão que acabou de consultar nunca perde o próprio registro novo; acima do
+     * teto sai o registro mais antigo da sessão de OUTRA pessoa que está há mais tempo parada — primeiro entre as
+     * consultas avulsas (sessão com um registro só), depois entre as demais. Assim, arquivo cheio não congela quem
+     * chega (a primeira versão desta correção apagava a consulta nova na hora — achado da revisão adversarial) e
+     * consulta avulsa em massa não expulsa quem tem histórico de verdade; o arquivo nunca passa de
+     * {@link #MAX_TOTAL}. Chamado com a trava tomada.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; sem outra sessão no arquivo, cai no FIFO.</p>
+     */
+    private void despejarAcimaDoTeto(String sessaoAtual) {
+        while (historyStore.size() > MAX_TOTAL) {
+            Map<Object, Integer> quantidade = new java.util.HashMap<>();
+            Map<Object, Integer> atividade = new java.util.HashMap<>();   // posição do registro mais novo (0 = agora)
+            int posicao = 0;
+            for (Map<String, Object> item : historyStore) {
+                Object dono = item.get(CHAVE_SESSAO);
+                quantidade.merge(dono, 1, Integer::sum);
+                atividade.putIfAbsent(dono, posicao++);
+            }
+            Object escolhida = null;
+            boolean achou = false;
+            for (Map.Entry<Object, Integer> e : atividade.entrySet()) {
+                Object dono = e.getKey();
+                if (java.util.Objects.equals(dono, sessaoAtual)) {
+                    continue;   // registro legado sem sessão (dono null) é candidato como qualquer outro
+                }
+                if (!achou) {
+                    escolhida = dono;
+                    achou = true;
+                    continue;
+                }
+                boolean avulsa = quantidade.get(dono) == 1;
+                boolean escolhidaAvulsa = quantidade.get(escolhida) == 1;
+                if (avulsa != escolhidaAvulsa ? avulsa : e.getValue() > atividade.get(escolhida)) {
+                    escolhida = dono;
+                }
+            }
+            if (!achou) {
+                historyStore.removeLast();
+                continue;
+            }
+            for (java.util.Iterator<Map<String, Object>> it = historyStore.descendingIterator(); it.hasNext(); ) {
+                if (java.util.Objects.equals(escolhida, it.next().get(CHAVE_SESSAO))) {
+                    it.remove();
+                    break;
+                }
+            }
         }
     }
 

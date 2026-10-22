@@ -50,4 +50,21 @@ class ChaveAdminForcaBrutaHttpTest {
         assertTrue(recusas > 0, "tentativa errada em série precisa chegar ao limite");
         given().header("X-Admin-Api-Key", "test-admin-secret").when().get("/export/json").then().statusCode(200);
     }
+
+    /**
+     * BACK-05: o formulário de /admin/login testa a mesma chave e ficava no limite comum (40 tentativas sem 429,
+     * medido). Agora conta no limite pesado: com o limite de teste em 4, a série chega ao 429.
+     */
+    @Test
+    void formularioDoAdminEntraNoLimitePesado() {
+        int recusas = 0;
+        for (int i = 0; i < 3 * LIMITE; i++) {
+            int status = given().redirects().follow(false).formParam("api_key", "errada-" + i)
+                    .when().post("/admin/login").then().extract().statusCode();
+            if (status == 429) {
+                recusas++;
+            }
+        }
+        assertTrue(recusas > 0, "tentativa errada em série no formulário precisa chegar ao limite");
+    }
 }

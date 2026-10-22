@@ -250,7 +250,7 @@ public class VlanService {
         }
         int vlanId;
         try {
-            vlanId = Integer.parseInt(valor);
+            vlanId = org.framework.net.shared.NumeroAscii.parseIntEstrito(valor);
         } catch (NumberFormatException ex) {
             throw new CalculadoraException("VLAN ID deve ser um número inteiro. Recebido: " + valor);
         }
@@ -459,7 +459,7 @@ public class VlanService {
         }
         int vlanId;
         try {
-            vlanId = Integer.parseInt(valor);
+            vlanId = org.framework.net.shared.NumeroAscii.parseIntEstrito(valor);
         } catch (NumberFormatException ex) {
             throw new CalculadoraException(nomeCampo + " deve ser um número inteiro de 1 a 4094. Recebido: " + valor);
         }
@@ -477,7 +477,7 @@ public class VlanService {
         }
         int passo;
         try {
-            passo = Integer.parseInt(valor);
+            passo = org.framework.net.shared.NumeroAscii.parseIntEstrito(valor);
         } catch (NumberFormatException ex) {
             throw new CalculadoraException("Passo entre VLAN IDs deve ser um número inteiro. Recebido: " + valor);
         }
@@ -494,7 +494,7 @@ public class VlanService {
         }
         int quantidade;
         try {
-            quantidade = Integer.parseInt(valor);
+            quantidade = org.framework.net.shared.NumeroAscii.parseIntEstrito(valor);
         } catch (NumberFormatException ex) {
             throw new CalculadoraException("Quantidade de VLANs deve ser um número inteiro. Recebido: " + valor);
         }

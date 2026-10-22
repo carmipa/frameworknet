@@ -432,7 +432,7 @@ public class HomeAnaliseService {
 
     private static int parseRegua(String value) {
         try {
-            int n = Integer.parseInt(defaultIfBlank(value, "5"));
+            int n = org.framework.net.shared.NumeroAscii.parseIntEstrito(defaultIfBlank(value, "5").strip());
             return REGUA_OPCOES.contains(n) ? n : 5;
         } catch (NumberFormatException ex) {
             return 5;

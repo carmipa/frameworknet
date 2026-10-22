@@ -135,7 +135,7 @@ public class AclSimulatorService {
         }
         int porta;
         try {
-            porta = Integer.parseInt(raw == null ? "" : raw.trim());
+            porta = org.framework.net.shared.NumeroAscii.parseIntEstrito(raw == null ? "" : raw.trim());
         } catch (NumberFormatException ex) {
             throw new SegurancaException("Porta de " + qual + " inválida (informe um número).");
         }
@@ -167,7 +167,7 @@ public class AclSimulatorService {
             if (parte.isEmpty() || parte.length() > 3 || !parte.chars().allMatch(c -> c >= '0' && c <= '9')) {
                 return false;
             }
-            if (Integer.parseInt(parte) > 255) {
+            if (org.framework.net.shared.NumeroAscii.parseIntEstrito(parte) > 255) {
                 return false;
             }
         }
@@ -178,7 +178,7 @@ public class AclSimulatorService {
         String[] octetos = ip.trim().split("\\.", -1);
         long valor = 0L;
         for (String parte : octetos) {
-            valor = (valor << 8) | (Integer.parseInt(parte) & 0xFF);
+            valor = (valor << 8) | (org.framework.net.shared.NumeroAscii.parseIntEstrito(parte) & 0xFF);
         }
         return valor & 0xFFFFFFFFL;
     }
@@ -230,7 +230,7 @@ public class AclSimulatorService {
                     throw new SegurancaException("Regra ACL não suportada: 'access-list' sem número.");
                 }
                 try {
-                    numero = Integer.parseInt(t[i + 1]);
+                    numero = org.framework.net.shared.NumeroAscii.parseIntEstrito(t[i + 1]);
                 } catch (NumberFormatException e) {
                     throw new SegurancaException("Regra ACL não suportada: número de access-list inválido '" + t[i + 1] + "'.");
                 }
@@ -357,7 +357,7 @@ public class AclSimulatorService {
         private static int lerPorta(String s) {
             int p;
             try {
-                p = Integer.parseInt(s);
+                p = org.framework.net.shared.NumeroAscii.parseIntEstrito(s);
             } catch (NumberFormatException e) {
                 throw new SegurancaException("Porta da regra inválida: '" + s + "'.");
             }

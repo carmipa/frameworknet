@@ -263,4 +263,16 @@ public class GitHubOAuthService {
             return new Resultado(false, false, "", motivo);
         }
     }
+
+    /**
+     * Os motivos de falha que este serviço escreve — a tela de login só exibe estes (BACK-09: o texto vem pela
+     * query {@code ?erro=}, e ecoar qualquer texto fazia da faixa oficial de erro uma isca de phishing).
+     */
+    public static final java.util.Set<String> MOTIVOS_DE_FALHA = java.util.Set.of(
+            "Login pelo GitHub não está configurado neste ambiente.",
+            "Código de autorização ausente.",
+            "Não foi possível concluir a troca com o GitHub.",
+            "O GitHub recusou o código de autorização.",
+            "Não foi possível consultar a identidade no GitHub.",
+            "O GitHub não devolveu a identidade do usuário.");
 }

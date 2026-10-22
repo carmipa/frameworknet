@@ -131,6 +131,47 @@ class HistoricoStoreTest {
         assertEquals(noDisco.size(), s.listarTodos().size());
     }
 
+    /**
+     * BACK-14: 500+ consultas avulsas (um POST sem cookie = sessão nova) não apagam o histórico de quem tem
+     * histórico de verdade; o teto global continua valendo e quem sai são as consultas avulsas mais antigas.
+     */
+    @Test
+    void consultasAvulsasNaoExpulsamQuemTemHistorico() throws Exception {
+        HistoricoStore s = novoStore(Files.createTempDirectory("hist-despejo"));
+        s.registrarConsulta("dono", Map.of("modo", "ip", "ip", "10.9.9.1"), Map.of("rede", "x"));
+        s.registrarConsulta("dono", Map.of("modo", "ip", "ip", "10.9.9.2"), Map.of("rede", "x"));
+        for (int i = 0; i < HistoricoStore.MAX_TOTAL + 50; i++) {
+            s.registrarConsulta("avulsa-" + i, Map.of("modo", "ip", "ip", "10.8." + (i / 250) + "." + (i % 250)),
+                    Map.of("rede", "x"));
+        }
+        assertEquals(HistoricoStore.MAX_TOTAL, s.listarTodos().size());
+        assertEquals(2, s.listar("dono").size(), "o histórico de quem consultou duas vezes não pode ser expulso");
+        assertEquals(0, s.listar("avulsa-0").size(), "a consulta avulsa mais antiga é a que sai");
+        assertEquals(1, s.listar("avulsa-" + (HistoricoStore.MAX_TOTAL + 49)).size());
+    }
+
+    /**
+     * Fronteira achada na revisão adversarial da correção acima: com o arquivo cheio de sessões de 2+ consultas, o
+     * visitante novo tem de GUARDAR as próprias consultas (a 1ª versão apagava a consulta nova na hora).
+     */
+    @Test
+    void arquivoSaturadoNaoCongelaQuemChega() throws Exception {
+        HistoricoStore s = novoStore(Files.createTempDirectory("hist-saturado"));
+        for (int i = 0; i < HistoricoStore.MAX_TOTAL / 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                s.registrarConsulta("antiga-" + i, Map.of("modo", "ip", "ip", "10.7." + (i % 250) + "." + j), Map.of("rede", "x"));
+            }
+        }
+        assertEquals(HistoricoStore.MAX_TOTAL, s.listarTodos().size());
+        for (int k = 0; k < 10; k++) {
+            s.registrarConsulta("nova", Map.of("modo", "ip", "ip", "10.6.6." + k), Map.of("rede", "x"));
+        }
+        assertEquals(10, s.listar("nova").size(), "o visitante novo precisa guardar as próprias consultas");
+        assertEquals(HistoricoStore.MAX_TOTAL, s.listarTodos().size());
+        // e quem saiu foi a sessão parada há mais tempo, não a mais recente das antigas
+        assertEquals(2, s.listar("antiga-" + (HistoricoStore.MAX_TOTAL / 2 - 1)).size());
+    }
+
     /** OPS-03: consultas em série saem numa gravação só, e nada se perde ao gravar. */
     @Test
     void consultasEmSerieSaemNumaGravacaoSo() throws Exception {

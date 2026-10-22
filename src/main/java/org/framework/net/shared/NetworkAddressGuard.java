@@ -90,6 +90,7 @@ public final class NetworkAddressGuard {
         byte[] octets = address.getAddress();
         int b0 = octets[0] & 0xFF;
         int b1 = octets[1] & 0xFF;
+        int b2 = octets[2] & 0xFF;
         // 0.0.0.0/8, 10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, 169.254.0.0/16, 172.16.0.0/12,
         // 192.0.0.0/24, 192.0.2.0/24, 192.168.0.0/16, 198.18.0.0/15, 198.51.100.0/24, 203.0.113.0/24, 240.0.0.0/4
         if (b0 == 0 || b0 == 10 || b0 == 127) {
@@ -104,10 +105,9 @@ public final class NetworkAddressGuard {
         if (b0 == 172 && b1 >= 16 && b1 <= 31) {
             return true;
         }
-        if (b0 == 192 && b1 == 0) {
-            return true;
-        }
-        if (b0 == 192 && b1 == 0) {
+        // 192.0.0.0/24 (atribuições do IETF) e 192.0.2.0/24 (TEST-NET-1): /24, não /16 — o resto de 192.0.x.x é
+        // público (ex.: 192.0.43.7, da ICANN), e testar só os dois primeiros octetos recusava esses endereços.
+        if (b0 == 192 && b1 == 0 && (b2 == 0 || b2 == 2)) {
             return true;
         }
         if (b0 == 192 && b1 == 168) {
@@ -116,10 +116,10 @@ public final class NetworkAddressGuard {
         if (b0 == 198 && (b1 == 18 || b1 == 19)) {
             return true;
         }
-        if (b0 == 198 && b1 == 51) {
+        if (b0 == 198 && b1 == 51 && b2 == 100) {
             return true;
         }
-        if (b0 == 203 && b1 == 0) {
+        if (b0 == 203 && b1 == 0 && b2 == 113) {
             return true;
         }
         return b0 >= 240;
@@ -131,7 +131,10 @@ public final class NetworkAddressGuard {
         }
         byte[] bytes = address.getAddress();
         int b0 = bytes[0] & 0xFF;
-        // Unique local fc00::/7, link-local fe80::/10
-        return (b0 & 0xFE) == 0xFC || b0 == 0xFE;
+        int b1 = bytes[1] & 0xFF;
+        int b2 = bytes[2] & 0xFF;
+        int b3 = bytes[3] & 0xFF;
+        // Unique local fc00::/7, link-local fe80::/10, documentação 2001:db8::/32 (RFC 3849)
+        return (b0 & 0xFE) == 0xFC || b0 == 0xFE || (b0 == 0x20 && b1 == 0x01 && b2 == 0x0D && b3 == 0xB8);
     }
 }

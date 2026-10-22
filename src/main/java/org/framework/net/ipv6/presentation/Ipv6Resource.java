@@ -186,7 +186,7 @@ public class Ipv6Resource {
             return padrao;
         }
         try {
-            return Integer.parseInt(t);
+            return org.framework.net.shared.NumeroAscii.parseIntEstrito(t);
         } catch (NumberFormatException ex) {
             return padrao;
         }
@@ -349,7 +349,7 @@ public class Ipv6Resource {
             throw new Ipv6Exception("Informe o prefixo alvo (ex.: 64).");
         }
         try {
-            return Integer.parseInt(txt);
+            return org.framework.net.shared.NumeroAscii.parseIntEstrito(txt);
         } catch (NumberFormatException ex) {
             throw new Ipv6Exception("Prefixo alvo inválido: use um número de 0 a 128.");
         }

@@ -50,6 +50,14 @@ public class EngenhariaReversaService {
      */
     public static final int MAX_ROTEADORES = 50;
 
+    /**
+     * Teto de interfaces COM endereço IP somadas em todos os roteadores — o mesmo do IPv6 ({@code Ipv6SubnetKernel}). O teto de
+     * roteadores sozinho não bastava: 50 roteadores com ~66 interfaces cada (3300 no total, cabe no campo de 256 KB)
+     * levavam 4,2 s de CPU e 9,2 MB de resposta por requisição, com o tempo crescendo mais que linearmente
+     * (auditoria de 22/10/2026, BACK-01). Laboratório didático real tem poucas dezenas de interfaces.
+     */
+    public static final int MAX_INTERFACES = 200;
+
     @Inject
     CiscoConfigParser parser;
 
@@ -66,7 +74,7 @@ public class EngenhariaReversaService {
      * Interpreta a configuração colada e devolve o projeto reconstruído.
      *
      * <p><b>Comportamento em caso de falha:</b> entrada nula ou em branco produz
-     * cenário vazio; mais de {@link #MAX_ROTEADORES} roteadores lança
+     * cenário vazio; mais de {@link #MAX_ROTEADORES} roteadores ou de {@link #MAX_INTERFACES} interfaces somadas lança
      * {@link EntradaInvalidaException} com a contagem, antes de montar tabela ou desenho.</p>
      */
     public CenarioReconstruido interpretar(String texto) {
@@ -75,6 +83,18 @@ public class EngenhariaReversaService {
             throw new EntradaInvalidaException("A engenharia reversa lê até " + MAX_ROTEADORES
                     + " roteadores por vez; o texto colado tem " + lida.roteadores().size()
                     + ". Divida em partes e cole uma de cada vez.");
+        }
+        // Conta só interface COM endereço IP — é ela que entra no cruzamento de LANs e enlaces (o custo medido). Um
+        // switch empilhado com 200 portas sem IP é um equipamento só e não pode ser "dividido em partes"
+        // (revisão de boa-fé, 22/10/2026).
+        long interfaces = lida.roteadores().stream()
+                .flatMap(r -> r.interfaces().stream())
+                .filter(i -> i.ip() != null && !i.ip().isBlank())
+                .count();
+        if (interfaces > MAX_INTERFACES) {
+            throw new EntradaInvalidaException("A engenharia reversa lê até " + MAX_INTERFACES
+                    + " interfaces com endereço IP por vez, somando todos os roteadores; o texto colado tem " + interfaces
+                    + ". Cole os roteadores em partes, ou apague os blocos de interface que não interessam ao exercício.");
         }
         AuditoriaConfiguracaoService.ResultadoAuditoria auditoria = auditoriaService.auditar(lida);
 

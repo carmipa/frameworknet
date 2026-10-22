@@ -22,7 +22,7 @@ public class CidrModoService {
 
         if (cidrRaw != null && !cidrRaw.isBlank()) {
             try {
-                cidrVal = Integer.parseInt(cidrRaw.trim());
+                cidrVal = org.framework.net.shared.NumeroAscii.parseIntEstrito(cidrRaw.trim());
             } catch (NumberFormatException ex) {
                 LOG.warnf("CIDR inválido no modo cidr: %s", cidrRaw);
                 result.setErro("O CIDR deve ser um número inteiro entre 0 e 32.");

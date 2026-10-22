@@ -94,7 +94,7 @@ public final class MascaraIpv4 {
             }
             int octeto;
             try {
-                octeto = Integer.parseInt(parte);
+                octeto = org.framework.net.shared.NumeroAscii.parseIntEstrito(parte);
             } catch (NumberFormatException ex) {
                 return -1;
             }

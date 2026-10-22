@@ -461,7 +461,7 @@ public class AvaliadorTopologiaService {
 
     private static int porta(String raw) {
         try {
-            int p = Integer.parseInt(raw == null ? "" : raw.trim());
+            int p = org.framework.net.shared.NumeroAscii.parseIntEstrito(raw == null ? "" : raw.trim());
             if (p < 0 || p > 65535) {
                 throw new SegurancaException("Porta fora do intervalo (0–65535).");
             }

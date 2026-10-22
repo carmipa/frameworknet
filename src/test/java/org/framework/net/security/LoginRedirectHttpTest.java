@@ -24,8 +24,13 @@ class LoginRedirectHttpTest {
                 .extract().header("Location");
         assertTrue(destino.contains("/login/?erro="), "redirect perde o erro no 301 de /login: " + destino);
 
-        // A tela realmente mostra o motivo quando recebe a query (controle positivo).
-        given().when().get("/login/?erro=Motivo-de-teste").then()
-                .statusCode(200).body(containsString("Motivo-de-teste"));
+        // A tela mostra o motivo que o próprio sistema escreveu (controle positivo)...
+        given().queryParam("erro", "Login pelo GitHub não configurado.").when().get("/login/").then()
+                .statusCode(200).body(containsString("Login pelo GitHub não configurado."));
+        // ...e não ecoa texto de quem montou o link (BACK-09): vira a mensagem genérica.
+        given().queryParam("erro", "Sua chave expirou. Envie para suporte@evil.example").when().get("/login/").then()
+                .statusCode(200)
+                .body(org.hamcrest.Matchers.not(containsString("evil.example")))
+                .body(containsString("Não foi possível entrar. Tente de novo."));
     }
 }

@@ -59,9 +59,6 @@ public class SegredosObrigatoriosVerificador {
     @ConfigProperty(name = "framework.security.csrf-secret", defaultValue = "")
     String csrfSecret;
 
-    @ConfigProperty(name = "framework.security.csrf-enabled", defaultValue = "true")
-    boolean csrfHabilitado;
-
     @ConfigProperty(name = "framework.security.admin-api-key-required", defaultValue = "false")
     boolean chaveAdminObrigatoria;
 
@@ -80,9 +77,9 @@ public class SegredosObrigatoriosVerificador {
         if (chaveAdminObrigatoria) {
             verificar("ADMIN_API_KEY", "framework.security.admin-api-key", adminApiKey, problemas);
         }
-        if (csrfHabilitado) {
-            verificar("CSRF_SECRET", "framework.security.csrf-secret", csrfSecret, problemas);
-        }
+        // Sempre, e não só com o CSRF ligado: o mesmo segredo assina a sessão da Telemetria (SessaoTelemetriaService).
+        // Com o CSRF desligado e sem segredo, qualquer pessoa calcularia um cookie de dono (BACK-15).
+        verificar("CSRF_SECRET", "framework.security.csrf-secret", csrfSecret, problemas);
 
         if (!problemas.isEmpty()) {
             String mensagem = "Recusando iniciar em producao: "

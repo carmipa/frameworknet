@@ -161,7 +161,7 @@ public class BulkClassImportService {
         }
         try {
             for (String chunk : chunks) {
-                int octet = Integer.parseInt(chunk.strip());
+                int octet = org.framework.net.shared.NumeroAscii.parseIntEstrito(chunk.strip());
                 if (octet < 0 || octet > 255) {
                     return false;
                 }
@@ -186,7 +186,7 @@ public class BulkClassImportService {
         }
         int prefix;
         try {
-            prefix = Integer.parseInt(split[1].strip());
+            prefix = org.framework.net.shared.NumeroAscii.parseIntEstrito(split[1].strip());
         } catch (NumberFormatException ex) {
             throw new EntradaInvalidaException("CIDR inválido em " + value);
         }

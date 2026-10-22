@@ -132,15 +132,15 @@ public class ExportClassZipService {
                     ? "extended_star" : formData.getTopologyType().strip();
             int wan = 30;
             if (formData.getWanPrefix() != null && !formData.getWanPrefix().isBlank()) {
-                wan = Integer.parseInt(formData.getWanPrefix().strip());
+                wan = org.framework.net.shared.NumeroAscii.parseIntEstrito(formData.getWanPrefix().strip());
             }
             int eigrp = 71;
             if (formData.getEigrpAs() != null && !formData.getEigrpAs().isBlank()) {
-                eigrp = Integer.parseInt(formData.getEigrpAs().strip());
+                eigrp = org.framework.net.shared.NumeroAscii.parseIntEstrito(formData.getEigrpAs().strip());
             }
             int ospf = 1;
             if (formData.getOspfProcess() != null && !formData.getOspfProcess().isBlank()) {
-                ospf = Integer.parseInt(formData.getOspfProcess().strip());
+                ospf = org.framework.net.shared.NumeroAscii.parseIntEstrito(formData.getOspfProcess().strip());
             }
             String remote = formData.getRemoteAccess() == null || formData.getRemoteAccess().isBlank()
                     ? "ssh" : formData.getRemoteAccess().strip();

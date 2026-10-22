@@ -272,7 +272,7 @@ public class Ipv4Kernel {
             if (raw.length() > 3) {
                 throw new EntradaInvalidaException(nomeCampo + " inválido: octeto " + octetoIdx + " fora de 0-255.");
             }
-            int octeto = Integer.parseInt(raw);
+            int octeto = org.framework.net.shared.NumeroAscii.parseIntEstrito(raw);
             if (octeto < 0 || octeto > 255) {
                 throw new EntradaInvalidaException(nomeCampo + " inválido: octeto " + octetoIdx + " fora de 0-255.");
             }

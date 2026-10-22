@@ -113,12 +113,14 @@ public class GeoLookupService {
                 return enriquecerRespostaGeo(erroBase("invalid", "Endereço IP inválido.", normalized));
             }
             InetAddress addr = literal.get();
-            normalized = addr.getHostAddress();
-            byte[] b = addr.getAddress();
-            boolean cgnat = b.length == 4 && (b[0] & 0xFF) == 100 && (b[1] & 0xC0) == 64;   // 100.64.0.0/10
-            if (addr.isLoopbackAddress() || addr.isSiteLocalAddress() || addr.isLinkLocalAddress()
-                    || addr.isMulticastAddress() || addr.isAnyLocalAddress() || cgnat) {
-                String msg = "Endereço local ou privado (RFC 1918, loopback, etc.) — "
+            normalized = addr instanceof java.net.Inet6Address
+                    ? new inet.ipaddr.IPAddressString(addr.getHostAddress()).getAddress().toCanonicalString()   // RFC 5952
+                    : addr.getHostAddress();
+            // Mesma classificação da guarda de rede (fonte única): ULA (fc00::/7), documentação (RFC 5737 e
+            // 2001:db8::/32), CGNAT e afins são não roteáveis. Antes só o RFC 1918/loopback era reconhecido, e
+            // fd00::1 ou 192.0.2.1 iam ao provedor e voltavam como "tente novamente" (BACK-08).
+            if (!org.framework.net.shared.NetworkAddressGuard.ehPublico(addr)) {
+                String msg = "Endereço local, privado ou reservado (RFC 1918, ULA, documentação, loopback, etc.) — "
                         + "não há geolocalização pública para este IP.";
                 // Devolve o que o usuário digitou, NUNCA o endereço resolvido: ecoar o
                 // resultado da resolução transformava este endpoint em oráculo de DNS —

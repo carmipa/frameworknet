@@ -120,6 +120,24 @@ class EntradaNumericaHostilHttpTest {
         assertEquals(List.of(), falhas);
     }
 
+    /**
+     * BACK-10 (auditoria de 22/10/2026): "+24" e "٢٤" (dígitos árabe-índicos) passavam pelo parseInt do Java e a
+     * Análise exibia /24. Agora o CIDR com sinal ou de outro alfabeto é recusado como não número, e "24" passa.
+     */
+    @Test
+    void cidrComSinalOuOutroAlfabetoERecusado() {
+        for (String ruim : List.of("+24", "٢٤")) {
+            given().contentType("application/x-www-form-urlencoded; charset=UTF-8")
+                    .formParam("modo", "cidr").formParam("ip", "10.0.0.1").formParam("cidr", ruim)
+                    .post("/analise").then().statusCode(org.hamcrest.Matchers.lessThan(500))
+                    .body(org.hamcrest.Matchers.containsString("O CIDR deve ser um número inteiro entre 0 e 32."));
+        }
+        given().contentType("application/x-www-form-urlencoded; charset=UTF-8")
+                .formParam("modo", "cidr").formParam("ip", "10.0.0.1").formParam("cidr", "24")
+                .post("/analise").then().statusCode(200)
+                .body(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("O CIDR deve ser um número inteiro")));
+    }
+
     private static Map<String, Boolean> campos(Method m) {
         Map<String, Boolean> out = new LinkedHashMap<>();
         for (Parameter p : m.getParameters()) {

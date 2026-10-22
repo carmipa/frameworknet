@@ -64,12 +64,10 @@ public class Ipv6SubnetKernel {
         if (bruto.isEmpty()) {
             throw new Ipv6Exception("Informe um endereço ou prefixo IPv6 (ex.: 2001:db8::/48).");
         }
-        // O zone index (%eth0) é informação de escopo, não entra no cálculo.
-        String semZona = bruto;
-        int idxZona = bruto.indexOf('%');
-        if (idxZona >= 0) {
-            semZona = bruto.substring(0, idxZona).strip();
-        }
+        // O zone index (%eth0) é informação de escopo, não entra no cálculo. Sai só ele: o prefixo que vem DEPOIS
+        // da zona continua valendo (RFC 4007 §11.7, "fe80::1%eth0/64"). Cortar tudo a partir do % apagava o /64 e
+        // a análise saía como /128 com 1 endereço (auditoria de 22/10/2026, BACK-04).
+        String semZona = bruto.replaceFirst("%[^/]*", "").strip();
 
         IPAddressString parser = new IPAddressString(semZona);
         if (!parser.isValid() || !parser.isIPv6()) {
@@ -90,7 +88,9 @@ public class Ipv6SubnetKernel {
         IPv6Address host = addr.getLower().withoutPrefixLength();
         IPv6Address bloco = prefixoBloco(host, prefixo);
 
-        String comprimido = host.toCanonicalString();
+        // IPv4-mapped (::ffff:0:0/96): a RFC 5952 §5 recomenda a forma mista, com o IPv4 em decimal pontuado
+        // ("::ffff:192.0.2.1"), e não "::ffff:c000:201" (auditoria de 22/10/2026, BACK-12).
+        String comprimido = host.isIPv4Mapped() ? host.toMixedString() : host.toCanonicalString();
         String expandido = host.toFullString();
         // getLower()/getUpper() de um bloco prefixado carregam o /n; withoutPrefixLength() tira o
         // sufixo para exibir só o endereço (senão "rede" sairia como "2001:db8::/48").
@@ -259,7 +259,8 @@ public class Ipv6SubnetKernel {
      * /64 e um MAC — mostra, passo a passo, como um host "ganha" o endereço IPv6 sozinho.
      *
      * INVARIANTES DO DOMÍNIO: EUI-64 = OUI(3 bytes) + FFFE + NIC(3 bytes), com o 7º bit do 1º byte
-     * (U/L) invertido (XOR 0x02). O prefixo é reduzido ao seu /64 (a fronteira do SLAAC).
+     * (U/L) invertido (XOR 0x02). O prefixo é reduzido ao seu /64 (a fronteira do SLAAC), e o resultado traz um
+     * aviso para a tela quando o prefixo informado não era /64.
      *
      * COMPORTAMENTO EM CASO DE FALHA: MAC ou prefixo inválidos lançam {@link Ipv6Exception}.
      */
@@ -315,8 +316,18 @@ public class Ipv6SubnetKernel {
         // O prefixo exibido é o /64 do SLAAC: só os 64 bits altos (os mesmos copiados para o endereço).
         byte[] prefixo64 = new byte[16];
         System.arraycopy(rede, 0, prefixo64, 0, 8);
+        // Prefixo diferente de /64 é reduzido ao /64 do SLAAC (decisão do F45), mas agora a tela DIZ isso: em
+        // silêncio, quem digitou /48 ou /96 não aprendia que o SLAAC exige /64 (RFC 4862 §5.5.3 d; BACK-07).
+        Integer informado = ps.getNetworkPrefixLength();
+        String rede64 = new IPv6Address(prefixo64).toCanonicalString() + "/64";
+        String aviso = informado != null && informado == 64 ? ""
+                : informado == null
+                ? "Sem prefixo informado: o cálculo usou os primeiros 64 bits do endereço, " + rede64
+                        + " — o SLAAC sempre forma o endereço num /64 (RFC 4862 §5.5.3)."
+                : "O SLAAC só forma endereço num /64 (RFC 4862 §5.5.3): o /" + informado + " informado virou " + rede64
+                        + ", os primeiros 64 bits do que foi digitado. Para outra sub-rede, informe o /64 dela.";
         return new Eui64Result(macNorm, iid, addr.toCanonicalString(),
-                new IPv6Address(prefixo64).toCanonicalString() + "/64", passos, iidGrade);
+                new IPv6Address(prefixo64).toCanonicalString() + "/64", passos, iidGrade, aviso);
     }
 
     /**
@@ -1676,7 +1687,7 @@ public class Ipv6SubnetKernel {
 
     /** Resultado do EUI-64: MAC normalizado, Interface ID, endereço SLAAC, passos e grade de bits do IID. */
     public record Eui64Result(String mac, String interfaceId, String enderecoSlaac,
-            String prefixoRede, String passos, List<Ipv6AnaliseRica.HextetoGrade> iidGrade) { }
+            String prefixoRede, String passos, List<Ipv6AnaliseRica.HextetoGrade> iidGrade, String aviso) { }
 
     /** Resultado da geração de ULA (RFC 4193): prefixo /48, /64, o Global ID e a explicação. */
     public record UlaResult(String ula48, String ula64, String globalId, String explicacao) { }

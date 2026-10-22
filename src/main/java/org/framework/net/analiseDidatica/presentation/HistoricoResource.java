@@ -34,6 +34,10 @@ public class HistoricoResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response registrarCatalogo(Map<String, Object> payload) {
+        if (payload == null) {
+            // Corpo JSON "null": era NPE e 500 genérico (BACK-06). É pedido malformado, como "{}" sem modo.
+            return Response.status(400).entity(Map.of("ok", false, "erro", "corpo ausente")).build();
+        }
         String modo = String.valueOf(payload.getOrDefault("modo", "")).strip().toLowerCase();
         if (!MODOS_CATALOGO.contains(modo)) {
             return Response.status(400).entity(Map.of("ok", false, "erro", "modo inválido")).build();

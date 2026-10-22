@@ -27,6 +27,14 @@ class HistoricoApiHttpTest {
                 .body("table", notNullValue());
     }
 
+    /** BACK-06: corpo JSON "null" é pedido malformado (400), não erro interno (era NPE e 500). */
+    @Test
+    void historyCatalogCorpoNullRecusaCom400() {
+        given().contentType("application/json").body("null")
+                .when().post("/history/catalog")
+                .then().statusCode(400);
+    }
+
     @Test
     void historyCatalogModoInvalido() {
         given()

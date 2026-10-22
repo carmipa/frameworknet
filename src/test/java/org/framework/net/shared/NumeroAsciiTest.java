@@ -25,4 +25,16 @@ class NumeroAsciiTest {
         assertFalse(NumeroAscii.digitosAscii(""));
         assertTrue(NumeroAscii.digitosAscii("007"));
     }
+
+    /** BACK-10: o parseInt do Java aceita "+24" e "٢٤"; o estrito recusa os dois e aceita o legítimo "24". */
+    @Test
+    void parseIntEstritoRecusaSinalEOutroAlfabeto() {
+        assertEquals(24, NumeroAscii.parseIntEstrito("24"));
+        assertEquals(24, Integer.parseInt("+24"), "controle: o parseInt do Java aceita o sinal");
+        for (String ruim : new String[]{"+24", "-1", "٢٤", " 24", "", "1234567890"}) {
+            org.junit.jupiter.api.Assertions.assertThrows(NumberFormatException.class,
+                    () -> NumeroAscii.parseIntEstrito(ruim), ruim);
+        }
+        org.junit.jupiter.api.Assertions.assertThrows(NumberFormatException.class, () -> NumeroAscii.parseIntEstrito(null));
+    }
 }

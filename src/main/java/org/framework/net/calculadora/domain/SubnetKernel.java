@@ -122,7 +122,7 @@ public class SubnetKernel {
         String valor = exigirTexto(texto, nomeCampo);
         int prefixo;
         try {
-            prefixo = Integer.parseInt(valor);
+            prefixo = org.framework.net.shared.NumeroAscii.parseIntEstrito(valor);
         } catch (NumberFormatException ex) {
             throw new CalculadoraException(nomeCampo + " deve ser um número inteiro de 0 a 32. Recebido: " + valor);
         }

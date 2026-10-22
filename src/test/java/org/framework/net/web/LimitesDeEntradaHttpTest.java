@@ -120,6 +120,57 @@ class LimitesDeEntradaHttpTest {
                 .body(containsString("hostname R50"));
     }
 
+    /** {@code roteadores} roteadores com {@code porRoteador} interfaces cada (uma LAN /24 distinta por interface). */
+    private static String roteadoresComInterfaces(int roteadores, int porRoteador) {
+        StringBuilder sb = new StringBuilder();
+        int n = 0;
+        for (int r = 0; r < roteadores; r++) {
+            sb.append("hostname R").append(r).append('\n');
+            for (int i = 0; i < porRoteador; i++, n++) {
+                sb.append("interface GigabitEthernet0/").append(i).append('\n')
+                        .append(" ip address 10.").append(n / 250).append('.').append(n % 250)
+                        .append(".1 255.255.255.0\n no shutdown\n!\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * BACK-01 (auditoria de 22/10/2026): sem teto de interfaces, 50 roteadores × 66 interfaces custavam 4,2 s de CPU e
+     * 9,2 MB por requisição. O teto é o mesmo do IPv6: 200 interfaces somadas passa, 201 é recusado com a contagem.
+     */
+    @Test
+    void engenhariaIpv4LimitaInterfacesNaFronteira() {
+        given().formParam("action_type", "reverse").formParam("aba", "reversa")
+                .formParam("config_paste", roteadoresComInterfaces(4, 50))
+                .when().post("/resolucao-problemas")
+                .then().statusCode(200)
+                .body(not(containsString("interfaces com endereço IP por vez")))
+                .body(containsString("LANs reconstruídas"));
+        given().formParam("action_type", "reverse").formParam("aba", "reversa")
+                .formParam("config_paste", roteadoresComInterfaces(4, 50) + roteadoresComInterfaces(1, 1).replace("hostname R0", "hostname R9"))
+                .when().post("/resolucao-problemas")
+                .then().statusCode(200)
+                .body(containsString("lê até 200 interfaces com endereço IP por vez, somando todos os roteadores; o texto colado tem 201"));
+    }
+
+    /** Fronteira de boa-fé: um switch empilhado com 210 portas, só 2 com IP, é um equipamento só e passa. */
+    @Test
+    void engenhariaIpv4NaoContaInterfaceSemIp() {
+        StringBuilder cfg = new StringBuilder("hostname SW-PILHA\n");
+        for (int i = 0; i < 208; i++) {
+            cfg.append("interface GigabitEthernet").append(i / 52 + 1).append("/0/").append(i % 52 + 1)
+                    .append("\n switchport\n!\n");
+        }
+        cfg.append("interface Vlan10\n ip address 10.0.10.1 255.255.255.0\n!\n")
+                .append("interface Vlan20\n ip address 10.0.20.1 255.255.255.0\n!\n");
+        given().formParam("action_type", "reverse").formParam("aba", "reversa")
+                .formParam("config_paste", cfg.toString())
+                .when().post("/resolucao-problemas")
+                .then().statusCode(200)
+                .body(not(containsString("interfaces com endereço IP por vez")));
+    }
+
     @Test
     void engenhariaIpv6LimitaInterfacesNaFronteira() {
         StringBuilder cfg = new StringBuilder("hostname R1\nipv6 unicast-routing\n");

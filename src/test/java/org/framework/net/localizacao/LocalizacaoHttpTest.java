@@ -44,6 +44,16 @@ class LocalizacaoHttpTest {
                 .body("ok", equalTo(false));
     }
 
+    /** BACK-11: NaN não é coordenada (IEEE 754 × WGS84) e não pode sair como sucesso; Infinity já era recusado. */
+    @Test
+    void gpsNaNRecusa() {
+        for (String v : new String[]{"NaN", "Infinity"}) {
+            given().queryParam("lat", v).queryParam("lon", "0")
+                    .when().get("/localizacao/api/gps")
+                    .then().statusCode(200).body("ok", equalTo(false));
+        }
+    }
+
     @Test
     void ipReservadoRetornaJsonSemRede() {
         given()

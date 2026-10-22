@@ -59,7 +59,9 @@ public class LocalizacaoResource {
     @Path("/api/gps")
     @Produces(MediaType.APPLICATION_JSON)
     public Response porGps(@QueryParam("lat") Double lat, @QueryParam("lon") Double lon) {
-        if (lat == null || lon == null || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+        // NaN passa por qualquer comparação (sempre false) e saía como sucesso: Double.isFinite fecha (BACK-11).
+        if (lat == null || lon == null || !Double.isFinite(lat) || !Double.isFinite(lon)
+                || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
             return Response.ok(java.util.Map.of("ok", false,
                     "mensagem", "Coordenadas inválidas.")).build();
         }

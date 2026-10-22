@@ -158,7 +158,7 @@ public class EncapsulamentoService {
             if (!p.matches("\\d{1,3}")) {
                 return null;
             }
-            int v = Integer.parseInt(p);
+            int v = org.framework.net.shared.NumeroAscii.parseIntEstrito(p);
             if (v < 0 || v > 255) {
                 return null;
             }
@@ -172,7 +172,7 @@ public class EncapsulamentoService {
             return padrao;
         }
         try {
-            int v = Integer.parseInt(porta.strip());
+            int v = org.framework.net.shared.NumeroAscii.parseIntEstrito(porta.strip());
             return (v >= 0 && v <= 65535) ? v : -1;
         } catch (NumberFormatException e) {
             return -1;

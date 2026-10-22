@@ -449,14 +449,14 @@ public class ResolucaoProblemasResource {
         String ospfTxt = formData.getOspfProcess() == null ? "" : formData.getOspfProcess().strip();
         if (!eigrpTxt.isEmpty()) {
             try {
-                eigrpAs = Integer.parseInt(eigrpTxt);
+                eigrpAs = org.framework.net.shared.NumeroAscii.parseIntEstrito(eigrpTxt);
             } catch (NumberFormatException ignored) {
                 eigrpAs = DEFAULT_EIGRP_AS;
             }
         }
         if (!ospfTxt.isEmpty()) {
             try {
-                ospfProcess = Integer.parseInt(ospfTxt);
+                ospfProcess = org.framework.net.shared.NumeroAscii.parseIntEstrito(ospfTxt);
             } catch (NumberFormatException ignored) {
                 ospfProcess = DEFAULT_OSPF_PROCESS;
             }
@@ -571,7 +571,7 @@ public class ResolucaoProblemasResource {
                         Set.of("loc_hosts")
                 );
             }
-            int hostCount = Integer.parseInt(host);
+            int hostCount = org.framework.net.shared.NumeroAscii.parseIntEstrito(host);
             if (hostCount <= 0) {
                 locations.add(new LocationInput(name, host));
                 return new LocationCollectionResult(
@@ -632,7 +632,7 @@ public class ResolucaoProblemasResource {
             invalid.add("topology_type");
         }
         try {
-            int wan = Integer.parseInt(formData.getWanPrefix());
+            int wan = org.framework.net.shared.NumeroAscii.parseIntEstrito(formData.getWanPrefix());
             if (wan < 0 || wan > 30) {
                 invalid.add("wan_prefix");
             }
@@ -642,7 +642,7 @@ public class ResolucaoProblemasResource {
         String eigrpTxt = formData.getEigrpAs() == null ? "" : formData.getEigrpAs().strip();
         if (!eigrpTxt.isEmpty()) {
             try {
-                int v = Integer.parseInt(eigrpTxt);
+                int v = org.framework.net.shared.NumeroAscii.parseIntEstrito(eigrpTxt);
                 if (v < 1 || v > 65535) {
                     invalid.add("eigrp_as");
                 }
@@ -653,7 +653,7 @@ public class ResolucaoProblemasResource {
         String ospfTxt = formData.getOspfProcess() == null ? "" : formData.getOspfProcess().strip();
         if (!ospfTxt.isEmpty()) {
             try {
-                int v = Integer.parseInt(ospfTxt);
+                int v = org.framework.net.shared.NumeroAscii.parseIntEstrito(ospfTxt);
                 if (v < 1 || v > 65535) {
                     invalid.add("ospf_process");
                 }
@@ -706,7 +706,7 @@ public class ResolucaoProblemasResource {
 
     private int parseWanPrefix(String wanPrefix) {
         try {
-            return Integer.parseInt(wanPrefix == null || wanPrefix.isBlank() ? "30" : wanPrefix.strip());
+            return org.framework.net.shared.NumeroAscii.parseIntEstrito(wanPrefix == null || wanPrefix.isBlank() ? "30" : wanPrefix.strip());
         } catch (NumberFormatException ex) {
             throw new EntradaInvalidaException("Prefixo WAN invalido. Informe um inteiro entre 0 e 30.");
         }

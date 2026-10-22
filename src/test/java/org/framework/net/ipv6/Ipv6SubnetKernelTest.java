@@ -40,6 +40,30 @@ class Ipv6SubnetKernelTest {
         assertEquals("1", r.totalEnderecos());
     }
 
+    /**
+     * BACK-04: o zone index sai, o prefixo depois dele fica (RFC 4007 §11.7). Gabarito do ipaddress do Python:
+     * ip_interface("fe80::1%eth0/64").network == fe80::/64. Sem prefixo, a zona continua não mudando nada.
+     */
+    @Test
+    void zoneIndexNaoApagaOPrefixo() {
+        AnaliseIpv6 r = kernel.analisar("fe80::1%eth0/64");
+        assertEquals(64, r.prefixo());
+        assertTrue(r.temPrefixo());
+        assertEquals("2^64", r.totalPotencia());
+        AnaliseIpv6 semPrefixo = kernel.analisar("fe80::1%eth0");
+        assertEquals(128, semPrefixo.prefixo());
+        assertEquals("fe80::1", semPrefixo.comprimido());
+    }
+
+    /** BACK-12: IPv4-mapped na forma mista da RFC 5952 §5 (gabarito: o texto da RFC, não a biblioteca). */
+    @Test
+    void ipv4MappedSaiNaFormaMista() {
+        assertEquals("::ffff:192.0.2.1", kernel.analisar("::ffff:192.0.2.1").comprimido());
+        assertEquals("::ffff:192.0.2.1", kernel.analisar("0:0:0:0:0:ffff:c000:201").comprimido());
+        // fronteira: o mesmo "::ffff" fora do bloco mapeado continua em hexadecimal
+        assertEquals("::fffe:c000:201", kernel.analisar("::fffe:c000:201").comprimido());
+    }
+
     @Test
     void prefixoInformadoContaBlocoInteiro() {
         AnaliseIpv6 r = kernel.analisar("2001:db8::/48");
@@ -564,6 +588,16 @@ class Ipv6SubnetKernelTest {
         assertEquals("2001:db8:0:1::/64", kernel.eui64("2001:db8:0:1::5", mac).prefixoRede());
         assertEquals("2001:db8:0:1::/64", kernel.eui64("2001:db8:0:1:ffff::/80", mac).prefixoRede());
         assertEquals("2001:db8:0:1:21a:2bff:fe3c:4d5e", kernel.eui64("2001:db8:0:1::5", mac).enderecoSlaac());
+    }
+
+    /** BACK-07: a redução ao /64 continua (F45), mas deixa de ser silenciosa — /64 não avisa, /96 e /48 avisam. */
+    @Test
+    void eui64AvisaQuandoOPrefixoNaoEraSlash64() {
+        String mac = "00:1a:2b:3c:4d:5e";
+        assertEquals("", kernel.eui64("2001:db8:0:1::/64", mac).aviso());
+        assertTrue(kernel.eui64("2001:db8:0:1::/96", mac).aviso().contains("/96 informado"));
+        assertTrue(kernel.eui64("2001:db8::/48", mac).aviso().contains("2001:db8::/64"));
+        assertTrue(kernel.eui64("2001:db8:0:1::5", mac).aviso().contains("Sem prefixo informado"));
     }
 
     @Test

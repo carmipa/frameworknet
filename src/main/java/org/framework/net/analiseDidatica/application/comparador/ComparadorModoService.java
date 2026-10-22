@@ -37,7 +37,7 @@ public class ComparadorModoService {
                 result.invalidFields().add(fieldNames[idx]);
                 return result;
             }
-            int cidrCmp = Integer.parseInt(cidrTxt);
+            int cidrCmp = org.framework.net.shared.NumeroAscii.parseIntEstrito(cidrTxt);
             if (cidrCmp < 0 || cidrCmp > 32) {
                 result.setErro("CIDR " + (idx + 1) + " do comparador deve estar entre 0 e 32.");
                 result.invalidFields().add(fieldNames[idx]);
@@ -48,7 +48,7 @@ public class ComparadorModoService {
         try {
             result.setComparadorIp(ipP);
             for (String cidrTxt : cidrsTxt) {
-                int cidrCmp = Integer.parseInt(cidrTxt);
+                int cidrCmp = org.framework.net.shared.NumeroAscii.parseIntEstrito(cidrTxt);
                 Map<String, Object> cmpRes = ipv4Kernel.processar(ipP, cidrCmp, 5);
                 Map<String, Object> card = new LinkedHashMap<>();
                 card.put("cidr", cidrCmp);

@@ -45,6 +45,19 @@ class GeoLookupServiceTest {
         assertEquals("private_or_local", geoLookupService.lookupRegiaoGeografica("100.64.0.1").get("motivo"));
     }
 
+    /**
+     * BACK-08: ULA (RFC 4193) e documentação (RFC 5737, RFC 3849) não são roteáveis — não vão ao provedor e não
+     * viram "tente novamente". Fronteira: 192.0.43.7 (mesmo início, fora do /24) não é marcado reservado.
+     */
+    @Test
+    void ulaEDocumentacaoSaoReservados() {
+        for (String ip : new String[]{"fd00::1", "192.0.2.1", "198.51.100.9", "2001:db8::1"}) {
+            assertEquals("private_or_local", geoLookupService.lookupRegiaoGeografica(ip).get("motivo"), ip);
+        }
+        org.junit.jupiter.api.Assertions.assertNotEquals("private_or_local",
+                geoLookupService.lookupRegiaoGeografica("192.0.43.7").get("motivo"));
+    }
+
     @Test
     void ipInvalidoRetornaErro() {
         Map<String, Object> out = geoLookupService.lookupRegiaoGeografica("nao-e-ip");
