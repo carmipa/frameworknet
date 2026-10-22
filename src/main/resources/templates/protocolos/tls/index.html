@@ -3,8 +3,8 @@
 {#description}TLS em profundidade: handshake, conjuntos de cifras, certificados e cadeia de confiança, e o que muda de verdade entre as versões 1.2 e 1.3.{/description}
 {#extraHead}
 <link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
-<link rel="stylesheet" href="/protocolos/tls/css/tls.css?v=20261001b">
-<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261001b">
+<link rel="stylesheet" href="/protocolos/tls/css/tls.css?v=20261022">
+<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261022">
 {/extraHead}
 {#content}
 <div class="container py-5">
@@ -15,11 +15,11 @@
         <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span></div>
         <span class="aed-eyebrow aed-eyebrow-teal">Aprofundamento · Camada de Aplicação</span>
         <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">TLS — Transport Layer Security</h1>
-        <p class="text-secondary small mx-auto" style="max-width:46rem;">{conteudo.resumo}</p>
+        <p class="text-secondary small mx-auto aed-medida-leitura">{conteudo.resumo}</p>
         <div class="tls-ficha" role="list">
             <span class="tls-ficha-item" role="listitem" title="Documento base do TLS 1.3"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">menu_book</span><strong>RFC</strong> 8446 (TLS 1.3)</span>
             <span class="tls-ficha-item" role="listitem" title="TLS assume qualquer transporte confiável; HTTPS usa TCP 443"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">lan</span><strong>Sobre</strong> TCP 443 (HTTPS)</span>
-            <span class="tls-ficha-item" role="listitem" title="Fica entre a aplicação e o transporte"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">layers</span><strong>Camada</strong> Sessão/Apresentação</span>
+            <span class="tls-ficha-item" role="listitem" title="Fica entre a aplicação e o transporte"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">layers</span><strong>Camada</strong> Aplicação (no TCP/IP; no OSI, sessão/apresentação)</span>
             <span class="tls-ficha-item" role="listitem" title="Confidencialidade, integridade e autenticação do servidor"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">shield</span><strong>Garante</strong> Sigilo + integridade + identidade</span>
             <span class="tls-ficha-item" role="listitem" title="TLS 1.3 obtém forward secrecy com (EC)DHE; também prevê modos PSK e PSK+(EC)DHE (RFC 8446 §2)"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">key</span><strong>PFS</strong> via (EC)DHE no 1.3 (também há PSK)</span>
             <span class="tls-ficha-item" role="listitem" title="A infraestrutura de chaves públicas e autoridades certificadoras"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">verified_user</span><strong>Confiança</strong> PKI / CAs</span>
@@ -27,16 +27,16 @@
     </header>
 
     <nav class="tls-indice" aria-label="Índice da página">
-        <a href="#conceitos" data-indice-link title="O que o TLS garante — e o que não garante">Conceitos</a>
-        <a href="#diagrama" data-indice-link title="Diagrama do handshake TLS 1.3">Diagrama</a>
-        <a href="#cabecalho" data-indice-link title="Decomposição binária do TLS Record">Cabeçalho (bits)</a>
-        <a href="#handshake" data-indice-link title="O handshake TLS 1.3, passo a passo">Handshake</a>
-        <a href="#cadeia" data-indice-link title="Raiz, intermediária e folha">Cadeia</a>
-        <a href="#ciphers" data-indice-link title="Cipher suites e o que evitar">Ciphers</a>
-        <a href="#ataques" data-indice-link title="MITM, stripping, downgrade">Ataques</a>
-        <a href="#mitigacoes" data-indice-link title="HSTS, CT, CAA, pinning">Defesas</a>
-        <a href="#laboratorio" data-indice-link title="openssl e testssl para praticar">Laboratório</a>
-        <a href="#troubleshooting" data-indice-link title="Erros de certificado e como ler">Troubleshooting</a>
+        <a href="#conceitos" data-indice-link title="O que o TLS garante — e o que não garante"><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Conceitos</a>
+        <a href="#diagrama" data-indice-link title="Diagrama do handshake TLS 1.3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama</a>
+        <a href="#cabecalho" data-indice-link title="Decomposição binária do TLS Record"><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> Cabeçalho (bits)</a>
+        <a href="#handshake" data-indice-link title="O handshake TLS 1.3, passo a passo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">handshake</span> Handshake</a>
+        <a href="#cadeia" data-indice-link title="Raiz, intermediária e folha"><span class="material-symbols-outlined" aria-hidden="true" translate="no">workspace_premium</span> Cadeia</a>
+        <a href="#ciphers" data-indice-link title="Cipher suites e o que evitar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">enhanced_encryption</span> Ciphers</a>
+        <a href="#ataques" data-indice-link title="MITM, stripping, downgrade"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques</a>
+        <a href="#mitigacoes" data-indice-link title="HSTS, CT, CAA, pinning"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</a>
+        <a href="#laboratorio" data-indice-link title="openssl e testssl para praticar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</a>
+        <a href="#troubleshooting" data-indice-link title="Erros de certificado e como ler"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</a>
     </nav>
 
     <section id="conceitos" class="tls-secao">
@@ -65,7 +65,7 @@
         <h3 class="tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">handshake</span> O handshake TLS 1.3</h3>
         <p class="small text-secondary">
             Um round-trip (1-RTT): o cliente já manda uma chave efêmera no primeiro pacote, e a validação
-            do certificado acontece antes de qualquer dado de aplicação trafegar.
+            do certificado acontece antes de o cliente enviar dados de aplicação (no handshake completo, sem 0-RTT).
         </p>
         <ol class="tls-fluxo">
             {#for p in conteudo.handshake}
@@ -236,8 +236,8 @@
 </div>
 {/content}
 {#extraScripts}
-<script src="/protocolos/js/aprofundamento.js?v=20260925"></script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
-<script src="/protocolos/aprofundamento/js/aprofundamento-diagrama.js?v=20261002"></script>
+<script src="/protocolos/js/aprofundamento.js?v=20261022"></script>
+<script src="/web/vendor/mermaid-11.17.2/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script src="/protocolos/aprofundamento/js/aprofundamento-diagrama.js?v=20261022"></script>
 {/extraScripts}
 {/include}

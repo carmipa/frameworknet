@@ -28,7 +28,7 @@
 .doc-toc-group {
     color: var(--aed-text-faint, #5b6679);
     font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
-    font-size: 0.7rem;
+    font-size: .75rem;
     font-weight: 800;
     letter-spacing: 0.1em;
     margin: 0.9rem 0 0.35rem;
@@ -102,7 +102,7 @@
     align-items: center;
     background: var(--aed-teal-dim, rgba(45, 212, 191, 0.12));
     border: 1px solid rgba(45, 212, 191, 0.28);
-    border-radius: 999px;
+    border-radius: 62.4375rem;
     color: var(--aed-teal, #2dd4bf);
     display: inline-flex;
     font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
@@ -211,7 +211,7 @@
     background: var(--aed-card-bottom, #0a0e16);
     color: var(--aed-text-faint, #5b6679);
     text-transform: uppercase;
-    font-size: 0.72rem;
+    font-size: .75rem;
     letter-spacing: 0.04em;
 }
 
@@ -251,7 +251,8 @@
     overflow-x: auto;
 }
 
-.markdown-doc .mermaid svg { max-width: 100%; height: auto; }
+/* Tamanho natural do diagrama (useMaxWidth: false no documentacao.js), com a rolagem da caixa acima. */
+.markdown-doc .mermaid svg { max-width: none !important; height: auto; }
 
 @media (max-width: 62em) {
     .doc-layout { grid-template-columns: 1fr; }

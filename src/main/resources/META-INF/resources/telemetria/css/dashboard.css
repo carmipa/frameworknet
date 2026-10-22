@@ -40,7 +40,7 @@
 .aed-kpi-icon.rose { background: rgba(244, 63, 94, 0.14); color: #f43f5e; }
 
 .aed-kpi-label {
-    font-size: 0.68rem;
+    font-size: .75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #7d8aa1;
@@ -83,7 +83,7 @@
     border-radius: 0.7rem;
     padding: 0.9rem 1rem;
     font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
-    font-size: 0.72rem;
+    font-size: .75rem;
     line-height: 1.85;
     color: var(--aed-text-secondary, #8b97ad);
     max-height: 21rem;
@@ -105,7 +105,7 @@
 .telemetry-path {
     font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
     color: var(--aed-text-faint, #5b6679);
-    font-size: 0.72rem;
+    font-size: .75rem;
 }
 
 /* ---- Histórico de eventos ---- */
@@ -126,7 +126,7 @@
     background: #0c1018;
     border-color: var(--aed-border, rgba(255, 255, 255, 0.08)) !important;
     color: var(--aed-text-faint, #5b6679);
-    font-size: 0.7rem;
+    font-size: .75rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
@@ -144,11 +144,12 @@
     font-size: 0.76rem;
 }
 
+/* A mensagem inteira fica na tela, quebrando linha: com reticências ela só existia no title (dica de mouse, que
+   não aparece no toque nem no teclado). */
 .telemetry-table td.col-msg {
     max-width: 22rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
     color: var(--aed-text-secondary, #8b97ad);
 }
 
@@ -156,7 +157,7 @@
     display: inline-block;
     padding: 0.05rem 0.5rem;
     border-radius: 0.4rem;
-    font-size: 0.7rem;
+    font-size: .75rem;
     font-weight: 600;
 }
 
@@ -188,7 +189,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
-    font-size: 0.66rem;
+    font-size: .75rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: #7d8aa1;
@@ -216,7 +217,7 @@
 .tele-kpi-6 { grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); }
 
 .aed-kpi-sub {
-    font-size: 0.66rem;
+    font-size: .75rem;
     color: var(--aed-text-faint, #5b6679);
     font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
     margin-top: 0.15rem;
@@ -241,7 +242,7 @@
     gap: 0.4rem;
     color: var(--aed-text-secondary, #8b97ad);
     text-transform: uppercase;
-    font-size: 0.72rem;
+    font-size: .75rem;
     letter-spacing: 0.03em;
     margin: 0.3rem 0 0.7rem;
 }
@@ -257,12 +258,13 @@
 .tele-endpoints th.num, .tele-endpoints td.num { text-align: right; white-space: nowrap; }
 .telemetry-table td.mono, .tele-endpoints td.mono { font-family: var(--aed-font-mono, "JetBrains Mono", monospace); }
 
+/* A rota inteira fica na tela, quebrando linha (com reticências e sem title, "/academia/fundamentos/hexadecimal"
+   aparecia cortada sem jeito de ler o resto). */
 .tele-endpoints td.col-endpoint,
 .telemetry-table td.col-endpoint {
     max-width: 15rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
     font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
     color: var(--aed-text-secondary, #8b97ad);
 }
@@ -275,7 +277,7 @@
     display: inline-block;
     padding: 0.02rem 0.4rem;
     border-radius: 0.35rem;
-    font-size: 0.66rem;
+    font-size: .75rem;
     font-weight: 700;
     letter-spacing: 0.03em;
     border: 1px solid rgba(255, 255, 255, 0.14);
@@ -333,7 +335,7 @@ ul.tele-export-menu .material-symbols-outlined {
 ul.tele-export-menu small {
     margin-left: auto;
     color: #5b6679;
-    font-size: .7rem;
+    font-size: .75rem;
 }
 
 /* ---------- Impressao: so o conteudo, sem casca ----------

@@ -32,7 +32,7 @@
 }
 
 .offline-texto {
-    max-width: 34rem;
+    max-width: 70ch;
     margin: 0;
     color: var(--aed-text-secondary, #9fb0c8);
     font-size: clamp(0.9rem, 2.6vw, 1rem);

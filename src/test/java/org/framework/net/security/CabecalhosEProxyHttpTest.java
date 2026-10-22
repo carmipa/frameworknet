@@ -47,9 +47,7 @@ class CabecalhosEProxyHttpTest {
 
         // Quebrar qualquer uma destas some com um recurso da tela sem erro no servidor.
         for (String origem : new String[]{
-                "https://cdn.jsdelivr.net",          // Bootstrap, mermaid
-                "https://unpkg.com",                 // Leaflet
-                "https://fonts.googleapis.com",      // Material Symbols
+                "https://fonts.googleapis.com",      // fontes de texto
                 "https://fonts.gstatic.com",         // arquivos das fontes
                 "tile.openstreetmap.org",            // tiles do mapa
                 "https://translate.google.com"}) {   // widget de tradução
@@ -58,6 +56,10 @@ class CabecalhosEProxyHttpTest {
         }
         // Bandeiras são locais (seletor desde 01/10, país da GeoIP desde FRONT-18): origem a menos no CSP.
         org.junit.jupiter.api.Assertions.assertFalse(csp.contains("flagcdn.com"), csp);
+        // Bootstrap, mermaid, Chart.js e Leaflet são servidos pelo próprio site desde 22/10/2026 (web/vendor):
+        // as duas origens de CDN saíram do CSP, e voltar com elas reabriria a dependência externa.
+        org.junit.jupiter.api.Assertions.assertFalse(csp.contains("cdn.jsdelivr.net"), csp);
+        org.junit.jupiter.api.Assertions.assertFalse(csp.contains("unpkg.com"), csp);
 
         // Trava as diretivas que independem de origem externa.
         org.junit.jupiter.api.Assertions.assertTrue(csp.contains("object-src 'none'"), csp);
@@ -84,13 +86,15 @@ class CabecalhosEProxyHttpTest {
     }
 
     @Test
-    @DisplayName("o Bootstrap de CDN carrega com Subresource Integrity")
+    @DisplayName("o Bootstrap é servido pelo próprio site, com Subresource Integrity, e o arquivo responde")
     void bibliotecasDeCdnTemIntegrity() {
         given()
                 .when().get("/")
                 .then()
                 .statusCode(200)
+                .body(containsString("href=\"/web/vendor/bootstrap-5.3.0/bootstrap.min.css\""))
                 .body(containsString("integrity=\"sha384-"))
-                .body(not(containsString("cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\" rel=\"stylesheet\">")));
+                .body(not(containsString("cdn.jsdelivr.net")));
+        given().when().get("/web/vendor/bootstrap-5.3.0/bootstrap.bundle.min.js").then().statusCode(200);
     }
 }

@@ -56,7 +56,7 @@
 }
 
 .diag-cmd-rotulo {
-    font-size: 0.6rem;
+    font-size: .75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--aed-text-faint);
@@ -97,7 +97,7 @@
 
 .diag-kpi-valor { font-family: var(--aed-font-mono); font-size: 1.15rem; font-weight: 700; color: var(--aed-text); }
 .diag-kpi-label { font-size: 0.75rem; font-weight: 600; color: var(--aed-text); }
-.diag-kpi-nota { font-size: 0.68rem; color: var(--aed-text-secondary); }
+.diag-kpi-nota { font-size: .75rem; color: var(--aed-text-secondary); }
 
 .diag-kpi-info { border-left-color: #38bdf8; }
 .diag-kpi-info .diag-kpi-valor { color: #7dd3fc; }
@@ -126,7 +126,7 @@
     border-color: #1e3346;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    font-size: 0.68rem;
+    font-size: .75rem;
 }
 
 .diag-tabela td { border-color: rgba(255, 255, 255, 0.06); font-size: 0.8rem; }

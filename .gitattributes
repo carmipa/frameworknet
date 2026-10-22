@@ -1,0 +1,3 @@
+# Bibliotecas de terceiros servidas pelo proprio site: os bytes tem de bater com o SRI (integrity) dos
+# templates. Sem isto, o core.autocrlf do Windows troca LF por CRLF no checkout e o navegador recusa o arquivo.
+src/main/resources/META-INF/resources/web/vendor/** -text

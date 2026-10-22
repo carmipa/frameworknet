@@ -305,14 +305,11 @@
             }
         });
 
-        document.querySelectorAll("#form-geo-ip [data-bs-toggle='tooltip'], #form-geo-ip [data-bs-toggle='popover']").forEach((el) => {
-            if (el.getAttribute("data-bs-toggle") === "tooltip" && !bootstrap.Tooltip.getInstance(el)) {
-                new bootstrap.Tooltip(el);
-            }
-            if (el.getAttribute("data-bs-toggle") === "popover" && !bootstrap.Popover.getInstance(el)) {
-                new bootstrap.Popover(el);
-            }
-        });
+        // Dicas pelo tooltip canônico (adaptador field-tooltips.js), que também liga os popovers.
+        const formGeo = document.getElementById("form-geo-ip");
+        if (formGeo && w.FieldTooltips) {
+            w.FieldTooltips.init(formGeo);
+        }
 
         w.refreshGeoHistory = refreshGeoHistory;
         refreshGeoHistory();

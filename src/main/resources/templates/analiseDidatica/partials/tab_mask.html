@@ -20,7 +20,7 @@
     <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Calculadora visual de hosts</h6>
     <div class="row g-2 align-items-center">
         <div class="col-lg-5">
-            <label for="mask_hosts_slider" class="form-label small text-secondary mb-1">Hosts necessários</label>
+            <label for="mask_hosts_slider" class="form-label small text-secondary mb-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> Hosts necessários</label>
             <input id="mask_hosts_slider" type="range" class="form-range" min="1" max="4094" step="1" value="254">
         </div>
         <div class="col-lg-7 small text-secondary">
@@ -36,7 +36,7 @@
     <h6 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">123</span> Visualizador binário da máscara</h6>
     <div class="row g-2 mb-2">
         <div class="col-lg-4">
-            <label for="mask_binary_input" class="form-label small text-secondary mb-1">Máscara decimal</label>
+            <label for="mask_binary_input" class="form-label small text-secondary mb-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span> Máscara decimal</label>
             <input id="mask_binary_input" type="text" class="form-control input-ipv4 bg-dark text-light border-secondary" value="255.255.255.0" placeholder="Ex.: 255.255.255.240" autocomplete="off" spellcheck="false">
         </div>
         <div class="col-lg-8 d-flex align-items-end">
@@ -49,12 +49,12 @@
 <form method="POST" class="row g-3 calc-form" data-tab-form="mask">
     <input type="hidden" name="tab" value="mask">
     <div class="col-lg-6">
-        <label class="form-label small text-secondary">Máscara decimal</label>
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span> Máscara decimal</label>
         <input type="text" name="mask_decimal" class="form-control input-ipv4 bg-dark text-light border-secondary {#if invalidFields.contains('mask_decimal')}is-invalid{/if}"
                placeholder="Ex.: 255.255.255.0" value="{maskDecPre}" inputmode="text" autocomplete="off" spellcheck="false">
     </div>
     <div class="col-lg-3">
-        <label class="form-label small text-secondary">Régua</label>
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Régua</label>
         <select aria-label="Régua" name="regua_count" class="form-select bg-dark text-light border-secondary">
             <option value="5" {#if reguaCountPre == '5'}selected{/if}>5</option>
             <option value="10" {#if reguaCountPre == '10'}selected{/if}>10</option>

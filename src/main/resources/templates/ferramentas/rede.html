@@ -5,7 +5,7 @@
 {#description}Comandos de rede comparados entre Windows e Linux, por intenção: ver IP, rotas, ARP, DNS, conectividade, portas e processos — com parâmetros explicados, saída de exemplo (simulada) e como interpretar.{/description}
 {#extraHead}
 <link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
-<link rel="stylesheet" href="/ferramentas/css/rede.css?v=20261002">
+<link rel="stylesheet" href="/ferramentas/css/rede.css?v=20261022">
 {/extraHead}
 {#content}
 <div class="container py-5 rede-page">
@@ -18,7 +18,7 @@
             <span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">compare_arrows</span>
             Rede: Windows × Linux
         </h1>
-        <p class="aed-subtitle" style="max-width:62rem;">
+        <p class="aed-subtitle aed-medida-leitura">
             Escolha <strong>o que você quer descobrir</strong> e veja o comando de cada sistema lado a lado — com os
             parâmetros explicados, uma saída de exemplo e como lê-la. As saídas são
             <strong class="rede-aviso-inline">simuladas</strong>: nada é executado no seu computador nem em servidores.
@@ -33,7 +33,7 @@
                    placeholder="Busque por tarefa: ver meu ip, quem usa esta porta, o nome não resolve…"
                    autocomplete="off" aria-label="Buscar tarefa ou comando">
             <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="rede-limpar-busca" data-bs-trigger="hover" title="Limpar a busca">
-                <span class="material-symbols-outlined" aria-hidden="true" translate="no">close</span> Limpar
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">delete_sweep</span> Limpar
             </button>
         </div>
         <div class="rede-chips" role="group" aria-label="Filtrar por categoria">
@@ -139,7 +139,7 @@
                 </ol>
             </details>
             <details class="rede-guia">
-                <summary><span class="material-symbols-outlined" aria-hidden="true" translate="no">travel_explore</span> "O nome não resolve"</summary>
+                <summary><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> "O nome não resolve"</summary>
                 <ol class="rede-guia-passos">
                     <li><strong>Qual resolvedor estou usando?</strong> Linux <code translate="no">dig example.com</code> mostra o SERVER que respondeu; Windows <code translate="no">ipconfig /all</code> lista os servidores DNS.</li>
                     <li><strong>É o meu resolvedor ou o nome?</strong> Teste um resolvedor público explícito: <code translate="no">dig @8.8.8.8 example.com</code>. Resolve com ele mas não com o seu → problema no resolvedor local.</li>

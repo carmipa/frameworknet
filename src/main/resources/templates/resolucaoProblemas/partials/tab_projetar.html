@@ -53,7 +53,7 @@
         <form method="POST" action="/resolucao-problemas" id="resolucao-form">
             <div class="row g-3 align-items-end">
                 <div class="col-lg-4 col-md-6">
-                    <label class="form-label text-secondary">IP da rede base (IPv4)</label>
+                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> IP da rede base (IPv4)</label>
                     <input
                         type="text"
                         class="form-control input-ipv4 input-ipv4-network {#if invalidFields.contains('base_network')}is-invalid{/if}"
@@ -72,7 +72,7 @@
                     <div class="form-text text-secondary">IPv4 completo com pontos (ex.: <code translate="no">172.19.0.0</code>) ou com barra <code translate="no">/16</code>.</div>
                 </div>
                 <div class="col-lg-2 col-md-6">
-                    <label class="form-label text-secondary">CIDR da rede base</label>
+                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> CIDR da rede base</label>
                     <input
                         type="text"
                         class="form-control input-cidr {#if invalidFields.contains('base_network')}is-invalid{/if}"
@@ -88,7 +88,7 @@
                     >
                 </div>
                 <div class="col-lg-2 col-md-6">
-                    <label class="form-label text-secondary">Prefixo WAN</label>
+                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cable</span> Prefixo WAN</label>
                     <input
                         type="text"
                         class="form-control input-cidr {#if invalidFields.contains('wan_prefix')}is-invalid{/if}"
@@ -103,7 +103,7 @@
                     >
                 </div>
                 <div class="col-lg-4 col-md-6">
-                    <label class="form-label text-secondary">Topologia WAN</label>
+                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Topologia WAN</label>
                     <select aria-label="Topologia WAN"
                         name="topology_type"
                         class="form-select {#if invalidFields.contains('topology_type')}is-invalid{/if}"
@@ -119,7 +119,7 @@
             </div>
             <div class="row g-3 align-items-end mt-1">
                 <div class="col-lg-3 col-md-6">
-                    <label class="form-label text-secondary">AS EIGRP <span class="text-secondary">(opcional)</span></label>
+                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span> AS EIGRP <span class="text-secondary">(opcional)</span></label>
                     <input
                         type="text"
                         class="form-control input-numeric {#if invalidFields.contains('eigrp_as')}is-invalid{/if}"
@@ -135,7 +135,7 @@
                     >
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <label class="form-label text-secondary">Processo OSPF <span class="text-secondary">(opcional)</span></label>
+                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Processo OSPF <span class="text-secondary">(opcional)</span></label>
                     <input
                         type="text"
                         class="form-control input-numeric {#if invalidFields.contains('ospf_process')}is-invalid{/if}"
@@ -151,7 +151,7 @@
                     >
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <label class="form-label text-secondary">Acesso remoto (VTY)</label>
+                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">settings_remote</span> Acesso remoto (VTY)</label>
                     <select aria-label="Acesso remoto (VTY)"
                         name="remote_access"
                         class="form-select"
@@ -165,7 +165,7 @@
                     </select>
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <label class="form-label text-secondary">Distribuição EIGRP/OSPF</label>
+                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Distribuição EIGRP/OSPF</label>
                     <select aria-label="Distribuição EIGRP/OSPF"
                         name="routing_mode"
                         id="routing-mode-select"
@@ -208,10 +208,11 @@
                 {#for loc in locations}
                 <div class="row g-2 align-items-end location-row mb-2">
                     <div class="col-lg-7 col-md-12">
-                        <label class="form-label text-secondary">Nome da localidade</label>
+                        <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">apartment</span> Nome da localidade</label>
                         <input
                             type="text"
                             name="loc_name"
+                            aria-label="Nome da localidade"
                             class="form-control {#if invalidFields.contains('loc_name')}is-invalid{/if}"
                             value="{loc.name}"
                             data-bs-toggle="tooltip"
@@ -221,10 +222,11 @@
                         >
                     </div>
                     <div class="col-lg-3 col-md-6">
-                        <label class="form-label text-secondary">Qtd. hosts <span class="text-secondary">(inteiro)</span></label>
+                        <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> Qtd. hosts <span class="text-secondary">(inteiro)</span></label>
                         <input
                             type="text"
                             name="loc_hosts"
+                            aria-label="Qtd. hosts (inteiro)"
                             class="form-control input-numeric {#if invalidFields.contains('loc_hosts')}is-invalid{/if}"
                             inputmode="numeric"
                             maxlength="6"
@@ -291,7 +293,7 @@
             <input type="hidden" name="remote_access" value="{formData.remoteAccess}">
             <input type="hidden" name="routing_mode" value="{formData.routingMode}">
             <div class="col-12">
-                <label class="form-label text-secondary">Colagem da planilha</label>
+                <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">content_paste</span> Colagem da planilha</label>
                 <textarea
                     name="class_roster_paste"
                     class="form-control font-monospace {#if invalidFields.contains('class_roster_paste')}is-invalid{/if}"

@@ -143,7 +143,9 @@ function rotasDaResource(fonte, arquivo) {
   // o arquivo por anotacao isolada separaria `@GET` do `@Produces` logo abaixo e
   // classificaria toda pagina HTML como API — foi exatamente o que aconteceu na
   // primeira versao deste extrator, e o portao de categoria vazia denunciou.
-  const bloco = /((?:^[ \t]*@[\w.]+(?:\((?:[^()]|\([^()]*\))*\))?[ \t]*\r?\n)+)[ \t]*public\s+[\w<>,.\s[\]]+?\s+(\w+)\s*\(/gm;
+  // Varias anotacoes na MESMA linha tambem contam ("@GET @Path(...) @Produces(...)"): so com uma por linha, a
+  // pagina /laboratorios/aneis-e-rede ficou fora do inventario e de toda varredura (CONT-S2, 22/10/2026).
+  const bloco = /((?:^[ \t]*(?:@[\w.]+(?:\((?:[^()]|\([^()]*\))*\))?[ \t]*)+\r?\n)+)[ \t]*public\s+[\w<>,.\s[\]]+?\s+(\w+)\s*\(/gm;
   for (const achado of fonte.matchAll(bloco)) {
     const anotacoes = achado[1];
     const metodoJava = achado[2];

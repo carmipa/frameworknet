@@ -6,17 +6,17 @@
 <form method="POST" class="row g-3 calc-form" data-tab-form="wildcard">
     <input type="hidden" name="tab" value="wildcard">
     <div class="col-lg-5">
-        <label class="form-label small text-secondary">Endereço IPv4 (obrigatório)</label>
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Endereço IPv4 (obrigatório)</label>
         <input type="text" name="ip" class="form-control input-ipv4 bg-dark text-light border-secondary {#if invalidFields.contains('ip')}is-invalid{/if}"
                placeholder="Ex.: 172.16.8.8" value="{ipPre}" inputmode="text" autocomplete="off" spellcheck="false">
     </div>
     <div class="col-lg-3">
-        <label class="form-label small text-secondary">Wildcard mask</label>
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span> Wildcard mask</label>
         <input type="text" name="wildcard_mask" class="form-control input-ipv4 bg-dark text-light border-secondary {#if invalidFields.contains('wildcard_mask')}is-invalid{/if}"
                placeholder="Ex.: 0.0.15.255" value="{wildcardPre}" inputmode="text" autocomplete="off" spellcheck="false">
     </div>
     <div class="col-lg-2">
-        <label class="form-label small text-secondary">Régua</label>
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Régua</label>
         <select aria-label="Régua" name="regua_count" class="form-select bg-dark text-light border-secondary">
             <option value="5" {#if reguaCountPre == '5'}selected{/if}>5</option>
             <option value="10" {#if reguaCountPre == '10'}selected{/if}>10</option>
@@ -39,11 +39,11 @@
     <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_horiz</span> Conversor visual Máscara ↔ Wildcard</h6>
     <div class="row g-2 mb-3 align-items-end">
         <div class="col-12 col-lg-5">
-            <label for="wild_mask_input" class="form-label small text-secondary mb-1">Máscara decimal</label>
+            <label for="wild_mask_input" class="form-label small text-secondary mb-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span> Máscara decimal</label>
             <input id="wild_mask_input" type="text" class="form-control input-ipv4 bg-dark text-light border-secondary" value="255.255.255.0" autocomplete="off" spellcheck="false">
         </div>
         <div class="col-12 col-lg-3">
-            <label for="wild_wildcard_input" class="form-label small text-secondary mb-1">Wildcard</label>
+            <label for="wild_wildcard_input" class="form-label small text-secondary mb-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span> Wildcard</label>
             <input id="wild_wildcard_input" type="text" class="form-control input-ipv4 bg-dark text-light border-secondary" value="0.0.0.255" autocomplete="off" spellcheck="false" data-bs-toggle="false" title="">
         </div>
         <div class="col-12 col-lg-2 d-grid">

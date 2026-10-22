@@ -12,7 +12,7 @@
     <div class="text-center mb-4">
         <span class="aed-eyebrow aed-eyebrow-indigo">Catálogo</span>
         <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Catálogo de Protocolos de Rede</h1>
-        <p class="text-secondary small mx-auto" style="max-width:36rem;">
+        <p class="text-secondary small mx-auto aed-medida-leitura">
             DataGrid didático: camada, transporte, segurança, função e classificação IGP/EGP para roteamento.
         </p>
     </div>
@@ -71,7 +71,7 @@
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-25">
                 <label class="small text-secondary mb-0 d-flex align-items-center gap-2 flex-wrap">
-                    <span>Linhas por página</span>
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> <span>Linhas por página</span>
                     <select aria-label="Linhas por página" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: auto; min-width: 12rem;" data-grid-page-size="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Paginação da tabela.">
                         <option value="10">10</option>
                         <option value="25">25</option>
@@ -83,11 +83,11 @@
             </div>
             <div class="row g-2 align-items-end mb-3">
                 <div class="col-lg-3">
-                    <label class="form-label small text-secondary d-flex align-items-center gap-1">Busca geral</label>
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">search</span> Busca geral</label>
                     <input type="text" class="form-control bg-dark text-light border-secondary" data-grid-search="protocolos" placeholder="Protocolo, IGP, EGP, camada..." data-bs-toggle="tooltip" data-bs-placement="top" title="Busca geral: digite protocolo, camada, IGP/EGP, transporte ou função.">
                 </div>
                 <div class="col-lg-2">
-                    <label class="form-label small text-secondary">Categoria</label>
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">category</span> Categoria</label>
                     <select aria-label="Categoria" class="form-select bg-dark text-light border-secondary" data-grid-context="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra por categoria: protocolos de roteamento ou outros.">
                         <option value="all">Todas</option>
                         <option value="roteamento">Roteamento</option>
@@ -95,7 +95,7 @@
                     </select>
                 </div>
                 <div class="col-lg-2">
-                    <label class="form-label small text-secondary">Camada</label>
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Camada</label>
                     <select aria-label="Camada" class="form-select bg-dark text-light border-secondary" data-grid-category="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pela camada do modelo (aplicação, transporte, rede, enlace).">
                         <option value="all">Todas</option>
                         <option value="aplicação">Aplicação</option>
@@ -105,7 +105,7 @@
                     </select>
                 </div>
                 <div class="col-lg-1">
-                    <label class="form-label small text-secondary">Transporte</label>
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_horiz</span> Transporte</label>
                     <select aria-label="Transporte" class="form-select bg-dark text-light border-secondary" data-grid-transport="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelo protocolo de transporte (TCP, UDP, ICMP ou N/A).">
                         <option value="all">Todos</option>
                         <option value="tcp">TCP</option>
@@ -115,7 +115,7 @@
                     </select>
                 </div>
                 <div class="col-lg-1">
-                    <label class="form-label small text-secondary">Nível</label>
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">equalizer</span> Nível</label>
                     <select aria-label="Nível" class="form-select bg-dark text-light border-secondary" data-grid-risk="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelo nível didático (crítico, atenção, seguro, didático).">
                         <option value="all">Todos</option>
                         <option value="crítico">Crítico</option>
@@ -143,7 +143,7 @@
                             <th class="sortable" data-sort-key="seguro"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">shield</span>Seguro</th>
                             <th class="sortable" data-sort-key="nivel"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">equalizer</span>Nível</th>
                             <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">functions</span>Função</th>
-                            <th class="text-center" style="width: 220px;" title="Copiar linha, abrir detalhes ou aprofundar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
+                            <th class="text-center" style="width: 13.75rem;" title="Copiar linha, abrir detalhes ou aprofundar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
                         </tr>
                     </thead>
                     <tbody data-grid-body="protocolos">

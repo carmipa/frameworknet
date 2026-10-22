@@ -24,7 +24,7 @@
                 return;
             }
             const alvo = document.getElementById(botao.getAttribute("data-copiar"));
-            const texto = alvo ? alvo.textContent : "";
+            const texto = alvo ? (window.FieldTooltips ? window.FieldTooltips.textoLimpo(alvo) : alvo.textContent) : "";
             const original = botao.innerHTML;
             try {
                 await navigator.clipboard.writeText(texto);

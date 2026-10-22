@@ -44,6 +44,9 @@ for (const r of rotas) {
       if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue;
       const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none' || !el.getClientRects().length) continue;
       if (el.closest('[aria-hidden="true"]') || el.classList.contains('material-symbols-outlined')) continue;
+      // Visualmente oculto (visually-hidden: caixa de 1 px recortada) não é texto na tela: o link "Pular" só aparece
+      // com o foco, e aí tem 17,8:1. Medido como estava, ele reprovava 84 páginas (UX-15, auditoria de 22/10/2026).
+      { const r = el.getBoundingClientRect(); if (r.width <= 1 || r.height <= 1) continue; }
       if (el.closest('svg')) { out.push({ nv: true }); continue; } // fundo é o fill do SVG, que o CSS não mostra
       const c = cores(cs.color)[0]; if (!c) continue;
       const bgs = fundos(el); if (!bgs) { out.push({ nv: true }); continue; }

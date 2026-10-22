@@ -10,6 +10,7 @@
     width: 100%;
 }
 
+
 .acad-regua-bit {
     display: flex;
     flex-direction: column;
@@ -39,7 +40,8 @@
     margin-left: .45rem;
 }
 
-.acad-regua-bit:disabled {
+.acad-regua-bit:disabled,
+.acad-regua-bit[aria-disabled="true"] {
     cursor: default;
 }
 
@@ -85,18 +87,29 @@
     border-color: var(--aed-teal);
 }
 
-@media (max-width: 576px) {
-    .acad-regua {
-        grid-template-columns: repeat(16, minmax(0, 1fr));
-    }
-
-    .acad-regua-bit:nth-child(8n + 1):not(:first-child) {
-        margin-left: 0;
-    }
-}
 
 @media (prefers-reduced-motion: reduce) {
     .acad-regua-bit {
         transition: none !important;
+    }
+}
+
+/* Tela estreita: um octeto por linha (4 × 8). Com 32 colunas cada bit ficava com 14 px de largura e 2 px de
+   vão — alvo de toque abaixo dos 24 px da WCAG 2.5.8 (auditoria de responsividade, 22/10/2026). Assim cada bit
+   tem pelo menos 1,5rem de largura (24 px; ~32 px em 320) e 2,75rem de altura. A ordem dos bits não muda: a
+   grade só quebra a linha a cada oito. */
+@media (max-width: 52em) {
+    .acad-regua {
+        grid-template-columns: repeat(8, minmax(1.5rem, 1fr));
+        gap: .35rem;
+    }
+
+    .acad-regua-bit {
+        min-height: 2.75rem;
+    }
+
+    /* cada octeto já começa numa linha nova: o respiro à esquerda desalinharia a coluna */
+    .acad-regua-bit:nth-child(8n + 1):not(:first-child) {
+        margin-left: 0;
     }
 }

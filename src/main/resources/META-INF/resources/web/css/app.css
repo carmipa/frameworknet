@@ -15,9 +15,8 @@ html {
             --dyn-table-th-text: #9ecbff;
             --dyn-row-highlight: rgba(121, 192, 255, 0.16);
             /* Escala fluida: referência 1280px de largura = 100% do layout */
-            --layout-max: 96%;
-            --border-thin: 1px;
-            --border-accent: 3px;
+            --border-thin: .0625rem;
+            --border-accent: .1875rem;
             --radius-sm: 0.31%;
             --radius-md: 0.47%;
             --radius-lg: 0.78%;
@@ -180,7 +179,7 @@ html {
             background: #21262d;
             border: 1px solid #30363d;
             color: #c9d1d9;
-            border-radius: 999px;
+            border-radius: 62.4375rem;
             padding: 0.3rem 0.7rem;
             font-size: 0.75rem;
             line-height: 1;
@@ -397,7 +396,7 @@ html {
         }
         .bit-col:last-child { border-right: none; }
 
-        .info-top { font-size: 0.72rem; color: #768390; background: #21262d; padding: 0.125em 0; line-height: 1.2; white-space: nowrap; }
+        .info-top { font-size: .75rem; color: #768390; background: #21262d; padding: 0.125em 0; line-height: 1.2; white-space: nowrap; }
         .val-bin { font-size: 1.32rem; padding: 0.5em 0; font-weight: bold; line-height: 1; }
         .bit-1 { background-color: var(--dyn-bit1); color: white; }
         .bit-0 { background-color: #161b22; color: #8b949e; }
@@ -473,7 +472,7 @@ html {
             display: inline-block;
             border-radius: 50%;
             padding: 0.08rem 0.45rem;
-            font-size: 0.73rem;
+            font-size: .75rem;
             font-weight: 700;
             margin-right: 0.38rem;
             border: 1px solid transparent;
@@ -663,7 +662,7 @@ html {
             font-size: 1.05rem;
             color: #8b949e;
             margin-top: 0.65rem;
-            max-width: 40rem;
+            max-width: 64ch;
             margin-left: auto;
             margin-right: auto;
             text-align: center;
@@ -783,7 +782,7 @@ html {
             border: 1px solid var(--dyn-table-border);
             border-radius: 50%;
             padding: 0.2rem 0.55rem;
-            font-size: 0.74rem;
+            font-size: .75rem;
             color: #c9d1d9;
         }
         .dynamic-legend-chip.chip-verde {
@@ -811,7 +810,7 @@ html {
             align-items: center;
             border-radius: 50%;
             padding: 0.18rem 0.58rem;
-            font-size: 0.72rem;
+            font-size: .75rem;
             font-weight: 700;
             border: 1px solid #30363d;
             white-space: nowrap;
@@ -901,32 +900,22 @@ html {
             color: #c9d1d9;
             word-break: break-word;
         }
-@media (min-width: 75em) {
-            .container {
-                max-width: min(100%, var(--layout-max, 96%));
-            }
-            .container.py-5 {
-                padding-left: 0.55rem !important;
-                padding-right: 0.55rem !important;
-            }
-        }
 
         @media (max-width: 62em) {
             .container.py-5 { padding-top: 1.4rem !important; padding-bottom: 1.4rem !important; }
             .header-tech h2 { font-size: 1.35rem; }
-            .shield-badge { font-size: 0.7rem; padding: 0.25rem 0.55rem; }
+            .shield-badge { font-size: .75rem; padding: 0.25rem 0.55rem; }
             .top-overview-grid { grid-template-columns: 1fr; }
             .bit-container { gap: 0.75em; padding: 0.75em; justify-content: center; }
             .bit-col { flex-basis: var(--bit-col-width-md); width: var(--bit-col-width-md); min-width: var(--bit-col-width-md); }
             .val-bin { font-size: 1rem; padding: 0.4em 0; }
-            .info-top { font-size: 0.58rem; }
-            .peso-bot { font-size: 0.66rem; }
-            .octeto-label { font-size: 0.72rem; }
+            .info-top { font-size: .75rem; }
+            .peso-bot { font-size: .75rem; }
+            .octeto-label { font-size: .75rem; }
             .and-table th, .and-table td { font-size: 0.78rem; min-width: 5.625%; }
         }
 
         @media (max-width: 36em) {
-            .container { padding-left: 0.8rem; padding-right: 0.8rem; }
             .card-tech { margin-bottom: 1.094%; }
             .header-tech { margin-bottom: 1.25%; }
             .header-tech h2 { font-size: 1.08rem; line-height: 1.25; }
@@ -953,7 +942,7 @@ html {
             .cmd-table th, .cmd-table td,
             .resultados-table th, .resultados-table td,
             .conv-table th, .conv-table td { font-size: 0.78rem; padding: 0.42rem 0.45rem; }
-            pre { font-size: 0.72rem; white-space: pre-wrap; word-break: break-word; }
+            pre { font-size: .75rem; white-space: pre-wrap; word-break: break-word; }
             .main-menu-nav .btn {
                 width: 100%;
                 justify-content: flex-start;
@@ -977,8 +966,6 @@ html {
             overflow: hidden;
         }
 
-/* Reduz margens laterais para evitar quebra de menus */
-@media (min-width: 992px) { .container { max-width: 98% !important; } }
 
 /* Ajuda de exemplo nos campos (dica com lampada + <code>), compartilhada por
    Diagnostico, Seguranca e Trafego. Componente unico (invariante 10). */

@@ -3,7 +3,7 @@
 {#description}Catálogo de portas TCP e UDP com filtro, ordenação e exportação, e aprofundamentos por família: web, e-mail, acesso remoto, arquivos, banco de dados e infraestrutura.{/description}
 {#extraHead}
 <link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
-<link rel="stylesheet" href="/portas/css/portas.css?v=20260907">
+<link rel="stylesheet" href="/portas/css/portas.css?v=20261022">
 {/extraHead}
 {#content}
 <div class="container py-5">
@@ -12,7 +12,7 @@
     <div class="text-center mb-4">
         <span class="aed-eyebrow aed-eyebrow-indigo">Catálogo</span>
         <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Catálogo de Portas TCP/UDP</h1>
-        <p class="text-secondary small mx-auto" style="max-width:36rem;">
+        <p class="text-secondary small mx-auto aed-medida-leitura">
             DataGrid técnico com busca em tempo real, filtros por risco e paginação.
         </p>
     </div>
@@ -59,7 +59,7 @@
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-25">
                 <label class="small text-secondary mb-0 d-flex align-items-center gap-2 flex-wrap">
-                    <span>Linhas por página</span>
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> <span>Linhas por página</span>
                     <select class="form-select form-select-sm bg-dark text-light border-secondary" style="width: auto; min-width: 12rem;" data-grid-page-size="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Paginação da tabela: escolha quantos registros ver de cada vez ou exiba todos de uma vez.">
                         <option value="8" selected>8</option>
                         <option value="10">10</option>
@@ -130,7 +130,7 @@
                             <th class="sortable" data-sort-key="risco" title="Ordenar por nível de risco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">warning</span>Risco</th>
                             <th title="Ação recomendada para reduzir exposição"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tips_and_updates</span>Recomendação</th>
                             <th title="Alternativa mais segura para operação"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">verified_user</span>Alternativa segura</th>
-                            <th class="text-center" style="width: 140px;" title="Copiar linha ou abrir detalhes"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
+                            <th class="text-center" style="width: 8.75rem;" title="Copiar linha ou abrir detalhes"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
                         </tr>
                     </thead>
                     <tbody data-grid-body="portas">

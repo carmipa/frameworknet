@@ -187,7 +187,7 @@
 
 .calc-kpi-label {
     color: var(--aed-text-faint);
-    font-size: 0.7rem;
+    font-size: .75rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
 }
@@ -210,15 +210,16 @@
 
 .calc-kpi-nota {
     color: var(--aed-text-secondary);
-    font-size: 0.72rem;
+    font-size: .75rem;
 }
 
 /* ---------- Blocos de texto ---------- */
 
+/* Bloco, não flex: com flex, cada trecho de texto e cada <strong> soltos viravam uma COLUNA, e a aba Conceitos do
+   IPv6 rolava 499 px numa tela de 320 (auditoria de responsividade, 22/10/2026). O ícone flutua à esquerda e o
+   texto corre ao lado dele. */
 .calc-explicacao {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.6rem;
+    display: block;
     padding: 0.8rem 1rem;
     margin-bottom: 1.25rem;
     background: rgba(0, 0, 0, 0.25);
@@ -233,7 +234,15 @@
 .calc-explicacao .material-symbols-outlined {
     color: var(--aed-risk-didactic);
     font-size: 1.2rem;
-    flex-shrink: 0;
+    float: left;
+    margin-right: 0.6rem;
+    line-height: 1.4;
+}
+
+.calc-explicacao::after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .calc-aviso {
@@ -314,7 +323,7 @@
     z-index: 1;
     background: var(--aed-nav-bg);
     color: var(--aed-text-faint);
-    font-size: 0.72rem;
+    font-size: .75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     white-space: nowrap;
@@ -333,7 +342,7 @@
 .calc-tabela thead th[title] {
     cursor: help;
     text-decoration: underline dotted rgba(255, 255, 255, 0.25);
-    text-underline-offset: 3px;
+    text-underline-offset: .1875rem;
 }
 
 /* Ícone dentro do label de campo do formulário: pequeno e discreto. */
@@ -358,7 +367,7 @@
     border: 1px solid var(--aed-border-input);
     border-radius: 1rem;
     color: var(--aed-text-secondary);
-    font-size: 0.7rem;
+    font-size: .75rem;
     white-space: nowrap;
 }
 

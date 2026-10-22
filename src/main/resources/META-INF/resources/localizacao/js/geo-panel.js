@@ -159,14 +159,10 @@
             .finally(function () { setLoading(false); });
     }
 
+    // Dicas e botões de ajuda pelo tooltip canônico (adaptador field-tooltips.js), sem depender do Bootstrap.
     function initTooltips() {
-        if (typeof bootstrap === "undefined") return;
-        document.querySelectorAll("#form-geo-ip [data-bs-toggle='tooltip']").forEach(function (el) {
-            if (!bootstrap.Tooltip.getInstance(el)) new bootstrap.Tooltip(el);
-        });
-        document.querySelectorAll("#form-geo-ip [data-bs-toggle='popover']").forEach(function (el) {
-            if (!bootstrap.Popover.getInstance(el)) new bootstrap.Popover(el);
-        });
+        var formGeo = document.getElementById("form-geo-ip");
+        if (formGeo && window.FieldTooltips) window.FieldTooltips.init(formGeo);
     }
 
     document.addEventListener("DOMContentLoaded", function () {

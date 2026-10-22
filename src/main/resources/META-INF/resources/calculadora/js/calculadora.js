@@ -74,7 +74,7 @@
             if (!origem || !navigator.clipboard) {
                 return;
             }
-            navigator.clipboard.writeText(origem.textContent || "").then(function () {
+            navigator.clipboard.writeText((window.FieldTooltips ? window.FieldTooltips.textoLimpo(origem) : origem.textContent) || "").then(function () {
                 // O rótulo é text node solto ao lado do <span> do ícone, então
                 // querySelector("span:last-child") pegaria o ÍCONE e o trocaria
                 // por "Copiado", fazendo o ícone sumir. Mexer no text node.

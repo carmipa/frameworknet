@@ -16,11 +16,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet" href="/web/css/material-symbols.css?v=20260925">
-    <link rel="stylesheet" href="/login/css/login.css?v=20261002">
+    <link rel="stylesheet" href="/web/css/material-symbols.css?v=20261022">
+    <link rel="stylesheet" href="/login/css/login.css?v=20261022">
+    <link rel="stylesheet" href="/web/css/dica-camada.css?v=20261022">
 </head>
 
 <body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
 <div class="page">
 
     <header class="topbar">
@@ -40,12 +42,12 @@
                         <span class="lang-code">PT</span>
                     </button>
                     <button type="button" class="lang" onclick="aedTranslate('en')"
-                            title="Traduzir para English (US)" aria-label="Translate to English">
+                            title="Traduzir para English (US)" lang="en" aria-label="Translate to English">
                         <img class="flag" src="/web/img/bandeiras/us.png?v=20261001" alt="" loading="lazy">
                         <span class="lang-code">EN</span>
                     </button>
                     <button type="button" class="lang" onclick="aedTranslate('es')"
-                            title="Traduzir para Español" aria-label="Traducir al Español">
+                            title="Traduzir para Español" lang="es" aria-label="Traducir al Español">
                         <img class="flag" src="/web/img/bandeiras/es.png?v=20261001" alt="" loading="lazy">
                         <span class="lang-code">ES</span>
                     </button>
@@ -58,7 +60,7 @@
         </div>
     </header>
 
-    <main class="main">
+    <main class="main" id="conteudo" tabindex="-1">
 
     {#if contingencia}
         {! ---------- Contingência: chave administrativa ---------- !}
@@ -89,7 +91,7 @@
                         {/if}
 
                         <form method="post" action="/login/chave" autocomplete="off">
-                            <label class="field-lbl" for="adminKey">Chave de API administrativa</label>
+                            <label class="field-lbl" for="adminKey"><span class="material-symbols-outlined" aria-hidden="true" translate="no">vpn_key</span> Chave de API administrativa</label>
                             <div class="field">
                                 <span class="material-symbols-outlined field-ic" aria-hidden="true" translate="no">key</span>
                                 <input id="adminKey" name="adminKey" type="password"
@@ -230,7 +232,7 @@
 
     <footer class="footer">
         <div class="foot-1">
-            Desenvolvido por: <strong>Paulo André Carminati</strong>
+            Desenvolvido por: <a class="foot-autor" href="https://carminati.dev.br/" target="_blank" rel="noopener noreferrer" title="Abre o site pessoal do autor, com os outros projetos dele, numa aba nova"><strong>Paulo André Carminati</strong></a>
         </div>
         <div class="foot-2">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">code</span>
@@ -240,7 +242,7 @@
 </div>
 
 <div id="google_translate_element" style="display:none;"></div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="/web/vendor/bootstrap-5.3.0/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 <!-- Esta tela NAO estende shared/base.html (tem head e body proprios), entao o
      csrf-client precisa ser carregado aqui explicitamente. Ele e o unico ponto
      que copia o cookie do token CSRF (__Host-XSRF-TOKEN em produção) para dentro do <form> nativo; sem ele o POST
@@ -249,7 +251,8 @@
      Medido em 2026-08-11: 403 "Token CSRF invalido ou ausente". O /admin/login,
      que inclui a base, sempre funcionou — e a diferenca entre os dois. -->
 <script src="/web/js/csrf-client.js?v=20260925e"></script>
-<script src="/web/js/field-tooltips.js?v=20261002"></script>
+<script src="/web/js/dica.js?v=20261022" defer></script>
+<script src="/web/js/field-tooltips.js?v=20261022"></script>
 <script src="/login/js/login.js?v=20260811"></script>
 <script src="/web/js/i18n-translate.js?v=20261002"></script>
 <script async src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

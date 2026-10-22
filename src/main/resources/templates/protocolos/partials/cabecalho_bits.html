@@ -4,7 +4,7 @@
     Uso: {#include protocolos/partials/cabecalho_bits.html cabecalho=conteudo.cabecalho /} !}
 {#if cabecalho}
 <section id="cabecalho" class="aprof-secao">
-    <h3 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> {cabecalho.titulo}</h3>
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> {cabecalho.titulo}</h2>
     {#if cabecalho.nota}<p class="small text-secondary">{cabecalho.nota}</p>{/if}
     <div class="aprof-regua" role="list" aria-label="Campos do cabeçalho, largura proporcional aos bits">
         {#for campo in cabecalho.campos}

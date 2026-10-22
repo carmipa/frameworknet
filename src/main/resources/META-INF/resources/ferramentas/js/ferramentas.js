@@ -167,7 +167,8 @@
         var copiar = document.getElementById("cmd-copiar");
         copiar.addEventListener("click", async function () {
             try {
-                await navigator.clipboard.writeText(document.getElementById("cmd-saida").textContent);
+                const saida = document.getElementById("cmd-saida");
+                await navigator.clipboard.writeText((window.FieldTooltips ? window.FieldTooltips.textoLimpo(saida) : saida.textContent));
                 var original = copiar.innerHTML;
                 copiar.innerHTML = '<span class="material-symbols-outlined" translate="no" aria-hidden="true">check</span> Copiado';
                 setTimeout(function () { copiar.innerHTML = original; }, 1500);

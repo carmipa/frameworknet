@@ -87,13 +87,16 @@
             if (bloqueado) {
                 if (link.hasAttribute('href')) {
                     link.setAttribute('data-acad-href', link.getAttribute('href'));
-                    link.setAttribute('data-acad-title', link.getAttribute('title') || '');
+                    // O adaptador de dicas já trocou o title pelo balão: o texto original fica em data-dica-texto.
+                    link.setAttribute('data-acad-title', link.getAttribute('title') || link.getAttribute('data-dica-texto') || '');
                     link.removeAttribute('href');
                 }
                 link.setAttribute('aria-disabled', 'true');
                 link.setAttribute('title', 'Bloqueada: conclua ' + (requisito ? requisito.titulo : 'o nível anterior') + ' para abrir');
                 link.setAttribute('tabindex', '0');
-                link.setAttribute('aria-label', (link.textContent || '').replace(/\s+/g, ' ').trim() + ' — ' + link.getAttribute('title'));
+                // Texto visível do link, sem o texto do balão que o adaptador pôs dentro dele.
+                var visivel = window.FieldTooltips ? window.FieldTooltips.textoLimpo(link) : link.textContent;
+                link.setAttribute('aria-label', (visivel || '').replace(/\s+/g, ' ').trim() + ' — ' + link.getAttribute('title'));
             } else {
                 if (link.hasAttribute('data-acad-href')) {
                     link.setAttribute('href', link.getAttribute('data-acad-href'));

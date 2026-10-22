@@ -15,12 +15,38 @@ import { THREE, Globe } from "/localizacao/vendor/globo-three.mjs?v=20261002";
     var CLOUDS_ALT = 0.01;
     var CLOUDS_SPEED = -0.006;
 
+    // WCAG 2.2.2 (nível A): o que se move sozinho tem de poder parar, e quem pediu menos movimento no sistema
+    // (prefers-reduced-motion) recebe o globo parado, sem nuvens girando nem anéis pulsando (UX-07).
+    var MENOS_MOVIMENTO = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
     function criarGlobo(el, opts) {
         opts = opts || {};
         var globe = null;
         var clouds = null;
         var ready = false;
         var pendente = null;
+        var parado = MENOS_MOVIMENTO;
+
+        /** Botão "Pausar/Girar" logo depois do globo (o quadro do globo é decorativo, aria-hidden). */
+        function criarBotaoDePausa(ctrl) {
+            var quadro = el.closest("[aria-hidden='true']") || el;
+            var botao = document.createElement("button");
+            botao.type = "button";
+            botao.className = "aed-btn aed-btn-neutral btn-sm globo-pausa";
+            botao.setAttribute("title", "Liga ou desliga o giro automático do globo e das nuvens");
+            function pintar() {
+                botao.setAttribute("aria-pressed", parado ? "true" : "false");
+                botao.innerHTML = '<span class="material-symbols-outlined" translate="no" aria-hidden="true">'
+                    + (parado ? "play_arrow" : "pause") + "</span> " + (parado ? "Girar o globo" : "Pausar o giro");
+            }
+            botao.addEventListener("click", function () {
+                parado = !parado;
+                ctrl.autoRotate = !parado;
+                pintar();
+            });
+            pintar();
+            quadro.insertAdjacentElement("afterend", botao);
+        }
 
         function apply(loc) {
             if (!ready || !globe || !loc) return;
@@ -28,8 +54,8 @@ import { THREE, Globe } from "/localizacao/vendor/globo-three.mjs?v=20261002";
             var lon = Number(loc.lon);
             if (!isFinite(lat) || !isFinite(lon)) return;
             var data = [{ lat: lat, lng: lon, label: loc.label || "" }];
-            globe.pointsData(data).ringsData(data);
-            globe.pointOfView({ lat: lat, lng: lon, altitude: 1.5 }, 1500);
+            globe.pointsData(data).ringsData(MENOS_MOVIMENTO ? [] : data);
+            globe.pointOfView({ lat: lat, lng: lon, altitude: 1.5 }, MENOS_MOVIMENTO ? 0 : 1500);
         }
 
         function build() {
@@ -66,7 +92,7 @@ import { THREE, Globe } from "/localizacao/vendor/globo-three.mjs?v=20261002";
             }
 
             var ctrl = globe.controls();
-            ctrl.autoRotate = true;
+            ctrl.autoRotate = !parado;
             ctrl.autoRotateSpeed = 0.5;
             ctrl.enableDamping = true;
 
@@ -77,7 +103,7 @@ import { THREE, Globe } from "/localizacao/vendor/globo-three.mjs?v=20261002";
                 );
                 globe.scene().add(clouds);
                 (function spin() {
-                    if (clouds) clouds.rotation.y += CLOUDS_SPEED * Math.PI / 180;
+                    if (clouds && !parado) clouds.rotation.y += CLOUDS_SPEED * Math.PI / 180;
                     requestAnimationFrame(spin);
                 })();
             }, undefined, function () { /* nuvens são opcionais */ });
@@ -92,6 +118,7 @@ import { THREE, Globe } from "/localizacao/vendor/globo-three.mjs?v=20261002";
             else window.addEventListener("resize", resize);
 
             ready = true;
+            criarBotaoDePausa(ctrl);
             globe.pointOfView({ lat: -14, lng: -52, altitude: 1.9 }, 0); // Brasil, enquanto não há ponto
             if (pendente) apply(pendente);
         }
@@ -112,7 +139,7 @@ import { THREE, Globe } from "/localizacao/vendor/globo-three.mjs?v=20261002";
                 pendente = null;
                 if (!ready || !globe) return;
                 globe.pointsData([]).ringsData([]);
-                globe.pointOfView({ lat: -14, lng: -52, altitude: 1.9 }, 800);
+                globe.pointOfView({ lat: -14, lng: -52, altitude: 1.9 }, MENOS_MOVIMENTO ? 0 : 800);
             }
         };
     }

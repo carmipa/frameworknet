@@ -12,7 +12,7 @@
     color: #a7f3d0;
     background: rgba(45, 212, 191, 0.1);
     border: 1px solid rgba(45, 212, 191, 0.25);
-    border-radius: 6px;
+    border-radius: .375rem;
     padding: 0.25rem 0.5rem;
     white-space: nowrap;
 }
@@ -25,7 +25,7 @@
 .ipv6-bits-table td .ipv6-bit-rede,
 .ipv6-bits-table td .ipv6-bit-iface {
     letter-spacing: 0.06em;
-    border-radius: 3px;
+    border-radius: .1875rem;
     padding: 0 0.15rem;
 }
 .ipv6-bit-rede { color: #a7f3d0; background: rgba(45, 212, 191, 0.16); }
@@ -34,8 +34,8 @@
     display: inline-block;
     margin-right: 0.6rem;
     padding: 0.05rem 0.4rem;
-    border-radius: 4px;
-    font-size: 0.72rem;
+    border-radius: .25rem;
+    font-size: .75rem;
 }
 
 /* ---------- Grade de 128 bits célula-a-célula (análogo do "array de 32 bits" do IPv4) ---------- */
@@ -65,7 +65,7 @@
 }
 .ipv6-bit-col:last-child { border-right: none; }
 .ipv6-info-top {
-    font-size: 0.6rem;
+    font-size: .75rem;
     color: #768390;
     background: #21262d;
     line-height: 1.25;
@@ -75,7 +75,7 @@
 .ipv6-pow { color: #f0883e; }
 .ipv6-val-bin { font-size: 1.25rem; font-weight: 700; padding: 0.45rem 0; line-height: 1; }
 .ipv6-peso-bot {
-    font-size: 0.55rem;
+    font-size: .75rem;
     color: #58a6ff;
     background: #0d1117;
     padding: 0.15rem 0;
@@ -117,9 +117,9 @@
     /* Em telas estreitas, um hexteto por linha para as 16 células caberem sem espremer. */
     .ipv6-bit-container { grid-template-columns: 1fr; }
     .ipv6-val-bin { font-size: 1.05rem; }
-    .ipv6-info-top, .ipv6-peso-bot { font-size: 0.5rem; }
+    .ipv6-info-top, .ipv6-peso-bot { font-size: .75rem; }
 }
 
 /* Diagrama de arquitetura (Mermaid) — ocupa a largura total, rola em telas pequenas. */
-.ipv6-diagrama { overflow-x: auto; text-align: center; background: rgba(13, 17, 23, 0.6); border-radius: 8px; }
+.ipv6-diagrama { overflow-x: auto; text-align: center; background: rgba(13, 17, 23, 0.6); border-radius: .5rem; }
 .ipv6-diagrama svg { max-width: 100%; height: auto; }

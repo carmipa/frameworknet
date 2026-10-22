@@ -22,7 +22,7 @@
             const alvo = document.getElementById(copiar.getAttribute("data-copiar-reversa"));
             const original = copiar.innerHTML;
             try {
-                await navigator.clipboard.writeText(alvo ? alvo.textContent : "");
+                await navigator.clipboard.writeText(alvo ? (window.FieldTooltips ? window.FieldTooltips.textoLimpo(alvo) : alvo.textContent) : "");
                 copiar.innerHTML = '<span class="material-symbols-outlined" translate="no" aria-hidden="true">check</span> Copiado';
             } catch (err) {
                 copiar.innerHTML = '<span class="material-symbols-outlined" translate="no" aria-hidden="true">error</span> Falhou';

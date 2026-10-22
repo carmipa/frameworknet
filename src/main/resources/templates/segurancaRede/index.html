@@ -2,7 +2,7 @@
 {#title}Segurança de Rede | Framework de Redes A&D{/title}
 {#description}Segurança de rede na prática: testador de regras de firewall e ACL para conferir se uma regra libera ou bloqueia exatamente o tráfego que você espera.{/description}
 {#extraHead}
-<link rel="stylesheet" href="/segurancaRede/css/seguranca.css?v=20260908" />
+<link rel="stylesheet" href="/segurancaRede/css/seguranca.css?v=20261022" />
 {/extraHead}
 {#content}
 
@@ -71,7 +71,7 @@
                                   hx-swap="innerHTML"
                                   hx-disabled-elt="find button[type='submit']">
                                 <div class="mb-3">
-                                    <label for="aclRegra" class="form-label text-secondary">Sintaxe da Regra ACL (estilo Cisco)</label>
+                                    <label for="aclRegra" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">rule</span> Sintaxe da Regra ACL (estilo Cisco)</label>
                                     <input type="text" class="aed-input form-control" id="aclRegra" name="regra"
                                            value="permit tcp any any eq 80" placeholder="permit tcp 192.168.1.0 0.0.0.255 any eq 80" required>
                                     <div class="form-text aed-ajuda">
@@ -88,7 +88,7 @@
 
                                 <h6 class="text-white mb-3">Pacote Forjado <span class="text-secondary small fw-normal">— o pacote de teste que você "joga" na regra</span></h6>
                                 <div class="mb-3">
-                                    <label for="aclProtocolo" class="form-label text-secondary">Protocolo do pacote</label>
+                                    <label for="aclProtocolo" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_horiz</span> Protocolo do pacote</label>
                                     <select class="aed-input form-select" id="aclProtocolo" name="protocolo"
                                             title="Protocolo do pacote de teste: uma regra tcp não captura UDP nem ICMP; ip captura todos">
                                         <option value="tcp" selected>TCP</option>
@@ -97,22 +97,22 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="ipOrigem" class="form-label text-secondary">IP de Origem</label>
+                                    <label for="ipOrigem" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span> IP de Origem</label>
                                     <input type="text" class="aed-input form-control" id="ipOrigem" name="ipOrigem" value="192.168.1.15" placeholder="192.168.1.15" required>
                                     <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>Quem envia o pacote. <strong>Ex.:</strong> <code translate="no">192.168.1.15</code>.</span></div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="portaOrigem" class="form-label text-secondary">Porta Origem</label>
+                                    <label for="portaOrigem" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span> Porta Origem</label>
                                     <input type="number" class="aed-input form-control" id="portaOrigem" name="portaOrigem" placeholder="49152" value="49152" min="1" max="65535">
                                     <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>De qual porta o pacote sai. Cliente comum usa uma porta alta, efêmera: <code translate="no">49152</code>–<code translate="no">65535</code>.</span></div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="ipDestino" class="form-label text-secondary">IP de Destino</label>
+                                    <label for="ipDestino" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span> IP de Destino</label>
                                     <input type="text" class="aed-input form-control" id="ipDestino" name="ipDestino" value="8.8.8.8" placeholder="8.8.8.8" required>
                                     <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>Para onde o pacote vai. <strong>Ex.:</strong> <code translate="no">8.8.8.8</code>.</span></div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="portaDestino" class="form-label text-secondary">Porta Destino</label>
+                                    <label for="portaDestino" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span> Porta Destino</label>
                                     <input type="number" class="aed-input form-control" id="portaDestino" name="portaDestino" placeholder="80" value="80" min="1" max="65535" required>
                                     <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>A porta do serviço. <strong>Ex.:</strong> <code translate="no">80</code> (HTTP), <code translate="no">443</code> (HTTPS), <code translate="no">22</code> (SSH).</span></div>
                                 </div>
@@ -169,32 +169,32 @@
                                   hx-swap="innerHTML"
                                   hx-disabled-elt="find button[type='submit']">
                                 <div class="mb-3">
-                                    <label for="tlsHost" class="form-label text-secondary">Nome acessado (o que você digitou na barra)</label>
+                                    <label for="tlsHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Nome acessado (o que você digitou na barra)</label>
                                     <input type="text" class="aed-input form-control" id="tlsHost" name="hostAcessado"
                                            value="frameworknet.carminati.dev.br" required>
                                     <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>O endereço que a pessoa digitou. <strong>Ex.:</strong> <code translate="no">seubanco.com.br</code>.</span></div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="tlsCn" class="form-label text-secondary">Nome no certificado (SAN) — use * para curinga</label>
+                                    <label for="tlsCn" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">badge</span> Nome no certificado (SAN) — use * para curinga</label>
                                     <input type="text" class="aed-input form-control" id="tlsCn" name="nomeCertificado"
                                            value="frameworknet.carminati.dev.br" required>
                                     <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>O nome para o qual o certificado foi emitido. <strong>Teste o ataque:</strong> ponha um nome DIFERENTE do de cima e veja a falha. Curinga: <code translate="no">*.example.com</code>.</span></div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="tlsDias" class="form-label text-secondary">Dias para expirar</label>
+                                    <label for="tlsDias" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">event</span> Dias para expirar</label>
                                     <input type="text" class="aed-input form-control" id="tlsDias" name="diasParaExpirar"
                                            inputmode="numeric" value="60" required>
                                     <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>Quantos dias faltam para vencer. <strong>Ex.:</strong> <code translate="no">60</code> (válido), <code translate="no">10</code> (vence em breve), <code translate="no">-3</code> (expirado há 3 dias).</span></div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="tlsSelf" class="form-label text-secondary">Emissor</label>
+                                    <label for="tlsSelf" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">verified</span> Emissor</label>
                                     <select id="tlsSelf" name="autoassinado" class="form-select bg-dark text-light border-secondary">
                                         <option value="nao" selected>CA confiável</option>
                                         <option value="sim">Autoassinado / não confiável</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="tlsVersao" class="form-label text-secondary">Versão do TLS negociada</label>
+                                    <label for="tlsVersao" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> Versão do TLS negociada</label>
                                     <select id="tlsVersao" name="versaoTls" class="form-select bg-dark text-light border-secondary">
                                         <option>TLS 1.3</option>
                                         <option>TLS 1.2</option>
@@ -204,7 +204,7 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="tlsCipher" class="form-label text-secondary">Cipher suite negociada</label>
+                                    <label for="tlsCipher" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">enhanced_encryption</span> Cipher suite negociada</label>
                                     <select id="tlsCipher" name="cipher" class="form-select bg-dark text-light border-secondary">
                                         <option>TLS_AES_128_GCM_SHA256</option>
                                         <option>TLS_CHACHA20_POLY1305_SHA256</option>
@@ -497,8 +497,8 @@ link FW S1</textarea>
 {/content}
 {#extraScripts}
 <script src="/web/js/aed-tabs.js?v=20260710"></script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
-<script src="/web/js/seguranca-topologia.js?v=20260908"></script>
+<script src="/web/vendor/mermaid-11.17.2/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script src="/web/js/seguranca-topologia.js?v=20261022"></script>
 <script src="/web/js/seguranca-canvas.js?v=20260925"></script>
 {/extraScripts}
 {/include}

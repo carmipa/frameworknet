@@ -28,8 +28,10 @@
  *     falha do service worker impede a aplicacao de funcionar online.
  */
 /* v3: expurga caches anteriores, que guardavam export/API e páginas com dado pessoal da sessão.
-   v4: a casca offline passa a levar o offline.css (a página offline aparecia sem estilo, FRONT-14). */
-const VERSAO = 'framework-net-v4';
+   v4: a casca offline passa a levar o offline.css (a página offline aparecia sem estilo, FRONT-14).
+   v5: CSS em largura cheia e rem (Regra 27) e Bootstrap/mermaid/Chart.js/Leaflet servidos pelo próprio site —
+       mesma origem, então entram no cache na primeira visita e o menu funciona offline. */
+const VERSAO = 'framework-net-v5';
 const CACHE_ESTATICO = `${VERSAO}-estatico`;
 const PAGINA_OFFLINE = '/offline.html';
 
@@ -41,7 +43,7 @@ const PRE_CACHE = [
   '/web/css/offline.css',
   '/pwa/icone-192.png',
   // Fonte de ícones local: sem ela, offline, o glifo aparece como a palavra do nome.
-  '/web/css/material-symbols.css?v=20260925',
+  '/web/css/material-symbols.css?v=20261022',
   '/web/fonts/material-symbols-outlined.woff2?v=20260925',
 ];
 

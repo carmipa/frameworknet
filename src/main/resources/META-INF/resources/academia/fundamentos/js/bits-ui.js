@@ -58,7 +58,11 @@
                     aoMudar(valorAtual, posicao);
                 });
             } else {
-                botao.disabled = true;
+                // Só exibe: aria-disabled (e não disabled) para a dica explicar o porquê no hover e no leitor de
+                // tela — elemento disabled não recebe nem foco nem hover (UX-05). Fora da ordem de Tab.
+                botao.setAttribute('aria-disabled', 'true');
+                botao.tabIndex = -1;
+                botao.title = 'Nesta etapa o bit só mostra o valor. Para acender e apagar você mesmo, vá para a etapa Mexer.';
             }
             botoes.push(botao);
             container.appendChild(botao);

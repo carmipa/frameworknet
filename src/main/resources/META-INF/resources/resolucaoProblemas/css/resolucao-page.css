@@ -1,7 +1,3 @@
-.problem-shell {
-    max-width: min(100%, var(--layout-max, 96%));
-}
-
 .problem-box {
     background: #161b22;
     border: 1px solid #30363d;
@@ -30,16 +26,18 @@
 .topology-wrap .mermaid {
     text-align: center;
     display: flex;
-    justify-content: center;
+    /* "safe": desenho maior que a caixa começa na borda esquerda e rola, em vez de cortar dos dois lados. */
+    justify-content: safe center;
     align-items: center;
-    overflow-x: hidden;
+    overflow-x: auto;
     padding: 0.3rem;
 }
 
+/* Tamanho natural (useMaxWidth: false no resolucao.js): o texto da topologia não encolhe até sumir no celular. */
 .topology-wrap .mermaid svg {
     margin: 0 auto !important;
     display: block;
-    max-width: 100%;
+    max-width: none !important;
     height: auto;
 }
 
@@ -69,7 +67,7 @@
 
 #resolucao-form .form-control,
 #resolucao-form .form-select {
-    height: 44px;
+    height: 2.75rem;
 }
 
 #resolucao-form .form-label {
@@ -83,7 +81,7 @@
 }
 
 #resolucao-form .location-row .btn-remove-location {
-    height: 44px;
+    height: 2.75rem;
     width: 100%;
 }
 
@@ -97,10 +95,10 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    border-radius: 999px;
+    border-radius: 62.4375rem;
     border: 1px solid #30363d;
     padding: 0.25rem 0.65rem;
-    font-size: 0.74rem;
+    font-size: .75rem;
     font-weight: 700;
     line-height: 1;
     background: #0d1117;
@@ -225,7 +223,7 @@
         white-space: nowrap;
     }
     .problem-box pre {
-        font-size: 0.73rem;
+        font-size: .75rem;
         line-height: 1.35;
     }
     .problem-box .table-responsive {

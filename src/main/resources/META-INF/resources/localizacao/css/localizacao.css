@@ -21,7 +21,7 @@
 .loc-forms {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-    gap: 3%;
+    gap: 1.25rem 3%;
     margin-bottom: 4%;
 }
 
@@ -82,7 +82,7 @@
 }
 
 .loc-result-item .k {
-    font-size: 0.72rem;
+    font-size: .75rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--aed-text-faint, #5b6679);
@@ -99,7 +99,7 @@
     align-items: center;
     gap: 0.3rem;
     padding: 0.15rem 0.6rem;
-    border-radius: 999px;
+    border-radius: 62.4375rem;
     font-size: 0.78rem;
     border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.12));
 }
@@ -158,7 +158,7 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.72rem;
+    font-size: .75rem;
     color: #8fb4d8;
     background: linear-gradient(180deg, rgba(4, 7, 14, 0), rgba(4, 7, 14, 0.85));
     pointer-events: none;
@@ -208,7 +208,7 @@
     align-items: center;
     gap: 0.4rem;
     text-transform: uppercase;
-    font-size: 0.72rem;
+    font-size: .75rem;
     letter-spacing: 0.03em;
     color: var(--aed-text-faint, #5b6679);
     margin: 1.1rem 0 0.5rem;
@@ -270,7 +270,7 @@
 .priv-local-cc {
     display: inline-block;
     margin-top: 0.2rem;
-    font-size: 0.7rem;
+    font-size: .75rem;
     letter-spacing: 0.06em;
     color: var(--aed-text-faint, #5b6679);
     border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.15));
@@ -328,7 +328,7 @@
     pointer-events: none;
 }
 
-.priv-globe-cap .priv-flag { width: 24px; height: 18px; }
+.priv-globe-cap .priv-flag { width: 1.5rem; height: 1.125rem; }
 .priv-globe-cap .priv-flag-emoji { font-size: 1.2rem; }
 
 .loc-map {
@@ -347,4 +347,9 @@
 
 .loc-map .leaflet-control-attribution a {
     color: #2dd4bf;
+}
+
+/* Botão de pausa do giro do globo (WCAG 2.2.2), criado pelo geo-globe.js logo depois do quadro do globo. */
+.globo-pausa {
+    margin-top: .5rem;
 }

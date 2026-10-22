@@ -17,7 +17,7 @@
         '1440': 'últimas 24 h', '10080': 'últimos 7 dias', '0': 'todo o histórico'
     };
 
-    const esc = (s) => (window.HtmlEscape && window.HtmlEscape.esc) ? window.HtmlEscape.esc(s) : String(s == null ? '' : s);
+    const esc = (s) => (window.HtmlEscape && window.HtmlEscape.esc) ? window.HtmlEscape.esc(s) : String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);  // fallback também escapa (BACK-16)
 
     function $(id) { return document.getElementById(id); }
 
@@ -433,7 +433,7 @@
         document.querySelectorAll('.btn-copy-console').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const alvo = $(btn.dataset.target);
-                if (alvo) { try { await navigator.clipboard.writeText(alvo.textContent || ''); } catch (_) { /* ignore */ } }
+                if (alvo) { try { await navigator.clipboard.writeText((window.FieldTooltips ? window.FieldTooltips.textoLimpo(alvo) : alvo.textContent) || ''); } catch (_) { /* ignore */ } }
             });
         });
         document.querySelectorAll('.btn-clear-console').forEach(btn => {

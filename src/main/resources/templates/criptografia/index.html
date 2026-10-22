@@ -6,8 +6,8 @@
 {#description}Criptografia aplicada a redes: algoritmos simétricos e assimétricos, força de chave, funções de hash, assinatura digital e um playground para experimentar cada um.{/description}
 {#extraHead}
 <link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
-<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261001b">
-<link rel="stylesheet" href="/criptografia/css/criptografia.css?v=20260907">
+<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261022">
+<link rel="stylesheet" href="/criptografia/css/criptografia.css?v=20261022">
 {/extraHead}
 {#content}
 <div class="container py-5">
@@ -18,7 +18,7 @@
         <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">enhanced_encryption</span></div>
         <span class="aed-eyebrow aed-eyebrow-teal">Criptografia</span>
         <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Criptografia — algoritmos e forças</h1>
-        <p class="text-secondary small mx-auto" style="max-width:48rem;">{conteudo.resumo}</p>
+        <p class="text-secondary small mx-auto aed-medida-leitura">{conteudo.resumo}</p>
         <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
             <a href="/certificados" class="aed-btn aed-btn-neutral btn-sm" title="Onde a criptografia é aplicada: certificados X.509"><span class="material-symbols-outlined" aria-hidden="true" translate="no">workspace_premium</span> Certificados</a>
             <a href="/protocolos/tls" class="aed-btn aed-btn-neutral btn-sm" title="O protocolo que usa tudo isso"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> TLS</a>
@@ -29,7 +29,7 @@
         <h3 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Playground de hash e codificação</h3>
         <p class="small text-secondary">Digite um texto e veja o hash e a codificação ao vivo — tudo no seu navegador (WebCrypto), nada é enviado ao servidor. Note o <strong>efeito avalanche</strong>: mude um caractere e o hash muda por completo.</p>
         <div class="card-tech p-3" id="cripto-hash">
-            <label for="cripto-in" class="form-label small text-secondary">Texto de entrada</label>
+            <label for="cripto-in" class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">text_fields</span> Texto de entrada</label>
             <textarea id="cripto-in" class="form-control bg-dark text-light border-secondary mb-2" rows="2" spellcheck="false">O rato roeu a roupa do rei de Roma</textarea>
             <div class="mb-3">
                 <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-limpar="#cripto-hash" data-limpar-resultado="#cripto-out"

@@ -1144,7 +1144,7 @@ um caso de uso:
 
 ## 👨‍💻 Autor
 
-Paulo André Carminati
+Paulo André Carminati — site pessoal: [carminati.dev.br](https://carminati.dev.br/)
 
 ---
 

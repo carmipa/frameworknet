@@ -164,6 +164,19 @@ transferência).
 Guardas menores, que continuam valendo: `node scripts/verificar-js.mjs`
 (sintaxe dos `.js`), `verificar-csp.mjs` e `verificar-pwa.mjs`.
 
+Desde 22/10/2026:
+
+- **Largura cheia e unidade relativa** — `CssLarguraPorcentagemGuardTest` (roda com
+  `gradlew test`) reprova contêiner de página com `max-width` centralizado, `px` fora de
+  borda/sombra, `100vw`, espaço entre linhas de grade em `%` e fonte abaixo de `.75rem`.
+- **Dicas (tooltip acessível)** — `node scripts/verificar-dicas.mjs [base]` varre todas as
+  páginas com a varredura do componente de tooltip e compara com
+  `scripts/dicas-linha-base.json`: elemento novo sem dica reprova; quando a dívida descer,
+  regrave com `--gravar`.
+- **Bibliotecas de terceiros** (Bootstrap, mermaid, Chart.js, Leaflet) são servidas por
+  `/web/vendor/`, com os mesmos `integrity` de antes; o `.gitattributes` impede o git de
+  trocar as quebras de linha desses arquivos.
+
 ## Docker (VPS)
 
 Crie um `.env` persistente na VPS a partir de `.env.example` e gere `ADMIN_API_KEY`/`CSRF_SECRET` apenas uma vez:
@@ -334,7 +347,7 @@ A documentação técnica completa fica em `src/main/resources/README.md` e é r
 
 ## Autor
 
-Paulo André Carminati — RM570877 — FIAP 2026 — Cyber Defense
+Paulo André Carminati — site pessoal: [carminati.dev.br](https://carminati.dev.br/)
 
 Repositório: [github.com/carmipa/framework-net-java-quarkus](https://github.com/carmipa/framework-net-java-quarkus)
 

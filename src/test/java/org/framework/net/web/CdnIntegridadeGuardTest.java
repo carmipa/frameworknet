@@ -143,7 +143,9 @@ class CdnIntegridadeGuardTest {
                 }
             }
         }
-        assertTrue(externos > 20, "instrumento cego: só " + externos + " assets externos encontrados");
+        // Desde 22/10/2026 Bootstrap, mermaid, Chart.js e Leaflet são locais (web/vendor); sobram as fontes de texto
+        // do Google e o tradutor. Zero externos seria o instrumento cego (não leu template nenhum).
+        assertTrue(externos > 0, "instrumento cego: só " + externos + " assets externos encontrados");
         assertEquals(List.of(), todas);
     }
 }

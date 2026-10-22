@@ -22,7 +22,7 @@
     border-radius: 999rem;
     background: rgba(99, 102, 241, 0.10);
     color: var(--aed-text);
-    font-size: 0.74rem;
+    font-size: .75rem;
 }
 
 .bgp-ficha-item strong {
@@ -30,7 +30,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    font-size: 0.66rem;
+    font-size: .75rem;
 }
 
 /* --- Índice pegajoso --- */
@@ -119,7 +119,7 @@
     border-color: #24304a;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    font-size: 0.7rem;
+    font-size: .75rem;
 }
 
 .bgp-tabela td {
@@ -255,7 +255,7 @@
 }
 
 .bgp-topologia dt {
-    font-size: 0.72rem;
+    font-size: .75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-top: 0.45rem;
@@ -286,7 +286,7 @@
     padding: 0.05rem 0.4rem;
     margin-right: 0.3rem;
     border-radius: 0.3rem;
-    font-size: 0.66rem;
+    font-size: .75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -330,4 +330,11 @@
     .bgp-secao-titulo {
         font-size: 1.05rem;
     }
+}
+
+/* Ícone do item do índice: o mesmo do título da seção para onde ele leva (UX-10). */
+.bgp-indice .material-symbols-outlined {
+    font-size: 1.05em;
+    vertical-align: -0.18em;
+    margin-right: 0.2em;
 }

@@ -3,8 +3,8 @@
 {#description}DNS em profundidade: hierarquia de zonas, tipos de registro, resolução recursiva e iterativa, cache e TTL, e os ataques mais comuns contra a resolução de nomes.{/description}
 {#extraHead}
 <link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
-<link rel="stylesheet" href="/protocolos/dns/css/dns.css?v=20261001b">
-<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261001b">
+<link rel="stylesheet" href="/protocolos/dns/css/dns.css?v=20261022">
+<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261022">
 {/extraHead}
 {#content}
 <div class="container py-5">
@@ -15,7 +15,7 @@
         <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span></div>
         <span class="aed-eyebrow aed-eyebrow-teal">Aprofundamento · Camada de Aplicação</span>
         <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">DNS — Domain Name System</h1>
-        <p class="text-secondary small mx-auto" style="max-width:46rem;">{conteudo.resumo}</p>
+        <p class="text-secondary small mx-auto aed-medida-leitura">{conteudo.resumo}</p>
         <div class="dns-ficha" role="list">
             <span class="dns-ficha-item" role="listitem" title="Documentos base do DNS"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">menu_book</span><strong>RFC</strong> 1034/1035</span>
             <span class="dns-ficha-item" role="listitem" title="UDP para consulta comum, TCP para respostas grandes e transferência de zona"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">lan</span><strong>Transporte</strong> UDP/TCP 53</span>
@@ -27,16 +27,16 @@
     </header>
 
     <nav class="dns-indice" aria-label="Índice da página">
-        <a href="#conceitos" data-indice-link title="Como o DNS funciona por dentro">Conceitos</a>
-        <a href="#diagrama" data-indice-link title="Diagrama da resolução recursiva">Diagrama</a>
-        <a href="#resolucao" data-indice-link title="Do resolver ao servidor autoritativo, passo a passo">Resolução</a>
-        <a href="#registros" data-indice-link title="A, AAAA, MX, NS, TXT e os demais tipos">Registros</a>
-        <a href="#cabecalho" data-indice-link title="Decomposição binária do cabeçalho DNS">Cabeçalho (bits)</a>
-        <a href="#ataques" data-indice-link title="Spoofing, cache poisoning e companhia">Ataques</a>
-        <a href="#mitigacoes" data-indice-link title="DNSSEC, aleatorização de porta, DoT/DoH">Defesas</a>
-        <a href="#dnssec" data-indice-link title="A cadeia de confiança do DNSSEC">DNSSEC</a>
-        <a href="#laboratorio" data-indice-link title="Comandos dig para praticar">Laboratório</a>
-        <a href="#troubleshooting" data-indice-link title="Sintomas comuns e como ler a saída">Troubleshooting</a>
+        <a href="#conceitos" data-indice-link title="Como o DNS funciona por dentro"><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Conceitos</a>
+        <a href="#diagrama" data-indice-link title="Diagrama da resolução recursiva"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama</a>
+        <a href="#resolucao" data-indice-link title="Do resolver ao servidor autoritativo, passo a passo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Resolução</a>
+        <a href="#registros" data-indice-link title="A, AAAA, MX, NS, TXT e os demais tipos"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span> Registros</a>
+        <a href="#cabecalho" data-indice-link title="Decomposição binária do cabeçalho DNS"><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> Cabeçalho (bits)</a>
+        <a href="#ataques" data-indice-link title="Spoofing, cache poisoning e companhia"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques</a>
+        <a href="#mitigacoes" data-indice-link title="DNSSEC, aleatorização de porta, DoT/DoH"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</a>
+        <a href="#dnssec" data-indice-link title="A cadeia de confiança do DNSSEC"><span class="material-symbols-outlined" aria-hidden="true" translate="no">verified_user</span> DNSSEC</a>
+        <a href="#laboratorio" data-indice-link title="Comandos dig para praticar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</a>
+        <a href="#troubleshooting" data-indice-link title="Sintomas comuns e como ler a saída"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</a>
     </nav>
 
     <section id="conceitos" class="dns-secao">
@@ -243,8 +243,8 @@
 </div>
 {/content}
 {#extraScripts}
-<script src="/protocolos/js/aprofundamento.js?v=20260925"></script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
-<script src="/protocolos/aprofundamento/js/aprofundamento-diagrama.js?v=20261002"></script>
+<script src="/protocolos/js/aprofundamento.js?v=20261022"></script>
+<script src="/web/vendor/mermaid-11.17.2/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script src="/protocolos/aprofundamento/js/aprofundamento-diagrama.js?v=20261022"></script>
 {/extraScripts}
 {/include}

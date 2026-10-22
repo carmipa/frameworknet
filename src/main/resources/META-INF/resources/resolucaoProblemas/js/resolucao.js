@@ -1,7 +1,7 @@
 (function () {
     const topologyDetails = window.__topologyDetails || {};
     let selectedTopologyNodeId = null;
-    const esc = (w) => (window.HtmlEscape && window.HtmlEscape.esc) ? window.HtmlEscape.esc(w) : String(w == null ? "" : w);
+    const esc = (w) => (window.HtmlEscape && window.HtmlEscape.esc) ? window.HtmlEscape.esc(w) : String(w == null ? "" : w).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);  // fallback também escapa (BACK-16)
 
     function applySelectedTopologyNode() {
         const allNodes = document.querySelectorAll(".topology-wrap .mermaid svg g.node");
@@ -84,7 +84,7 @@
     }
 
     if (typeof mermaid !== "undefined") {
-        mermaid.initialize({ startOnLoad: false, theme: "dark", securityLevel: "strict" });
+        mermaid.initialize({ startOnLoad: false, theme: "dark", securityLevel: "strict", flowchart: { useMaxWidth: false }, sequence: { useMaxWidth: false }, state: { useMaxWidth: false }, class: { useMaxWidth: false }, er: { useMaxWidth: false }, mindmap: { useMaxWidth: false } });
         Promise.resolve(mermaid.run({ querySelector: ".topology-wrap .mermaid" }))
             .then(ligarCliquesDaTopologia)
             .catch((erro) => console.warn("Diagrama de topologia não renderizou:", erro));
@@ -124,11 +124,11 @@
         row.innerHTML =
             '<div class="col-lg-7 col-md-12">' +
             '<label class="form-label text-secondary">Nome da localidade</label>' +
-            '<input type="text" name="loc_name" class="form-control" value="' + (defaultName || "") + '" data-bs-toggle="tooltip" data-bs-placement="top" title="Nome da unidade (ex.: Matriz, Filial I, CPD)." required>' +
+            '<input type="text" name="loc_name" aria-label="Nome da localidade" class="form-control" value="' + (defaultName || "") + '" data-bs-toggle="tooltip" data-bs-placement="top" title="Nome da unidade (ex.: Matriz, Filial I, CPD)." required>' +
             '</div>' +
             '<div class="col-lg-3 col-md-6">' +
             '<label class="form-label text-secondary">Qtd. hosts <span class="text-secondary">(inteiro)</span></label>' +
-            '<input type="text" name="loc_hosts" class="form-control input-numeric" inputmode="numeric" maxlength="6" value="' + (defaultHosts || "") + '" placeholder="ex.: 400" data-bs-toggle="tooltip" data-bs-placement="top" title="Quantidade de hosts necessária (número inteiro). Não use endereço IP aqui." required>' +
+            '<input type="text" name="loc_hosts" aria-label="Qtd. hosts (inteiro)" class="form-control input-numeric" inputmode="numeric" maxlength="6" value="' + (defaultHosts || "") + '" placeholder="ex.: 400" data-bs-toggle="tooltip" data-bs-placement="top" title="Quantidade de hosts necessária (número inteiro). Não use endereço IP aqui." required>' +
             '</div>' +
             '<div class="col-lg-2 col-md-6 d-grid">' +
             '<label class="form-label text-secondary spacer-label d-none d-md-block" aria-hidden="true">&nbsp;</label>' +
@@ -144,8 +144,6 @@
         bindAllHostsQtyInputs(row);
         if (window.FieldTooltips) {
             window.FieldTooltips.init(row);
-        } else {
-            row.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => new bootstrap.Tooltip(el));
         }
         updateRemoveButtonsState();
     });
@@ -161,7 +159,9 @@
 
     updateRemoveButtonsState();
     bindAllHostsQtyInputs(document);
-    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => new bootstrap.Tooltip(el));
+    if (window.FieldTooltips) {
+        window.FieldTooltips.init(document);
+    }
     document.getElementById("btn-limpar-resolucao")?.addEventListener("click", () => {
         window.location.assign("/resolucao-problemas");
     });

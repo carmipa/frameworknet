@@ -111,7 +111,14 @@ class PaginaErroProxyGeneratorTest {
 
     /** Scripts que só fazem sentido com a aplicação viva. */
     private static final List<Pattern> JS_DESCARTAVEIS = List.of(
-            Pattern.compile("<script[^>]*src=\"/web/js/field-tooltips\\.js[^\"]*\"[^>]*></script>"));
+            Pattern.compile("<script[^>]*src=\"/web/js/field-tooltips\\.js[^\"]*\"[^>]*></script>"),
+            // O Bootstrap só servia às dicas do field-tooltips (descartado acima) e passou a ser servido pelo
+            // próprio site (22/10/2026): com a aplicação fora, ele daria 502 junto.
+            Pattern.compile("<script[^>]*src=\"/web/vendor/bootstrap-[^\"]*\"[^>]*></script>"),
+            // Tooltip canônico (22/10/2026): sem o adaptador acima ele não tem o que mostrar, e os dois arquivos
+            // são da aplicação — dariam 502 junto. Na página do proxy o title nativo continua valendo.
+            Pattern.compile("<script[^>]*src=\"/web/js/dica\\.js[^\"]*\"[^>]*></script>"),
+            Pattern.compile("<link rel=\"stylesheet\" href=\"/web/css/dica-camada\\.css[^\"]*\">"));
 
     /**
      * O script de tradução do próprio site, embutido: sem ele as bandeiras chamariam uma função que

@@ -21,7 +21,7 @@
     border-radius: 999rem;
     background: rgba(56, 189, 248, 0.10);
     color: var(--aed-text);
-    font-size: 0.74rem;
+    font-size: .75rem;
 }
 
 .dns-ficha-item strong {
@@ -29,7 +29,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    font-size: 0.66rem;
+    font-size: .75rem;
 }
 
 /* --- Índice pegajoso --- */
@@ -172,7 +172,7 @@
     background: #04060c;
     color: #7dd3fc;
     font-family: var(--aed-font-mono);
-    font-size: 0.74rem;
+    font-size: .75rem;
 }
 
 .dns-resposta {
@@ -187,7 +187,7 @@
     border-color: #1e3346;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    font-size: 0.7rem;
+    font-size: .75rem;
 }
 
 .dns-tabela td {
@@ -197,7 +197,7 @@
 
 .dns-inline {
     font-family: var(--aed-font-mono);
-    font-size: 0.73rem;
+    font-size: .75rem;
     color: #93c5fd;
     white-space: nowrap;
 }
@@ -254,7 +254,7 @@
     padding: 0.05rem 0.4rem;
     margin-right: 0.3rem;
     border-radius: 0.3rem;
-    font-size: 0.66rem;
+    font-size: .75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -298,4 +298,11 @@
     .dns-secao-titulo {
         font-size: 1.05rem;
     }
+}
+
+/* Ícone do item do índice: o mesmo do título da seção para onde ele leva (UX-10). */
+.dns-indice .material-symbols-outlined {
+    font-size: 1.05em;
+    vertical-align: -0.18em;
+    margin-right: 0.2em;
 }

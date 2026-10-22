@@ -43,7 +43,7 @@
 }
 
 .anom-kpi-rotulo {
-    font-size: 0.72rem;
+    font-size: .75rem;
     color: var(--aed-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -121,7 +121,7 @@
 
 .anom-passo-acao {
     font-family: var(--aed-font-mono);
-    font-size: 0.74rem;
+    font-size: .75rem;
     color: #93c5fd;
 }
 
@@ -133,7 +133,7 @@
     background: #04060c;
     color: var(--aed-text-faint);
     font-family: var(--aed-font-mono);
-    font-size: 0.68rem;
+    font-size: .75rem;
 }
 
 .anom-passo-detalhe {

@@ -88,6 +88,6 @@
 
 .portas-faixa-range {
     font-family: var(--aed-font-mono);
-    font-size: 0.72rem;
+    font-size: .75rem;
     color: var(--aed-text-faint);
 }

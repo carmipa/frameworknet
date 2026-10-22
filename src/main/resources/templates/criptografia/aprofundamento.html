@@ -4,7 +4,7 @@
 {#description}{item.titulo} — {item.chamada}{/description}
 {#extraHead}
 <link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
-<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261001b">
+<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261022">
 {/extraHead}
 {#content}
 <div class="container py-5">
@@ -14,7 +14,7 @@
         <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">{item.icone}</span></div>
         <span class="aed-eyebrow aed-eyebrow-teal">Aprofundamento · Criptografia</span>
         <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">{item.titulo}</h1>
-        <p class="text-secondary small mx-auto" style="max-width:48rem;">{conteudo.resumo}</p>
+        <p class="text-secondary small mx-auto aed-medida-leitura">{conteudo.resumo}</p>
         {#if conteudo.ficha}
         <div class="aprof-ficha" role="list">
             {#for f in conteudo.ficha}
@@ -35,8 +35,8 @@
 </div>
 {/content}
 {#extraScripts}
-<script src="/protocolos/js/aprofundamento.js?v=20260925"></script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
-<script src="/protocolos/aprofundamento/js/aprofundamento-diagrama.js?v=20261002"></script>
+<script src="/protocolos/js/aprofundamento.js?v=20261022"></script>
+<script src="/web/vendor/mermaid-11.17.2/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script src="/protocolos/aprofundamento/js/aprofundamento-diagrama.js?v=20261022"></script>
 {/extraScripts}
 {/include}

@@ -3,7 +3,7 @@
 .home-hero {
     display: grid;
     grid-template-columns: minmax(0, 42%) 1fr;
-    gap: 5%;
+    gap: 2rem 5%;
     align-items: center;
     padding: 4% 5%;
     margin-bottom: 4%;
@@ -40,9 +40,9 @@
 
 .home-chip {
     font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
-    font-size: 0.72rem;
+    font-size: .75rem;
     padding: 0.28rem 0.7rem;
-    border-radius: 999px;
+    border-radius: 62.4375rem;
     border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.1));
     color: var(--aed-teal, #2dd4bf);
     background: rgba(45, 212, 191, 0.08);
@@ -58,7 +58,7 @@
 .home-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-    gap: 3%;
+    gap: 1.25rem 3%;
 }
 
 .home-module {
@@ -72,7 +72,7 @@
 
 .home-module:hover,
 .home-module:focus-visible {
-    transform: translateY(-3px);
+    transform: translateY(-.1875rem);
     border-color: rgba(45, 212, 191, 0.5);
     box-shadow: 0 0.5rem 1.6rem rgba(2, 6, 12, 0.55);
 }

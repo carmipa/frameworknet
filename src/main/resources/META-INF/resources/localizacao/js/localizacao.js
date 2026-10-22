@@ -39,7 +39,11 @@
         }
         marker = L.marker([la, lo]).addTo(map);
         if (label) {
-            marker.bindPopup(label).openPopup();
+            // Texto, nunca HTML: o rótulo vem de provedor externo (cidade do GeoIP, logradouro do ViaCEP) e o
+            // Leaflet grava string com innerHTML. Elemento com textContent não interpreta marcação (BACK-03).
+            var conteudo = document.createElement("span");
+            conteudo.textContent = String(label);
+            marker.bindPopup(conteudo).openPopup();
         }
         map.invalidateSize();
         map.setView([la, lo], 13);

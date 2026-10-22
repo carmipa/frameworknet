@@ -2,18 +2,18 @@
    Todos os seletores começam por .lab- (ou descendem de .lab-page): nada aqui
    deve vazar para outras telas. Reutiliza os tokens --aed-* do design system. */
 
-.lab-page { max-width: 1100px; }
+/* .lab-page: largura cheia (Regra 27) — o contêiner da página não leva max-width. */
 
 /* ---- Subnav interna ---- */
 .lab-subnav {
     display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;
     padding: 0.4rem; margin-bottom: 1.25rem;
-    border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.22); border-radius: .75rem;
     background: rgba(15, 22, 34, 0.55);
 }
 .lab-subnav-item {
     display: inline-flex; align-items: center; gap: 0.35rem;
-    padding: 0.4rem 0.8rem; border-radius: 8px;
+    padding: 0.4rem 0.8rem; border-radius: .5rem;
     color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 600;
 }
 .lab-subnav-item:hover { background: rgba(45, 212, 191, 0.12); color: #eef2f8; }
@@ -24,35 +24,35 @@
 
 /* ---- Visão geral ---- */
 .lab-hero-icone {
-    width: 64px; height: 64px; margin: 0 auto 0.5rem; border-radius: 16px;
+    width: 4rem; height: 4rem; margin: 0 auto 0.5rem; border-radius: 1rem;
     display: grid; place-items: center;
     background: rgba(45, 212, 191, 0.12); color: #2dd4bf;
 }
 .lab-hero-icone .material-symbols-outlined { font-size: 2rem; }
 .lab-secao-titulo { display: flex; align-items: center; gap: 0.45rem; font-size: 1.05rem; font-weight: 700; margin-bottom: 0.75rem; color: #eef2f8; }
 .lab-secao-titulo .material-symbols-outlined { color: #2dd4bf; }
-.lab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 1rem; }
+.lab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr)); gap: 1rem; }
 .lab-card {
     display: flex; gap: 0.9rem; padding: 1rem; text-decoration: none;
-    border: 1px solid rgba(148, 163, 184, 0.25); border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.25); border-radius: .875rem;
     background: rgba(15, 22, 34, 0.6); color: inherit; transition: border-color 0.15s ease, transform 0.15s ease;
 }
-.lab-card:hover { border-color: #2dd4bf; transform: translateY(-2px); }
-.lab-card-icone { flex: 0 0 auto; width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; background: rgba(56, 189, 248, 0.14); color: #38bdf8; }
+.lab-card:hover { border-color: #2dd4bf; transform: translateY(-.125rem); }
+.lab-card-icone { flex: 0 0 auto; width: 3rem; height: 3rem; border-radius: .75rem; display: grid; place-items: center; background: rgba(56, 189, 248, 0.14); color: #38bdf8; }
 .lab-card-titulo { font-size: 1.1rem; font-weight: 700; margin: 0 0 0.25rem; color: #eef2f8; }
 .lab-card-desc { font-size: 0.9rem; color: #94a3b8; margin: 0 0 0.5rem; }
 .lab-card-cta { display: inline-flex; align-items: center; gap: 0.3rem; color: #2dd4bf; font-weight: 600; font-size: 0.9rem; }
 .lab-links { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 
 /* ---- Cenário declarado ---- */
-.lab-cenario { border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 12px; background: rgba(15, 22, 34, 0.5); padding: 0.5rem 1rem; margin-bottom: 1.25rem; }
+.lab-cenario { border: 1px solid rgba(148, 163, 184, 0.22); border-radius: .75rem; background: rgba(15, 22, 34, 0.5); padding: 0.5rem 1rem; margin-bottom: 1.25rem; }
 .lab-cenario > summary { cursor: pointer; font-weight: 700; color: #eef2f8; display: flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0; }
 .lab-cenario > summary .material-symbols-outlined { color: #2dd4bf; }
-.lab-cenario-corpo { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 1rem; padding: 0.5rem 0 0.75rem; }
+.lab-cenario-corpo { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 1rem; padding: 0.5rem 0 0.75rem; }
 .lab-cenario-col h3 { font-size: 0.95rem; color: #2dd4bf; margin-bottom: 0.4rem; }
 .lab-cenario-col ul { margin: 0; padding-left: 1.1rem; }
 .lab-cenario-col li { font-size: 0.86rem; color: #cbd5e1; margin-bottom: 0.3rem; }
-.lab-cenario-col code { color: #fcd34d; background: rgba(0,0,0,0.25); padding: 0 0.25rem; border-radius: 4px; }
+.lab-cenario-col code { color: #fcd34d; background: rgba(0,0,0,0.25); padding: 0 0.25rem; border-radius: .25rem; }
 
 /* ---- Entrada / controles ---- */
 .lab-entrada { margin-bottom: 1rem; }
@@ -67,37 +67,39 @@
 .lab-corpo { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.25rem; align-items: start; }
 @media (max-width: 820px) { .lab-corpo { grid-template-columns: 1fr; } }
 
-.lab-cena-wrap { position: relative; border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 14px; background: #0a0e16; padding: 0.5rem; }
+.lab-cena-wrap { position: relative; overflow-x: auto; border: 1px solid rgba(148, 163, 184, 0.22); border-radius: .875rem; background: #0a0e16; padding: 0.5rem; }
 .lab-reproduzindo {
     position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
     display: inline-flex; align-items: center; gap: 0.45rem;
-    padding: 0.3rem 0.7rem; border-radius: 999px;
+    padding: 0.3rem 0.7rem; border-radius: 62.4375rem;
     background: rgba(16, 185, 129, 0.16); border: 1px solid #10b981; color: #6ee7b7;
     font-size: 0.8rem; font-weight: 700; letter-spacing: 0.01em;
     box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.15), 0 6px 18px rgba(0, 0, 0, 0.35);
 }
-.lab-rep-dot { width: 9px; height: 9px; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); animation: lab-rep-pulse 1.2s ease-out infinite; }
+.lab-rep-dot { width: .5625rem; height: .5625rem; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); animation: lab-rep-pulse 1.2s ease-out infinite; }
 @keyframes lab-rep-pulse {
     0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
     70% { box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
     100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
 }
 @media (prefers-reduced-motion: reduce) { .lab-rep-dot { animation: none; } }
-.lab-cena { width: 100%; height: auto; aspect-ratio: 900 / 260; display: block; }
+/* Piso de largura (o desenho tem 900 de largura útil): abaixo disso o texto da cena chegava a 3,7 px no celular e
+   a 10,9 px em 1440 (auditoria de responsividade, 22/10/2026). Em tela menor a cena rola dentro da moldura. */
+.lab-cena { width: 100%; min-width: 56.25rem; height: auto; aspect-ratio: 900 / 260; display: block; }
 .lab-cena .lab-fio { stroke: #334155; stroke-width: 3; stroke-linecap: round; }
 .lab-cena .lab-no rect { fill: #0f1622; stroke: #5b6679; stroke-width: 2; }
 .lab-cena .lab-no[data-no="SW"] rect { stroke: #34d399; }
 .lab-cena .lab-no[data-no="A"] rect, .lab-cena .lab-no[data-no="B"] rect { stroke: #38bdf8; }
-.lab-cena .lab-no-titulo { fill: #eef2f8; font-family: "Inter Tight", system-ui, sans-serif; font-size: 17px; font-weight: 700; }
-.lab-cena .lab-no-sub { fill: #94a3b8; font-family: "Inter Tight", system-ui, sans-serif; font-size: 12px; }
+.lab-cena .lab-no-titulo { fill: #eef2f8; font-family: "Inter Tight", system-ui, sans-serif; font-size: 1.0625rem; font-weight: 700; }
+.lab-cena .lab-no-sub { fill: #94a3b8; font-family: "Inter Tight", system-ui, sans-serif; font-size: .75rem; }
 #lab-pacote rect { fill: #a78bfa; stroke: #ede9fe; stroke-width: 1.5; }
-#lab-pacote text { fill: #1e1b4b; font-family: "Inter Tight", system-ui, sans-serif; font-size: 12px; font-weight: 700; }
+#lab-pacote text { fill: #1e1b4b; font-family: "Inter Tight", system-ui, sans-serif; font-size: .75rem; font-weight: 700; }
 #lab-pacote { transition: transform 0.5s ease, opacity 0.3s ease; }
 
 /* ---- Pilha de encapsulamento (caixas aninhadas) ---- */
 .lab-lado { min-width: 0; }
 .lab-pilha { display: block; }
-.lab-camada { border: 1.5px solid transparent; border-radius: 10px; padding: 0; margin: 0; transition: border-color 0.2s ease, background 0.2s ease, padding 0.2s ease; }
+.lab-camada { border: 1.5px solid transparent; border-radius: .625rem; padding: 0; margin: 0; transition: border-color 0.2s ease, background 0.2s ease, padding 0.2s ease; }
 .lab-camada.presente { padding: 0.5rem 0.6rem; margin-top: 0.4rem; background: rgba(148, 163, 184, 0.05); }
 .lab-camada[data-camada="eth"].presente { border-color: #f59e0b; }
 .lab-camada[data-camada="ip"].presente { border-color: #38bdf8; }
@@ -113,9 +115,9 @@
 .lab-total-nota { margin: 0.25rem 0 0; font-size: 0.78rem; color: var(--aed-text-faint, #7d899f); line-height: 1.35; }
 
 /* ---- Explicação ---- */
-.lab-explica { margin-top: 1.25rem; border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 14px; background: rgba(15, 22, 34, 0.55); padding: 1rem 1.1rem; }
+.lab-explica { margin-top: 1.25rem; border: 1px solid rgba(148, 163, 184, 0.22); border-radius: .875rem; background: rgba(15, 22, 34, 0.55); padding: 1rem 1.1rem; }
 .lab-explica-cab { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6rem; }
-.lab-explica-tag { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: #2dd4bf; background: rgba(45, 212, 191, 0.12); padding: 0.15rem 0.5rem; border-radius: 999px; }
+.lab-explica-tag { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: #2dd4bf; background: rgba(45, 212, 191, 0.12); padding: 0.15rem 0.5rem; border-radius: 62.4375rem; }
 .lab-explica-titulo { font-size: 1.15rem; font-weight: 700; margin: 0; color: #eef2f8; }
 .lab-explica-desc { margin: 0.6rem 0 0.4rem; color: #e2e8f0; }
 .lab-explica-porque { margin: 0 0 0.6rem; color: #94a3b8; font-size: 0.9rem; }
@@ -130,15 +132,15 @@
 .lab-proximo { margin: 0.5rem 0 0; font-size: 0.86rem; color: var(--aed-text-faint, #7d899f); font-style: italic; }
 
 /* ---- Pergunta ---- */
-.lab-pergunta { margin-top: 1.25rem; border: 1px solid rgba(167, 139, 250, 0.35); border-radius: 14px; background: rgba(167, 139, 250, 0.06); padding: 1rem 1.1rem; }
+.lab-pergunta { margin-top: 1.25rem; border: 1px solid rgba(167, 139, 250, 0.35); border-radius: .875rem; background: rgba(167, 139, 250, 0.06); padding: 1rem 1.1rem; }
 .lab-pergunta-opcoes { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .lab-opcao.marcada { box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.5); }
-.lab-pergunta-feedback { margin: 0.75rem 0 0; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.9rem; }
+.lab-pergunta-feedback { margin: 0.75rem 0 0; padding: 0.5rem 0.75rem; border-radius: .5rem; font-size: 0.9rem; }
 .lab-pergunta-feedback.acertou { background: rgba(52, 211, 153, 0.12); color: #6ee7b7; }
 .lab-pergunta-feedback.errou { background: rgba(245, 158, 11, 0.12); color: #fcd34d; }
 
 /* ---- Modelo OSI/TCP-IP ---- */
-.lab-modelo { margin-top: 1.25rem; border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 14px; background: rgba(15, 22, 34, 0.55); padding: 1rem 1.1rem; }
+.lab-modelo { margin-top: 1.25rem; border: 1px solid rgba(148, 163, 184, 0.22); border-radius: .875rem; background: rgba(15, 22, 34, 0.55); padding: 1rem 1.1rem; }
 .lab-modelo-cab { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem; margin-bottom: 0.6rem; }
 .lab-modelo-toggle { display: inline-flex; gap: 0.3rem; }
 .lab-modelo-toggle .is-active { border-color: #2dd4bf; color: #2dd4bf; box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.5) inset; }
@@ -146,7 +148,7 @@
 .lab-modelo-explica li { font-size: 0.88rem; color: #cbd5e1; margin-bottom: 0.25rem; }
 
 /* ---- Alternativa textual ---- */
-.lab-alt { margin-top: 1.25rem; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px; padding: 0.5rem 1rem; }
+.lab-alt { margin-top: 1.25rem; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: .75rem; padding: 0.5rem 1rem; }
 .lab-alt > summary { cursor: pointer; font-weight: 600; color: #cbd5e1; display: flex; align-items: center; gap: 0.4rem; }
 .lab-alt-lista { margin: 0.6rem 0 0.4rem; padding-left: 1.3rem; }
 .lab-alt-lista li { font-size: 0.86rem; color: #94a3b8; margin-bottom: 0.5rem; }
@@ -161,13 +163,13 @@
 }
 
 /* Laboratório Aplicação → Kernel → Rede: escopo exclusivo .rings-. */
-.rings-page{max-width:1320px}.rings-simulacao{display:flex;gap:.5rem;align-items:center;margin:1rem 0;padding:.7rem 1rem;border:1px solid rgba(56,189,248,.35);border-radius:10px;background:rgba(56,189,248,.07);color:#cbd5e1}.rings-simulacao .material-symbols-outlined{color:#38bdf8}.rings-acoes{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}.rings-acao,.rings-etapa{font:inherit;color:inherit;text-align:left;cursor:pointer}.rings-acao{display:grid;gap:.2rem;padding:.7rem;border:1px solid rgba(148,163,184,.24);border-radius:10px;background:#0a0e16}.rings-acao.is-active,.rings-acao:hover{border-color:#2dd4bf;background:rgba(45,212,191,.1)}.rings-acao strong,.rings-etapa strong{color:#eef2f8}.rings-acao small,.rings-etapa small{color:#94a3b8}.rings-acao .material-symbols-outlined{color:#38bdf8}.rings-fluxo,.rings-inspecao{padding:1rem;border:1px solid rgba(148,163,184,.22);border-radius:14px;background:rgba(15,22,34,.58)}.rings-fluxo-cab{display:flex;justify-content:space-between;gap:1rem;align-items:center}.rings-diagrama{display:grid;grid-template-columns:repeat(9,1fr);gap:.25rem;margin-top:.8rem}.rings-etapa{min-height:130px;display:flex;flex-direction:column;gap:.3rem;padding:.65rem;border:1px solid rgba(148,163,184,.3);border-radius:11px;background:#090d15}.rings-etapa b{font-size:.68rem;color:#a7f3d0}.rings-etapa .material-symbols-outlined{color:#38bdf8}.rings-etapa.is-selected{border-color:#2dd4bf;background:rgba(45,212,191,.12);box-shadow:0 0 0 2px rgba(45,212,191,.15)}.rings-seta{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#38bdf8}.rings-seta small{max-width:92px;font-size:.68rem;line-height:1.18}.rings-explica{margin-top:1rem;padding:1rem;border-left:3px solid #2dd4bf;background:rgba(45,212,191,.06)}.rings-explica h3{font-size:1.1rem;color:#eef2f8}.rings-dados-reais{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;margin-top:.75rem}.rings-dados-reais>div{padding:.65rem;border:1px solid rgba(148,163,184,.16);border-radius:8px;background:rgba(2,6,23,.6)}.rings-dados-reais h4{margin:0 0 .3rem;color:#2dd4bf;font-size:.72rem;text-transform:uppercase}.rings-dados-reais p{margin:0;color:#cbd5e1;font-size:.8rem;line-height:1.35}.rings-inspecao{margin-top:1rem}.rings-inspecao summary{cursor:pointer;color:#bae6fd;font-weight:700}.rings-inspecao pre{padding:.7rem;background:#06090f;color:#a7f3d0;overflow:auto}@media(max-width:900px){.rings-acoes,.rings-dados-reais{grid-template-columns:repeat(2,1fr)}.rings-diagrama{grid-template-columns:1fr}.rings-seta{min-height:28px}.rings-seta .material-symbols-outlined{transform:rotate(90deg)}}@media(max-width:520px){.rings-acoes,.rings-dados-reais{grid-template-columns:1fr}}
+.rings-simulacao{display:flex;gap:.5rem;align-items:center;margin:1rem 0;padding:.7rem 1rem;border:1px solid rgba(56,189,248,.35);border-radius:.625rem;background:rgba(56,189,248,.07);color:#cbd5e1}.rings-simulacao .material-symbols-outlined{color:#38bdf8}.rings-acoes{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}.rings-acao,.rings-etapa{font:inherit;color:inherit;text-align:left;cursor:pointer}.rings-acao{display:grid;gap:.2rem;padding:.7rem;border:1px solid rgba(148,163,184,.24);border-radius:.625rem;background:#0a0e16}.rings-acao.is-active,.rings-acao:hover{border-color:#2dd4bf;background:rgba(45,212,191,.1)}.rings-acao strong,.rings-etapa strong{color:#eef2f8}.rings-acao small,.rings-etapa small{color:#94a3b8}.rings-acao .material-symbols-outlined{color:#38bdf8}.rings-fluxo,.rings-inspecao{padding:1rem;border:1px solid rgba(148,163,184,.22);border-radius:.875rem;background:rgba(15,22,34,.58)}.rings-fluxo-cab{display:flex;justify-content:space-between;gap:1rem;align-items:center}.rings-diagrama{display:grid;grid-template-columns:repeat(9,1fr);gap:.25rem;margin-top:.8rem}.rings-etapa{min-height:8.125rem;display:flex;flex-direction:column;gap:.3rem;padding:.65rem;border:1px solid rgba(148,163,184,.3);border-radius:.6875rem;background:#090d15}.rings-etapa b{font-size:.75rem;color:#a7f3d0}.rings-etapa .material-symbols-outlined{color:#38bdf8}.rings-etapa.is-selected{border-color:#2dd4bf;background:rgba(45,212,191,.12);box-shadow:0 0 0 2px rgba(45,212,191,.15)}.rings-seta{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#38bdf8}.rings-seta small{max-width:5.75rem;font-size:.75rem;line-height:1.18}.rings-explica{margin-top:1rem;padding:1rem;border-left:3px solid #2dd4bf;background:rgba(45,212,191,.06)}.rings-explica h3{font-size:1.1rem;color:#eef2f8}.rings-dados-reais{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;margin-top:.75rem}.rings-dados-reais>div{padding:.65rem;border:1px solid rgba(148,163,184,.16);border-radius:.5rem;background:rgba(2,6,23,.6)}.rings-dados-reais h4{margin:0 0 .3rem;color:#2dd4bf;font-size:.75rem;text-transform:uppercase}.rings-dados-reais p{margin:0;color:#cbd5e1;font-size:.8rem;line-height:1.35}.rings-inspecao{margin-top:1rem}.rings-inspecao summary{cursor:pointer;color:#bae6fd;font-weight:700}.rings-inspecao pre{padding:.7rem;background:#06090f;color:#a7f3d0;overflow:auto}@media(max-width:900px){.rings-acoes,.rings-dados-reais{grid-template-columns:repeat(2,1fr)}.rings-diagrama{grid-template-columns:1fr}.rings-seta{min-height:1.75rem}.rings-seta .material-symbols-outlined{transform:rotate(90deg)}}@media(max-width:520px){.rings-acoes,.rings-dados-reais{grid-template-columns:1fr}}
 /* Conteudo didatico estatico do laboratorio de aneis (mapa de aneis, prosa, cards, notas) */
-.rings-prosa{color:#cbd5e1;line-height:1.6;max-width:70rem;margin:.4rem 0 1rem}
-.rings-prosa code,.rings-anel code,.rings-saber-card code,.rings-nota code{font-family:var(--aed-font-mono,ui-monospace,monospace);font-size:.85em;color:#a7f3d0;background:rgba(45,212,191,.1);padding:.05rem .35rem;border-radius:5px}
+.rings-prosa{color:#cbd5e1;line-height:1.6;max-width:110ch;margin:.4rem 0 1rem}
+.rings-prosa code,.rings-anel code,.rings-saber-card code,.rings-nota code{font-family:var(--aed-font-mono,ui-monospace,monospace);font-size:.85em;color:#a7f3d0;background:rgba(45,212,191,.1);padding:.05rem .35rem;border-radius:.3125rem}
 .rings-mapa{display:grid;gap:.55rem;margin:.5rem 0 1rem}
-.rings-anel{display:grid;grid-template-columns:auto 1fr;gap:.9rem;align-items:start;padding:.75rem .9rem;border:1px solid rgba(148,163,184,.22);border-left-width:4px;border-radius:10px;background:rgba(15,22,34,.55)}
-.rings-anel-badge{font-weight:800;font-size:.82rem;letter-spacing:.02em;color:#0b0f17;background:#94a3b8;padding:.35rem .55rem;border-radius:8px;white-space:nowrap;text-align:center;min-width:5.2rem}
+.rings-anel{display:grid;grid-template-columns:auto 1fr;gap:.9rem;align-items:start;padding:.75rem .9rem;border:1px solid rgba(148,163,184,.22);border-left-width:4px;border-radius:.625rem;background:rgba(15,22,34,.55)}
+.rings-anel-badge{font-weight:800;font-size:.82rem;letter-spacing:.02em;color:#0b0f17;background:#94a3b8;padding:.35rem .55rem;border-radius:.5rem;white-space:nowrap;text-align:center;min-width:5.2rem}
 .rings-anel strong{display:flex;align-items:center;gap:.4rem;color:#eef2f8;font-size:.98rem}
 .rings-anel strong .material-symbols-outlined{font-size:1.1rem;color:#38bdf8}
 .rings-anel p{margin:.3rem 0 0;color:#cbd5e1;font-size:.85rem;line-height:1.45}
@@ -175,11 +177,11 @@
 .rings-anel.is-kernel{border-left-color:#f87171}.rings-anel.is-kernel .rings-anel-badge{background:#f87171}
 .rings-anel.is-unused{border-left-color:#64748b}.rings-anel.is-unused .rings-anel-badge{background:#475569;color:#e2e8f0}
 .rings-anel.is-neg{border-left-color:#a78bfa}.rings-anel.is-neg .rings-anel-badge{background:#a78bfa;color:#0b0f17}
-.rings-nota{display:flex;gap:.7rem;align-items:flex-start;margin:1rem 0;padding:.85rem 1rem;border:1px solid rgba(250,204,21,.35);border-radius:10px;background:rgba(250,204,21,.07)}
+.rings-nota{display:flex;gap:.7rem;align-items:flex-start;margin:1rem 0;padding:.85rem 1rem;border:1px solid rgba(250,204,21,.35);border-radius:.625rem;background:rgba(250,204,21,.07)}
 .rings-nota .material-symbols-outlined{color:#facc15;flex:none}
 .rings-nota p{margin:0;color:#e2e8f0;font-size:.88rem;line-height:1.5}
 .rings-saber{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin:.5rem 0 1rem}
-.rings-saber-card{padding:.75rem .9rem;border:1px solid rgba(148,163,184,.2);border-radius:10px;background:rgba(2,6,23,.5)}
+.rings-saber-card{padding:.75rem .9rem;border:1px solid rgba(148,163,184,.2);border-radius:.625rem;background:rgba(2,6,23,.5)}
 .rings-saber-card strong{display:flex;align-items:center;gap:.4rem;color:#eef2f8;font-size:.9rem;margin-bottom:.3rem}
 .rings-saber-card strong .material-symbols-outlined{color:#38bdf8;font-size:1.1rem}
 .rings-saber-card p{margin:0;color:#cbd5e1;font-size:.83rem;line-height:1.45}

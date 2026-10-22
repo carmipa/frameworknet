@@ -33,7 +33,7 @@
     padding: 0.05rem 0.4rem;
     border-radius: 0.35rem;
     font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
-    font-size: 0.7rem;
+    font-size: .75rem;
     font-weight: 700;
     color: #0a0e16;
     background: var(--lc, #2dd4bf);

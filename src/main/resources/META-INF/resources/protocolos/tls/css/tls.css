@@ -21,7 +21,7 @@
     border-radius: 999rem;
     background: rgba(167, 139, 250, 0.10);
     color: var(--aed-text);
-    font-size: 0.74rem;
+    font-size: .75rem;
 }
 
 .tls-ficha-item strong {
@@ -29,7 +29,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    font-size: 0.66rem;
+    font-size: .75rem;
 }
 
 /* --- Índice pegajoso --- */
@@ -158,7 +158,7 @@
     background: rgba(167, 139, 250, 0.14);
     color: #c4b5fd;
     font-family: var(--aed-font-mono);
-    font-size: 0.72rem;
+    font-size: .75rem;
     font-weight: 500;
 }
 
@@ -199,7 +199,7 @@
     border-color: #2b2246;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    font-size: 0.7rem;
+    font-size: .75rem;
 }
 
 .tls-tabela td {
@@ -209,7 +209,7 @@
 
 .tls-inline {
     font-family: var(--aed-font-mono);
-    font-size: 0.73rem;
+    font-size: .75rem;
     color: #d8b4fe;
     word-break: break-word;
 }
@@ -266,7 +266,7 @@
     padding: 0.05rem 0.4rem;
     margin-right: 0.3rem;
     border-radius: 0.3rem;
-    font-size: 0.66rem;
+    font-size: .75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -310,4 +310,11 @@
     .tls-secao-titulo {
         font-size: 1.05rem;
     }
+}
+
+/* Ícone do item do índice: o mesmo do título da seção para onde ele leva (UX-10). */
+.tls-indice .material-symbols-outlined {
+    font-size: 1.05em;
+    vertical-align: -0.18em;
+    margin-right: 0.2em;
 }

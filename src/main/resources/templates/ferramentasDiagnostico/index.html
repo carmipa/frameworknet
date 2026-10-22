@@ -2,7 +2,7 @@
 {#title}Ferramentas de Diagnóstico | Framework de Redes A&D{/title}
 {#description}Simulador didático de ferramentas de diagnóstico de rede: PING e consultas DNS, para entender a saída de cada comando sem depender de um terminal real.{/description}
 {#extraHead}
-<link rel="stylesheet" href="/ferramentasDiagnostico/css/diagnostico.css?v=20261001" />
+<link rel="stylesheet" href="/ferramentasDiagnostico/css/diagnostico.css?v=20261022" />
 {/extraHead}
 {#content}
 
@@ -39,7 +39,7 @@
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="sweep" role="tab"
                     title="Ping Sweep: descobre quais hosts de uma faixa respondem ao ICMP">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span><span>Ping Sweep</span>
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span><span>Ping Sweep</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="scan" role="tab"
                     title="Varredura SYN stealth: portas abertas, fechadas e filtradas, e como um IDS detecta">
@@ -64,7 +64,7 @@
                   hx-trigger="submit delay:1.2s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="pingHost" class="form-label text-secondary">Host ou domínio de destino</label>
+                    <label for="pingHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio de destino</label>
                     <input type="text" class="aed-input form-control" id="pingHost" name="host"
                            value="8.8.8.8" placeholder="8.8.8.8" required>
                     <div class="form-text aed-ajuda">
@@ -99,7 +99,7 @@
                   hx-trigger="submit delay:1s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="dnsDominio" class="form-label text-secondary">Domínio para resolver</label>
+                    <label for="dnsDominio" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio para resolver</label>
                     <input type="text" class="aed-input form-control" id="dnsDominio" name="dominio"
                            value="google.com" placeholder="exemplo.com.br" required>
                     <div class="form-text aed-ajuda">
@@ -134,7 +134,7 @@
                   hx-trigger="submit delay:1s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="traceHost" class="form-label text-secondary">Host ou domínio de destino</label>
+                    <label for="traceHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio de destino</label>
                     <input type="text" class="aed-input form-control" id="traceHost" name="host"
                            value="1.1.1.1" placeholder="1.1.1.1" required>
                     <div class="form-text aed-ajuda">
@@ -159,7 +159,7 @@
         <!-- PING SWEEP -->
         <div class="tab-panel" data-tab-panel="sweep">
             <div class="diag-intro" role="note">
-                <span class="material-symbols-outlined" aria-hidden="true" translate="no">travel_explore</span>
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">radar</span>
                 <div><strong>Ping Sweep.</strong> Pinga uma faixa inteira de endereços de uma vez para descobrir <em>quais máquinas estão ligadas</em> na rede. É o primeiro mapa de um ambiente.</div>
             </div>
             <form id="formSweep"
@@ -169,7 +169,7 @@
                   hx-trigger="submit delay:1s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="sweepRede" class="form-label text-secondary">Faixa / rede a varrer (CIDR)</label>
+                    <label for="sweepRede" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Faixa / rede a varrer (CIDR)</label>
                     <input type="text" class="aed-input form-control" id="sweepRede" name="rede"
                            value="192.168.1.0/24" placeholder="192.168.1.0/24" required>
                     <div class="form-text aed-ajuda">
@@ -204,7 +204,7 @@
                   hx-trigger="submit delay:1.2s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="scanHost" class="form-label text-secondary">Host ou domínio alvo</label>
+                    <label for="scanHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio alvo</label>
                     <input type="text" class="aed-input form-control" id="scanHost" name="host"
                            value="scanme.nmap.org" placeholder="scanme.nmap.org" required>
                     <div class="form-text aed-ajuda">
@@ -239,7 +239,7 @@
                   hx-trigger="submit delay:1s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="spoofDominio" class="form-label text-secondary">Domínio alvo da consulta</label>
+                    <label for="spoofDominio" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio alvo da consulta</label>
                     <input type="text" class="aed-input form-control" id="spoofDominio" name="dominio"
                            value="banco.example.com" placeholder="banco.example.com" required>
                     <div class="form-text aed-ajuda">

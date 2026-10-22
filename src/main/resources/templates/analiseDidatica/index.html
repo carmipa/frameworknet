@@ -2,7 +2,7 @@
 {#title}Análise Didática | Framework de Redes A&D{/title}
 {#description}Análise didática de endereços IPv4 e IPv6: CIDR, máscara, wildcard, classe, RFC1918, rede e broadcast, com o cálculo mostrado bit a bit e comparador de endereços.{/description}
 {#extraHead}
-<link rel="stylesheet" href="/calculadora/css/calculadora.css?v=20260908" />
+<link rel="stylesheet" href="/calculadora/css/calculadora.css?v=20261022" />
 {/extraHead}
 {#content}
 <div class="container py-5">
@@ -52,7 +52,7 @@
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="ipv6" role="tab"
                     data-bs-toggle="tooltip" data-bs-placement="top"
                     title="IPv6: expanda, comprima e analise endereços IPv6">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">public</span><span>IPv6</span>
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">filter_6</span><span>IPv6</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="comparador" role="tab"
                     data-bs-toggle="tooltip" data-bs-placement="top"
@@ -165,7 +165,7 @@
             <h6 class="text-info mb-0 d-flex align-items-center gap-2" title="Suas consultas ficam só neste navegador e somem ao fechá-lo; outras pessoas não as veem"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico deste navegador</h6>
             <form method="GET" action="/analise" class="d-flex flex-wrap align-items-center gap-2 small">
                 <input type="hidden" name="tab" value="{activeTabPre}">
-                <label class="text-secondary">Por página</label>
+                <label class="text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> Por página</label>
                 <select aria-label="Por página" name="history_limit" class="form-select form-select-sm bg-dark text-light border-secondary" style="width:auto;">
                     <option value="5" {#if historyLimitPre == '5'}selected{/if}>5</option>
                     <option value="10" {#if historyLimitPre == '10'}selected{/if}>10</option>
@@ -216,6 +216,6 @@
 {#extraScripts}
 <script src="/analiseDidatica/js/geo_report.js?v=20261002"></script>
 <script src="/analiseDidatica/js/analise_widgets.js?v=20261002"></script>
-<script src="/analiseDidatica/js/analise.js?v=20261002"></script>
+<script src="/analiseDidatica/js/analise.js?v=20261022"></script>
 {/extraScripts}
 {/include}

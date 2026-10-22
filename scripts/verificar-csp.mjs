@@ -5,13 +5,22 @@
  * PROPOSITO: um CSP mal calibrado nao gera erro no servidor — a pagina responde
  * 200 e o recurso simplesmente nao carrega. So o browser revela a violacao.
  *
- * USO:  node scripts/verificar-csp.mjs [base-url]
+ * USO:  node scripts/verificar-csp.mjs [base-url] [--com-google]
+ *       base padrao: http://127.0.0.1:8081 (o local, como os outros roteiros). Producao so por argumento.
+ *       O Google (Translate) fica BLOQUEADO por padrao: em 22/10/2026 uma rodada sem bloqueio gerou 40
+ *       redirecionamentos para o captcha (google.com/sorry) e derrubou a traducao da rede por um tempo.
+ *       A traducao tem roteiro proprio, que toca o Google uma vez: scripts/verificar-tradutor.mjs.
  * SAIDA: 0 ok · 1 violacao de CSP, requisicao bloqueada ou status errado · 2 NAO VERIFICOU
  *        (sem sitemap, sem cabecalho CSP ou instrumento incapaz de ver uma violacao proposital).
  */
 import { chromium } from 'playwright';
 
-const base = process.argv[2] || 'https://frameworknet.carminati.dev.br';
+const base = process.argv.slice(2).find((a) => a.startsWith('http')) || 'http://127.0.0.1:8081';
+const COM_GOOGLE = process.argv.includes('--com-google');
+const GOOGLE = /^https?:\/\/([a-z0-9-]+\.)*(google\.com|googleapis\.com|gstatic\.com)\//i;
+async function bloquearGoogle(contexto) {
+  if (!COM_GOOGLE) await contexto.route(GOOGLE, (r) => r.abort());
+}
 
 // Paginas: TODAS as do sitemap (auditoria F26 — a lista fixa nao tinha IPv6, Laboratorios,
 // Certificados, Camadas, Criptografia, Wi-Fi nem Ferramentas) mais as que o sitemap nao lista.
@@ -42,11 +51,14 @@ console.log(`${PAGINAS.length} paginas (${doSitemap.length} do sitemap)`);
 const navegador = await chromium.launch();
 let problemas = 0;
 let ambientais = 0;
+// Página que nem abriu não foi verificada: é estado 2, não "ajuste o CSP" (UX-14, auditoria de 22/10/2026).
+let naoVerificadas = 0;
 
 // Controle positivo (0 nao e prova): sem cabecalho CSP, "nenhum bloqueio" seria cegueira. E o
 // instrumento precisa ENXERGAR uma violacao de verdade: um script de origem proibida tem de ser recusado.
 {
   const contexto = await navegador.newContext();
+  await bloquearGoogle(contexto);
   const pagina = await contexto.newPage();
   const resp = await pagina.goto(base + '/', { waitUntil: 'load', timeout: 45000 });
   const csp = resp && resp.headers()['content-security-policy'];
@@ -74,6 +86,7 @@ let ambientais = 0;
 
 for (const caminho of PAGINAS) {
   const contexto = await navegador.newContext();
+  await bloquearGoogle(contexto);
   const pagina = await contexto.newPage();
   const violacoes = [];
   const falhas = [];
@@ -100,8 +113,8 @@ for (const caminho of PAGINAS) {
       falhas.push(`status ${resp ? resp.status() : 'sem resposta'} (esperado ${esperado})`);
     }
   } catch (erro) {
-    console.log(`  ${caminho.padEnd(22)} ERRO DE NAVEGACAO: ${String(erro).slice(0, 90)}`);
-    problemas++;
+    console.log(`  ${caminho.padEnd(22)} NAO VERIFICOU (navegacao): ${String(erro).slice(0, 90)}`);
+    naoVerificadas++;
     await contexto.close();
     continue;
   }
@@ -135,7 +148,13 @@ if (ambientais) {
   console.log(`
 ${ambientais} bloqueio(s) do redirect anti-robô do Google (ambiental, não é defeito do CSP).`);
 }
-console.log(problemas === 0
-  ? '\nCSP nao bloqueou nenhum recurso legitimo.'
-  : `\n${problemas} problema(s) — ajuste o CSP em application.properties.`);
-process.exit(problemas === 0 ? 0 : 1);
+if (problemas > 0) {
+  console.log(`\n${problemas} problema(s) — ajuste o CSP em application.properties.`);
+  process.exit(1);
+}
+if (naoVerificadas > 0) {
+  console.log(`\nNAO VERIFICOU: ${naoVerificadas} pagina(s) nao abriram — isso nao e aprovacao.`);
+  process.exit(2);
+}
+console.log('\nCSP nao bloqueou nenhum recurso legitimo.');
+process.exit(0);

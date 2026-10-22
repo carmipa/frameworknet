@@ -22,6 +22,9 @@
         try {
             mermaid.initialize({
                 startOnLoad: false,
+                // Tamanho natural do desenho (texto legível) dentro de uma caixa com rolagem própria: com useMaxWidth o
+                // diagrama encolhia até caber e o texto chegava a 3 px no celular (auditoria de responsividade, 22/10/2026).
+                flowchart: { useMaxWidth: false }, sequence: { useMaxWidth: false }, state: { useMaxWidth: false }, class: { useMaxWidth: false }, er: { useMaxWidth: false }, mindmap: { useMaxWidth: false },
                 securityLevel: "strict",
                 theme: "base",
                 themeVariables: {

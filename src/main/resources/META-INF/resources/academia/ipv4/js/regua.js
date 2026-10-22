@@ -35,7 +35,10 @@
                     botao.addEventListener('click', function () { aoEscolher(prefixo); });
                 }(i + 1));
             } else {
-                botao.disabled = true;
+                // Só exibe: aria-disabled (e não disabled) para a dica explicar o porquê (UX-05). Fora do Tab.
+                botao.setAttribute('aria-disabled', 'true');
+                botao.tabIndex = -1;
+                botao.title = 'Nesta etapa a régua só mostra a máscara. Para mudar a divisória, vá para a etapa Mexer.';
             }
             botoes.push(botao);
             container.appendChild(botao);

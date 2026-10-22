@@ -28,7 +28,7 @@
 
                 <div class="mb-3">
                     <label for="divPrefixoBase" class="form-label text-secondary">
-                        Prefixo do bloco base <span class="text-muted">(opcional)</span>
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Prefixo do bloco base <span class="text-muted">(opcional)</span>
                     </label>
                     <input type="text" class="aed-input form-control input-cidr" id="divPrefixoBase"
                            name="prefixoBase" inputmode="numeric" maxlength="2" placeholder="21">
@@ -38,15 +38,15 @@
                     <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tune</span> Critério da divisão</label>
                     <div class="calc-radio-group" role="radiogroup">
                         <label class="calc-radio">
-                            <input type="radio" name="criterio" value="prefixo" checked data-alvo="grupo-prefixo">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> <input type="radio" name="criterio" value="prefixo" checked data-alvo="grupo-prefixo">
                             <span>Por prefixo alvo</span>
                         </label>
                         <label class="calc-radio">
-                            <input type="radio" name="criterio" value="quantidade" data-alvo="grupo-quantidade">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span> <input type="radio" name="criterio" value="quantidade" data-alvo="grupo-quantidade">
                             <span>Por nº de sub-redes</span>
                         </label>
                         <label class="calc-radio">
-                            <input type="radio" name="criterio" value="hosts" data-alvo="grupo-hosts">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> <input type="radio" name="criterio" value="hosts" data-alvo="grupo-hosts">
                             <span>Por hosts necessários</span>
                         </label>
                     </div>

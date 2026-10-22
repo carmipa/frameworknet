@@ -2,8 +2,8 @@
 {#title}Localização | Framework de Redes A&D{/title}
 {#description}Localização de endereços IP por GeoIP e de endereços por CEP, com o resultado no mapa e os dados de rede associados ao endereço consultado.{/description}
 {#extraHead}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
-<link rel="stylesheet" href="/localizacao/css/localizacao.css?v=20261001">
+<link rel="stylesheet" href="/web/vendor/leaflet-1.9.4/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<link rel="stylesheet" href="/localizacao/css/localizacao.css?v=20261022">
 {/extraHead}
 {#content}
 <div class="container py-5">
@@ -12,7 +12,7 @@
     <div class="text-center mb-4">
         <span class="aed-eyebrow aed-eyebrow-teal">Localização</span>
         <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Localização por IP (GeoIP) e por CEP</h1>
-        <p class="text-secondary small mx-auto" style="max-width:44rem;">
+        <p class="text-secondary small mx-auto aed-medida-leitura">
             Localize a região de um IP público (GeoIP) e o endereço de um CEP, plotados no mapa (OpenStreetMap).
         </p>
     </div>
@@ -183,7 +183,7 @@
             <form id="form-loc-cep" class="aed-card card-tech loc-cep-form mb-4" autocomplete="off" onsubmit="return false;">
                 <span class="aed-eyebrow aed-eyebrow-indigo">Por CEP</span>
                 <h5 class="loc-form-title">Endereço no mapa (ViaCEP + OpenStreetMap)</h5>
-                <label class="form-label small text-secondary" for="loc-cep">CEP</label>
+                <label class="form-label small text-secondary" for="loc-cep"><span class="material-symbols-outlined" aria-hidden="true" translate="no">markunread_mailbox</span> CEP</label>
                 <div class="loc-input-row">
                     <input type="text" id="loc-cep" class="form-control bg-dark text-light border-secondary"
                            placeholder="01001-000" inputmode="numeric" maxlength="9">
@@ -226,12 +226,12 @@
 </div>
 {/content}
 {#extraScripts}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<script src="/web/vendor/leaflet-1.9.4/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script src="/web/js/aed-tabs.js?v=20260710"></script>
 <script src="/analiseDidatica/js/geo_report.js?v=20261002"></script>
-<script src="/localizacao/js/localizacao.js?v=20261002"></script>
-<script src="/localizacao/js/geo-panel.js?v=20261002"></script>
+<script src="/localizacao/js/localizacao.js?v=20261022"></script>
+<script src="/localizacao/js/geo-panel.js?v=20261022"></script>
 <script src="/localizacao/js/privacidade.js?v=20261002"></script>
-<script type="module" src="/localizacao/js/geo-globe.js?v=20261002b"></script>
+<script type="module" src="/localizacao/js/geo-globe.js?v=20261022"></script>
 {/extraScripts}
 {/include}

@@ -134,20 +134,22 @@
 /* A ajuda de exemplo dos campos usa a classe compartilhada .aed-ajuda (app.css). */
 
 /* -------------------------------------------------- Canvas de topologia (aba arrastar) */
-.topo-canvas-wrap { width: 100%; }
+/* O canvas rola dentro da moldura em tela estreita: encolhido até caber, o texto dos equipamentos chegava a 3 px. */
+.topo-canvas-wrap { width: 100%; overflow-x: auto; }
 
 .topo-canvas {
     width: 100%;
+    min-width: 56.25rem;
     height: auto;
     aspect-ratio: 900 / 460;
     display: block;
     border: 1px solid rgba(148, 163, 184, 0.28);
-    border-radius: 12px;
+    border-radius: .75rem;
     background-color: #0a0e16;
     background-image:
-        linear-gradient(rgba(148, 163, 184, 0.10) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(148, 163, 184, 0.10) 1px, transparent 1px);
-    background-size: 30px 30px;
+        linear-gradient(rgba(148, 163, 184, 0.10) .0625rem, transparent .0625rem),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.10) .0625rem, transparent .0625rem);
+    background-size: 1.875rem 1.875rem;
     touch-action: none; /* pointer-drag também no touch, sem o scroll roubar o gesto */
 }
 
@@ -171,13 +173,13 @@
 .topo-node-id {
     fill: #eef2f8;
     font-family: "Inter Tight", system-ui, sans-serif;
-    font-size: 15px;
+    font-size: .9375rem;
     font-weight: 700;
 }
 .topo-node-sub {
     fill: #94a3b8;
     font-family: "Inter Tight", system-ui, sans-serif;
-    font-size: 11px;
+    font-size: .75rem;
 }
 
 .topo-edge {
@@ -188,7 +190,7 @@
 
 .topo-props {
     border: 1px solid rgba(148, 163, 184, 0.25);
-    border-radius: 10px;
+    border-radius: .625rem;
     padding: 0.75rem;
     background: rgba(15, 22, 34, 0.6);
 }

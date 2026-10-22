@@ -21,7 +21,7 @@
     border-radius: 999rem;
     background: rgba(45, 212, 191, 0.10);
     color: var(--aed-text);
-    font-size: 0.74rem;
+    font-size: .75rem;
 }
 
 .ssh-ficha-item strong {
@@ -29,7 +29,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    font-size: 0.66rem;
+    font-size: .75rem;
 }
 
 /* --- Índice pegajoso --- */
@@ -154,7 +154,7 @@
     border-radius: 0.35rem;
     color: var(--aed-text-faint);
     font-family: var(--aed-font-mono);
-    font-size: 0.68rem;
+    font-size: .75rem;
 }
 
 /* --- Tabelas --- */
@@ -164,7 +164,7 @@
     border-color: #1f3b3b;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    font-size: 0.7rem;
+    font-size: .75rem;
 }
 
 .ssh-tabela td {
@@ -247,7 +247,7 @@
     padding: 0.05rem 0.4rem;
     margin-right: 0.3rem;
     border-radius: 0.3rem;
-    font-size: 0.66rem;
+    font-size: .75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -291,4 +291,11 @@
     .ssh-secao-titulo {
         font-size: 1.05rem;
     }
+}
+
+/* Ícone do item do índice: o mesmo do título da seção para onde ele leva (UX-10). */
+.ssh-indice .material-symbols-outlined {
+    font-size: 1.05em;
+    vertical-align: -0.18em;
+    margin-right: 0.2em;
 }

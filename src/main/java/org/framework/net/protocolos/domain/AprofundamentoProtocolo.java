@@ -43,7 +43,7 @@ public record AprofundamentoProtocolo(
         List<String> nomesNoCatalogo) {
 
     /** Versão dos estáticos; muda junto com o CSS para furar cache de browser. */
-    private static final String VERSAO_CSS = "20260810";
+    private static final String VERSAO_CSS = "20261022";
 
     /** Template e CSS únicos dos aprofundamentos genéricos (conteúdo por JSON). */
     private static final String GEN_TEMPLATE = "protocolos/aprofundamento.html";

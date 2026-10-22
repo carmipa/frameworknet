@@ -308,6 +308,8 @@ try {
 
 // A11Y-01 (auditoria de 2026-10-01) — o tooltip do Bootstrap trocava o aria-describedby do campo pelo id
 // dele e o APAGAVA ao esconder: a dica própria do campo sumia para o leitor de tela depois do 1º foco.
+// Desde 22/10/2026 a dica é o tooltip canônico (aria-describedby PERMANENTE): a descrição própria do campo
+// tem de estar lá antes, durante e depois do foco, e o foco não pode mudar a lista.
 for (const caso of [
   { rota: '/ferramentas', campo: '#cmd-alvo', descr: 'cmd-alvo-dica' },
   { rota: '/laboratorios/camadas', campo: '[aria-describedby="lab-msg-ajuda"]', descr: 'lab-msg-ajuda' },
@@ -324,7 +326,8 @@ for (const caso of [
   await page.waitForTimeout(400);
   const depois = await ids();
   registrar(`A11Y-01 descrição do campo sobrevive ao tooltip (${caso.rota})`,
-    durante.some((i) => i.startsWith('tooltip')) && durante.includes(caso.descr) && depois.join(' ') === caso.descr,
+    durante.includes(caso.descr) && depois.includes(caso.descr) && durante.join(' ') === depois.join(' ')
+      && !durante.some((i) => i.startsWith('tooltip')),
     `durante="${durante.join(' ')}" depois="${depois.join(' ')}"`);
   await page.context().close();
 }
@@ -411,25 +414,31 @@ for (const caso of [
   await page.context().close();
 }
 
-// FRONT-10 — Esc fecha a dica aberta (WCAG 1.4.13).
+// FRONT-10 — Esc fecha a dica aberta (WCAG 1.4.13). Desde 22/10/2026 a dica é o tooltip canônico: o balão é o
+// elemento role="tooltip" apontado pelo aria-describedby do controle; "aberta" = visível no foco. A página é a
+// Resolução, cujos campos de localidade trazem dica própria (os da Calculadora não têm).
 {
   const page = await novaPagina(browser);
-  await page.goto(BASE + '/calculadora', { waitUntil: 'load', timeout: 45000 });
+  await page.goto(BASE + '/resolucao-problemas', { waitUntil: 'load', timeout: 45000 });
   await assentar(page);
   const alvo = await page.evaluate(() => {
-    const el = [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].find((e) => e.offsetParent !== null && /INPUT|SELECT|TEXTAREA|BUTTON/.test(e.tagName));
+    const balaoDe = (e) => (e.getAttribute('aria-describedby') || '').split(/\s+/).map((i) => document.getElementById(i))
+      .find((n) => n && n.getAttribute('role') === 'tooltip');
+    const el = [...document.querySelectorAll('input, select, textarea')].find((e) => e.offsetParent !== null && balaoDe(e));
     if (!el) return null;
     el.setAttribute('data-verif', 'esc');
+    balaoDe(el).setAttribute('data-verif-balao', 'esc');
     return true;
   });
+  const visivel = () => page.evaluate(() => getComputedStyle(document.querySelector('[data-verif-balao="esc"]')).visibility === 'visible');
   let aberta = false, depois = true;
   if (alvo) {
     await page.focus('[data-verif="esc"]');
     await page.waitForTimeout(400);
-    aberta = await page.evaluate(() => !!document.querySelector('.tooltip.show'));
+    aberta = await visivel();
     await page.keyboard.press('Escape');
     await page.waitForTimeout(400);
-    depois = await page.evaluate(() => !!document.querySelector('.tooltip.show'));
+    depois = await visivel();
   }
   registrar('FRONT-10 Esc fecha a dica', !!alvo && aberta && !depois, `alvo=${!!alvo} aberta no foco=${aberta} aberta depois do Esc=${depois}`);
   await page.context().close();

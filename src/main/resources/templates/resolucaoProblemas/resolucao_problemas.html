@@ -2,8 +2,8 @@
 {#title}Resolução de Problemas | Framework de Redes A&D{/title}
 {#description}Resolução de problemas de endereçamento: VLSM para várias localidades, topologia WAN, prefixo configurável, EIGRP e OSPF, com exportação de laboratório Packet Tracer.{/description}
 {#extraHead}
-<link rel="stylesheet" href="/resolucaoProblemas/css/resolucao-page.css?v=20260703">
-<link rel="stylesheet" href="/resolucaoProblemas/css/engenharia-reversa.css?v=20260810">
+<link rel="stylesheet" href="/resolucaoProblemas/css/resolucao-page.css?v=20261022">
+<link rel="stylesheet" href="/resolucaoProblemas/css/engenharia-reversa.css?v=20261022">
 {/extraHead}
 {#content}
 <div class="container py-5 problem-shell">
@@ -48,13 +48,13 @@
 </div>
 {/content}
 {#extraScripts}
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script src="/web/vendor/mermaid-11.17.2/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
 <script src="/web/js/html-escape.js?v=20261002"></script>
 <script id="topology-details-json" type="application/json">{topologyDetailsJson.raw}</script>
 <script>
 window.__topologyDetails = JSON.parse(document.getElementById("topology-details-json")?.textContent || "{}");
 </script>
-<script src="/resolucaoProblemas/js/resolucao.js?v=20260925b"></script>
-<script src="/resolucaoProblemas/js/engenharia-reversa.js?v=20260925"></script>
+<script src="/resolucaoProblemas/js/resolucao.js?v=20261022"></script>
+<script src="/resolucaoProblemas/js/engenharia-reversa.js?v=20261022"></script>
 {/extraScripts}
 {/include}
