@@ -18,7 +18,7 @@
     },
     {
       "rotulo": "SNI obrigatório",
-      "valor": "-servername / --resolve",
+      "valor": "-servername (openssl) / nome da URL (curl)",
       "dica": "sem SNI o servidor pode devolver o certificado errado em hosts compartilhados"
     },
     {
@@ -43,7 +43,7 @@
     {
       "titulo": "SNI escolhe qual certificado o servidor mostra",
       "icone": "dns",
-      "texto": "Um mesmo IP hospeda vários domínios HTTPS. O cliente envia o nome do host no campo SNI durante o handshake para que o servidor devolva o certificado certo. No openssl isso é o -servername; no curl é o Host mais o --resolve.",
+      "texto": "Um mesmo IP hospeda vários domínios HTTPS. O cliente envia o nome do host no campo SNI durante o handshake para que o servidor devolva o certificado certo. No openssl isso é o -servername; no curl o SNI sai do nome do host na URL. Para testar outro IP mantendo esse nome, use --resolve ou --connect-to; mudar só o cabeçalho Host (-H) não muda o SNI.",
       "destaque": "-servername = SNI"
     },
     {
@@ -67,7 +67,7 @@
   ],
   "diagrama": {
     "titulo": "O que curl -v mostra: do DNS até a resposta HTTP",
-    "definicao": "sequenceDiagram\n    participant C as curl\n    participant R as Resolver DNS\n    participant S as Servidor\n    C->>R: Consulta A/AAAA do host\n    R-->>C: Endereço IP\n    C->>S: TCP SYN (porta 443)\n    S-->>C: SYN-ACK\n    C->>S: ACK (conexão aberta)\n    C->>S: TLS ClientHello (versão, cifras, SNI)\n    S-->>C: ServerHello + Certificado + cadeia\n    C->>C: Valida cadeia e validade\n    C->>S: Finished (chave de sessão pronta)\n    S-->>C: Finished (túnel cifrado ativo)\n    C->>S: GET / HTTP/1.1 (linhas com >)\n    S-->>C: HTTP/1.1 200 OK (linhas com <)",
+    "definicao": "sequenceDiagram\n    participant C as curl\n    participant R as Resolver DNS\n    participant S as Servidor\n    C->>R: Consulta A/AAAA do host\n    R-->>C: Endereço IP\n    C->>S: TCP SYN (porta 443)\n    S-->>C: SYN-ACK\n    C->>S: ACK (conexão aberta)\n    C->>S: TLS 1.3 ClientHello (versão, cifras, SNI, key_share)\n    S-->>C: ServerHello + Certificado (cadeia) + CertificateVerify + Finished\n    C->>C: Valida cadeia e validade\n    C->>S: Finished (túnel cifrado ativo)\n    C->>S: GET / HTTP/1.1 (linhas com >)\n    S-->>C: HTTP/1.1 200 OK (linhas com <)",
     "legenda": "Cada seta corresponde a uma linha da saída de curl -v. As notas * marcam DNS, TCP e TLS; > são os cabeçalhos enviados e < os recebidos. Se o fluxo para no bloco TLS, o problema é de certificado ou cifra, não de HTTP."
   },
   "tabelas": [
@@ -186,7 +186,7 @@
       "leitura": "Verify return code diferente de 0 confirma a falha. Compare as linhas s: (subject) e i: (issuer) para ver se a cadeia encadeia até uma raiz; se só a folha aparece, faltam intermediários. Confira -dates para expiração e o SAN para ver se o host está listado. Um curl -k que passa prova que o problema é de certificado, não de HTTP."
     },
     {
-      "sintoma": "curl -L nunca termina e retorna 'Maximum (50) redirects followed'",
+      "sintoma": "curl -L entra em loop e aborta com 'Maximum (50) redirects followed'",
       "causa_provavel": "Loop de redirecionamento: dois endereços apontam um para o outro, ou o servidor redireciona para si mesmo (ex.: HTTP para HTTPS que volta para HTTP, ou cookie/Host ausente que reinicia o fluxo).",
       "comando": "curl -sIL --max-redirs 10 https://host/ | grep -Ei 'HTTP/|^location:'",
       "leitura": "A lista de pares HTTP/3xx + Location revela o ciclo: quando um Location repete um endereço já visto, está o loop. Verifique se o destino difere da origem a cada salto. Causas comuns: regra de rewrite que reaplica o mesmo redirect, ou falta de um cabeçalho (-H 'Host:' ou cookie) que o servidor espera para encerrar o fluxo."

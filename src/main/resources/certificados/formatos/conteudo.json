@@ -285,7 +285,7 @@
       "titulo": "Importar um PFX para um keystore Java (keytool)",
       "cenario": "Uma aplicação Java (Tomcat/Quarkus) precisa do certificado e da chave dentro de um keystore. Você parte do servidor.pfx gerado acima.",
       "comandos": "# Importar o PFX inteiro para um keystore PKCS12 (padrão Java 9+)\nkeytool -importkeystore \\\n  -srckeystore servidor.pfx -srcstoretype PKCS12 \\\n  -destkeystore keystore.p12 -deststoretype PKCS12 \\\n  -srcalias meu-servico -destalias meu-servico\n\n# Conferir as entradas do keystore\nkeytool -list -v -keystore keystore.p12 -storetype PKCS12\n\n# (opcional) Gerar o formato antigo JKS, se algum sistema legado exigir\nkeytool -importkeystore \\\n  -srckeystore servidor.pfx -srcstoretype PKCS12 \\\n  -destkeystore keystore.jks -deststoretype JKS",
-      "explicacao": "O keytool -importkeystore traz a entrada (alias) com cert + chave do PFX para o keystore Java. O destino PKCS12 é o padrão desde o Java 9; JKS só quando um sistema antigo exigir. Cada store e cada chave têm senha própria — o keytool as solicita."
+      "explicacao": "O keytool -importkeystore traz a entrada (alias) com cert + chave do PFX para o keystore Java. O destino PKCS12 é o padrão desde o Java 9; JKS só quando um sistema antigo exigir. No PKCS12 a senha do store vale também para as chaves (o keytool ignora um -destkeypass diferente); senhas separadas por chave só existem no JKS."
     }
   ],
   "diagnosticos": [

@@ -64,7 +64,7 @@
   ],
   "diagrama": {
     "titulo": "Descida (encapsulamento) e subida (desencapsulamento) na pilha",
-    "definicao": "sequenceDiagram\n    participant App as Aplicação\n    participant Trans as Transporte\n    participant Rede as Rede\n    participant Enlace as Enlace\n    participant Fis as Física\n    Note over App: PDU: Dados\n    App->>Trans: entrega os Dados\n    Note over Trans: + cabeçalho TCP/UDP (portas) = Segmento\n    Trans->>Rede: entrega o Segmento\n    Note over Rede: + cabeçalho IP (endereços) = Pacote\n    Rede->>Enlace: entrega o Pacote\n    Note over Enlace: + cabeçalho MAC + trailer FCS = Quadro\n    Enlace->>Fis: entrega o Quadro\n    Note over Fis: converte em Bits e transmite no meio\n    Fis-->>Enlace: recebe os Bits e remonta o Quadro\n    Note over Enlace: lê e remove cabeçalho/trailer -> Pacote\n    Enlace-->>Rede: entrega o Pacote\n    Note over Rede: lê e remove cabeçalho IP -> Segmento\n    Rede-->>Trans: entrega o Segmento\n    Note over Trans: lê e remove cabeçalho, escolhe a porta -> Dados\n    Trans-->>App: entrega os Dados a aplicação",
+    "definicao": "sequenceDiagram\n    participant App as Aplicação\n    participant Trans as Transporte\n    participant Rede as Rede\n    participant Enlace as Enlace\n    participant Fis as Física\n    Note over App: PDU: Dados\n    App->>Trans: entrega os Dados\n    Note over Trans: + cabeçalho TCP/UDP (portas) = Segmento\n    Trans->>Rede: entrega o Segmento\n    Note over Rede: + cabeçalho IP (endereços) = Pacote\n    Rede->>Enlace: entrega o Pacote\n    Note over Enlace: + cabeçalho MAC + trailer FCS = Quadro\n    Enlace->>Fis: entrega o Quadro\n    Note over Fis: converte em Bits e transmite no meio\n    Fis-->>Enlace: recebe os Bits e remonta o Quadro\n    Note over Enlace: lê e remove cabeçalho/trailer -> Pacote\n    Enlace-->>Rede: entrega o Pacote\n    Note over Rede: lê e remove cabeçalho IP -> Segmento\n    Rede-->>Trans: entrega o Segmento\n    Note over Trans: lê e remove cabeçalho, escolhe a porta -> Dados\n    Trans-->>App: entrega os Dados à aplicação",
     "legenda": "As setas sólidas (->>) mostram a descida na origem, onde cada camada acrescenta seu cabeçalho e a PDU muda de nome. As setas tracejadas (-->>) mostram a subida no destino, onde cada camada lê e remove o cabeçalho correspondente até entregar os Dados originais à aplicação. O módulo Tráfego oferece um simulador interativo que anima exatamente esse vai e volta de cabeçalhos."
   },
   "tabelas": [
@@ -184,13 +184,13 @@
     {
       "titulo": "Descobrir a MTU do caminho com ping",
       "cenario": "Você suspeita que transferências grandes travam por causa de MTU. Envie pacotes que não podem ser fragmentados e vá reduzindo o tamanho até parar de receber o erro.",
-      "comandos": "# Linux (payload ICMP; some 28 bytes de cabecalho IP+ICMP para chegar a MTU)\nping -M do -s 1472 8.8.8.8\nping -M do -s 1473 8.8.8.8   # deve falhar em MTU 1500\n\n# Windows\nping -f -l 1472 8.8.8.8\nping -f -l 1473 8.8.8.8",
+      "comandos": "# Linux (payload ICMP; some 28 bytes de cabeçalho IP+ICMP para chegar à MTU)\nping -M do -s 1472 8.8.8.8\nping -M do -s 1473 8.8.8.8   # deve falhar em MTU 1500\n\n# Windows\nping -f -l 1472 8.8.8.8\nping -f -l 1473 8.8.8.8",
       "explicacao": "Com 1472 bytes de payload + 28 de cabeçalho = 1500 (a MTU da Ethernet). Se 1472 passa e 1473 retorna 'Precisa fragmentar' (ou 'Packet needs to be fragmented'), a MTU do caminho é 1500. Reduza os números para achar MTUs menores, como 1492 em PPPoE ou ~1400 em VPN."
     },
     {
       "titulo": "Ver os cabeçalhos empilhados em cada camada",
       "cenario": "Você quer enxergar o encapsulamento real: Ethernet dentro do qual está o IP, dentro do qual está o TCP, dentro do qual está o HTTP.",
-      "comandos": "# tcpdump mostrando a hierarquia (verbose)\nsudo tcpdump -i eth0 -n -vvv -c 5 tcp port 80\n\n# Ver a MTU configurada nas interfaces\nip link show          # Linux\nnetsh interface ipv4 show subinterfaces   # Windows",
+      "comandos": "# tcpdump mostrando a hierarquia (verbose; o -e imprime o cabeçalho Ethernet com os MACs)\nsudo tcpdump -i eth0 -e -n -vvv -c 5 tcp port 80\n\n# Ver a MTU configurada nas interfaces\nip link show          # Linux\nnetsh interface ipv4 show subinterfaces   # Windows",
       "explicacao": "O tcpdump imprime, em uma única captura, o cabeçalho Ethernet (MAC), depois o IP (endereços e TTL), depois o TCP (portas e flags) e por fim a carga útil. É a prova visível de que cada camada acrescentou seu cabeçalho. Para uma visão gráfica de cada campo, o Wireshark separa as camadas em árvore, e o simulador do módulo Tráfego reproduz o mesmo empilhamento de forma didática."
     }
   ],

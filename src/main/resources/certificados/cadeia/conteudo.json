@@ -73,7 +73,7 @@
   "diagrama": {
     "titulo": "Validação da cadeia no handshake TLS (porta 443)",
     "definicao": "sequenceDiagram\n    participant N as Navegador (cliente)\n    participant S as Servidor (443)\n    participant T as Trust store\n    N->>S: ClientHello (inicia TLS na porta 443)\n    S-->>N: Certificado folha + intermediária(s)\n    Note over N: Monta o caminho (path building)\n    N->>N: Folha assinada pela intermediária?\n    N->>N: Intermediária assinada pela raiz?\n    N->>T: A raiz está na trust store?\n    T-->>N: Sim -- âncora de confiança encontrada\n    Note over N: Verifica cada elo: assinatura, validade e revogação (o nome, SAN, só na folha)\n    alt Todos os elos válidos e nome confere\n        N->>S: Cadeia confiável -- segue o handshake\n        S-->>N: Conexão segura estabelecida\n    else Elo inválido, expirado ou nome errado\n        N->>N: Cadeia rejeitada -- alerta de segurança\n    end",
-    "legenda": "O navegador recebe a folha e as intermediárias, sobe até uma raiz confiável na trust store e valida cada elo por assinatura, validade e nome. Basta um elo falhar para a cadeia inteira ser recusada. Para ver a cadeia real de um servidor, use o openssl s_client -showcerts; o Inspetor TLS do site simula a validação com os dados que você informa."
+    "legenda": "O navegador recebe a folha e as intermediárias, sobe até uma raiz confiável na trust store e valida cada elo por assinatura, validade e encadeamento de nomes (emissor = sujeito); o hostname (SAN) é conferido só na folha. Basta um elo falhar para a cadeia inteira ser recusada. Para ver a cadeia real de um servidor, use o openssl s_client -showcerts; o Inspetor TLS do site simula a validação com os dados que você informa."
   },
   "tabelas": [
     {
@@ -129,7 +129,7 @@
         ],
         [
           "Mozilla NSS",
-          "Firefox (store própria, independente do SO)",
+          "Firefox (store própria, NSS; desde o Firefox 120 também aceita por padrão raízes instaladas no SO no Windows, macOS e Android)",
           "Config de certificados do Firefox; certutil (NSS)"
         ],
         [
@@ -231,7 +231,7 @@
     },
     {
       "nome": "Remover CAs não confiáveis",
-      "como_funciona": "Auditar periodicamente a trust store (SO, navegador, cacerts da JVM) e remover raízes que você não usa, que foram distrustadas pelos navegadores ou que entraram indevidamente. Menos âncoras = menos superfície para uma raiz ruim assinar em seu nome.",
+      "como_funciona": "Auditar periodicamente a trust store (SO, navegador, cacerts da JVM) e remover raízes que você não usa, que perderam a confiança dos navegadores ou que entraram indevidamente. Menos âncoras = menos superfície para uma raiz ruim assinar em seu nome.",
       "cobre": "CA raiz maliciosa/injetada e raízes já desconfiadas pelo ecossistema",
       "limite": "Remover uma raiz ainda em uso quebra conexões legítimas; exige inventário do que depende de cada raiz antes de mexer."
     },
@@ -246,19 +246,19 @@
     {
       "titulo": "Verificar uma cadeia com openssl verify -CAfile",
       "cenario": "Você tem a folha (folha.pem), a intermediária (intermediaria.pem) e a raiz (raiz.pem) e quer confirmar que a cadeia fecha numa âncora confiável, checando assinatura e validade de cada elo.",
-      "comandos": "# Monta o bundle de CAs (intermediaria + raiz) e valida a folha\ncat intermediaria.pem raiz.pem > cadeia-ca.pem\nopenssl verify -CAfile cadeia-ca.pem folha.pem\n# Esperado: folha.pem: OK\n\n# Se faltar a intermediaria, o erro revela cadeia incompleta:\nopenssl verify -CAfile raiz.pem folha.pem\n# error 20 at 0 depth lookup: unable to get local issuer certificate\n\n# Inspecionar validade e nomes (SAN) da folha:\nopenssl x509 -in folha.pem -noout -dates -ext subjectAltName -issuer -subject",
-      "explicacao": "O verify sobe da folha até a raiz do -CAfile, conferindo assinatura e datas em cada elo (mas não o hostname -- isso é papel da aplicação/SNI). O erro 20 (unable to get local issuer certificate) é a assinatura clássica de cadeia incompleta: a folha existe mas o emissor não está no bundle. O x509 mostra notBefore/notAfter (validade) e o subjectAltName (nome), as outras duas verificações por elo."
+      "comandos": "# Monta o bundle de CAs (intermediária + raiz) e valida a folha\ncat intermediaria.pem raiz.pem > cadeia-ca.pem\nopenssl verify -CAfile cadeia-ca.pem folha.pem\n# Esperado: folha.pem: OK\n\n# Se faltar a intermediária, o erro revela cadeia incompleta:\nopenssl verify -CAfile raiz.pem folha.pem\n# error 20 at 0 depth lookup: unable to get local issuer certificate\n\n# Inspecionar validade e nomes (SAN) da folha:\nopenssl x509 -in folha.pem -noout -dates -ext subjectAltName -issuer -subject",
+      "explicacao": "O verify sobe da folha até a raiz do -CAfile, conferindo assinatura e datas em cada elo (mas não o hostname -- isso é papel da aplicação ou da biblioteca TLS). O erro 20 (unable to get local issuer certificate) é a assinatura clássica de cadeia incompleta: a folha existe mas o emissor não está no bundle. O x509 mostra notBefore/notAfter (validade, conferida em cada elo) e o subjectAltName (nome, conferido só na folha)."
     },
     {
       "titulo": "Capturar a cadeia real de um servidor com openssl s_client -showcerts",
       "cenario": "Você quer ver exatamente quais certificados um servidor HTTPS entrega na porta 443 -- para diagnosticar cadeia incompleta ou ordem errada -- sem precisar de arquivos prévios.",
-      "comandos": "# Abre TLS na porta 443 e mostra toda a cadeia enviada pelo servidor\nopenssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br -showcerts </dev/null\n\n# Extrai os certificados da saida para arquivo e valida:\nopenssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br -showcerts </dev/null \\\n  | awk '/BEGIN CERT/,/END CERT/' > cadeia-do-servidor.pem\n\n# Ver o resumo da verificacao que o proprio openssl fez:\nopenssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br </dev/null 2>/dev/null \\\n  | grep -E 'Verify return code|depth='",
-      "explicacao": "O -showcerts lista, em ordem, todos os certificados que o servidor apresenta -- normalmente folha depois intermediária(s). O -servername (SNI) garante que você recebe o certificado do host certo. Verify return code: 0 (ok) confirma cadeia válida; qualquer outro código (ex.: 21, unable to verify the first certificate) indica intermediária faltando. É a versão real, contra um servidor de verdade, do que o Inspetor TLS do site simula."
+      "comandos": "# Abre TLS na porta 443 e mostra toda a cadeia enviada pelo servidor\nopenssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br -showcerts </dev/null\n\n# Extrai os certificados da saída para arquivo e valida:\nopenssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br -showcerts </dev/null \\\n  | awk '/BEGIN CERT/,/END CERT/' > cadeia-do-servidor.pem\n\n# Ver o resumo da verificação que o próprio openssl fez:\nopenssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br </dev/null 2>/dev/null \\\n  | grep -E 'Verify return code|depth='",
+      "explicacao": "O -showcerts lista, em ordem, todos os certificados que o servidor apresenta -- normalmente folha depois intermediária(s). O -servername (SNI) garante que você recebe o certificado do host certo. Verify return code: 0 (ok) confirma cadeia válida; qualquer outro código indica a causa: 20 (unable to get local issuer certificate) ou 21 (unable to verify the first certificate) costumam indicar intermediária faltando; 10 é certificado expirado; 18 e 19, autoassinado. É a versão real, contra um servidor de verdade, do que o Inspetor TLS do site simula."
     },
     {
       "titulo": "Listar as âncoras da trust store da JVM com keytool",
       "cenario": "Uma aplicação Java falha o handshake enquanto o navegador funciona. Você suspeita que a raiz não está no cacerts da JVM ou quer auditar quais raízes a JVM confia.",
-      "comandos": "# Lista todas as raizes confiaveis do cacerts da JVM\nkeytool -list -cacerts -storepass changeit | head -n 40\n\n# Procura uma CA especifica pelo nome:\nkeytool -list -cacerts -storepass changeit | grep -i \"lets encrypt\\|isrg\\|digicert\"\n\n# Importar uma raiz que falta (PKI interna, por exemplo):\nkeytool -importcert -trustcacerts -alias minha-raiz-interna \\\n  -file raiz.pem -cacerts -storepass changeit\n\n# Detalhar um certificado antes de confiar:\nkeytool -printcert -file raiz.pem",
+      "comandos": "# Lista todas as raízes confiáveis do cacerts da JVM\nkeytool -list -cacerts -storepass changeit | head -n 40\n\n# Procura uma CA específica pelo nome:\nkeytool -list -cacerts -storepass changeit | grep -i \"lets encrypt\\|isrg\\|digicert\"\n\n# Importar uma raiz que falta (PKI interna, por exemplo):\nkeytool -importcert -trustcacerts -alias minha-raiz-interna \\\n  -file raiz.pem -cacerts -storepass changeit\n\n# Detalhar um certificado antes de confiar:\nkeytool -printcert -file raiz.pem",
       "explicacao": "O cacerts é a trust store da JVM, independente do SO e do navegador -- por isso um site pode funcionar no Chrome e falhar em Java. O keytool -list mostra as âncoras; se a raiz da cadeia não aparecer, o handshake TLS falha com PKIX path building failed. Importar deve ser feito só com raízes verificadas (keytool -printcert antes), pois cada import adiciona uma âncora de confiança à JVM."
     }
   ],

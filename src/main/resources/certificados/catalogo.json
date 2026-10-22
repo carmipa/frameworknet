@@ -31,7 +31,7 @@
     {
       "extensao": ".key",
       "codificacao": "PEM (Base64), frequentemente cifrada com senha; também pode ser DER",
-      "conteudo": "Chave privada (RSA, EC ou PKCS#8); material secreto que nunca deve ser compartilhado",
+      "conteudo": "Chave privada (RSA ou EC, em formato tradicional ou PKCS#8); material secreto que nunca deve ser compartilhado",
       "uso": "Par com o certificado no servidor TLS; exige permissões restritas de leitura (ex.: chmod 600)",
       "ferramenta": "openssl (genrsa, ecparam, genpkey, pkey); mantenha fora de repositórios e de backups abertos"
     },
@@ -129,7 +129,7 @@
       "campo": "Basic Constraints",
       "oque": "Indica se o certificado é de uma CA e o limite de profundidade da cadeia (pathlen)",
       "exemplo": "CA:TRUE, pathlen:0 (CA) ou CA:FALSE (folha)",
-      "nota": "É crítica. A folha deve ter CA:FALSE; esse campo impede que um certificado comum assine outros"
+      "nota": "Obrigatória e crítica em certificados de CA; na folha é opcional (CA:FALSE ou ausente). Impede que um certificado comum assine outros"
     },
     {
       "campo": "Authority Key Identifier / Subject Key Identifier",

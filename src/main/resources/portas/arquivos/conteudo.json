@@ -23,7 +23,7 @@
     },
     {
       "rotulo": "Faixa das portas",
-      "valor": "Todas são portas conhecidas (0-1023), atribuídas a serviços padronizados",
+      "valor": "FTP (20/21), TFTP (69) e SMB/NetBIOS (139/445) são portas conhecidas (0-1023); o NFS (2049) fica na faixa registrada (1024-49151)",
       "dica": "Portas conhecidas vão de 0 a 1023; registradas de 1024 a 49151; dinâmicas de 49152 a 65535."
     },
     {
@@ -213,7 +213,7 @@
       "como_funciona": "Um export NFS que confia em qualquer host ou usa no_root_squash permite ao atacante montar o diretório remotamente, forjar um UID e ler ou sobrescrever arquivos, inclusive como root. Sem Kerberos, a única barreira é o IP, que pode ser falsificado.",
       "sinal": "Montagens NFS de IPs não autorizados; alteração de arquivos por usuários inesperados; showmount revelando exports amplos.",
       "gravidade": "Alta",
-      "gravidade_cor": "warning"
+      "gravidade_cor": "danger"
     },
     {
       "nome": "Share SMB/FTP aberto ou anônimo",
@@ -272,13 +272,13 @@
     {
       "titulo": "Ver credenciais FTP em texto claro",
       "cenario": "Demonstrar por que FTP é inseguro capturando um login em laboratório isolado, com um servidor e um cliente FTP de teste que você controla.",
-      "comandos": "# Terminal 1: capturar o trafego FTP na interface\nsudo tcpdump -i eth0 -A 'tcp port 21'\n\n# Terminal 2: fazer um login FTP comum\nftp 192.168.56.20\n# usuario: teste  senha: senha123\n\n# No tcpdump aparecerao linhas como:\n# USER teste\n# PASS senha123",
+      "comandos": "# Terminal 1: capturar o tráfego FTP na interface\nsudo tcpdump -i eth0 -A 'tcp port 21'\n\n# Terminal 2: fazer um login FTP comum\nftp 192.168.56.20\n# usuário: teste  senha: senha123\n\n# No tcpdump aparecerão linhas como:\n# USER teste\n# PASS senha123",
       "explicacao": "O tcpdump mostra USER e PASS legíveis no fio, provando que qualquer um na rede lê a senha. Repita a mesma transferência por SFTP (porta 22) e o conteúdo aparece cifrado, ilegível. O aprofundamento dedicado de FTP/TFTP no site detalha a migração."
     },
     {
       "titulo": "Auditar exports NFS de um servidor",
       "cenario": "Descobrir quais diretórios um servidor NFS compartilha e para quem, verificando configurações perigosas como exports abertos a qualquer host.",
-      "comandos": "# Listar exports que o servidor oferece\nshowmount -e 192.168.56.30\n\n# Exemplo de saida perigosa:\n# /dados   *          (aberto a todos)\n# /home    *(rw,no_root_squash)\n\n# Conferir a configuracao no servidor\ncat /etc/exports",
+      "comandos": "# Listar exports que o servidor oferece\nshowmount -e 192.168.56.30\n\n# Exemplo de saída perigosa:\n# /dados   *          (aberto a todos)\n# /home    *(rw,no_root_squash)\n\n# Conferir a configuração no servidor\ncat /etc/exports",
       "explicacao": "Um * na coluna de clientes significa que qualquer host pode montar o diretório. no_root_squash permite que o root do cliente seja root nos arquivos: combinação crítica. O correto é restringir por IP (ex.: 192.168.56.0/24) e usar root_squash, além de Kerberos onde possível."
     }
   ],

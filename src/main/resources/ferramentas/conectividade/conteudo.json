@@ -112,7 +112,7 @@
         [
           "ping",
           "-M do -s TAM",
-          "Proíbe fragmentação e fixa o tamanho do payload, para sondar a MTU do caminho"
+          "Proíbe fragmentação e fixa o tamanho do payload, para sondar a MTU do caminho (Linux; no Windows use -f -l TAM; no macOS, -D -s TAM)"
         ],
         [
           "ping",
@@ -157,7 +157,7 @@
     {
       "titulo": "Descobrir a MTU do caminho com ping",
       "cenario": "Suspeita de que pacotes grandes estão sendo descartados por exceder a MTU de algum enlace no meio (típico em túneis VPN e PPPoE).",
-      "comandos": "# Proíbe fragmentação (-M do) e testa payload de 1472 bytes\nping -M do -s 1472 -c 3 8.8.8.8\n\n# Se falhar com 'Frag needed', reduza o -s até passar\nping -M do -s 1400 -c 3 8.8.8.8",
+      "comandos": "# Linux: proíbe fragmentação (-M do) e testa payload de 1472 bytes\nping -M do -s 1472 -c 3 8.8.8.8\n\n# Se falhar com 'Frag needed', reduza o -s até passar\nping -M do -s 1400 -c 3 8.8.8.8",
       "explicacao": "1472 bytes de payload + 28 bytes de cabeçalhos ICMP/IP = 1500, a MTU Ethernet padrão. Se o comando retorna 'Frag needed and DF set', algum enlace tem MTU menor: baixe o -s até obter respostas. O maior -s que passa, somado a 28, é a MTU efetiva do caminho."
     },
     {

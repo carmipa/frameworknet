@@ -35,7 +35,7 @@
       "titulo": "0x20, porta e Transaction ID: a entropia que protege sem DNSSEC",
       "icone": "casino",
       "texto": "Sem assinatura, o resolver só aceita a resposta se ela casar três coisas que o atacante teria de adivinhar: o Transaction ID de 16 bits, a porta de origem UDP aleatória e — com a codificação 0x20 — o padrão de maiúsculas/minúsculas do nome consultado. Quanto mais entropia, mais improvável a resposta forjada casar por sorte.",
-      "destaque": "Foi retirar a aleatoriedade de porta (resolvers antigos usavam porta fixa) que tornou o ataque de Kaminsky prático em 2008."
+      "destaque": "Foi a falta de aleatoriedade de porta (resolvers antigos usavam porta fixa) que tornou o ataque de Kaminsky prático em 2008."
     }
   ],
   "resolucao": [

@@ -12,7 +12,7 @@
     },
     {
       "rotulo": "Padronizado por",
-      "valor": "ISO, em 1984 (norma ISO/IEC 7498)"
+      "valor": "ISO, em 1984 (ISO 7498; revisada como ISO/IEC 7498-1:1994)"
     },
     {
       "rotulo": "Mnemônico (baixo para cima)",
@@ -29,7 +29,7 @@
     {
       "titulo": "Separação de responsabilidades",
       "icone": "layers",
-      "texto": "Cada camada resolve um único problema e não precisa saber como as outras funcionam por dentro. A camada de Transporte garante a entrega confiável sem se importar se o meio físico é cabo de cobre, fibra ou Wi-Fi. Isso permite trocar uma tecnologia (por exemplo, migrar de Ethernet para Wi-Fi na camada 1) sem reescrever tudo acima.",
+      "texto": "Cada camada resolve um único problema e não precisa saber como as outras funcionam por dentro. A camada de Transporte garante a entrega confiável sem se importar se o meio físico é cabo de cobre, fibra ou Wi-Fi. Isso permite trocar uma tecnologia (por exemplo, migrar de Ethernet para Wi-Fi, o que troca as camadas 1 e 2) sem reescrever tudo acima.",
       "destaque": "Uma camada, uma responsabilidade."
     },
     {
@@ -229,7 +229,7 @@
       "sintoma": "O site não carrega, mas o IP numérico responde ao ping",
       "causa_provavel": "Camada 7 (Aplicação): falha de DNS. O nome não está sendo resolvido para IP.",
       "leitura": "A rede (camada 3) funciona; quem falha é o serviço de nomes. Testar o IP direto isola a camada.",
-      "comando": "nslookup site.com"
+      "comando": "nslookup example.com"
     },
     {
       "sintoma": "Conexão recusada ou fica pendurada ao acessar um serviço",

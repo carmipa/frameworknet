@@ -71,13 +71,13 @@
     {
       "titulo": "Broadcast e multicast",
       "icone": "lan",
-      "texto": "Por não exigir conexão ponto a ponto, o UDP é o único transporte que suporta envio para vários destinos ao mesmo tempo: broadcast (toda a rede local, usado pelo DHCP) e multicast (grupos, usado por streaming e descoberta de serviços).",
+      "texto": "Por não exigir conexão ponto a ponto, o UDP é o único transporte de uso comum que suporta envio para vários destinos ao mesmo tempo: broadcast (toda a rede local, usado pelo DHCP) e multicast (grupos, usado por streaming e descoberta de serviços).",
       "destaque": "Um envio, muitos receptores"
     }
   ],
   "diagrama": {
     "titulo": "Consulta DNS via UDP: um único datagrama, sem handshake",
-    "definicao": "sequenceDiagram\n    participant C as Cliente (porta 51000)\n    participant S as Servidor DNS (porta 53)\n    Note over C,S: Não há handshake (nada de SYN/SYN-ACK/ACK)\n    C->>S: Datagrama UDP - consulta A para example.com\n    Note right of S: Servidor processa a consulta\n    S-->>C: Datagrama UDP - resposta 93.184.216.34\n    Note over C,S: Sem confirmação, sem encerramento de conexão",
+    "definicao": "sequenceDiagram\n    participant C as Cliente (porta 51000)\n    participant S as Servidor DNS (porta 53)\n    Note over C,S: Não há handshake (nada de SYN/SYN-ACK/ACK)\n    C->>S: Datagrama UDP - consulta A para example.com\n    Note right of S: Servidor processa a consulta\n    S-->>C: Datagrama UDP - resposta A (ex.: 192.0.2.10)\n    Note over C,S: Sem confirmação, sem encerramento de conexão",
     "legenda": "Toda a troca DNS cabe em dois datagramas independentes. Se a resposta se perder, o cliente simplesmente reenvia a consulta após um timeout, sem nenhuma negociação prévia."
   },
   "cabecalho": {
@@ -231,7 +231,7 @@
         ],
         [
           "Envio para vários destinos",
-          "Só o UDP faz broadcast e multicast",
+          "Entre os transportes comuns, só o UDP faz broadcast e multicast",
           "DHCP, descoberta de serviços, streaming IPTV"
         ],
         [
@@ -326,7 +326,7 @@
     {
       "titulo": "Consultar DNS e observar o UDP com dig",
       "cenario": "Fazer uma consulta DNS real (que trafega sobre UDP na porta 53) e inspecionar tempos e servidor usado.",
-      "comandos": "# Consulta A padrão (usa UDP/53)\ndig example.com A\n\n# Forçar um resolver específico e ver o tempo de resposta\ndig @8.8.8.8 example.com +stats\n\n# Ver que uma resposta grande pode cair para TCP\ndig example.com TXT +short",
+      "comandos": "# Consulta A padrão (usa UDP/53)\ndig example.com A\n\n# Forçar um resolver específico e ver o tempo de resposta\ndig @8.8.8.8 example.com +stats\n\n# Comparar com a mesma consulta por TCP (o que o dig faz sozinho quando a resposta UDP volta truncada, flag tc)\ndig example.com A +tcp +stats",
       "explicacao": "O dig usa UDP por padrão. No rodapé da saída (Query time) você vê a latência baixa típica do UDP. Quando a resposta excede o limite, o resolver reenvia via TCP (fallback), demonstrando o papel complementar dos dois transportes."
     },
     {
@@ -364,7 +364,7 @@
     {
       "sintoma": "Falha silenciosa de checksum",
       "causa_provavel": "Dados corrompidos em trânsito; se o checksum estava ligado, o receptor descarta o datagrama sem avisar o remetente.",
-      "leitura": "Contadores de erro na interface aumentam (RX errors) e a aplicação percebe apenas ausência de dados. Em IPv4, checksum zero desativa a verificação.",
+      "leitura": "O descarte conta nos contadores do UDP (InCsumErrors e InErrors no netstat -su), não nos erros da interface (RX errors); a aplicação percebe apenas ausência de dados. Em IPv4, checksum zero desativa a verificação.",
       "comando": "netstat -su"
     },
     {

@@ -19,7 +19,7 @@
     {
       "rotulo": "Privilégio",
       "valor": "root ou CAP_NET_RAW",
-      "dica": "Capturar exige modo promíscuo / raw socket"
+      "dica": "Capturar exige socket raw (CAP_NET_RAW; no Windows, o driver Npcap); o modo promíscuo é opcional"
     },
     {
       "rotulo": "Interface de análise",

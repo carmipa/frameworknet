@@ -42,7 +42,7 @@
     {
       "titulo": "CRL: a lista de revogados",
       "icone": "description",
-      "texto": "A CA publica periodicamente uma Certificate Revocation List: um arquivo assinado com o número de série de todos os certificados revogados e a data. O cliente baixa a CRL e verifica se o serial está lá. É simples e funciona offline depois de baixada, mas a lista cresce sem parar em CAs grandes (megabytes), fica desatualizada entre publicações (a revogação de hoje pode só aparecer daqui a horas ou dias) e obriga a baixar milhares de entradas só para checar um certificado.",
+      "texto": "A CA publica periodicamente uma Certificate Revocation List: um arquivo assinado com o número de série de todos os certificados revogados e a data. O cliente baixa a CRL e verifica se o serial está lá. É simples e funciona offline depois de baixada, mas a lista pode ficar grande em CAs grandes (megabytes), pois guarda todos os revogados ainda dentro da validade, fica desatualizada entre publicações (a revogação de hoje pode só aparecer daqui a horas ou dias) e obriga a baixar milhares de entradas só para checar um certificado.",
       "destaque": "Robusta e cacheável, porém grande e sempre um pouco atrasada."
     },
     {
@@ -66,7 +66,7 @@
     {
       "titulo": "Must-Staple e o futuro dos short-lived",
       "icone": "autorenew",
-      "texto": "Stapling sozinho ainda é soft-fail: se o servidor omitir o grampo, o cliente segue. O Must-Staple (extensão TLS Feature marcada no certificado) inverte isso: o cliente PASSA a exigir o grampo e recusa a conexão sem ele, fechando a brecha. A tendência complementar são os certificados de vida curta (dias, não meses): se um certificado vive pouco, a janela de exposição pós-vazamento é tão pequena que a revogação quase perde a função. É a direção para onde a PKI pública caminha.",
+      "texto": "Stapling sozinho ainda é soft-fail: se o servidor omitir o grampo, o cliente segue. O Must-Staple (extensão TLS Feature marcada no certificado) inverte isso: o cliente PASSA a exigir o grampo e recusa a conexão sem ele, fechando a brecha (na prática, poucos clientes aplicam essa exigência: o Firefox aplica; o Chrome, que nem consulta OCSP, ignora a extensão). A tendência complementar são os certificados de vida curta (dias, não meses): se um certificado vive pouco, a janela de exposição pós-vazamento é tão pequena que a revogação quase perde a função. É a direção para onde a PKI pública caminha.",
       "destaque": "Must-Staple torna o grampo obrigatório; a vida curta torna a revogação quase dispensável."
     }
   ],
@@ -117,7 +117,7 @@
         ],
         [
           "Tamanho / custo",
-          "Cresce sem limite em CAs grandes (MB)",
+          "Pode ficar grande em CAs grandes (MB); só sai da lista o que já expirou",
           "Leve por consulta, mas multiplicado por conexão",
           "Leve e amortizado entre todos os clientes"
         ]

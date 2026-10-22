@@ -266,7 +266,7 @@
     {
       "titulo": "Ler Subject, SAN e Basic Constraints de um certificado",
       "cenario": "Você baixou ou tem um arquivo cert.pem e quer saber exatamente o que ele cobre, se é CA ou folha, e para que serve.",
-      "comandos": "# Ver o texto completo do certificado\nopenssl x509 -in cert.pem -noout -text\n\n# So o Subject e o Issuer (self-signed = Subject igual ao Issuer)\nopenssl x509 -in cert.pem -noout -subject -issuer\n\n# So os nomes cobertos (a SAN e o que o browser valida)\nopenssl x509 -in cert.pem -noout -ext subjectAltName\n\n# Basic Constraints (CA:TRUE = pode assinar; CA:FALSE = folha) e usos\nopenssl x509 -in cert.pem -noout -ext basicConstraints,keyUsage,extendedKeyUsage",
+      "comandos": "# Ver o texto completo do certificado\nopenssl x509 -in cert.pem -noout -text\n\n# Só o Subject e o Issuer (self-signed = Subject igual ao Issuer)\nopenssl x509 -in cert.pem -noout -subject -issuer\n\n# Só os nomes cobertos (a SAN é o que o browser valida)\nopenssl x509 -in cert.pem -noout -ext subjectAltName\n\n# Basic Constraints (CA:TRUE = pode assinar; CA:FALSE = folha) e usos\nopenssl x509 -in cert.pem -noout -ext basicConstraints,keyUsage,extendedKeyUsage",
       "explicacao": "Se Subject e Issuer forem idênticos, é self-signed. A SAN diz os nomes reais cobertos (um *.example.com ali indica wildcard). Basic Constraints com CA:TRUE marca um certificado de CA; o EKU (serverAuth, clientAuth, codeSigning, emailProtection) revela o uso pretendido. O flag -ext exige OpenSSL 1.1.1 ou mais recente."
     },
     {
@@ -278,7 +278,7 @@
     {
       "titulo": "Criar e inspecionar um keystore Java (keytool)",
       "cenario": "Em stacks Java/Quarkus você lida com certificados dentro de keystores PKCS12/JKS e precisa conferir alias, cadeia e uso.",
-      "comandos": "# Gerar um par self-signed para lab (NAO usar em producao publica)\nkeytool -genkeypair -alias servidor -keyalg RSA -keysize 2048 \\\n  -dname \"CN=localhost, O=Lab, C=BR\" -validity 365 \\\n  -ext SAN=dns:localhost \\\n  -keystore lab.p12 -storetype PKCS12 -storepass changeit\n\n# Listar o conteudo e ver o certificado em detalhe\nkeytool -list -v -keystore lab.p12 -storetype PKCS12 -storepass changeit\n\n# Exportar para PEM e reinspecionar com openssl\nkeytool -exportcert -alias servidor -keystore lab.p12 -storetype PKCS12 \\\n  -storepass changeit -rfc -file servidor.pem\nopenssl x509 -in servidor.pem -noout -subject -ext subjectAltName,basicConstraints",
+      "comandos": "# Gerar um par self-signed para lab (NÃO usar em produção pública)\nkeytool -genkeypair -alias servidor -keyalg RSA -keysize 2048 \\\n  -dname \"CN=localhost, O=Lab, C=BR\" -validity 365 \\\n  -ext SAN=dns:localhost \\\n  -keystore lab.p12 -storetype PKCS12 -storepass changeit\n\n# Listar o conteúdo e ver o certificado em detalhe\nkeytool -list -v -keystore lab.p12 -storetype PKCS12 -storepass changeit\n\n# Exportar para PEM e reinspecionar com openssl\nkeytool -exportcert -alias servidor -keystore lab.p12 -storetype PKCS12 \\\n  -storepass changeit -rfc -file servidor.pem\nopenssl x509 -in servidor.pem -noout -subject -ext subjectAltName,basicConstraints",
       "explicacao": "O keytool -list -v mostra Owner (Subject), Issuer, validade e extensões. Incluir -ext SAN=dns:localhost já grava a SAN, sem a qual o browser recusaria o nome. Exportar com -rfc gera PEM legível pelo openssl, permitindo confirmar SAN e Basic Constraints com as mesmas ferramentas do primeiro laboratório. Um certificado gerado assim é self-signed: Owner e Issuer coincidem."
     }
   ],
@@ -290,7 +290,7 @@
       "leitura": "Confira se o nome acessado aparece na lista DNS da SAN. Se só estiver no CN, o certificado precisa ser reemitido com a SAN correta."
     },
     {
-      "sintoma": "Erro de certificado autoassinado (SELF_SIGNED_CERT_IN_CHAIN)",
+      "sintoma": "Erro de certificado autoassinado (18 DEPTH_ZERO_SELF_SIGNED_CERT na folha; 19 SELF_SIGNED_CERT_IN_CHAIN quando a raiz autoassinada da cadeia não é confiável)",
       "causa_provavel": "O certificado ou a cadeia não encadeia até uma raiz confiável do sistema — tipicamente self-signed ou CA interna não instalada.",
       "comando": "openssl x509 -in cert.pem -noout -subject -issuer",
       "leitura": "Se Subject e Issuer forem iguais, é self-signed. Em ambiente interno, instale a CA raiz no truststore; em produção pública, use certificado emitido por CA confiável."

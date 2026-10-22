@@ -33,7 +33,7 @@
     },
     {
       "rotulo": "RFCs de referência",
-      "valor": "SMTP RFC 5321, Submission RFC 6409, POP3 RFC 1939, IMAP RFC 3501",
+      "valor": "SMTP RFC 5321, Submission RFC 6409, POP3 RFC 1939, IMAP RFC 9051 (IMAP4rev2; a RFC 3501 descreve o IMAP4rev1)",
       "dica": "STARTTLS para e-mail: RFC 3207 (SMTP) e RFC 8314 (recomenda TLS implícito)."
     }
   ],
@@ -225,7 +225,7 @@
       "como_funciona": "Sem criptografia, todo o conteúdo (mensagens, anexos, cookies de sessão de webmail) circula visível. Um atacante posicionado na rede lê a correspondência inteira e pode sequestrar a sessão.",
       "sinal": "Tráfego SMTP/POP3/IMAP sem TLS no Wireshark; conexões em portas claras a partir de redes não confiáveis.",
       "gravidade": "Alta",
-      "gravidade_cor": "warning"
+      "gravidade_cor": "danger"
     },
     {
       "nome": "Downgrade de STARTTLS (stripping)",
@@ -311,7 +311,7 @@
       "sintoma": "Envios saem às vezes cifrados, às vezes em texto claro",
       "causa_provavel": "STARTTLS opcional na submissão, sujeito a downgrade/stripping",
       "comando": "nmap --script smtp-commands -p 587 mail.example.com",
-      "leitura": "Se o STARTTLS aparecer como opcional, torne o TLS obrigatório na 587 (ou migre para a 465 implícita) e configure o cliente para exigir criptografia."
+      "leitura": "O smtp-commands lista as extensões do EHLO: ver STARTTLS ali só prova que ele é oferecido, não que é exigido. Para saber se é obrigatório, tente AUTH ou MAIL FROM sem TLS: um servidor que exige TLS responde 530 (Must issue a STARTTLS command first, RFC 3207). Se ele aceitar, torne o TLS obrigatório na 587 (ou migre para a 465 implícita) e configure o cliente para exigir criptografia."
     },
     {
       "sintoma": "Terceiros recebem phishing falsificando o seu domínio",

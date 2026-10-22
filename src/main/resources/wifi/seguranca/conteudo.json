@@ -29,7 +29,7 @@
     {
       "rotulo": "Defesa recomendada",
       "valor": "WPA3-SAE + senha forte, ou 802.1X/RADIUS",
-      "dica": "O SAE elimina a viabilidade do brute force offline mesmo com senhas medianas."
+      "dica": "O SAE impede o brute force offline a partir da captura do handshake, desde que a implementação esteja corrigida contra o Dragonblood (Vanhoef e Ronen, 2019); no modo de transição WPA2/WPA3 o ataque volta pelo WPA2."
     }
   ],
   "conceitos": [
@@ -60,7 +60,7 @@
     {
       "titulo": "WPA3-SAE resiste a dicionário offline",
       "icone": "encrypted",
-      "texto": "O WPA3 Pessoal substitui o PSK pelo SAE (handshake Dragonfly), uma troca de chave autenticada por senha baseada em curvas elípticas. Mesmo capturando a troca, o atacante não consegue testar senhas offline - cada tentativa exige uma nova interação ao vivo com a rede, o que permite detecção e bloqueio. O SAE ainda entrega Forward Secrecy: comprometer a senha não decifra o tráfego passado.",
+      "texto": "O WPA3 Pessoal substitui o PSK pelo SAE (handshake Dragonfly), uma troca de chave autenticada por senha baseada em curvas elípticas. Mesmo capturando a troca, o atacante não consegue testar senhas offline - cada tentativa exige uma nova interação ao vivo com a rede, o que permite detecção e bloqueio. O SAE ainda entrega Forward Secrecy: comprometer a senha não decifra o tráfego passado. Ressalva: o Dragonblood (Vanhoef e Ronen, 2019) mostrou que implementações que vazam informação por tempo ou cache permitem, sim, ataque de dicionário offline, e que o modo de transição WPA2/WPA3 deixa empurrar o cliente para o WPA2; por isso, firmware atualizado e, quando possível, WPA3 sem modo de transição.",
       "destaque": "Cada palpite exige interação ao vivo - brute force offline inviável."
     },
     {
@@ -240,7 +240,7 @@
     {
       "titulo": "Colocar a interface em modo monitor",
       "cenario": "Ambiente de laboratório didático, em rede própria e com autorização explícita. O modo monitor permite à placa escutar todo o tráfego 802.11 do ar, não só o destinado a ela.",
-      "comandos": "airmon-ng start wlan0\n# cria a interface wlan0mon em modo monitor\nairmon-ng check kill   # encerra processos que interferem",
+      "comandos": "airmon-ng check kill   # antes do start: encerra processos que interferem\nairmon-ng start wlan0\n# cria a interface wlan0mon em modo monitor",
       "explicacao": "Passo conceitual inicial de qualquer análise de Wi-Fi: sem modo monitor não se enxergam os quadros de gerenciamento (beacons, deauth) nem os EAPOL do handshake. Apenas para fins educativos em rede autorizada."
     },
     {
@@ -255,7 +255,7 @@
       "sintoma": "Rede ainda aparece como WEP ou WPA/TKIP nas configurações",
       "causa_provavel": "Equipamento legado ou modo de compatibilidade mantendo cifras quebradas/obsoletas.",
       "leitura": "Se o AP só oferece WEP/TKIP, está indefensável - substituir ou, no mínimo, forçar WPA2-AES; idealmente WPA3.",
-      "comando": "# no roteador: definir seguranca como WPA3-SAE ou WPA2-AES (CCMP), nunca WEP/TKIP"
+      "comando": "# no roteador: definir segurança como WPA3-SAE ou WPA2-AES (CCMP), nunca WEP/TKIP"
     },
     {
       "sintoma": "Rajadas de desautenticação e clientes reconectando sem parar",

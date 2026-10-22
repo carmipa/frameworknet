@@ -260,7 +260,7 @@
       "titulo": "1. Gerar a chave e instalar no servidor",
       "cenario": "Primeiro acesso por chave, ainda com senha habilitada.",
       "comandos": "ssh-keygen -t ed25519 -C \"paulo@estacao\"\nssh-copy-id -i ~/.ssh/id_ed25519.pub paulo@servidor\nssh -i ~/.ssh/id_ed25519 paulo@servidor",
-      "explicacao": "ssh-copy-id acrescenta a chave ao authorized_keys com as permissões certas. Sem ele, lembre-se: ~/.ssh precisa ser 700 e authorized_keys 600, ou o StrictModes recusa em silêncio e o login volta a pedir senha."
+      "explicacao": "ssh-copy-id acrescenta a chave ao authorized_keys com as permissões certas. Sem ele, lembre-se: ~/.ssh e authorized_keys não podem ter dono errado nem permissão de escrita para grupo ou outros (700 e 600 são o recomendado), ou o StrictModes recusa a chave (o motivo fica só no log do servidor) e o login volta a pedir senha."
     },
     {
       "titulo": "2. Conferir o fingerprint antes de confiar",
@@ -326,7 +326,7 @@
   },
   "cabecalho": {
     "titulo": "Binary Packet Protocol do SSH (RFC 4253) - campos fixos do cabeçalho",
-    "nota": "São mostrados como campos apenas os dois cabeçalhos de tamanho fixo: Packet length (32 bits) + Padding length (8 bits) = 40 bits = 5 bytes. Logo após esses 5 bytes fixos seguem três partes de tamanho variável, descritas aqui na nota e não desenhadas por não terem largura fixa: (1) Payload - a mensagem real (por exemplo KEXINIT ou USERAUTH_REQUEST), possivelmente comprimida, com tamanho variável; (2) Random padding - bytes aleatórios de enchimento, com pelo menos 4 bytes, escolhidos para que o total (Packet length + o próprio campo Padding length + Payload + padding) seja múltiplo do tamanho de bloco da cifra, escondendo o tamanho real da mensagem; (3) MAC - código de autenticação da mensagem, de tamanho variável conforme o algoritmo negociado (por exemplo 32 bytes no hmac-sha2-256, ou 0 quando o MAC já está embutido numa cifra AEAD como chacha20-poly1305 ou aes-gcm). O campo Packet length conta os bytes de todo o pacote exceto ele próprio e o MAC. Soma dos campos fixos exibidos: 32 + 8 = 40 bits = 5 bytes.",
+    "nota": "São mostrados como campos apenas os dois cabeçalhos de tamanho fixo: Packet length (32 bits) + Padding length (8 bits) = 40 bits = 5 bytes. Logo após esses 5 bytes fixos seguem três partes de tamanho variável, descritas aqui na nota e não desenhadas por não terem largura fixa: (1) Payload - a mensagem real (por exemplo KEXINIT ou USERAUTH_REQUEST), possivelmente comprimida, com tamanho variável; (2) Random padding - bytes aleatórios de enchimento, com pelo menos 4 bytes, escolhidos para que o total (Packet length + o próprio campo Padding length + Payload + padding) seja múltiplo do tamanho de bloco da cifra, escondendo o tamanho real da mensagem; (3) MAC - código de autenticação da mensagem, de tamanho variável conforme o algoritmo negociado (por exemplo 32 bytes no hmac-sha2-256; nas cifras AEAD, como chacha20-poly1305 ou aes-gcm, não há HMAC separado e o campo leva a tag de autenticação de 16 bytes). O campo Packet length conta os bytes de todo o pacote exceto ele próprio e o MAC. Soma dos campos fixos exibidos: 32 + 8 = 40 bits = 5 bytes.",
     "campos": [
       {
         "nome": "Packet length",

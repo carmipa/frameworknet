@@ -139,8 +139,8 @@
         ],
         [
           "Velocidade",
-          "Proposital rápido",
-          "Proposital lento e ajustável (custo/memória)"
+          "Propositalmente rápido",
+          "Propositalmente lento e ajustável (custo/memória)"
         ],
         [
           "Salt",
@@ -221,7 +221,7 @@
     },
     {
       "nome": "Length extension (construção Merkle-Damgård)",
-      "como_funciona": "Em hashes como SHA-256, sabendo H(mensagem) e o tamanho da mensagem, o atacante consegue calcular H(mensagem || extensão) sem conhecer a mensagem original. Isso quebra o uso ingênuo de hash(segredo || dados) como autenticador. A defesa é usar HMAC (ou SHA-3, que não sofre desse problema).",
+      "como_funciona": "Em hashes como SHA-256, sabendo H(mensagem) e o tamanho da mensagem, o atacante consegue calcular H(mensagem || padding || extensão) sem conhecer a mensagem original. Isso quebra o uso ingênuo de hash(segredo || dados) como autenticador. A defesa é usar HMAC (ou SHA-3, que não sofre desse problema).",
       "sinal": "Autenticação caseira do tipo hash(segredo concatenado com dados)",
       "gravidade": "Média",
       "gravidade_cor": "warning"

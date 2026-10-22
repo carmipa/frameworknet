@@ -1,5 +1,5 @@
 {
-  "resumo": "HTTP é o protocolo de requisição-resposta, em texto, que move a web: o cliente pede um recurso com um método e uma URL, e o servidor responde com um código de status e um corpo. Ele é stateless (sem estado), então cookies e sessões carregam o contexto entre chamadas. HTTPS é o mesmo HTTP encapsulado em TLS, o que garante confidencialidade, integridade e autenticação do servidor. Sem HTTPS tudo trafega em texto claro e pode ser lido ou adulterado por quem estiver no caminho.",
+  "resumo": "HTTP é o protocolo de requisição-resposta que move a web (textual no HTTP/1.1, binário no HTTP/2 e no HTTP/3): o cliente pede um recurso com um método e uma URL, e o servidor responde com um código de status e um corpo. Ele é stateless (sem estado), então cookies e sessões carregam o contexto entre chamadas. HTTPS é o mesmo HTTP encapsulado em TLS, o que garante confidencialidade, integridade e autenticação do servidor. Sem HTTPS tudo trafega em texto claro e pode ser lido ou adulterado por quem estiver no caminho.",
   "ficha": [
     {
       "rotulo": "RFC",
@@ -66,7 +66,7 @@
     {
       "titulo": "Cache",
       "icone": "cached",
-      "texto": "Cache-Control, ETag e 304 Not Modified evitam rebaixar dados que não mudaram, economizando banda e latência. Cache mal configurado, porém, pode servir conteúdo velho ou privado.",
+      "texto": "Cache-Control, ETag e 304 Not Modified evitam baixar de novo dados que não mudaram, economizando banda e latência. Cache mal configurado, porém, pode servir conteúdo velho ou privado.",
       "destaque": "max-age e no-store controlam o que pode ser guardado."
     }
   ],
@@ -329,7 +329,7 @@
     {
       "titulo": "Cookies, sessão e redirecionamentos",
       "cenario": "Observar Set-Cookie, seguir redirects e reenviar cookies como faz um navegador.",
-      "comandos": "curl -c cookies.txt -b cookies.txt -L -v https://example.com\n# ver 301/308 de http para https:\ncurl -I -L http://example.com",
+      "comandos": "curl -c cookies.txt -b cookies.txt -L -v https://example.com\n# ver 301/308 de http para https:\ncurl -I -L http://www.wikipedia.org",
       "explicacao": "O -c grava os cookies em arquivo, o -b os reenvia e o -L segue os redirecionamentos 3xx. Serve para enxergar o ciclo de sessão (Set-Cookie na resposta, Cookie na próxima requisição) e o redirect de http para https com HSTS."
     },
     {
@@ -343,31 +343,31 @@
     {
       "sintoma": "Site abre só em http://, sem cadeado",
       "causa_provavel": "Falta HTTPS, redirecionamento para https ou HSTS",
-      "comando": "curl -I http://site.com",
+      "comando": "curl -I http://example.com",
       "leitura": "Sem um 301/308 apontando para https:// nem o cabeçalho Strict-Transport-Security, o tráfego segue em texto claro e fica exposto a MITM."
     },
     {
       "sintoma": "Respostas 401 Unauthorized",
       "causa_provavel": "Credenciais ausentes ou inválidas no cabeçalho Authorization",
-      "comando": "curl -v -H \"Authorization: Bearer TOKEN\" https://api.site.com",
+      "comando": "curl -v -H \"Authorization: Bearer TOKEN\" https://api.example.com",
       "leitura": "401 pede autenticação (veja o WWW-Authenticate na resposta); já 403 Forbidden seria estar autenticado, porém sem permissão para o recurso."
     },
     {
       "sintoma": "O login não persiste entre requisições",
       "causa_provavel": "Cookie de sessão não gravado/reenviado, ou marcado Secure sobre HTTP",
-      "comando": "curl -c c.txt -b c.txt -v https://site.com/login",
+      "comando": "curl -c c.txt -b c.txt -v https://example.com/login",
       "leitura": "Procure Set-Cookie na resposta do login e Cookie na requisição seguinte; sem eles o servidor stateless trata cada chamada como um cliente novo."
     },
     {
       "sintoma": "Erros 502 ou 504 no navegador",
       "causa_provavel": "Proxy ou gateway sem resposta válida do backend",
-      "comando": "curl -v https://site.com",
+      "comando": "curl -v https://example.com",
       "leitura": "502 Bad Gateway = o upstream devolveu resposta inválida; 504 Gateway Timeout = o upstream demorou demais. O problema está entre o proxy e a aplicação, não no cliente."
     },
     {
       "sintoma": "Navegador bloqueia a chamada por CORS",
       "causa_provavel": "Resposta sem Access-Control-Allow-Origin correspondente",
-      "comando": "curl -I -H \"Origin: https://app.site.com\" https://api.site.com",
+      "comando": "curl -I -H \"Origin: https://app.example.com\" https://api.example.com",
       "leitura": "Sem um Access-Control-Allow-Origin que case com a Origin, o navegador bloqueia; note que o curl não impõe CORS, quem aplica a regra é o navegador."
     }
   ]

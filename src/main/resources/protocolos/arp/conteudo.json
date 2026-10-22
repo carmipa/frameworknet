@@ -324,7 +324,7 @@
     {
       "titulo": "Ler e inspecionar o cache ARP",
       "cenario": "Você quer ver quais pares IP -> MAC seu host já aprendeu, em que estado estão e identificar o MAC do gateway. É o primeiro passo de qualquer diagnóstico de LAN.",
-      "comandos": "# Linux (moderno) - mostra estado (REACHABLE, STALE, FAILED...)\nip neigh show\n\n# Linux/Windows/macOS (clássico)\narp -a\n\n# Linux - limpar uma entrada suspeita para forçar nova resolução\nip neigh flush dev eth0\n\n# Ver o MAC real da sua própria interface para comparar\nip link show eth0",
+      "comandos": "# Linux (moderno) - mostra estado (REACHABLE, STALE, FAILED...)\nip neigh show\n\n# Linux/Windows/macOS (clássico)\narp -a\n\n# Linux - limpar uma entrada suspeita para forçar nova resolução\nip neigh del 192.168.0.1 dev eth0\n\n# Ver o MAC real da sua própria interface para comparar\nip link show eth0",
       "explicacao": "O 'ip neigh' é superior ao 'arp -a' por mostrar o estado da entrada. Anote o MAC do gateway aqui: se ele mudar depois, é sinal de alerta. Uma entrada FAILED indica que o IP não respondeu; uma INCOMPLETE indica resolução em andamento."
     },
     {
@@ -368,7 +368,7 @@
     {
       "sintoma": "Tráfego lento e captura mostra excesso de replies ARP não solicitadas",
       "causa_provavel": "Flood de ARP ou gratuitous ARP malicioso saturando cache e switch, degradando o desempenho da LAN.",
-      "comando": "sudo tcpdump -i eth0 -n arp | grep -i reply",
+      "comando": "sudo tcpdump -l -i eth0 -n arp | grep -i reply",
       "leitura": "Muitas replies sem requests correspondentes indicam anúncios forçados. Identifique o MAC de origem recorrente e bloqueie-o na porta do switch (port security)."
     }
   ],
@@ -406,7 +406,7 @@
     {
       "rotulo": "Equivalente IPv6",
       "valor": "NDP (Neighbor Discovery Protocol) sobre ICMPv6",
-      "dica": "No IPv6 não existe ARP; a resolução usa NS/NA em multicast."
+      "dica": "No IPv6 não existe ARP; a resolução usa NS (em multicast solicited-node) e NA (em unicast)."
     }
   ]
 }

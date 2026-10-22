@@ -329,7 +329,7 @@
     {
       "titulo": "Ver os endereços IPv6 da máquina",
       "cenario": "Você quer saber quais endereços IPv6 cada interface possui e distinguir o link-local (fe80::) do endereço global.",
-      "comandos": "# Lista todos os enderecos IPv6 por interface\nip -6 addr show\n\n# Filtra apenas o escopo global (o endereco roteavel)\nip -6 addr show scope global\n\n# Ver so uma interface\nip -6 addr show dev eth0",
+      "comandos": "# Lista todos os endereços IPv6 por interface\nip -6 addr show\n\n# Filtra apenas o escopo global (o endereço roteável)\nip -6 addr show scope global\n\n# Ver só uma interface\nip -6 addr show dev eth0",
       "explicacao": "Toda interface ativa tem um endereço fe80:: (link-local). Se houver também um endereço 2000::/3 (ex.: 2001:...), o SLAAC ou o DHCPv6 funcionou e a máquina tem conectividade global. Se só aparecer o fe80::, a autoconfiguração falhou."
     },
     {
@@ -342,7 +342,7 @@
       "titulo": "Inspecionar a tabela de vizinhos (NDP)",
       "cenario": "Diagnosticar problemas de resolução endereço-MAC, o equivalente a olhar a tabela ARP no IPv4.",
       "comandos": "# Lista a cache de vizinhos com estado\nip -6 neigh show\n\n# Forca a re-descoberta de um vizinho\nip -6 neigh flush all\nping6 -c 1 fe80::1%eth0\nip -6 neigh show",
-      "explicacao": "Cada entrada mostra um estado: REACHABLE (ok), STALE (válido mas antigo), INCOMPLETE (não respondeu - vizinho inalcançável) ou FAILED. INCOMPLETE persistente indica que o vizinho está offline ou que há filtro de ICMPv6 bloqueando o NDP."
+      "explicacao": "Cada entrada mostra um estado: REACHABLE (ok), STALE (válido mas antigo), INCOMPLETE (resolução em andamento: NS enviado, sem resposta ainda) ou FAILED (no Linux: desistiu após as retransmissões). INCOMPLETE persistente indica que o vizinho está offline ou que há filtro de ICMPv6 bloqueando o NDP."
     }
   ],
   "diagnosticos": [

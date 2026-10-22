@@ -73,7 +73,7 @@
   "diagrama": {
     "titulo": "TCP 3-way handshake (abertura de conexão)",
     "definicao": "sequenceDiagram\n    participant C as Cliente\n    participant S as Servidor\n    Note over S: Estado LISTEN\n    C->>S: SYN seq=x\n    Note over C: SYN_SENT\n    S->>C: SYN-ACK seq=y ack=x+1\n    Note over S: SYN_RECV\n    C->>S: ACK seq=x+1 ack=y+1\n    Note over C,S: ESTABLISHED - dados podem fluir",
-    "legenda": "Cada lado envia seu número de sequência inicial e vê o outro confirmá-lo com +1. Ao final das três mensagens ambos estão em ESTABLISHED e sabem que há caminho de ida e de volta. Na prática são 1,5 rodadas (RTT): o cliente já pode enviar dados junto com o ACK final."
+    "legenda": "Cada lado envia seu número de sequência inicial e vê o outro confirmá-lo com +1. Ao final das três mensagens ambos estão em ESTABLISHED e sabem que há caminho de ida e de volta. São três mensagens, mas o custo é de 1 RTT: o cliente já pode enviar dados junto com o ACK final."
   },
   "cabecalho": {
     "titulo": "Cabeçalho TCP (20 bytes) e os bits de controle",
@@ -254,7 +254,7 @@
         ],
         [
           "Rodadas (RTT)",
-          "1,5 na prática",
+          "1 RTT (3 mensagens)",
           "1-RTT (0-RTT em retomada)",
           "~2 (versão + kex + auth)"
         ],
@@ -364,7 +364,7 @@
     },
     {
       "nome": "Challenge ACK (RFC 5961)",
-      "como_funciona": "Ao receber RST ou SYN dentro da janela mas fora da posição exata esperada, em vez de agir o receptor envia um ACK de desafio; só um remetente que vê o tráfego consegue responder com o seq correto.",
+      "como_funciona": "Ao receber RST dentro da janela mas fora da posição exata esperada, ou SYN em qualquer número de sequência, em vez de agir o receptor envia um ACK de desafio; só um remetente que vê o tráfego consegue responder com o seq correto.",
       "cobre": "Injeção cega de RST e SYN em conexões existentes",
       "limite": "O rate limit do desafio virou canal lateral explorado (CVE-2016-5696), exigindo ajuste"
     },

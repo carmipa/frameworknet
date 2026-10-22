@@ -137,7 +137,7 @@
         [
           "SOA",
           "Start of Authority: dados da zona (serial, TTLs)",
-          "ns1.exemplo.com.br. admin. 2026090701 ..."
+          "ns1.exemplo.com.br. admin.exemplo.com.br. 2026090701 ..."
         ],
         [
           "PTR",
@@ -170,7 +170,7 @@
       "titulo": "nslookup interativo e por tipo",
       "cenario": "Fazer verificações rápidas em uma máquina Windows ou sem bind-utils, inclusive escolhendo o servidor no modo interativo.",
       "comandos": "nslookup exemplo.com.br\nnslookup -type=MX exemplo.com.br\nnslookup -type=NS exemplo.com.br 1.1.1.1",
-      "explicacao": "Sem argumentos extras o nslookup resolve o A. Com -type você pede registros específicos (MX, NS, TXT). O último argumento (1.1.1.1) define o servidor a consultar, equivalente ao @servidor do dig."
+      "explicacao": "Sem argumentos extras o nslookup resolve os endereços (A e AAAA). Com -type você pede registros específicos (MX, NS, TXT). O último argumento (1.1.1.1) define o servidor a consultar, equivalente ao @servidor do dig."
     }
   ],
   "diagnosticos": [

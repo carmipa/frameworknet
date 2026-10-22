@@ -219,19 +219,19 @@
   ],
   "diagnosticos": [
     {
-      "sintoma": "ping no IP funciona, mas o site não abre pelo nome",
+      "sintoma": "Ping no IP funciona, mas o site não abre pelo nome",
       "causa_provavel": "Camada Internet OK (IP roteia), mas a camada de Aplicação falha: DNS não resolve o nome.",
       "comando": "nslookup example.com",
       "leitura": "Se o ping no IP direto responde e o nslookup falha ou retorna servidor sem resposta, o problema está acima da camada Internet. Configure/troque o servidor DNS."
     },
     {
-      "sintoma": "o nome resolve e o IP pinga, mas a conexão ao serviço dá timeout",
+      "sintoma": "O nome resolve e o IP pinga, mas a conexão ao serviço dá timeout",
       "causa_provavel": "Camadas Internet e Aplicação (DNS) OK, mas a camada de Transporte está bloqueada: porta fechada ou firewall barrando o TCP.",
       "comando": "Test-NetConnection example.com -Port 443",
       "leitura": "TcpTestSucceeded : False com ping funcionando indica bloqueio na camada de Transporte (porta), não na de Internet. Verifique firewall e se o serviço escuta na porta."
     },
     {
-      "sintoma": "nenhum host da rede local se comunica, nem o gateway responde",
+      "sintoma": "Nenhum host da rede local se comunica, nem o gateway responde",
       "causa_provavel": "Falha na camada de Acesso à rede (Física/Enlace do OSI): cabo, placa, Wi-Fi desconectado ou switch.",
       "comando": "ipconfig /all",
       "leitura": "Mídia desconectada ou ausência de IP/gateway aponta para a camada mais baixa (link). Antes de investigar IP ou DNS, confirme link físico e endereçamento L2."

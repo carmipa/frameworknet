@@ -253,7 +253,7 @@
     },
     {
       "nome": "BasicConstraints ignorada (folha vira CA)",
-      "como_funciona": "Se o validador não processa BasicConstraints, um certificado folha legítimo (emitido para um domínio qualquer) pode ser usado como se fosse uma CA e assinar certificados para OUTROS domínios. Foi a falha do bug de 'basicConstraints' em navegadores e bibliotecas antigas, que permitia a qualquer dono de um certificado impersonar qualquer site.",
+      "como_funciona": "Se o validador não processa BasicConstraints, um certificado folha legítimo (emitido para um domínio qualquer) pode ser usado como se fosse uma CA e assinar certificados para OUTROS domínios. Foi a falha do bug de 'basicConstraints' em navegadores e bibliotecas antigas, que permitia a qualquer dono de um certificado se passar por qualquer site.",
       "sinal": "Validador que não checa cA=TRUE / pathLen; certificado com cA=FALSE mesmo assim aceito assinando outros.",
       "gravidade": "Alta",
       "gravidade_cor": "danger"
@@ -267,7 +267,7 @@
     },
     {
       "nome": "Certificado expirado ou revogado aceito",
-      "como_funciona": "O validador ignora notAfter ou não consulta CRL/OCSP. Uma chave privada já comprometida e revogada continua sendo aceita porque ninguém checa o status, mantendo um canal de impersonação ativo mesmo depois de a CA ter revogado o certificado.",
+      "como_funciona": "O validador ignora notAfter ou não consulta CRL/OCSP. Uma chave privada já comprometida e revogada continua sendo aceita porque ninguém checa o status, mantendo um canal de falsificação de identidade ativo mesmo depois de a CA ter revogado o certificado.",
       "sinal": "Sem consulta OCSP/CRL nos logs; conexão aceita com notAfter no passado.",
       "gravidade": "Média",
       "gravidade_cor": "warning"
@@ -300,7 +300,7 @@
     },
     {
       "nome": "Consultar revogação (OCSP stapling / CRL)",
-      "como_funciona": "Habilitar OCSP stapling no servidor e checagem de status no cliente, para descobrir certificados revogados antes do vencimento. Complementar com ciclos de vida curtos, que reduzem a janela de risco quando a revogação falha.",
+      "como_funciona": "Onde a CA ainda mantém OCSP, habilitar stapling; em qualquer caso, garantir checagem por CRL (ou CRLite/CRLSets no navegador), para descobrir certificados revogados antes do vencimento. Complementar com ciclos de vida curtos, que reduzem a janela de risco quando a revogação falha.",
       "cobre": "Certificado revogado por chave comprometida",
       "limite": "O OCSP pode ficar indisponível; muitos clientes fazem soft-fail, aceitando quando não conseguem checar."
     }

@@ -177,7 +177,7 @@
         [
           "TIME-WAIT",
           "Encerrando",
-          "Fim normal; socket segura a porta por alguns segundos"
+          "Fim normal; o socket segura o par de portas por 2×MSL (60 s no Linux)"
         ],
         [
           "CLOSE-WAIT",
@@ -196,25 +196,25 @@
     {
       "titulo": "Inventariar tudo que escuta na máquina",
       "cenario": "Você chegou em um servidor e precisa saber quais serviços estão expostos e em quais portas, com o processo dono de cada uma.",
-      "comandos": "sudo ss -tulpn\n\n# Saida tipica (colunas: Netid State Local:Port Process):\n# tcp   LISTEN 0.0.0.0:22    users:((\"sshd\",pid=812,fd=3))\n# tcp   LISTEN 127.0.0.1:5432 users:((\"postgres\",pid=1103,fd=5))\n# tcp   LISTEN 0.0.0.0:443   users:((\"nginx\",pid=1450,fd=6))",
+      "comandos": "sudo ss -tulpn\n\n# Saída típica (colunas: Netid State Local:Port Process):\n# tcp   LISTEN 0.0.0.0:22    users:((\"sshd\",pid=812,fd=3))\n# tcp   LISTEN 127.0.0.1:5432 users:((\"postgres\",pid=1103,fd=5))\n# tcp   LISTEN 0.0.0.0:443   users:((\"nginx\",pid=1450,fd=6))",
       "explicacao": "O -tulpn é a receita padrão. Repare no Postgres em 127.0.0.1:5432: ele só aceita conexões locais. O SSH e o Nginx em 0.0.0.0 aceitam de qualquer interface. O sudo é necessário para ver o PID de processos de outros usuários."
     },
     {
       "titulo": "Resumo estatístico dos sockets",
       "cenario": "Você suspeita de vazamento de sockets ou excesso de conexões e quer um panorama rápido antes de investigar em detalhe.",
-      "comandos": "ss -s\n\n# Saida tipica:\n# Total: 231\n# TCP:   48 (estab 12, closed 20, orphaned 0, timewait 18)\n#\n# Transport Total  IP  IPv6\n# TCP       28     22  6\n# UDP       9      7   2",
-      "explicacao": "O ss -s conta sockets por protocolo e estado sem listar cada um. Um número alto de timewait é normal após muitas conexões curtas; muitos closed ou orphaned pode indicar aplicação fechando conexões de forma anormal."
+      "comandos": "ss -s\n\n# Saída típica:\n# Total: 231\n# TCP:   48 (estab 12, closed 20, orphaned 0, timewait 18)\n#\n# Transport Total  IP  IPv6\n# TCP       28     22  6\n# UDP       9      7   2",
+      "explicacao": "O ss -s conta sockets por protocolo e estado sem listar cada um. Um número alto de timewait é normal após muitas conexões curtas; muitos closed ou orphaned podem indicar aplicação fechando conexões de forma anormal."
     },
     {
       "titulo": "Testar se uma porta remota responde",
       "cenario": "A aplicação não conecta ao banco em outro host. Você quer isolar se é problema de rede/firewall ou da aplicação.",
-      "comandos": "nc -zv -w 3 db.interno.local 5432\n\n# Sucesso:\n# Connection to db.interno.local 5432 port [tcp/postgresql] succeeded!\n\n# Recusada (servico nao esta escutando):\n# nc: connect to db.interno.local port 5432 (tcp) failed: Connection refused\n\n# Sem resposta (firewall ou host caido) apos ~3s:\n# nc: connect to db.interno.local port 5432 (tcp) timed out",
+      "comandos": "nc -zv -w 3 db.interno.local 5432\n\n# Sucesso:\n# Connection to db.interno.local 5432 port [tcp/postgresql] succeeded!\n\n# Recusada (serviço não está escutando):\n# nc: connect to db.interno.local port 5432 (tcp) failed: Connection refused\n\n# Sem resposta (firewall ou host caído) após ~3s:\n# nc: connect to db.interno.local port 5432 (tcp) timed out",
       "explicacao": "O -z faz o nc só verificar a conexão sem enviar dados, -v mostra o resultado e -w 3 impede travar. As três saídas apontam causas diferentes: succeeded (rede OK, olhe a aplicação), refused (chegou na máquina mas nada escuta) e timed out (firewall descarta ou host inalcançável)."
     },
     {
       "titulo": "Montar um servidor didático com nc",
       "cenario": "Você quer provar que o firewall e o roteamento permitem chegar a uma porta, sem depender de o serviço real estar instalado.",
-      "comandos": "# No servidor (terminal 1): abre LISTEN na porta 9000\nnc -l -p 9000\n\n# Em outro terminal do proprio servidor, confirme o LISTEN:\nss -tulpn | grep 9000\n# tcp LISTEN 0.0.0.0:9000 users:((\"nc\",pid=2210,fd=3))\n\n# Na maquina cliente (terminal 2): conecta e digita texto\nnc -v 203.0.113.10 9000\n# o que voce digitar aqui aparece no terminal 1",
+      "comandos": "# No servidor (terminal 1): abre LISTEN na porta 9000\nnc -l -p 9000\n\n# Em outro terminal do próprio servidor, confirme o LISTEN:\nss -tulpn | grep 9000\n# tcp LISTEN 0.0.0.0:9000 users:((\"nc\",pid=2210,fd=3))\n\n# Na máquina cliente (terminal 2): conecta e digita texto\nnc -v 203.0.113.10 9000\n# o que você digitar aqui aparece no terminal 1",
       "explicacao": "O nc -l -p 9000 vira um servidor temporário. Se o cliente conecta e o texto atravessa, o caminho de rede até a porta 9000 está liberado, isolando o problema para a aplicação real. Encerre com Ctrl+C. Em algumas versões do OpenBSD netcat o -p é opcional: basta nc -l 9000."
     }
   ],
@@ -223,7 +223,7 @@
       "sintoma": "Address already in use ao iniciar o serviço",
       "causa_provavel": "Outro processo (ou uma instância antiga do próprio serviço) já está com a porta em LISTEN, ou um socket ficou em TIME-WAIT segurando a porta.",
       "comando": "sudo ss -tulpn | grep :8080\nss -tan state time-wait '( sport = :8080 )'",
-      "leitura": "A 1ª linha mostra o PID e o nome do processo que ocupa a porta em LISTEN; se for uma instância órfã, encerre-a (kill <PID>) e reinicie. O -l não lista TIME-WAIT: é a 2ª linha que mostra os sockets de um restart recente — aguarde alguns segundos ou habilite SO_REUSEADDR na aplicação."
+      "leitura": "A 1ª linha mostra o PID e o nome do processo que ocupa a porta em LISTEN; se for uma instância órfã, encerre-a (kill <PID>) e reinicie. O -l não lista TIME-WAIT: é a 2ª linha que mostra os sockets de um restart recente — aguarde até cerca de 1 minuto (60 s no Linux) ou habilite SO_REUSEADDR na aplicação."
     },
     {
       "sintoma": "Connection refused ao conectar",

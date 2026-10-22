@@ -225,7 +225,7 @@
   "mitigacoes": [
     {
       "nome": "Rate limiting de ICMP",
-      "como_funciona": "Limita a quantidade de mensagens ICMP por segundo que o host ou roteador aceita e responde, absorvendo floods sem derrubar o serviço. A maioria dos sistemas já traz limitação de resposta a Echo embutida.",
+      "como_funciona": "Limita a quantidade de mensagens ICMP por segundo que o host ou roteador aceita e responde, absorvendo floods sem derrubar o serviço. O Linux já limita por padrão as mensagens de erro (destino inalcançável, tempo excedido); limitar as respostas a Echo exige configuração (icmp_ratemask ou regra de firewall).",
       "cobre": "ICMP Flood, Ping Flood e o reflexo do Smurf",
       "limite": "Reduz o impacto, mas não impede DDoS volumétrico que satura o enlace antes de chegar ao host."
     },
@@ -291,7 +291,7 @@
       "sintoma": "Conexões travam ao transferir arquivos grandes, mas o ping simples funciona",
       "causa_provavel": "PMTUD quebrado: um enlace tem MTU menor e o ICMP tipo 3 código 4 ('fragmentation needed') está sendo bloqueado. Pacotes grandes somem sem aviso (buraco negro de MTU).",
       "leitura": "Handshake e pacotes pequenos passam; pacotes grandes com DF são descartados silenciosamente. O ICMP essencial precisa ser liberado.",
-      "comando": "ping -M do -s 1472 host.example.com   # reduza o tamanho ate parar de falhar"
+      "comando": "ping -M do -s 1472 host.example.com   # reduza o tamanho até parar de falhar"
     },
     {
       "sintoma": "tcpdump mostra 'ICMP host unreachable' ou 'port unreachable' chegando",
@@ -335,7 +335,7 @@
     {
       "rotulo": "Ferramentas clássicas",
       "valor": "ping, traceroute/tracert, mtr, tcpdump",
-      "dica": "Todas dependem de Echo (8/0) e Time Exceeded (11)."
+      "dica": "O ping depende de Echo (8/0); traceroute/tracert e mtr, de Time Exceeded (11) (o traceroute do Linux usa UDP e termina em Port Unreachable, 3/3); o tcpdump só captura."
     },
     {
       "rotulo": "Segurança",

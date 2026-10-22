@@ -139,7 +139,7 @@
         ],
         [
           "TYPE",
-          "Define modo de transferência: A (ASCII) ou I (binário/Image)",
+          "Define o tipo de representação dos dados: A (ASCII) ou I (binário/Image)",
           "Controle"
         ],
         [

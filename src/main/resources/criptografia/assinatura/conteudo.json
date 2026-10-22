@@ -23,8 +23,8 @@
     },
     {
       "rotulo": "O que é realmente processado",
-      "valor": "O hash da mensagem, não o dado bruto",
-      "dica": "Assinar 1 GB custa quase o mesmo que assinar 32 bytes"
+      "valor": "No RSA/ECDSA, o hash da mensagem; no Ed25519, a mensagem inteira (com hash interno)",
+      "dica": "A operação de chave custa o mesmo para 1 GB ou 32 bytes; o que cresce com o tamanho é só o hash"
     }
   ],
   "conceitos": [
@@ -62,7 +62,7 @@
       "titulo": "O nonce da assinatura é crítico",
       "icone": "warning",
       "texto": "Algoritmos como ECDSA e DSA precisam de um valor aleatório por assinatura (nonce k) que deve ser único, secreto e imprevisível. Falhar nisso não degrada a segurança aos poucos: vaza a chave privada por completo. Ed25519 elimina esse risco derivando o nonce de forma determinística.",
-      "destaque": "Reuso de k = chave exposta"
+      "destaque": "Reúso de k = chave exposta"
     }
   ],
   "diagrama": {
@@ -135,13 +135,13 @@
           "ECDSA (P-256)",
           "Assinatura",
           "Exige nonce k único, secreto e imprevisível",
-          "Reuso ou previsibilidade de k vaza a chave privada"
+          "Reúso ou previsibilidade de k vaza a chave privada"
         ],
         [
           "Ed25519 (EdDSA)",
           "Assinatura",
           "Determinístico por design (nonce derivado da chave + mensagem)",
-          "Rápido, curto (64 bytes) e imune a reuso de nonce"
+          "Rápido, curto (64 bytes) e imune a reúso de nonce"
         ],
         [
           "HMAC-SHA256",
@@ -189,7 +189,7 @@
   ],
   "ataques": [
     {
-      "nome": "Reuso de nonce no ECDSA/DSA",
+      "nome": "Reúso de nonce no ECDSA/DSA",
       "como_funciona": "ECDSA usa um valor aleatório k por assinatura. Se o mesmo k for reaproveitado em duas mensagens diferentes (ou for previsível), dá para resolver duas equações e recuperar a chave privada com álgebra simples. Foi assim que a chave de assinatura do PlayStation 3 (ECDSA) vazou.",
       "sinal": "Duas assinaturas distintas com o mesmo valor de r; RNG fraco, VM clonada ou embarcado sem entropia.",
       "gravidade": "Crítica",
@@ -197,7 +197,7 @@
     },
     {
       "nome": "Length extension em MAC mal construído",
-      "como_funciona": "Construir MAC como H(chave || mensagem) com hashes de Merkle-Damgard (MD5, SHA-1, SHA-256) permite ao atacante, sem conhecer a chave, calcular um MAC válido para mensagem+padding+sufixo a partir do MAC observado, estendendo o dado autenticado.",
+      "como_funciona": "Construir MAC como H(chave || mensagem) com hashes de Merkle-Damgård (MD5, SHA-1, SHA-256) permite ao atacante, sem conhecer a chave, calcular um MAC válido para mensagem+padding+sufixo a partir do MAC observado, estendendo o dado autenticado.",
       "sinal": "Código caseiro concatenando chave e dado direto no hash em vez de usar HMAC.",
       "gravidade": "Alta",
       "gravidade_cor": "danger"
@@ -227,8 +227,8 @@
   "mitigacoes": [
     {
       "nome": "Ed25519 (assinatura determinística)",
-      "como_funciona": "O nonce é derivado deterministicamente do hash da chave privada com a mensagem, então nunca se repete nem depende do RNG do sistema no momento da assinatura. Elimina de raiz a classe de reuso/previsibilidade de nonce.",
-      "cobre": "Reuso e previsibilidade de nonce (que afligem ECDSA/DSA)",
+      "como_funciona": "O nonce é derivado deterministicamente do hash da chave privada com a mensagem, então nunca se repete nem depende do RNG do sistema no momento da assinatura. Elimina de raiz a classe de reúso/previsibilidade de nonce.",
+      "cobre": "Reúso e previsibilidade de nonce (que afligem ECDSA/DSA)",
       "limite": "Continua sem dar não-repúdio útil sem uma PKI que ligue a chave pública a uma identidade"
     },
     {
@@ -239,7 +239,7 @@
     },
     {
       "nome": "HMAC em vez de hash concatenado",
-      "como_funciona": "A construção HMAC(k, m) = H((k xor opad) || H((k xor ipad) || m)) aninha dois hashes com padding, tornando a extensão de comprimento inviável mesmo sobre hashes Merkle-Damgard.",
+      "como_funciona": "A construção HMAC(k, m) = H((k xor opad) || H((k xor ipad) || m)) aninha dois hashes com padding, tornando a extensão de comprimento inviável mesmo sobre hashes Merkle-Damgård.",
       "cobre": "Length extension e MACs caseiros",
       "limite": "Segue simétrico: sem não-repúdio e exige distribuir/rotacionar a chave com segurança"
     },
@@ -260,14 +260,14 @@
     {
       "titulo": "Assinar e verificar com ECDSA (P-256)",
       "cenario": "Gerar um par de chaves, assinar um arquivo com a privada e verificar com a pública. O openssl calcula o hash internamente — você assina o digest, não o arquivo bruto.",
-      "comandos": "# 1) chave privada ECDSA P-256 e a pública correspondente\nopenssl ecparam -name prime256v1 -genkey -noout -out priv.pem\nopenssl ec -in priv.pem -pubout -out pub.pem\n\n# 2) mensagem de teste\necho \"transferir 100 para Bob\" > msg.txt\n\n# 3) assinar (SHA-256 sobre msg.txt, assinatura em msg.sig)\nopenssl dgst -sha256 -sign priv.pem -out msg.sig msg.txt\n\n# 4) verificar com a chave pública\nopenssl dgst -sha256 -verify pub.pem -signature msg.sig msg.txt\n# saída esperada: Verified OK\n\n# 5) prova de integridade: altere 1 byte e verifique de novo\necho \"transferir 900 para Bob\" > msg.txt\nopenssl dgst -sha256 -verify pub.pem -signature msg.sig msg.txt\n# saída esperada: Verification Failure",
+      "comandos": "# 1) chave privada ECDSA P-256 e a pública correspondente\nopenssl ecparam -name prime256v1 -genkey -noout -out priv.pem\nopenssl ec -in priv.pem -pubout -out pub.pem\n\n# 2) mensagem de teste\necho \"transferir 100 para Bob\" > msg.txt\n\n# 3) assinar (SHA-256 sobre msg.txt, assinatura em msg.sig)\nopenssl dgst -sha256 -sign priv.pem -out msg.sig msg.txt\n\n# 4) verificar com a chave pública\nopenssl dgst -sha256 -verify pub.pem -signature msg.sig msg.txt\n# saída esperada: Verified OK\n\n# 5) prova de integridade: altere 1 byte e verifique de novo\necho \"transferir 900 para Bob\" > msg.txt\nopenssl dgst -sha256 -verify pub.pem -signature msg.sig msg.txt\n# saída esperada: Verification failure",
       "explicacao": "A verificação usa apenas pub.pem — quem verifica nunca toca na chave privada, e por isso há não-repúdio. Qualquer mudança na mensagem muda o hash e reprova a assinatura."
     },
     {
       "titulo": "Ed25519: assinatura determinística sem nonce",
       "cenario": "Repetir o fluxo com Ed25519, que assina o dado bruto (o hash é interno ao esquema) e não depende de RNG por assinatura.",
       "comandos": "# chave privada e pública Ed25519\nopenssl genpkey -algorithm ed25519 -out ed_priv.pem\nopenssl pkey -in ed_priv.pem -pubout -out ed_pub.pem\n\n# Ed25519 NÃO leva -sha256: use pkeyutl com -rawin\nopenssl pkeyutl -sign -inkey ed_priv.pem -rawin -in msg.txt -out ed.sig\nopenssl pkeyutl -verify -pubin -inkey ed_pub.pem -rawin -in msg.txt -sigfile ed.sig\n# saída esperada: Signature Verified Successfully\n\n# assinar duas vezes gera a MESMA assinatura (determinismo)\nopenssl pkeyutl -sign -inkey ed_priv.pem -rawin -in msg.txt -out ed2.sig\ncmp ed.sig ed2.sig && echo \"assinaturas idênticas: nonce determinístico\"",
-      "explicacao": "Como o nonce interno vem da chave e da mensagem, duas assinaturas da mesma mensagem são idênticas — não há janela para reuso de nonce como no ECDSA."
+      "explicacao": "Como o nonce interno vem da chave e da mensagem, duas assinaturas da mesma mensagem são idênticas — não há janela para reúso de nonce como no ECDSA."
     },
     {
       "titulo": "HMAC-SHA256: MAC com chave compartilhada",

@@ -1,5 +1,5 @@
 {
-  "resumo": "O nmap (Network Mapper) é a ferramenta padrão para descoberta de hosts e varredura de portas: ele envia pacotes cuidadosamente montados e interpreta as respostas para dizer quais máquinas estão vivas, quais portas estão abertas e quais serviços as atendem. O tipo mais usado, o SYN scan (-sS), inicia o aperto de mão TCP mas nunca o completa: envia SYN, e se voltar SYN/ACK a porta está aberta (o nmap responde RST para não abrir a conexão), se voltar RST está fechada, e se nada voltar está filtrada por firewall. IMPORTANTE: varredura de portas só é legítima em redes próprias ou com autorização explícita por escrito. Escanear terceiros sem permissão é reconhecimento hostil e, em muitos países, crime. Todo o conteúdo abaixo pressupõe uso didático e autorizado. No próprio site, a rota /diagnostico traz um SYN scan simulado para você ver o mecanismo sem tocar em nenhuma rede real.",
+  "resumo": "O nmap (Network Mapper) é a ferramenta padrão para descoberta de hosts e varredura de portas: ele envia pacotes cuidadosamente montados e interpreta as respostas para dizer quais máquinas estão vivas, quais portas estão abertas e quais serviços as atendem. O tipo mais usado, o SYN scan (-sS), inicia o aperto de mão TCP mas nunca o completa: envia SYN, e se voltar SYN/ACK a porta está aberta (o kernel da máquina do nmap, que não abriu aquela conexão, responde RST), se voltar RST está fechada, e se nada voltar está filtrada por firewall. IMPORTANTE: varredura de portas só é legítima em redes próprias ou com autorização explícita por escrito. Escanear terceiros sem permissão é reconhecimento hostil e, em muitos países, crime. Todo o conteúdo abaixo pressupõe uso didático e autorizado. No próprio site, a rota /diagnostico traz um SYN scan simulado para você ver o mecanismo sem tocar em nenhuma rede real.",
   "ficha": [
     {
       "rotulo": "Ferramenta",
@@ -37,7 +37,7 @@
     {
       "titulo": "SYN scan (half-open)",
       "icone": "content_cut",
-      "texto": "O -sS envia o SYN e, ao receber SYN/ACK, responde com RST em vez de ACK. A conexão nunca se completa, por isso é chamado de half-open: rápido e menos ruidoso nos logs da aplicação.",
+      "texto": "O -sS envia o SYN e, ao receber SYN/ACK, não completa com ACK: o kernel da máquina do nmap, que não reconhece a conexão, responde com RST. A conexão nunca se completa, por isso é chamado de half-open: rápido e menos ruidoso nos logs da aplicação.",
       "destaque": "Half-open"
     },
     {
@@ -67,7 +67,7 @@
   ],
   "diagrama": {
     "titulo": "SYN scan: como o nmap decide se a porta está aberta ou fechada",
-    "definicao": "sequenceDiagram\n    participant N as nmap (atacante autorizado)\n    participant A as Porta aberta\n    participant F as Porta fechada\n    Note over N,A: Caso 1 - porta ABERTA\n    N->>A: SYN (tento abrir a porta)\n    A-->>N: SYN/ACK (serviço presente)\n    N->>A: RST (abandono, half-open)\n    Note over N,F: Caso 2 - porta FECHADA\n    N->>F: SYN (tento abrir a porta)\n    F-->>N: RST (viva, mas sem serviço)\n    Note over N,F: Caso 3 - porta FILTRADA\n    N->>F: SYN (tento abrir a porta)\n    Note right of F: silêncio - firewall descartou o pacote",
+    "definicao": "sequenceDiagram\n    participant N as nmap (atacante autorizado)\n    participant A as Porta aberta\n    participant F as Porta fechada\n    participant X as Porta filtrada\n    Note over N,A: Caso 1 - porta ABERTA\n    N->>A: SYN (tento abrir a porta)\n    A-->>N: SYN/ACK (serviço presente)\n    N->>A: RST (abandono, half-open)\n    Note over N,F: Caso 2 - porta FECHADA\n    N->>F: SYN (tento abrir a porta)\n    F-->>N: RST (viva, mas sem serviço)\n    Note over N,X: Caso 3 - porta FILTRADA\n    N->>X: SYN (tento abrir a porta)\n    Note right of X: silêncio - firewall descartou o pacote",
     "legenda": "No SYN scan, o nmap nunca completa a conexão. SYN/ACK significa aberta; RST significa fechada; ausência de resposta significa filtrada (firewall). O envio de RST após o SYN/ACK é o que mantém a conexão half-open."
   },
   "tabelas": [
@@ -171,8 +171,8 @@
     {
       "titulo": "SYN scan discreto com detecção de SO",
       "cenario": "Auditoria autorizada onde você tem privilégio de root e quer o scan padrão, rápido e completo.",
-      "comandos": "sudo nmap -sS -O 192.168.0.10\n\n# scan rapido das portas mais comuns:\nsudo nmap -sS -F 192.168.0.10",
-      "explicacao": "O -sS exige root porque monta pacotes SYN crus. Combinado com -O, tenta ainda identificar o sistema operacional pela pilha TCP/IP. O -F limita as ~100 portas mais comuns para um resultado rápido."
+      "comandos": "sudo nmap -sS -O 192.168.0.10\n\n# scan rápido das portas mais comuns:\nsudo nmap -sS -F 192.168.0.10",
+      "explicacao": "O -sS exige root porque monta pacotes SYN crus. Combinado com -O, tenta ainda identificar o sistema operacional pela pilha TCP/IP. O -F limita a varredura às ~100 portas mais comuns para um resultado rápido."
     }
   ],
   "diagnosticos": [
@@ -184,7 +184,7 @@
     },
     {
       "sintoma": "O host não responde ao ping, mas você sabe que está ligado",
-      "causa_provavel": "O ICMP (ping) está bloqueado pelo firewall, então o nmap conclui que o host está down.",
+      "causa_provavel": "O firewall descarta todas as sondas de descoberta do nmap (ICMP echo e timestamp, SYN na 443, ACK na 80), então ele conclui que o host está down (numa LAN, a descoberta por ARP costuma achar o host mesmo assim).",
       "leitura": "Use -Pn para pular a descoberta por ping e forçar a varredura assumindo o host vivo.",
       "comando": "nmap -Pn -sS 192.168.0.10"
     },

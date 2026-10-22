@@ -73,7 +73,7 @@
   "diagrama": {
     "titulo": "O caminho de um e-mail, da escrita à leitura",
     "definicao": "flowchart TD\n    A[MUA remetente] -->|Submission 587 ou 465| B[MTA de saída]\n    B -->|SMTP 25 via DNS MX| C[MTA de entrada]\n    C -->|entrega local| D[MDA]\n    D -->|grava mensagem| E[(Caixa postal)]\n    E -->|POP3 995 baixa| F[MUA leitor]\n    E -->|IMAP 993 sincroniza| F",
-    "legenda": "O envio (SMTP) vai da esquerda para a direita até a caixa postal; a leitura (POP3 ou IMAP) puxa a mensagem da caixa de volta ao cliente. Note que SMTP só entrega até o servidor - quem apresenta a caixa ao usuário é o POP3 ou o IMAP."
+    "legenda": "O envio (SMTP) desce de cima para baixo até a caixa postal; a leitura (POP3 ou IMAP) puxa a mensagem da caixa de volta ao cliente. Note que SMTP só entrega até o servidor - quem apresenta a caixa ao usuário é o POP3 ou o IMAP."
   },
   "cabecalho": null,
   "tabelas": [
@@ -335,7 +335,7 @@
       "titulo": "Inspecionar STARTTLS no submission",
       "cenario": "Confirmar que a porta 587 aceita STARTTLS e ver as extensões ESMTP e o certificado.",
       "comandos": "openssl s_client -starttls smtp -crlf -connect smtp.example.com:587\n# após o handshake TLS:\nEHLO teste.local\nQUIT",
-      "explicacao": "O openssl abre a conexão em claro na 587, envia STARTTLS e faz o handshake TLS; a partir daí você fala SMTP dentro do canal cifrado. Verifique 'Verify return code: 0' e as linhas 250-STARTTLS e 250-AUTH na resposta ao EHLO."
+      "explicacao": "O openssl abre a conexão em claro na 587, envia STARTTLS e faz o handshake TLS; a partir daí você fala SMTP dentro do canal cifrado. Verifique 'Verify return code: 0' e a linha 250-AUTH na resposta ao EHLO. A 250-STARTTLS não aparece de novo: depois do TLS o servidor não volta a anunciá-la (RFC 3207 §4.2); o fato de o s_client ter concluído o STARTTLS já prova que ela foi oferecida."
     },
     {
       "titulo": "Enviar um e-mail de teste com swaks",
@@ -358,7 +358,7 @@
   ],
   "diagnosticos": [
     {
-      "sintoma": "'Relay access denied' (550 5.7.1) ao enviar",
+      "sintoma": "'Relay access denied' (554 5.7.1 no Postfix; o Exchange usa 550 5.7.1) ao enviar",
       "causa_provavel": "Cliente tentando enviar sem AUTH ou pela porta 25 (relay) em vez do submission 587/465.",
       "comando": "swaks --server smtp.example.com:587 --tls --auth LOGIN --auth-user ana@example.com",
       "leitura": "235 após o AUTH e depois 250 no RCPT TO indicam submission autenticado funcionando."
@@ -373,7 +373,7 @@
       "sintoma": "STARTTLS não aparece / cliente cai para texto puro",
       "causa_provavel": "MTA sem TLS configurado ou stripping de STARTTLS na rede.",
       "comando": "openssl s_client -starttls smtp -connect smtp.example.com:587",
-      "leitura": "A linha 250-STARTTLS na resposta do EHLO e 'Verify return code: 0' confirmam TLS disponível e handshake concluído."
+      "leitura": "Se o s_client conclui o handshake e mostra 'Verify return code: 0', o servidor oferece STARTTLS e o TLS fechou; se ele falha logo no STARTTLS, o servidor não o anuncia (ou a rede o removeu)."
     },
     {
       "sintoma": "Conexão trava ou dá timeout na porta 25 saindo da rede",

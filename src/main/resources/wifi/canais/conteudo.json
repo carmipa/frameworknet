@@ -23,7 +23,7 @@
     },
     {
       "rotulo": "Larguras de canal",
-      "valor": "20 / 40 / 80 / 160 MHz",
+      "valor": "20 / 40 / 80 / 160 / 320 MHz (320 só no 6 GHz, Wi-Fi 7)",
       "dica": "Dobrar a largura dobra a taxa teórica, mas reduz à metade o número de canais independentes."
     }
   ],
@@ -49,7 +49,7 @@
     {
       "titulo": "Canais largos: mais velocidade, mais interferência",
       "icone": "speed",
-      "texto": "Juntar canais (40, 80 ou 160 MHz) aumenta a taxa máxima porque há mais espectro por transmissão. O custo é duplo: canais largos capturam todo o ruído e todas as redes que ocupam qualquer pedaço daquela faixa, e sobram menos canais independentes. Em ambiente lotado, um canal de 80 MHz costuma render menos que um de 20 ou 40 MHz limpo. No 2.4 GHz, 40 MHz praticamente ocupa a banda inteira e não deve ser usado.",
+      "texto": "Juntar canais (40, 80 ou 160 MHz) aumenta a taxa máxima porque há mais espectro por transmissão. O custo é duplo: canais largos capturam todo o ruído e todas as redes que ocupam qualquer pedaço daquela faixa, e sobram menos canais independentes. Em ambiente lotado, um canal de 80 MHz costuma render menos que um de 20 ou 40 MHz limpo. No 2.4 GHz, um canal de 40 MHz ocupa quase metade da banda (40 de cerca de 83 MHz), deixa só um canal de 20 MHz limpo e não deve ser usado.",
       "destaque": "Largura maior só ajuda em espectro limpo; em ambiente cheio, canal estreito é mais estável."
     },
     {
@@ -165,14 +165,14 @@
         ],
         [
           "Interferência típica",
-          "Alta (bluetooth, micro-ondas, vizinhos)",
+          "Alta (Bluetooth, micro-ondas, vizinhos)",
           "Média",
           "Baixa (espectro novo)"
         ],
         [
           "Wi-Fi que usa",
-          "Todos (b/g/n/ax)",
-          "a/n/ac/ax",
+          "b/g/n/ax/be",
+          "a/n/ac/ax/be",
           "6E (ax) e 7 (be)"
         ]
       ]
@@ -291,7 +291,7 @@
       "titulo": "Confirmar canal e largura da própria conexão",
       "cenario": "Descobrir em qual canal e com que largura o cliente está realmente conectado, para validar mudanças de planejamento.",
       "comandos": "iw dev wlan0 link\niw dev wlan0 info",
-      "explicacao": "O iw dev link mostra frequência central, largura de canal (ex.: '80 MHz') e taxa negociada da associação atual. Serve para confirmar se o AP aplicou o canal e a largura desejados e comparar com o que o planejador de canais do site recomendou."
+      "explicacao": "O iw dev link mostra a frequência do canal primário e a taxa negociada da associação atual (com a largura, ex.: '80MHz', dentro do tx bitrate); a frequência central (center1) e a largura do canal saem no iw dev info. Serve para confirmar se o AP aplicou o canal e a largura desejados e comparar com o que o planejador de canais do site recomendou."
     }
   ]
 }

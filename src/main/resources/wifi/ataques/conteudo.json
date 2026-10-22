@@ -82,7 +82,7 @@
         [
           "Evil Twin",
           "AP falso clona o SSID e atrai o cliente com sinal mais forte para MITM",
-          "802.11w (PMF), portal com certificado validado, WIDS/WIPS"
+          "802.11w (PMF), 802.1X/EAP-TLS com validação do certificado do servidor, WIDS/WIPS"
         ],
         [
           "Deauth flood",
@@ -182,7 +182,7 @@
       "limite": "Alguns firmwares mantêm o WPS ativo internamente mesmo com a opção desmarcada; verificar com scanner"
     },
     {
-      "nome": "Portal com certificado (802.1X/EAP)",
+      "nome": "802.1X/EAP-TLS com validação do certificado",
       "como_funciona": "Usa WPA2/WPA3-Enterprise com EAP-TLS e validação de certificado do servidor pelo cliente, de modo que um AP falso sem o certificado correto é recusado na autenticação.",
       "cobre": "Evil Twin, Karma, roubo de credencial",
       "limite": "Cliente precisa validar o certificado do servidor; configuração permissiva anula a proteção"
@@ -205,7 +205,7 @@
       "sintoma": "SSID duplicado com dois BSSIDs, ou mesmo BSSID em outro canal",
       "causa_provavel": "Evil Twin / Rogue AP clonando a rede legítima",
       "leitura": "Dois APs anunciando o mesmo SSID com MAC ou canal diferentes, um deles com sinal anormalmente forte, apontam para AP falso. Confirmar o BSSID legítimo na etiqueta do roteador.",
-      "comando": "sudo airodump-ng wlan0mon | grep -i \"NOME_DA_REDE\""
+      "comando": "sudo airodump-ng --essid \"NOME_DA_REDE\" wlan0mon"
     },
     {
       "sintoma": "Portal de login aparece em rede já conhecida que não pedia autenticação",

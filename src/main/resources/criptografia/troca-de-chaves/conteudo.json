@@ -8,7 +8,7 @@
     },
     {
       "rotulo": "Mecanismo moderno",
-      "valor": "ECDHE (Diffie-Hellman efêmero em curva elíptica)",
+      "valor": "ECDHE (Diffie-Hellman efêmero em curva elíptica, ex.: X25519), cada vez mais no híbrido pós-quântico X25519MLKEM768 (ML-KEM, FIPS 203)",
       "dica": "Par de chaves novo e descartável por conexão"
     },
     {
@@ -107,7 +107,7 @@
         [
           "Status no TLS 1.3",
           "DHE permitido (grupos ffdhe)",
-          "Padrão recomendado",
+          "Padrão recomendado; o híbrido X25519MLKEM768 já é oferecido por padrão pelos navegadores atuais",
           "Removido"
         ]
       ]
@@ -216,8 +216,8 @@
     {
       "titulo": "Confirmar ECDHE e forward secrecy na conexão",
       "cenario": "Verificar qual troca de chaves o servidor negocia e se há PFS.",
-      "comandos": "openssl s_client -connect example.com:443 -tls1_3 </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject\n\n# ver a suite e o grupo negociados\necho | openssl s_client -connect example.com:443 2>/dev/null | grep -E 'Cipher|Server Temp Key|Protocol'",
-      "explicacao": "A linha 'Server Temp Key' revelando ECDH com uma curva (ex.: X25519, 253 bits) confirma troca efêmera e forward secrecy. Uma suite ECDHE_ no campo Cipher também indica PFS; TLS_RSA_ indicaria key transport sem PFS."
+      "comandos": "openssl s_client -connect example.com:443 -tls1_3 </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject\n\n# ver a suite e o grupo negociados\necho | openssl s_client -connect example.com:443 2>/dev/null | grep -E 'Cipher|Temp Key|TLS1.3 group|Protocol'",
+      "explicacao": "A linha 'Server Temp Key' ou 'Peer Temp Key' (ex.: X25519, 253 bits), ou 'Negotiated TLS1.3 group' (ex.: X25519MLKEM768) no OpenSSL 3.5 ou mais novo, confirma troca efêmera e forward secrecy. Uma suite ECDHE_ no campo Cipher também indica PFS; TLS_RSA_ indicaria key transport sem PFS."
     },
     {
       "titulo": "Testar se o servidor ainda aceita RSA key transport (sem PFS)",

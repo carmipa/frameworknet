@@ -4,7 +4,7 @@
     {
       "rotulo": "Portas da família",
       "valor": "22 (SSH), 23 (Telnet), 3389 (RDP), 5900 (VNC)",
-      "dica": "Todas usam TCP; são os principais canais de administração remota. Todas ficam na faixa: 22 e 23 são portas conhecidas (0-1023), 3389 e 5900 são portas registradas (1024-49151)."
+      "dica": "Todas usam TCP; são os principais canais de administração remota. Quanto à faixa: 22 e 23 são portas conhecidas (0-1023); 3389 e 5900 são portas registradas (1024-49151)."
     },
     {
       "rotulo": "Transporte",
@@ -24,7 +24,7 @@
     {
       "rotulo": "RFCs de referência",
       "valor": "SSH: RFC 4251-4254; Telnet: RFC 854",
-      "dica": "RDP e VNC seguem protocolos proprietários/RFB, sem RFC IETF clássica."
+      "dica": "RDP é especificação da Microsoft (MS-RDPBCGR); VNC usa o protocolo RFB, descrito na RFC 6143."
     },
     {
       "rotulo": "Recomendação de exposição",
@@ -210,7 +210,7 @@
       "como_funciona": "Muitas instalações de VNC ficam sem senha ou com senha curta limitada a 8 caracteres. Buscadores como o Shodan listam esses servidores; o atacante conecta e vê/controla a tela como se estivesse sentado na máquina.",
       "sinal": "Porta 5900 aberta ao público; sessões VNC de origem desconhecida; ausência de senha configurada.",
       "gravidade": "Alta",
-      "gravidade_cor": "warning"
+      "gravidade_cor": "danger"
     }
   ],
   "mitigacoes": [

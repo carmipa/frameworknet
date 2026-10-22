@@ -60,7 +60,7 @@
       "titulo": "Checksum só do cabeçalho",
       "icone": "fact_check",
       "texto": "O checksum de 16 bits protege apenas o cabeçalho, não os dados. Como o TTL muda a cada salto, cada roteador precisa recalcular o checksum. A integridade do payload fica por conta das camadas superiores (checksum de TCP/UDP). No IPv6 esse campo foi removido.",
-      "destaque": "Cobre 20 bytes de cabeçalho, não o payload"
+      "destaque": "Cobre o cabeçalho (20 a 60 bytes), não o payload"
     },
     {
       "titulo": "NAT: a resposta ao esgotamento",
@@ -77,7 +77,7 @@
   ],
   "diagrama": {
     "titulo": "Roteamento salto a salto com decremento do TTL",
-    "definicao": "sequenceDiagram\n    participant O as Origem TTL=64\n    participant R1 as Roteador 1\n    participant R2 as Roteador 2\n    participant R3 as Roteador 3\n    participant D as Destino\n    O->>R1: Pacote com TTL=64\n    Note over R1: Decrementa TTL -> 63\n    R1->>R2: Encaminha com TTL=63\n    Note over R2: Decrementa TTL -> 62\n    R2->>R3: Encaminha com TTL=62\n    Note over R3: Decrementa TTL -> 61\n    R3->>D: Entrega com TTL=61\n    D-->>O: Resposta chega a origem\n    Note over R2,R3: Se o TTL chegar a 0 no meio do caminho\n    R2-->>O: ICMP Time Exceeded quando TTL=0",
+    "definicao": "sequenceDiagram\n    participant O as Origem TTL=64\n    participant R1 as Roteador 1\n    participant R2 as Roteador 2\n    participant R3 as Roteador 3\n    participant D as Destino\n    O->>R1: Pacote com TTL=64\n    Note over R1: Decrementa TTL -> 63\n    R1->>R2: Encaminha com TTL=63\n    Note over R2: Decrementa TTL -> 62\n    R2->>R3: Encaminha com TTL=62\n    Note over R3: Decrementa TTL -> 61\n    R3->>D: Entrega com TTL=61\n    D-->>O: Resposta chega à origem\n    Note over R2,R3: Se o TTL chegar a 0 no meio do caminho\n    R2-->>O: ICMP Time Exceeded quando TTL=0",
     "legenda": "Cada roteador subtrai 1 do TTL antes de encaminhar. Se o TTL zera no meio do caminho, o pacote é descartado e um ICMP Time Exceeded volta à origem — mecanismo que o traceroute explora para mapear a rota."
   },
   "cabecalho": {
@@ -398,7 +398,7 @@
     {
       "titulo": "Descobrir o MTU do caminho (Path MTU)",
       "cenario": "Achar o maior pacote que atravessa o caminho sem fragmentar, ligando o bit DF e variando o tamanho.",
-      "comandos": "# Linux: -M do liga o Don't Fragment, -s define o payload\nping -M do -s 1472 8.8.8.8\n# se falhar, reduza o -s ate passar (1472 + 28 = 1500 MTU tipico)\nping -M do -s 1500 8.8.8.8   # deve falhar num link de MTU 1500",
+      "comandos": "# Linux: -M do liga o Don't Fragment, -s define o payload\nping -M do -s 1472 8.8.8.8\n# se falhar, reduza o -s até passar (1472 + 28 = 1500 MTU típico)\nping -M do -s 1500 8.8.8.8   # deve falhar num link de MTU 1500",
       "explicacao": "Payload de 1472 bytes + 20 (IP) + 8 (ICMP) = 1500. Se o ping com DF falha com 'fragmentation needed', o MTU do caminho é menor que o testado. Diminua o -s até obter resposta."
     },
     {

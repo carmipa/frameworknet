@@ -1,5 +1,5 @@
 {
-  "resumo": "A família de padrões IEEE 802.11 evoluiu de forma contínua desde o padrão original de 1997 (1 e 2 Mbps), saindo de dezenas de Mbps para dezenas de Gbps. A linha original b/a/g estabeleceu as bandas de 2.4 GHz e 5 GHz e a modulação OFDM. A partir do 802.11n (Wi-Fi 4) a Wi-Fi Alliance passou a usar nomes comerciais simplificados: Wi-Fi 4 (802.11n) trouxe MIMO e uso simultâneo de duas bandas; Wi-Fi 5 (802.11ac) concentrou-se em 5 GHz com canais de até 160 MHz e MU-MIMO de downlink; Wi-Fi 6/6E (802.11ax) introduziu OFDMA, MU-MIMO bidirecional, modulação 1024-QAM e a banda de 6 GHz; e Wi-Fi 7 (802.11be) adicionou canais de 320 MHz, 4096-QAM e o Multi-Link Operation (MLO), que agrega bandas simultaneamente. Entender qual padrão e qual banda um dispositivo usa é a chave para diagnosticar velocidade baixa, pois um cliente antigo derruba a experiência da rede inteira.",
+  "resumo": "A família de padrões IEEE 802.11 evoluiu de forma contínua desde o padrão original de 1997 (1 e 2 Mbps), saindo de dezenas de Mbps para dezenas de Gbps. A linha original b/a/g estabeleceu as bandas de 2.4 GHz e 5 GHz e a modulação OFDM. A partir do 802.11n (Wi-Fi 4) a Wi-Fi Alliance passou a usar nomes comerciais simplificados: Wi-Fi 4 (802.11n) trouxe MIMO e operação tanto em 2.4 quanto em 5 GHz; Wi-Fi 5 (802.11ac) concentrou-se em 5 GHz com canais de até 160 MHz e MU-MIMO de downlink; Wi-Fi 6/6E (802.11ax) introduziu OFDMA, MU-MIMO bidirecional, modulação 1024-QAM e a banda de 6 GHz; e Wi-Fi 7 (802.11be) adicionou canais de 320 MHz, 4096-QAM e o Multi-Link Operation (MLO), que agrega bandas simultaneamente. Entender qual padrão e qual banda um dispositivo usa é a chave para diagnosticar velocidade baixa, pois um cliente antigo derruba a experiência da rede inteira.",
   "ficha": [
     {
       "rotulo": "Padrões no foco",
@@ -13,7 +13,7 @@
     },
     {
       "rotulo": "Velocidade máxima teórica",
-      "valor": "de 11 Mbps (802.11b) até cerca de 46 Gbps (802.11be)",
+      "valor": "de 11 Mbps (802.11b) até cerca de 23 Gbps (802.11be)",
       "dica": "Valores de PHY em laboratório; a vazão real fica bem abaixo por overhead e ambiente"
     },
     {
@@ -43,7 +43,7 @@
     {
       "titulo": "Banda 6 GHz: o salto do Wi-Fi 6E e 7",
       "icone": "cell_tower",
-      "texto": "Faixa de 5.925 a 7.125 GHz liberada para Wi-Fi 6E e Wi-Fi 7. Traz muitos canais de 20/40/80/160 MHz totalmente novos e livres de equipamentos legados, quase sem congestionamento e sem clientes antigos degradando a banda.",
+      "texto": "Faixa de 5,925 a 7,125 GHz liberada para Wi-Fi 6E e Wi-Fi 7. Traz muitos canais de 20/40/80/160 MHz totalmente novos e livres de equipamentos legados, quase sem congestionamento e sem clientes antigos degradando a banda.",
       "destaque": "Espectro limpo, exclusivo de dispositivos novos"
     },
     {
@@ -67,7 +67,7 @@
   ],
   "diagrama": {
     "titulo": "Evolução dos padrões 802.11 (1999 a 2024)",
-    "definicao": "flowchart LR\n  b[\"802.11b - 1999\n2.4 GHz - 11 Mbps\nDSSS\"] --> a[\"802.11a - 1999\n5 GHz - 54 Mbps\nOFDM\"]\n  a --> g[\"802.11g - 2003\n2.4 GHz - 54 Mbps\nOFDM\"]\n  g --> n[\"Wi-Fi 4 / 802.11n - 2009\n2.4 e 5 GHz - 600 Mbps\nMIMO\"]\n  n --> ac[\"Wi-Fi 5 / 802.11ac - 2013\n5 GHz - até 6.9 Gbps\nMU-MIMO (downlink)\"]\n  ac --> ax[\"Wi-Fi 6/6E / 802.11ax - 2019\n2.4/5/6 GHz - 9.6 Gbps\nOFDMA + 1024-QAM\"]\n  ax --> be[\"Wi-Fi 7 / 802.11be - 2024\n2.4/5/6 GHz - 46 Gbps\n320 MHz + MLO\"]",
+    "definicao": "flowchart LR\n  b[\"802.11b - 1999\n2.4 GHz - 11 Mbps\nDSSS\"] --> a[\"802.11a - 1999\n5 GHz - 54 Mbps\nOFDM\"]\n  a --> g[\"802.11g - 2003\n2.4 GHz - 54 Mbps\nOFDM\"]\n  g --> n[\"Wi-Fi 4 / 802.11n - 2009\n2.4 e 5 GHz - 600 Mbps\nMIMO\"]\n  n --> ac[\"Wi-Fi 5 / 802.11ac - 2013\n5 GHz - até 6.9 Gbps\nMU-MIMO (downlink)\"]\n  ac --> ax[\"Wi-Fi 6/6E / 802.11ax - 2019\n2.4/5/6 GHz - 9.6 Gbps\nOFDMA + 1024-QAM\"]\n  ax --> be[\"Wi-Fi 7 / 802.11be - 2024\n2.4/5/6 GHz - 23 Gbps\n320 MHz + MLO\"]",
     "legenda": "Cada geração mantém compatibilidade regressiva com as anteriores na mesma banda; por isso um cliente antigo (ex.: 802.11g) conectado numa rede moderna reduz a eficiência do canal para todos."
   },
   "tabelas": [
@@ -134,7 +134,7 @@
           "Wi-Fi 7 (802.11be)",
           "2024",
           "2.4 / 5 / 6 GHz",
-          "cerca de 46 Gbps",
+          "cerca de 23 Gbps",
           "20 a 320 MHz",
           "MLO + OFDMA + 4096-QAM"
         ]
@@ -188,7 +188,7 @@
           "Até 4",
           "Até 8",
           "Até 8",
-          "Até 16"
+          "Até 8"
         ],
         [
           "MU-MIMO",

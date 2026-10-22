@@ -61,7 +61,7 @@
   ],
   "diagrama": {
     "titulo": "A mesma chave nos dois lados",
-    "definicao": "sequenceDiagram\n    participant A as Alice (emissora)\n    participant C as Canal inseguro\n    participant B as Bob (receptor)\n    Note over A,B: Ambos já compartilham a mesma chave secreta K\n    A->>A: texto claro + K + nonce\n    A->>A: cifrar com AES-256-GCM\n    A->>C: texto cifrado + nonce + tag\n    C->>B: texto cifrado + nonce + tag\n    B->>B: verificar tag com K\n    B->>B: decifrar com a MESMA chave K\n    Note over B: tag inválida, entao rejeita (não decifra)",
+    "definicao": "sequenceDiagram\n    participant A as Alice (emissora)\n    participant C as Canal inseguro\n    participant B as Bob (receptor)\n    Note over A,B: Ambos já compartilham a mesma chave secreta K\n    A->>A: texto claro + K + nonce\n    A->>A: cifrar com AES-256-GCM\n    A->>C: texto cifrado + nonce + tag\n    C->>B: texto cifrado + nonce + tag\n    B->>B: verificar tag com K\n    B->>B: decifrar com a MESMA chave K\n    Note over B: tag inválida, então rejeita (não decifra)",
     "legenda": "A mesma chave secreta K cifra na origem e decifra no destino. O nonce e a tag viajam junto do texto cifrado; o nonce garante unicidade e a tag garante integridade. A chave nunca trafega pelo canal inseguro: ela é combinada antes, tipicamente via troca assimétrica no handshake do TLS."
   },
   "tabelas": [
@@ -191,7 +191,7 @@
   "ataques": [
     {
       "nome": "Reúso de nonce / IV",
-      "como_funciona": "Em GCM ou CTR, usar o mesmo nonce com a mesma chave para duas mensagens permite ao atacante calcular o XOR dos textos claros e, em GCM, até forjar a chave de autenticação (recuperar a subchave H), quebrando a integridade. É o erro operacional mais destrutivo da criptografia simétrica.",
+      "como_funciona": "Em GCM ou CTR, usar o mesmo nonce com a mesma chave para duas mensagens permite ao atacante calcular o XOR dos textos claros e, em GCM, até recuperar a subchave de autenticação H e, com ela, forjar tags válidas, quebrando a integridade. É o erro operacional mais destrutivo da criptografia simétrica.",
       "sinal": "Nonces fixos, contadores reiniciados após reboot ou nonces derivados de valores que colidem",
       "gravidade": "Crítica",
       "gravidade_cor": "danger"
@@ -199,7 +199,7 @@
     {
       "nome": "Uso do modo ECB",
       "como_funciona": "No ECB cada bloco é cifrado de forma independente, então blocos de texto claro idênticos geram blocos cifrados idênticos. Isso vaza a estrutura dos dados: o exemplo clássico é a imagem do pinguim Tux, cujo contorno permanece visível após a cifragem em ECB.",
-      "sinal": "Padrões ou repetições visíveis no texto cifrado; uso de EVP com -aes-ecb",
+      "sinal": "Padrões ou repetições visíveis no texto cifrado; uso de -aes-128-ecb (ou -aes-256-ecb) no openssl enc, ou de EVP_aes_*_ecb na API",
       "gravidade": "Alta",
       "gravidade_cor": "danger"
     },
@@ -267,7 +267,7 @@
     {
       "titulo": "Ver na prática por que ECB é inseguro",
       "cenario": "Comparar a mesma entrada com blocos repetidos cifrada em ECB e em CBC, evidenciando que o ECB preserva padrões.",
-      "comandos": "# Gerar entrada com muitos blocos identicos (16 KB de zeros)\nhead -c 16384 /dev/zero > repetido.bin\n\n# Cifrar em ECB (blocos iguais geram saida com repeticoes)\nopenssl enc -aes-256-ecb -nosalt -K 00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff \\\n  -in repetido.bin -out ecb.bin\n\n# Cifrar em CBC com IV (encadeia blocos, sem repeticoes visiveis)\nopenssl enc -aes-256-cbc -nosalt -iv 000102030405060708090a0b0c0d0e0f \\\n  -K 00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff \\\n  -in repetido.bin -out cbc.bin\n\n# Contar blocos de 16 bytes repetidos em cada saida\nxxd -c 16 ecb.bin | awk '{print $2$3$4$5$6$7$8$9}' | sort | uniq -c | sort -rn | head\nxxd -c 16 cbc.bin | awk '{print $2$3$4$5$6$7$8$9}' | sort | uniq -c | sort -rn | head",
+      "comandos": "# Gerar entrada com muitos blocos idênticos (16 KB de zeros)\nhead -c 16384 /dev/zero > repetido.bin\n\n# Cifrar em ECB (blocos iguais geram saída com repetições)\nopenssl enc -aes-256-ecb -nosalt -K 00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff \\\n  -in repetido.bin -out ecb.bin\n\n# Cifrar em CBC com IV (encadeia blocos, sem repetições visíveis)\nopenssl enc -aes-256-cbc -nosalt -iv 000102030405060708090a0b0c0d0e0f \\\n  -K 00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff \\\n  -in repetido.bin -out cbc.bin\n\n# Contar blocos de 16 bytes repetidos em cada saída\nxxd -c 16 ecb.bin | awk '{print $2$3$4$5$6$7$8$9}' | sort | uniq -c | sort -rn | head\nxxd -c 16 cbc.bin | awk '{print $2$3$4$5$6$7$8$9}' | sort | uniq -c | sort -rn | head",
       "explicacao": "Na saída ECB um mesmo bloco cifrado aparece milhares de vezes, revelando a estrutura repetitiva do texto claro; na saída CBC não há repetição porque cada bloco depende do anterior e do IV. É a demonstração prática do porquê o ECB nunca deve ser usado. As chaves e o IV acima são apenas didáticos."
     },
     {

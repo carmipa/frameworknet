@@ -1,5 +1,5 @@
 {
-  "resumo": "As ferramentas de linha de comando são o instrumento do analista de redes. Abaixo, um catálogo por categoria — o que cada uma faz e um exemplo de uso; os aprofundamentos no sub-menu detalham cada família e como ler a saída.",
+  "resumo": "As ferramentas de linha de comando são o instrumento do analista de redes. Abaixo, um catálogo por categoria — o que cada uma faz e um exemplo de uso; os aprofundamentos no submenu detalham cada família e como ler a saída.",
   "tabelas": [
     {
       "titulo": "Ferramentas de rede (CLI)",
@@ -108,7 +108,7 @@
         ],
         [
           "iperf3",
-          "Transferencia",
+          "Transferência",
           "Mede a largura de banda entre dois pontos em TCP ou UDP com estatísticas de vazão.",
           "iperf3 -c 192.168.0.10 -t 20"
         ],

@@ -117,7 +117,7 @@
         [
           "9200",
           "Elasticsearch",
-          "Sem segurança até a 6.x; API REST inteira aberta na porta"
+          "Segurança desligada por padrão até a 7.x; API REST inteira aberta na porta"
         ]
       ]
     },
@@ -260,13 +260,13 @@
     {
       "titulo": "Descobrir em qual interface seu banco escuta",
       "cenario": "Você quer confirmar se o banco está em 127.0.0.1 (seguro) ou em 0.0.0.0 (exposto). Este é o primeiro teste de qualquer auditoria de porta de banco.",
-      "comandos": "# Linux: listar portas de banco em escuta e o endereco de bind\nsudo ss -tlnp | grep -E '3306|5432|1433|1521|27017|6379|9200'\n\n# Leitura: 127.0.0.1:5432 = seguro (so local)\n#          0.0.0.0:5432   = PERIGO (todas as interfaces)\n\n# Windows (PowerShell):\nGet-NetTCPConnection -State Listen | Where-Object LocalPort -in 3306,5432,1433,1521,27017,6379,9200 | Select-Object LocalAddress,LocalPort,OwningProcess",
+      "comandos": "# Linux: listar portas de banco em escuta e o endereço de bind\nsudo ss -tlnp | grep -E '3306|5432|1433|1521|27017|6379|9200'\n\n# Leitura: 127.0.0.1:5432 = seguro (só local)\n#          0.0.0.0:5432   = PERIGO (todas as interfaces)\n\n# Windows (PowerShell):\nGet-NetTCPConnection -State Listen | Where-Object LocalPort -in 3306,5432,1433,1521,27017,6379,9200 | Select-Object LocalAddress,LocalPort,OwningProcess",
       "explicacao": "Se aparecer 0.0.0.0 ou o IP público ao lado da porta, o banco está acessível de fora. Corrija o bind no arquivo de configuração (bind-address no MySQL, listen_addresses no PostgreSQL, bindIp no MongoDB, bind no Redis) para 127.0.0.1 ou o IP da rede privada e reinicie o serviço."
     },
     {
       "titulo": "Testar se a porta responde do lado de fora",
       "cenario": "Do seu computador (fora do servidor), você quer verificar se a porta do banco está alcançável pela internet. Do lado de fora, o correto é a conexão ser recusada ou dar timeout.",
-      "comandos": "# Substitua SERVIDOR pelo IP publico do seu servidor\n# Testar a porta do PostgreSQL a partir de uma maquina externa\nnc -zv SERVIDOR 5432\n\n# Testar Redis exposto sem senha (so faca isto no SEU proprio servidor de teste)\nredis-cli -h SERVIDOR -p 6379 PING\n# Resposta PONG sem pedir senha = Redis exposto e sem auth\n\n# Testar API do Elasticsearch exposta\ncurl -s http://SERVIDOR:9200/_cat/indices",
+      "comandos": "# Substitua SERVIDOR pelo IP público do seu servidor\n# Testar a porta do PostgreSQL a partir de uma máquina externa\nnc -zv SERVIDOR 5432\n\n# Testar Redis exposto sem senha (só faça isto no SEU próprio servidor de teste)\nredis-cli -h SERVIDOR -p 6379 PING\n# Resposta PONG sem pedir senha = Redis exposto e sem auth\n\n# Testar API do Elasticsearch exposta\ncurl -s http://SERVIDOR:9200/_cat/indices",
       "explicacao": "O resultado desejado é connection refused ou timeout, provando que firewall e bind estão fazendo o trabalho. Se o nc conectar, o Redis responder PONG sem senha, ou o Elastic listar índices, você tem um banco exposto e precisa fechar a porta imediatamente. Faça este teste apenas contra servidores que são seus."
     },
     {

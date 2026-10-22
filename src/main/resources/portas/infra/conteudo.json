@@ -43,7 +43,7 @@
       "titulo": "Fator de amplificação",
       "icone": "trending_up",
       "texto": "É a razão entre o tamanho da resposta e o do pedido. Uma consulta DNS ANY pode devolver dezenas de vezes mais bytes; o monlist do NTP chega a centenas de vezes. Quanto maior o fator, menos máquinas o atacante precisa para gerar um DDoS massivo.",
-      "destaque": "Pedido de bytes, resposta de kilobytes"
+      "destaque": "Pedido de bytes, resposta de quilobytes"
     },
     {
       "titulo": "Resolver recursivo aberto",
@@ -73,7 +73,7 @@
   "diagrama": {
     "titulo": "Ataque de amplificação e reflexão via DNS",
     "definicao": "sequenceDiagram\n    participant A as Atacante (IP falsificado)\n    participant R as Resolver DNS aberto (53/UDP)\n    participant V as Vítima\n    Note over A: Escreve o IP da vítima<br/>como origem do pacote\n    A->>R: Consulta pequena (ANY example.com) com origem falsa da vítima\n    Note over R: O resolver acredita<br/>na origem e responde\n    R-->>V: Resposta enorme enviada para a vítima\n    Note over V: A vítima recebe tráfego<br/>que nunca pediu (DDoS)\n    A->>R: Repete com milhares de resolvers abertos\n    R-->>V: A enxurrada somada satura o link da vítima",
-    "legenda": "As setas contínuas (->>) são os pedidos pequenos do atacante com origem forjada; as tracejadas (-->>) são as respostas grandes que os resolvers despejam sobre a vítima. Um pedido de dezenas de bytes vira resposta de kilobytes, e o volume somado de muitos resolvers derruba o alvo."
+    "legenda": "As setas contínuas (->>) são os pedidos pequenos do atacante com origem forjada; as tracejadas (-->>) são as respostas grandes que os resolvers despejam sobre a vítima. Um pedido de dezenas de bytes vira resposta de quilobytes, e o volume somado de muitos resolvers derruba o alvo."
   },
   "tabelas": [
     {
@@ -118,7 +118,7 @@
           "389",
           "LDAP",
           "UDP e TCP",
-          "46x a 55x (CLDAP em UDP)",
+          "56x a 70x (CLDAP em UDP)",
           "Nunca exposto; migrar para 636"
         ],
         [
@@ -234,14 +234,14 @@
       "como_funciona": "Com a community padrão 'public' exposta, o atacante faz um snmpwalk e lê toda a MIB: interfaces, tabelas de roteamento, versões de firmware e até a configuração. Se a 'private' estiver ativa, pode reconfigurar o equipamento.",
       "sinal": "Consultas SNMP de origens externas respondidas com sucesso; sessões GET/WALK não esperadas nos logs.",
       "gravidade": "Alta",
-      "gravidade_cor": "warning"
+      "gravidade_cor": "danger"
     },
     {
       "nome": "LDAP em claro (389)",
       "como_funciona": "Com o diretório ouvindo na 389 sem TLS, um atacante posicionado na rede captura os bind requests e lê usuário e senha em texto legível, além de enumerar toda a árvore do diretório.",
       "sinal": "Binds LDAP simples em texto claro capturáveis por sniffer; ausência de handshake TLS antes da autenticação.",
       "gravidade": "Alta",
-      "gravidade_cor": "warning"
+      "gravidade_cor": "danger"
     }
   ],
   "mitigacoes": [
@@ -280,19 +280,19 @@
     {
       "titulo": "Testar se um resolver DNS está aberto e medir a amplificação",
       "cenario": "Você quer confirmar se um resolver responde recursão para qualquer origem e comparar o tamanho da resposta com o do pedido. Faça isso apenas contra servidores que você administra.",
-      "comandos": "# Consulta recursiva a um dominio externo pelo resolver alvo\ndig @192.0.2.53 example.com ANY +norecurse\ndig @192.0.2.53 example.com A\n\n# Comparar o tamanho: uma resposta muito maior que o pedido indica potencial de amplificacao\ndig @192.0.2.53 isc.org ANY +bufsize=4096 | grep -i 'MSG SIZE'\n\n# Se 'status: REFUSED' ou nao responder recursao externa, o resolver esta corretamente fechado",
+      "comandos": "# Consulta recursiva a um domínio externo pelo resolver alvo\ndig @192.0.2.53 example.com A\n# Não recursiva, para comparação\ndig @192.0.2.53 example.com A +norecurse\n\n# Comparar o tamanho: uma resposta muito maior que o pedido indica potencial de amplificação\ndig @192.0.2.53 isc.org ANY +bufsize=4096 | grep -i 'MSG SIZE'\n\n# Se 'status: REFUSED' ou não responder recursão externa, o resolver está corretamente fechado",
       "explicacao": "Se o resolver devolve NOERROR com dados para domínios de terceiros vindo de fora, ele está aberto e pode ser usado em amplificação. O ideal é ver REFUSED para origens externas. A linha MSG SIZE mostra o volume da resposta usado no cálculo do fator de amplificação."
     },
     {
       "titulo": "Detectar SNMP com a community 'public'",
       "cenario": "Verificar se um equipamento responde à community padrão e, portanto, vaza a MIB inteira. Rode somente em hosts autorizados da sua rede.",
-      "comandos": "# Tenta ler o sysDescr com a community padrao\nsnmpget -v2c -c public 192.0.2.10 1.3.6.1.2.1.1.1.0\n\n# Percorre a MIB inteira (evidencia o vazamento se responder)\nsnmpwalk -v2c -c public 192.0.2.10 system\n\n# Alternativa cifrada e autenticada (o correto):\nsnmpget -v3 -l authPriv -u monitor -a SHA -A 'SenhaAuth' -x AES -X 'SenhaPriv' 192.0.2.10 1.3.6.1.2.1.1.1.0",
+      "comandos": "# Tenta ler o sysDescr com a community padrão\nsnmpget -v2c -c public 192.0.2.10 1.3.6.1.2.1.1.1.0\n\n# Percorre a MIB inteira (evidencia o vazamento se responder)\nsnmpwalk -v2c -c public 192.0.2.10 system\n\n# Alternativa cifrada e autenticada (o correto):\nsnmpget -v3 -l authPriv -u monitor -a SHA -A 'SenhaAuth' -x AES -X 'SenhaPriv' 192.0.2.10 1.3.6.1.2.1.1.1.0",
       "explicacao": "Se o snmpget/snmpwalk com -c public retorna dados, a community padrão está ativa e exposta: qualquer um lê o inventário do equipamento. A linha final mostra o formato SNMPv3 authPriv, que exige usuário, chave de autenticação e chave de privacidade, encerrando o problema."
     },
     {
       "titulo": "Comparar o LDAP em claro (389) com o LDAPS (636)",
       "cenario": "Confirmar que o bind na 389 trafega em texto legível e validar que a 636 responde com TLS. Use um servidor de diretório de teste seu.",
-      "comandos": "# Bind simples na 389 (a credencial trafega em claro na rede)\nldapsearch -x -H ldap://dir.exemplo.local:389 -D 'cn=admin,dc=exemplo,dc=local' -w 'senha' -b 'dc=exemplo,dc=local' '(uid=paulo)'\n\n# Bind sobre TLS na 636 (LDAPS)\nldapsearch -x -H ldaps://dir.exemplo.local:636 -D 'cn=admin,dc=exemplo,dc=local' -w 'senha' -b 'dc=exemplo,dc=local' '(uid=paulo)'\n\n# Provar que a 389 e legivel: capturar e procurar a senha no pacote\nsudo tcpdump -i any -A 'port 389' -c 20",
+      "comandos": "# Bind simples na 389 (a credencial trafega em claro na rede)\nldapsearch -x -H ldap://dir.exemplo.local:389 -D 'cn=admin,dc=exemplo,dc=local' -w 'senha' -b 'dc=exemplo,dc=local' '(uid=paulo)'\n\n# Bind sobre TLS na 636 (LDAPS)\nldapsearch -x -H ldaps://dir.exemplo.local:636 -D 'cn=admin,dc=exemplo,dc=local' -w 'senha' -b 'dc=exemplo,dc=local' '(uid=paulo)'\n\n# Provar que a 389 é legível: capturar e procurar a senha no pacote\nsudo tcpdump -i any -A 'port 389' -c 20",
       "explicacao": "No tcpdump da porta 389 a senha e os atributos aparecem legíveis, provando o risco do LDAP em claro. Na 636 o tcpdump só mostra o handshake TLS e bytes cifrados. Conclusão prática: desativar o bind simples na 389 e exigir o LDAPS na 636."
     }
   ],

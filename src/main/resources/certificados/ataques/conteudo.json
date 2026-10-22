@@ -190,14 +190,14 @@
     },
     {
       "nome": "Self-signed aceito pelo usuário",
-      "como_funciona": "O atacante apresenta um certificado auto-assinado. O navegador barra, mas exibe a opção de prosseguir. O usuário habituado a ignorar avisos clica em 'Prosseguir mesmo assim' e entrega credenciais diretamente ao interceptador.",
+      "como_funciona": "O atacante apresenta um certificado autoassinado. O navegador barra, mas exibe a opção de prosseguir. O usuário habituado a ignorar avisos clica em 'Prosseguir mesmo assim' e entrega credenciais diretamente ao interceptador.",
       "sinal": "Tela de aviso vermelha com botão de exceção; certificado sem cadeia até uma raiz pública.",
       "gravidade": "Alta",
       "gravidade_cor": "warning"
     },
     {
       "nome": "Forja por assinatura fraca (SHA-1/MD5)",
-      "como_funciona": "Com MD5 (colisão já demonstrada, caso Flame) ou SHA-1 (colisão prática, SHAttered), o atacante constrói um certificado diferente com a mesma assinatura da CA, obtendo um certificado válido para um domínio que não controla. Hoje é em grande parte histórico: navegadores e CAs públicas rejeitam SHA-1.",
+      "como_funciona": "Com MD5 (colisão já demonstrada, caso Flame) ou SHA-1 (colisão prática desde o SHAttered, 2017, e de prefixo escolhido, a que permite forjar certificado, desde o 'SHA-1 is a Shambles', 2020), o atacante constrói um certificado diferente com a mesma assinatura da CA, obtendo um certificado válido para um domínio que não controla. Hoje é em grande parte histórico: navegadores e CAs públicas rejeitam SHA-1.",
       "sinal": "Campo Signature Algorithm indicando sha1WithRSAEncryption ou md5WithRSAEncryption na cadeia.",
       "gravidade": "Média",
       "gravidade_cor": "warning"
@@ -205,7 +205,7 @@
     {
       "nome": "Uso de chave comprometida não revogada",
       "como_funciona": "A chave privada vazou (backup exposto, Heartbleed, repositório público), mas o certificado segue ativo porque a revogação não foi propagada ou o cliente não consulta OCSP/CRL (soft-fail). O atacante usa o par vazado para se passar pelo servidor legítimo.",
-      "sinal": "Certificado tecnicamente válido, porém listado em CRL/OCSP como revogado; ausência de OCSP stapling.",
+      "sinal": "Certificado tecnicamente válido, porém listado como revogado na CRL (ou no OCSP, onde ainda houver).",
       "gravidade": "Alta",
       "gravidade_cor": "danger"
     }
@@ -284,7 +284,7 @@
     {
       "sintoma": "Cadeado presente, mas a página mostra aviso de não segura",
       "causa_provavel": "Mixed content: página HTTPS carregando recursos via HTTP",
-      "comando": "Abrir o console do navegador (F12) e observar avisos 'Mixed Content' ou usar ./testssl.sh --headers host",
+      "comando": "Abrir o console do navegador (F12) e observar avisos 'Mixed Content'; na aba Rede (Network), procurar recursos carregados por http://",
       "leitura": "Cada recurso HTTP em página HTTPS quebra a garantia da conexão e abre brecha de injeção. Corrija as URLs para HTTPS e adote Content-Security-Policy para bloquear conteúdo inseguro."
     }
   ]

@@ -78,7 +78,7 @@
   "diagrama": {
     "titulo": "Ciclo de vida de uma conexão TCP: abertura em 3 vias e encerramento em 4 tempos",
     "definicao": "sequenceDiagram\n    participant C as Cliente\n    participant S as Servidor\n    Note over S: LISTEN (aguardando conexões)\n    Note over C: CLOSED\n    C->>S: SYN (seq=x)\n    Note over C: SYN_SENT\n    S-->>C: SYN-ACK (seq=y, ack=x+1)\n    Note over S: SYN_RECEIVED\n    C->>S: ACK (ack=y+1)\n    Note over C,S: ESTABLISHED (dados nos dois sentidos)\n    C->>S: FIN (seq=m)\n    Note over C: FIN_WAIT_1\n    S-->>C: ACK (ack=m+1)\n    Note over C: FIN_WAIT_2\n    Note over S: CLOSE_WAIT\n    S->>C: FIN (seq=n)\n    Note over S: LAST_ACK\n    C-->>S: ACK (ack=n+1)\n    Note over C: TIME_WAIT (espera 2 MSL)\n    Note over S: CLOSED",
-    "legenda": "As setas cheias (->>) são mensagens iniciadas pelo lado; as tracejadas (-->>) são as respostas/confirmações. Cada Note marca o estado da máquina de estados TCP em cada momento. Repare que são 3 mensagens para abrir e 4 para fechar, porque cada lado encerra o seu sentido do fluxo separadamente."
+    "legenda": "As setas cheias (->>) são as mensagens que cada lado inicia; as tracejadas (-->>) são as respostas/confirmações. Cada Note marca o estado da máquina de estados TCP em cada momento. Repare que são 3 mensagens para abrir e 4 para fechar, porque cada lado encerra o seu sentido do fluxo separadamente."
   },
   "cabecalho": {
     "titulo": "Cabeçalho TCP completo (20 bytes / 160 bits sem opções)",
@@ -432,19 +432,19 @@
     {
       "titulo": "Listar conexões e estados com ss",
       "cenario": "Você quer ver rapidamente todas as conexões TCP da máquina, em que estado estão e quais portas estão em LISTEN, para diagnosticar um serviço que não responde.",
-      "comandos": "# Todas as conexoes TCP com numeros (sem resolver nomes)\nss -tan\n\n# So as portas em escuta, com o processo dono\nss -tlnp\n\n# Contar conexoes por estado\nss -tan | awk 'NR>1 {print $1}' | sort | uniq -c",
+      "comandos": "# Todas as conexões TCP com números (sem resolver nomes)\nss -tan\n\n# Só as portas em escuta, com o processo dono\nss -tlnp\n\n# Contar conexões por estado\nss -tan | awk 'NR>1 {print $1}' | sort | uniq -c",
       "explicacao": "O ss (substituto moderno do netstat) mostra a coluna State: LISTEN, ESTAB, SYN-SENT, TIME-WAIT etc. Um monte de SYN-RECV pode indicar SYN flood; muitos TIME-WAIT indicam fechamento ativo em massa. O -p revela qual processo abriu cada porta."
     },
     {
       "titulo": "Capturar handshake e flags com tcpdump",
       "cenario": "Você precisa provar se o handshake está completando e ver quais flags cada segmento carrega ao acessar um serviço na porta 443.",
-      "comandos": "# Capturar so os SYN (inicio de conexao) na porta 443\nsudo tcpdump -ni eth0 'tcp[tcpflags] & tcp-syn != 0 and port 443'\n\n# Capturar SYN e RST juntos (aberturas e resets)\nsudo tcpdump -ni eth0 'tcp[tcpflags] & (tcp-syn|tcp-rst) != 0'\n\n# Ver o 3-way handshake completo de forma legivel\nsudo tcpdump -ni eth0 'port 443' -c 10",
+      "comandos": "# Capturar só os SYN (início de conexão) na porta 443\nsudo tcpdump -ni eth0 'tcp[tcpflags] & tcp-syn != 0 and port 443'\n\n# Capturar SYN e RST juntos (aberturas e resets)\nsudo tcpdump -ni eth0 'tcp[tcpflags] & (tcp-syn|tcp-rst) != 0'\n\n# Ver o 3-way handshake completo de forma legível\nsudo tcpdump -ni eth0 'port 443' -c 10",
       "explicacao": "O filtro tcp[tcpflags] lê o byte de flags do cabeçalho. Um SYN sem o SYN-ACK de volta aponta porta filtrada ou host inalcançável; um RST logo após o SYN significa porta fechada (connection refused). Ver SYN, SYN-ACK e ACK em sequência confirma conexão saudável."
     },
     {
       "titulo": "Abrir e testar conexões com nc (netcat)",
       "cenario": "Você quer testar manualmente se uma porta TCP está aberta e até trocar bytes crus com o serviço, sem um cliente dedicado.",
-      "comandos": "# Testar se a porta 80 responde (modo verboso, so scan)\nnc -zv example.com 80\n\n# Abrir conexao e falar HTTP na mao\nprintf 'GET / HTTP/1.0\\r\\n\\r\\n' | nc example.com 80\n\n# Subir um servidor de escuta local para testes\nnc -l 9000",
+      "comandos": "# Testar se a porta 80 responde (modo verboso, só scan)\nnc -zv example.com 80\n\n# Abrir conexão e falar HTTP na mão\nprintf 'GET / HTTP/1.0\\r\\n\\r\\n' | nc example.com 80\n\n# Subir um servidor de escuta local para testes\nnc -l 9000",
       "explicacao": "O nc completa o handshake TCP por você. Com -z ele só verifica se a porta abre (útil para varredura leve); connection refused = porta fechada com RST, e travar até estourar = pacotes filtrados por firewall. O modo -l transforma o nc num servidor para observar o outro lado da conexão."
     }
   ],

@@ -118,7 +118,7 @@
     {
       "ordem": 3,
       "criterio": "Rota originada localmente",
-      "regra": "network e aggregate ganham de redistribuição",
+      "regra": "Originada localmente (network, redistribute ou aggregate) ganha da aprendida de vizinho; entre as locais, network e redistribute ganham do aggregate-address",
       "observacao": "Prefere o que este AS anuncia por conta própria."
     },
     {
@@ -198,7 +198,7 @@
     {
       "ordem": 3,
       "estado": "Active",
-      "significado": "Tentando abrir o TCP ativamente depois de uma falha.",
+      "significado": "Escutando e aceitando uma conexão TCP do vizinho depois que a tentativa ativa falhou; quando o ConnectRetry expira, volta a Connect e tenta de novo.",
       "trava_comum": "Oscilar entre Active e Connect é o sintoma clássico de porta 179 bloqueada por ACL/firewall, IP de vizinho errado, update-source incorreto ou senha MD5 divergente — com a senha errada o TCP é descartado antes de abrir (no Cisco, log %TCP-6-BADAUTH)."
     },
     {
@@ -315,7 +315,7 @@
     {
       "nome": "RPKI / ROV",
       "ameaca": "Hijack: outro AS anuncia o seu prefixo e sequestra o tráfego.",
-      "aplicacao": "Publicar ROA para os seus prefixos e validar na entrada, descartando rotas com estado Invalid. Estado NotFound ainda é maioria e não deve ser descartado sem análise.",
+      "aplicacao": "Publicar ROA para os seus prefixos e validar na entrada, descartando rotas com estado Invalid. Estado NotFound (prefixo sem ROA) ainda é parcela grande das rotas e não deve ser descartado sem análise.",
       "comando": "router bgp 65001\n bgp rpki server tcp 10.0.0.9 port 3323 refresh 600\n neighbor 198.51.100.1 route-map RPKI-ENTRADA in\n!\nroute-map RPKI-ENTRADA deny 10\n match rpki invalid\nroute-map RPKI-ENTRADA permit 20"
     },
     {
@@ -374,7 +374,7 @@
       "sintoma": "Sessão Established, mas nenhum prefixo recebido",
       "causa_provavel": "Filtro de entrada seu, ou ausência de 'network'/filtro de saída do outro lado.",
       "comando": "show ip bgp neighbors 198.51.100.2 received-routes\nshow ip bgp neighbors 198.51.100.2 routes",
-      "leitura": "'received-routes' exige soft-reconfiguration inbound ou route refresh. Se received traz rotas e 'routes' vem vazio, o descarte é seu — o filtro de entrada é o culpado."
+      "leitura": "'received-routes' exige soft-reconfiguration inbound (o route refresh não guarda as rotas recebidas antes do filtro). Se received traz rotas e 'routes' vem vazio, o descarte é seu — o filtro de entrada é o culpado."
     },
     {
       "sintoma": "Prefixo aparece em 'show ip bgp' e não entra em 'show ip route'",
@@ -389,7 +389,7 @@
       "leitura": "Compare os caminhos linha a linha na ordem oficial de decisão. Weight só existe localmente: um valor ajustado em um roteador explica por que a decisão difere entre equipamentos do mesmo AS."
     },
     {
-      "sintoma": "Sessão derrubada sozinha com log %BGP-4-MAXPFX",
+      "sintoma": "Sessão derrubada sozinha com log %BGP-3-MAXPFXEXCEED (o %BGP-4-MAXPFX é só o aviso de limiar)",
       "causa_provavel": "Vizinho anunciou mais prefixos que o teto configurado.",
       "comando": "show ip bgp summary\nshow logging | include BGP",
       "leitura": "O teto funcionou — ele existe para proteger a memória. Verifique se o vizinho vazou tabela antes de simplesmente aumentar o limite."

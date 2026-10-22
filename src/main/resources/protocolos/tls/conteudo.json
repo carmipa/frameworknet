@@ -269,7 +269,7 @@
   },
   "cabecalho": {
     "titulo": "Cabeçalho do TLS Record (5 bytes / 40 bits)",
-    "nota": "O cabeçalho do TLS Record possui 8 + 16 + 16 = 40 bits, ou seja, 5 bytes. Ele antecede cada fragmento transmitido. O campo Content type identifica o tipo de conteúdo: 20 = ChangeCipherSpec, 21 = Alert, 22 = Handshake e 23 = Application Data. O campo Legacy version, no TLS 1.3, permanece fixo como legado no valor 0x0303 (que correspondia ao TLS 1.2) por compatibilidade com equipamentos de rede antigos; a versão real é negociada dentro da extensão supported_versions. O campo Length indica o tamanho, em bytes, do fragmento que vem logo após o cabeçalho (no máximo 16384 bytes de texto claro).",
+    "nota": "O cabeçalho do TLS Record possui 8 + 16 + 16 = 40 bits, ou seja, 5 bytes. Ele antecede cada fragmento transmitido. O campo Content type identifica o tipo de conteúdo: 20 = ChangeCipherSpec, 21 = Alert, 22 = Handshake e 23 = Application Data. O campo Legacy version, no TLS 1.3, permanece fixo como legado no valor 0x0303 (que correspondia ao TLS 1.2) por compatibilidade com equipamentos de rede antigos (só o primeiro ClientHello pode usar 0x0301 nesse campo); a versão real é negociada dentro da extensão supported_versions. O campo Length indica o tamanho, em bytes, do fragmento que vem logo após o cabeçalho (no máximo 16384 bytes de texto claro).",
     "campos": [
       {
         "nome": "Content type",
@@ -280,7 +280,7 @@
       {
         "nome": "Legacy version",
         "bits": 16,
-        "descricao": "Versão legada, fixada em 0x0303 no TLS 1.3 por compatibilidade; a versão verdadeira é negociada pela extensão supported_versions.",
+        "descricao": "Versão legada, fixada em 0x0303 no TLS 1.3 por compatibilidade (o ClientHello inicial pode usar 0x0301); a versão verdadeira é negociada pela extensão supported_versions.",
         "cor": "#7c3aed"
       },
       {

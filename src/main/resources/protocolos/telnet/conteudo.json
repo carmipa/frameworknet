@@ -336,7 +336,7 @@
       "titulo": "Banner grabbing didático",
       "cenario": "Usar o cliente telnet apenas como ferramenta de teste TCP para ver o banner que serviços de texto anunciam ao conectar.",
       "comandos": "telnet smtp.example.com 25\n# resposta típica: 220 mail.example.com ESMTP Postfix\n\ntelnet www.example.com 80\nGET / HTTP/1.0\n\n# (linha em branco encerra o cabeçalho e o servidor responde)",
-      "explicacao": "O cliente telnet abre um fluxo TCP cru; serviços de texto respondem com um banner que identifica software e versão. Aqui o telnet não é acesso remoto - é sondagem de serviço, e mostra o quanto informação vaza em protocolos de texto."
+      "explicacao": "O cliente telnet abre um fluxo TCP cru; serviços de texto respondem com um banner que identifica software e versão. Aqui o telnet não é acesso remoto - é sondagem de serviço, e mostra quanta informação vaza em protocolos de texto."
     },
     {
       "titulo": "Provar a credencial em claro",
