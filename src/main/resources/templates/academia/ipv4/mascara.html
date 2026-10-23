@@ -15,21 +15,21 @@
 
     <div class="acad-etapas">
         <section class="acad-etapa acad-etapa-larga acad-leitura" id="ler" aria-labelledby="ler-titulo">
-            <h2 class="acad-etapa-titulo" id="ler-titulo">
+            <h2 class="acad-etapa-titulo" id="ler-titulo" title="Texto sobre a divisória entre rede e host num endereço IPv4, para ler antes da animação">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
                 Entenda
             </h2>
             <p class="acad-explica">Leia primeiro; depois veja a divisória andar na régua de 32 bits e teste com os seus endereços.</p>
             <div class="acad-leitura-texto">
                 <section class="acad-leitura-bloco">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
+                    <h3 title="Por que separar rede e host decide se o pacote vai direto ou passa pelo roteador"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
                     <p>Um endereço IPv4 tem 32 bits divididos em duas partes: a <strong>rede</strong> (em que "rua" o computador
                     está) e o <strong>host</strong> (qual "casa" é ele nessa rua). Dois computadores na mesma rede conversam
                     direto; para falar com outra rede, o pacote vai para o roteador. A <strong>máscara</strong> é o que diz onde
                     fica a divisória entre as duas partes.</p>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
+                    <h3 title="Como achar rede, broadcast e hosts a partir do prefixo, com um /27 resolvido"><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
                     <p>A máscara tem bits <span class="acad-valor" translate="no">1</span> na parte de rede e <span class="acad-valor" translate="no">0</span> na parte de host, sempre nessa ordem. O
                     <strong>prefixo</strong> é só a contagem dos uns: <span class="acad-valor" translate="no">/24</span> = 24 uns e 8 zeros = <span class="acad-valor" translate="no">255.255.255.0</span>.</p>
                     <p>O <strong>endereço de rede</strong> é o IP com os bits de host zerados (IP AND máscara). O
@@ -44,7 +44,7 @@
                     endereços (RFC 3021); <span class="acad-valor" translate="no">/32</span> é um único host.</p>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
+                    <h3 title="Enganos frequentes ao contar hosts e ao achar o endereço de rede"><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
                     <ul>
                         <li>Contar a rede e o broadcast como hosts (32 em vez de 30 no /27).</li>
                         <li>Responder o próprio IP digitado como endereço de rede.</li>
@@ -52,7 +52,7 @@
                     </ul>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
+                    <h3 title="As fórmulas de prefixo, hosts, rede e broadcast reunidas para consulta"><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
                     <ul>
                         <li>Prefixo = quantidade de bits de rede. Hosts = <span class="acad-valor" translate="no">2^(bits de host) − 2</span>.</li>
                         <li>Rede: bits de host em 0. Broadcast: bits de host em 1.</li>
@@ -62,7 +62,7 @@
         </section>
 
         <section class="acad-etapa acad-etapa-larga" id="ver" aria-labelledby="ver-titulo">
-            <h2 class="acad-etapa-titulo" id="ver-titulo">
+            <h2 class="acad-etapa-titulo" id="ver-titulo" title="Animação da divisória andando na régua de 32 bits e mudando rede, broadcast e hosts">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span>
                 Ver
             </h2>
@@ -90,14 +90,14 @@
         </section>
 
         <section class="acad-etapa acad-etapa-larga" id="mexer" aria-labelledby="mexer-titulo">
-            <h2 class="acad-etapa-titulo" id="mexer-titulo">
+            <h2 class="acad-etapa-titulo" id="mexer-titulo" title="Área livre: digite um endereço e um prefixo ou máscara e veja o bloco calculado na hora">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">touch_app</span>
                 Mexer
             </h2>
             <p class="acad-explica">Digite um endereço e o prefixo (ou a máscara). Clicar num bit da régua põe a divisória depois dele.</p>
             <div class="row g-3">
                 <div class="col-12 col-md-4 acad-campo">
-                    <label for="mexer-ip">
+                    <label for="mexer-ip" title="O endereço que será dividido em parte de rede e parte de host">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span>
                         Endereço IPv4
                     </label>
@@ -106,7 +106,7 @@
                     <span class="acad-eco" id="mexer-ip-eco"></span>
                 </div>
                 <div class="col-12 col-md-4 acad-campo">
-                    <label for="mexer-prefixo">
+                    <label for="mexer-prefixo" title="Quantos bits, da esquerda, formam a parte de rede; a máscara acompanha">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span>
                         Prefixo
                     </label>
@@ -115,7 +115,7 @@
                     <span class="acad-eco" id="mexer-prefixo-eco"></span>
                 </div>
                 <div class="col-12 col-md-4 acad-campo">
-                    <label for="mexer-mascara">
+                    <label for="mexer-mascara" title="O mesmo prefixo em quatro octetos decimais, com bits 1 na rede e 0 no host">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span>
                         Máscara
                     </label>
@@ -137,14 +137,14 @@
         </section>
 
         <section class="acad-etapa acad-etapa-larga" id="provar" aria-labelledby="provar-titulo">
-            <h2 class="acad-etapa-titulo" id="provar-titulo">
+            <h2 class="acad-etapa-titulo" id="provar-titulo" title="Exercício sorteado sobre máscara, hosts, rede ou broadcast, com a correção nomeando o engano">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span>
                 Provar
             </h2>
             <p class="acad-pergunta" id="provar-pergunta"></p>
             <form id="provar-form" class="row g-3 align-items-end" novalidate>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="provar-resposta">
+                    <label for="provar-resposta" title="Campo da resposta à pergunta sorteada acima; o rótulo diz o que é pedido">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">edit</span>
                         <span id="provar-rotulo">Sua resposta</span>
                     </label>

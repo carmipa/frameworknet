@@ -113,10 +113,16 @@
   "tabelas": [
     {
       "titulo": "UDP vs TCP lado a lado",
+      "dica": "Compara garantias e custos do UDP e do TCP, para entender quando a simplicidade do UDP compensa",
       "colunas": [
         "Característica",
         "UDP",
         "TCP"
+      ],
+      "dicas_colunas": [
+        "Propriedade de transporte avaliada nos dois protocolos",
+        "Comportamento do UDP, que envia datagramas sem conexão nem confirmação",
+        "Comportamento do TCP, que estabelece conexão e confirma o que recebe"
       ],
       "linhas": [
         [
@@ -168,10 +174,16 @@
     },
     {
       "titulo": "Serviços e portas que usam UDP",
+      "dica": "Serviços comuns que trafegam sobre UDP e suas portas padrão, para reconhecer o tráfego ou liberá-lo no firewall",
       "colunas": [
         "Serviço",
         "Porta(s)",
         "Para que serve"
+      ],
+      "dicas_colunas": [
+        "Protocolo de aplicação que usa UDP como transporte",
+        "Número da porta UDP padrão; faixas dinâmicas variam conforme o equipamento ou software",
+        "Função do serviço na rede"
       ],
       "linhas": [
         [
@@ -213,10 +225,16 @@
     },
     {
       "titulo": "Quando escolher UDP",
+      "dica": "Cenários em que o UDP é a escolha mais adequada, com o motivo técnico e exemplos reais",
       "colunas": [
         "Situação",
         "Por que UDP",
         "Exemplo"
+      ],
+      "dicas_colunas": [
+        "Tipo de necessidade da aplicação que favorece o UDP",
+        "Vantagem concreta do UDP sobre o TCP nesse cenário",
+        "Protocolos ou aplicações conhecidos que se enquadram no cenário"
       ],
       "linhas": [
         [

@@ -73,10 +73,16 @@
   "tabelas": [
     {
       "titulo": "RSA versus ECC (ECDSA / Ed25519)",
+      "dica": "Compara as duas famílias de criptografia assimétrica em base matemática, tamanho de chave, operações e uso",
       "colunas": [
         "Aspecto",
         "RSA",
         "ECC (ECDSA / Ed25519)"
+      ],
+      "dicas_colunas": [
+        "Característica comparada entre as duas famílias",
+        "Como o RSA se comporta nesse critério",
+        "Como a criptografia de curva elíptica se comporta nesse critério"
       ],
       "linhas": [
         [
@@ -113,11 +119,18 @@
     },
     {
       "titulo": "Força equivalente: tamanhos comparáveis",
+      "dica": "Mostra os tamanhos de chave RSA e ECC que oferecem a mesma segurança e a cifra simétrica de força equivalente",
       "colunas": [
         "Segurança (bits)",
         "RSA",
         "ECC",
         "Equivale a simétrico"
+      ],
+      "dicas_colunas": [
+        "Nível de segurança aproximado: o ataque exige na ordem de 2 elevado a esse número de operações",
+        "Tamanho do módulo RSA, em bits, necessário para atingir esse nível",
+        "Tamanho da chave de curva elíptica, em bits, necessário para atingir esse nível",
+        "Cifra simétrica de força comparável, usada como referência"
       ],
       "linhas": [
         [
@@ -148,11 +161,18 @@
     },
     {
       "titulo": "Qual chave usar em cada objetivo",
+      "dica": "Indica, para cada objetivo, quem opera, com qual chave do par e como o outro lado lê ou verifica",
       "colunas": [
         "Objetivo",
         "Quem cifra/assina",
         "Com qual chave",
         "Quem lê/verifica"
+      ],
+      "dicas_colunas": [
+        "Propriedade de segurança que se quer obter",
+        "Parte que inicia a operação criptográfica",
+        "Chave aplicada nessa operação e a quem ela pertence",
+        "Parte que recebe o resultado e a chave que usa para decifrar, verificar ou derivar o segredo"
       ],
       "linhas": [
         [

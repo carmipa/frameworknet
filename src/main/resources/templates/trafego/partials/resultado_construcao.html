@@ -1,7 +1,8 @@
 {#if sim.ok}
 <div class="aed-card mt-3">
     <div class="card-body">
-        <h2 class="h5 d-flex flex-wrap align-items-center gap-2 text-white mb-2">
+        <h2 class="h5 d-flex flex-wrap align-items-center gap-2 text-white mb-2"
+            title="Resumo do pacote montado: protocolo de transporte, tamanho total do quadro e situação do checksum">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">construction</span>
             Pacote {sim.protocolo} &middot; {sim.totalBytes} bytes
             {#if sim.checksumValido}
@@ -14,8 +15,9 @@
             {#for c in sim.camadas}<li>{c}</li>{/for}
         </ul>
 
-        <label class="form-label small text-secondary" for="construtor-hex"><span class="material-symbols-outlined" aria-hidden="true" translate="no">data_object</span> Bytes do pacote (hex)</label>
+        <label class="form-label small text-secondary" for="construtor-hex" title="O quadro completo gerado a partir dos campos, do cabeçalho Ethernet até o payload"><span class="material-symbols-outlined" aria-hidden="true" translate="no">data_object</span> Bytes do pacote (hex)</label>
         <textarea id="construtor-hex" readonly rows="3"
+                  title="Somente leitura; copie estes dígitos para colar no Decodificador ou em outra ferramenta"
                   class="form-control bg-dark text-light border-secondary trafego-hex">{sim.hex}</textarea>
 
         <div class="d-flex flex-wrap gap-2 mt-3">

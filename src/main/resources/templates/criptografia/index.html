@@ -26,11 +26,11 @@
     </header>
 
     <section class="aprof-secao">
-        <h2 class="h3 aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Playground de hash e codificação</h2>
+        <h2 class="h3 aprof-secao-titulo" title="Calcula no seu navegador o hash e a codificação do texto digitado, para ver como uma pequena mudança altera todo o resultado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Playground de hash e codificação</h2>
         <p class="small text-secondary">Digite um texto e veja o hash e a codificação ao vivo — tudo no seu navegador (WebCrypto), nada é enviado ao servidor. Note o <strong>efeito avalanche</strong>: mude um caractere e o hash muda por completo.</p>
         <div class="card-tech p-3" id="cripto-hash">
-            <label for="cripto-in" class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">text_fields</span> Texto de entrada</label>
-            <textarea id="cripto-in" class="form-control bg-dark text-light border-secondary mb-2" rows="2" spellcheck="false">O rato roeu a roupa do rei de Roma</textarea>
+            <label for="cripto-in" class="form-label small text-secondary" title="Texto que será transformado em hash e codificado; nada é enviado ao servidor"><span class="material-symbols-outlined" aria-hidden="true" translate="no">text_fields</span> Texto de entrada</label>
+            <textarea id="cripto-in" class="form-control bg-dark text-light border-secondary mb-2" rows="2" spellcheck="false" title="Digite qualquer texto, com acentos se quiser; as saídas abaixo se atualizam a cada tecla">O rato roeu a roupa do rei de Roma</textarea>
             <div class="mb-3">
                 <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-limpar="#cripto-hash" data-limpar-resultado="#cripto-out"
                         title="Esvaziar o texto e apagar as saídas de hash/codificação">
@@ -39,7 +39,7 @@
             </div>
             <div class="table-responsive">
                 <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
-                    <thead><tr><th>Algoritmo / codificação</th><th>Saída</th></tr></thead>
+                    <thead><tr><th title="Função de hash ou forma de codificação aplicada ao texto">Algoritmo / codificação</th><th title="Resultado em hexadecimal ou Base64; o hash tem sempre o mesmo tamanho, seja qual for o texto">Saída</th></tr></thead>
                     <tbody id="cripto-out">
                         <tr data-alg="SHA-256"><td class="fw-bold text-info text-nowrap">SHA-256</td><td class="cripto-val small"></td></tr>
                         <tr data-alg="SHA-384"><td class="fw-bold text-info text-nowrap">SHA-384</td><td class="cripto-val small"></td></tr>
@@ -54,10 +54,10 @@
     </section>
 
     <section class="aprof-secao">
-        <h2 class="h3 aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">verified_user</span> Comparador de força</h2>
+        <h2 class="h3 aprof-secao-titulo" title="Mostra se um algoritmo ainda é recomendado hoje e o motivo do veredito"><span class="material-symbols-outlined" aria-hidden="true" translate="no">verified_user</span> Comparador de força</h2>
         <p class="small text-secondary">Escolha um algoritmo e veja o veredito — seguro, aceitável, fraco ou quebrado — e por quê.</p>
         <div class="card-tech p-3">
-            <select aria-label="Algoritmo para comparar a força" id="forca-alg" class="form-select bg-dark text-light border-secondary mb-3" style="max-width:24rem;">
+            <select aria-label="Algoritmo para comparar a força" title="Escolha um algoritmo de cifra, assinatura ou hash para ver o veredito de segurança e a justificativa" id="forca-alg" class="form-select bg-dark text-light border-secondary mb-3" style="max-width:24rem;">
                 <option value="aes">AES-256-GCM</option>
                 <option value="chacha">ChaCha20-Poly1305</option>
                 <option value="3des">3DES (Triple DES)</option>

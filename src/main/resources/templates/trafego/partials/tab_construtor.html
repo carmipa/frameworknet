@@ -15,64 +15,74 @@
       hx-disabled-elt="find button[type='submit']">
     <div class="row g-3">
         <div class="col-sm-4">
-            <label class="form-label small text-secondary" for="c-proto"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">swap_horiz</span> Protocolo</label>
-            <select id="c-proto" name="protocolo" class="form-select form-select-sm bg-dark text-light border-secondary">
+            <label class="form-label small text-secondary" for="c-proto" title="Protocolo de transporte que vai dentro do IPv4; define se o cabeçalho montado será TCP ou UDP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">swap_horiz</span> Protocolo</label>
+            <select id="c-proto" name="protocolo" class="form-select form-select-sm bg-dark text-light border-secondary"
+                    title="Escolha TCP, orientado a conexão com flags e sequência, ou UDP, sem conexão e com cabeçalho de 8 bytes">
                 <option value="tcp" selected>TCP</option>
                 <option value="udp">UDP</option>
             </select>
         </div>
         <div class="col-sm-4">
-            <label class="form-label small text-secondary" for="c-ttl"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">timer</span> TTL</label>
-            <input id="c-ttl" name="ttl" value="64" class="form-control form-control-sm bg-dark text-light border-secondary">
+            <label class="form-label small text-secondary" for="c-ttl" title="Tempo de vida: cada roteador subtrai 1 e descarta o pacote quando chega a zero"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">timer</span> TTL</label>
+            <input id="c-ttl" name="ttl" value="64" class="form-control form-control-sm bg-dark text-light border-secondary"
+                   title="Número inteiro de 1 a 255; Linux usa 64 e Windows usa 128 por padrão">
         </div>
         <div class="col-sm-4">
-            <label class="form-label small text-secondary" for="c-checksum"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">verified</span> Checksum</label>
-            <select id="c-checksum" name="checksum" class="form-select form-select-sm bg-dark text-light border-secondary">
+            <label class="form-label small text-secondary" for="c-checksum" title="Soma de verificação que o receptor recalcula para detectar bytes corrompidos no caminho"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">verified</span> Checksum</label>
+            <select id="c-checksum" name="checksum" class="form-select form-select-sm bg-dark text-light border-secondary"
+                    title="Válido gera a soma correta; inválido grava um valor errado para ver como o decodificador acusa a falha">
                 <option value="valido" selected>Válido (calculado)</option>
                 <option value="invalido">Inválido (didático)</option>
             </select>
         </div>
 
         <div class="col-sm-6">
-            <label class="form-label small text-secondary" for="c-ipo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">call_made</span> IP de origem</label>
-            <input id="c-ipo" name="ipOrigem" value="192.168.0.10" class="form-control form-control-sm bg-dark text-light border-secondary">
+            <label class="form-label small text-secondary" for="c-ipo" title="Endereço IPv4 do remetente, gravado no cabeçalho IP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">call_made</span> IP de origem</label>
+            <input id="c-ipo" name="ipOrigem" value="192.168.0.10" class="form-control form-control-sm bg-dark text-light border-secondary"
+                   title="IPv4 em quatro números de 0 a 255 separados por ponto, ex.: 192.168.0.10">
         </div>
         <div class="col-sm-6">
-            <label class="form-label small text-secondary" for="c-ipd"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">call_received</span> IP de destino</label>
-            <input id="c-ipd" name="ipDestino" value="203.0.113.5" class="form-control form-control-sm bg-dark text-light border-secondary">
+            <label class="form-label small text-secondary" for="c-ipd" title="Endereço IPv4 do destinatário, gravado no cabeçalho IP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">call_received</span> IP de destino</label>
+            <input id="c-ipd" name="ipDestino" value="203.0.113.5" class="form-control form-control-sm bg-dark text-light border-secondary"
+                   title="IPv4 em quatro números de 0 a 255 separados por ponto, ex.: 203.0.113.5">
         </div>
 
         <div class="col-sm-3">
-            <label class="form-label small text-secondary" for="c-po"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">login</span> Porta origem</label>
-            <input id="c-po" name="portaOrigem" value="51000" class="form-control form-control-sm bg-dark text-light border-secondary">
+            <label class="form-label small text-secondary" for="c-po" title="Porta usada pelo remetente; em clientes costuma ser uma porta efêmera alta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">login</span> Porta origem</label>
+            <input id="c-po" name="portaOrigem" value="51000" class="form-control form-control-sm bg-dark text-light border-secondary"
+                   title="Número de 0 a 65535, ex.: 51000">
         </div>
         <div class="col-sm-3">
-            <label class="form-label small text-secondary" for="c-pd"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">logout</span> Porta destino</label>
-            <input id="c-pd" name="portaDestino" value="443" class="form-control form-control-sm bg-dark text-light border-secondary">
+            <label class="form-label small text-secondary" for="c-pd" title="Porta do serviço no destino, como 80 para HTTP ou 443 para HTTPS"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">logout</span> Porta destino</label>
+            <input id="c-pd" name="portaDestino" value="443" class="form-control form-control-sm bg-dark text-light border-secondary"
+                   title="Número de 0 a 65535, ex.: 443">
         </div>
         <div class="col-sm-3">
-            <label class="form-label small text-secondary" for="c-seq"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span> Sequência (TCP)</label>
-            <input id="c-seq" name="seq" value="1000" class="form-control form-control-sm bg-dark text-light border-secondary">
+            <label class="form-label small text-secondary" for="c-seq" title="Número que o TCP usa para ordenar os bytes enviados; ignorado quando o protocolo é UDP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span> Sequência (TCP)</label>
+            <input id="c-seq" name="seq" value="1000" class="form-control form-control-sm bg-dark text-light border-secondary"
+                   title="Número inteiro de 0 a 4294967295 (32 bits), ex.: 1000">
         </div>
         <div class="col-sm-3">
-            <label class="form-label small text-secondary" for="c-win"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">aspect_ratio</span> Janela (TCP)</label>
-            <input id="c-win" name="window" value="64240" class="form-control form-control-sm bg-dark text-light border-secondary">
+            <label class="form-label small text-secondary" for="c-win" title="Quantos bytes o remetente aceita receber antes de confirmar; controla o fluxo do TCP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">aspect_ratio</span> Janela (TCP)</label>
+            <input id="c-win" name="window" value="64240" class="form-control form-control-sm bg-dark text-light border-secondary"
+                   title="Número inteiro de 0 a 65535 (16 bits), ex.: 64240">
         </div>
 
         <div class="col-12">
-            <label class="form-label small text-secondary d-block"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">flag</span> Flags TCP</label>
+            <label class="form-label small text-secondary d-block" title="Bits de controle do cabeçalho TCP que dizem o papel do segmento na conexão"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">flag</span> Flags TCP</label>
             <div class="d-flex flex-wrap gap-3 small text-light">
-                <label class="d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flag</span> <input type="checkbox" name="flags" value="SYN" checked> SYN</label>
-                <label class="d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flag</span> <input type="checkbox" name="flags" value="ACK"> ACK</label>
-                <label class="d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flag</span> <input type="checkbox" name="flags" value="FIN"> FIN</label>
-                <label class="d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flag</span> <input type="checkbox" name="flags" value="RST"> RST</label>
-                <label class="d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flag</span> <input type="checkbox" name="flags" value="PSH"> PSH</label>
+                <span class="d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flag</span> <span><input type="checkbox" id="c-flag-syn" name="flags" value="SYN" checked title="Marque para ligar o bit SYN no segmento"></span> <label for="c-flag-syn" title="Pede a abertura da conexão e sincroniza o número de sequência inicial">SYN</label></span>
+                <span class="d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flag</span> <span><input type="checkbox" id="c-flag-ack" name="flags" value="ACK" title="Marque para ligar o bit ACK no segmento"></span> <label for="c-flag-ack" title="Confirma o recebimento; indica que o campo de confirmação é válido">ACK</label></span>
+                <span class="d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flag</span> <span><input type="checkbox" id="c-flag-fin" name="flags" value="FIN" title="Marque para ligar o bit FIN no segmento"></span> <label for="c-flag-fin" title="Avisa que o remetente terminou de enviar e quer encerrar a conexão">FIN</label></span>
+                <span class="d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flag</span> <span><input type="checkbox" id="c-flag-rst" name="flags" value="RST" title="Marque para ligar o bit RST no segmento"></span> <label for="c-flag-rst" title="Derruba a conexão na hora, sem o encerramento normal">RST</label></span>
+                <span class="d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flag</span> <span><input type="checkbox" id="c-flag-psh" name="flags" value="PSH" title="Marque para ligar o bit PSH no segmento"></span> <label for="c-flag-psh" title="Pede que os dados sejam entregues à aplicação sem esperar encher o buffer">PSH</label></span>
             </div>
         </div>
 
         <div class="col-12">
-            <label class="form-label small text-secondary" for="c-msg"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span> Mensagem / payload (opcional)</label>
+            <label class="form-label small text-secondary" for="c-msg" title="Dados da aplicação que vão depois dos cabeçalhos; deixe vazio para um pacote só de controle"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span> Mensagem / payload (opcional)</label>
             <input id="c-msg" name="mensagem" value="" placeholder="ex.: GET / HTTP/1.1"
+                   title="Texto livre convertido em bytes, ex.: GET / HTTP/1.1"
                    class="form-control form-control-sm bg-dark text-light border-secondary">
         </div>
     </div>

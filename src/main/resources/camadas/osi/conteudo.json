@@ -71,12 +71,20 @@
   "tabelas": [
     {
       "titulo": "As 7 camadas OSI: função, unidade de dados e exemplos",
+      "dica": "Resume as sete camadas do modelo OSI, do topo à base, com o papel e protocolos de cada uma",
       "colunas": [
         "#",
         "Camada",
         "Função principal",
         "Unidade (PDU)",
         "Exemplos"
+      ],
+      "dicas_colunas": [
+        "Número da camada no modelo OSI, de 1 (Física) a 7 (Aplicação)",
+        "Nome oficial da camada no modelo OSI",
+        "O que essa camada faz pelo dado durante a comunicação",
+        "Nome dado ao bloco de dados enquanto ele está nessa camada",
+        "Protocolos, padrões e equipamentos associados a essa camada"
       ],
       "linhas": [
         [
@@ -132,10 +140,16 @@
     },
     {
       "titulo": "Mnemônicos para memorizar a ordem das camadas",
+      "dica": "Frases cujas iniciais seguem a ordem das camadas, para decorar a sequência",
       "colunas": [
         "Sentido",
         "Frase",
         "Iniciais"
+      ],
+      "dicas_colunas": [
+        "Direção em que a frase percorre as camadas",
+        "Frase em que cada palavra começa com a inicial de uma camada",
+        "Iniciais da frase, que correspondem às camadas na ordem indicada"
       ],
       "linhas": [
         [
@@ -157,10 +171,16 @@
     },
     {
       "titulo": "OSI x TCP/IP: como o modelo teórico mapeia na prática",
+      "dica": "Mostra como as sete camadas do OSI se agrupam nas quatro camadas usadas de fato na Internet",
       "colunas": [
         "Camadas OSI",
         "Camada TCP/IP correspondente",
         "Exemplos práticos"
+      ],
+      "dicas_colunas": [
+        "Camadas do modelo OSI que se juntam numa única camada do TCP/IP",
+        "Camada do TCP/IP que cumpre o papel dessas camadas OSI",
+        "Protocolos e tecnologias reais que atuam nesse nível"
       ],
       "linhas": [
         [

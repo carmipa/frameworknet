@@ -78,12 +78,20 @@
   "tabelas": [
     {
       "titulo": "Evolução das gerações de segurança sem fio",
+      "dica": "Linha do tempo de WEP a WPA3 com cifra, autenticação e situação atual, para avaliar se uma rede usa proteção adequada",
       "colunas": [
         "Padrão",
         "Ano",
         "Cifra / Mecanismo",
         "Autenticação",
         "Situação atual"
+      ],
+      "dicas_colunas": [
+        "Geração de segurança configurada no roteador ou ponto de acesso",
+        "Ano em que a geração foi introduzida",
+        "Algoritmo que cifra o tráfego e mecanismos auxiliares de chave ou integridade",
+        "Como o cliente prova que pode entrar na rede: senha compartilhada, SAE ou 802.1X",
+        "Avaliação de segurança hoje e a fraqueza conhecida que a justifica"
       ],
       "linhas": [
         [
@@ -118,10 +126,16 @@
     },
     {
       "titulo": "Modo Pessoal x Modo Empresarial",
+      "dica": "Compara a autenticação por senha compartilhada com a autenticação individual via 802.1X, para escolher o modo de cada rede",
       "colunas": [
         "Aspecto",
         "Pessoal (PSK / SAE)",
         "Empresarial (802.1X / EAP)"
+      ],
+      "dicas_colunas": [
+        "Critério de comparação entre os dois modos",
+        "Como o modo baseado em uma senha única atende ao critério",
+        "Como o modo com servidor de autenticação e credencial por usuário atende ao critério"
       ],
       "linhas": [
         [
@@ -153,11 +167,18 @@
     },
     {
       "titulo": "Cifras e chaves por padrão",
+      "dica": "Detalha, para cada geração, o algoritmo de cifra, a verificação de integridade e como a chave é estabelecida no modo Pessoal",
       "colunas": [
         "Padrão",
         "Algoritmo de cifra",
         "Integridade",
         "Troca de chave (Pessoal)"
+      ],
+      "dicas_colunas": [
+        "Geração de segurança Wi-Fi descrita na linha",
+        "Algoritmo que torna o conteúdo dos quadros ilegível para quem não tem a chave",
+        "Mecanismo que detecta quadros alterados no caminho",
+        "Como as chaves de sessão são estabelecidas quando a rede usa senha compartilhada"
       ],
       "linhas": [
         [

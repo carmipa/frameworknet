@@ -78,12 +78,20 @@
   "tabelas": [
     {
       "titulo": "Papéis na cadeia e onde cada um vive",
+      "dica": "Compara raiz, intermediária e folha quanto à assinatura, à guarda da chave e à função na cadeia",
       "colunas": [
         "Papel",
         "Autoassinado?",
         "Chave privada",
         "Função",
         "Onde vive"
+      ],
+      "dicas_colunas": [
+        "Posição do certificado na cadeia de confiança",
+        "Se o certificado foi assinado pela própria chave ou por uma CA acima dele",
+        "Onde e como a chave privada desse certificado costuma ficar guardada",
+        "O que esse certificado faz dentro da cadeia",
+        "Onde o certificado fica disponível para quem precisa validá-lo"
       ],
       "linhas": [
         [
@@ -111,10 +119,16 @@
     },
     {
       "titulo": "Trust stores mais comuns",
+      "dica": "Indica onde ficam as raízes confiáveis em cada plataforma e como consultá-las",
       "colunas": [
         "Trust store",
         "Quem usa",
         "Como inspecionar/gerenciar"
+      ],
+      "dicas_colunas": [
+        "Repositório de certificados raiz considerados confiáveis",
+        "Programas e sistemas que consultam esse repositório para validar certificados",
+        "Ferramenta, comando ou caminho para listar e alterar as raízes desse repositório"
       ],
       "linhas": [
         [
@@ -146,10 +160,16 @@
     },
     {
       "titulo": "O que se confere na cadeia",
+      "dica": "Lista as checagens feitas em cada elo ao validar a cadeia e o erro que aparece quando uma falha",
       "colunas": [
         "Verificação",
         "O que confere",
         "Falha típica"
+      ],
+      "dicas_colunas": [
+        "Checagem aplicada durante a validação da cadeia",
+        "Condição que precisa ser verdadeira para essa checagem passar",
+        "Causa comum de reprovação nessa checagem e a mensagem de erro associada"
       ],
       "linhas": [
         [

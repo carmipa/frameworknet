@@ -16,21 +16,21 @@
 
     <div class="acad-etapas">
         <section class="acad-etapa acad-etapa-larga acad-leitura" id="ler" aria-labelledby="ler-titulo">
-            <h2 class="acad-etapa-titulo" id="ler-titulo">
+            <h2 class="acad-etapa-titulo" id="ler-titulo" title="Texto sobre janela deslizante e as duas formas de recuperar um segmento perdido, para ler antes">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
                 Entenda
             </h2>
             <p class="acad-explica">Leia primeiro; depois veja a perda acontecer na animação e compare os dois modos no Mexer.</p>
             <div class="acad-leitura-texto">
                 <section class="acad-leitura-bloco">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
+                    <h3 title="Por que mandar vários segmentos sem esperar confirmação aumenta a vazão"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
                     <p>Se o emissor esperasse a confirmação de cada segmento antes de mandar o próximo (o "pare e espere"), a
                     maior parte do tempo seria gasta esperando a ida e volta. A <strong>janela</strong> deixa vários segmentos
                     no caminho ao mesmo tempo, sem confirmação. Quanto maior a janela, mais dados por segundo — no máximo
                     <span class="acad-valor" translate="no">janela ÷ tempo de ida e volta</span>.</p>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
+                    <h3 title="Quais segmentos a janela deixa sair e como Go-Back-N e repetição seletiva reenviam, com exemplo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
                     <p>Com a janela de <span class="acad-valor" translate="no">W</span> segmentos começando no mais antigo ainda sem confirmação (a <strong>base</strong>),
                     podem sair os segmentos de <span class="acad-valor" translate="no">base</span> até <span class="acad-valor" translate="no">base + W − 1</span>. Cada confirmação na ordem faz a janela andar.</p>
                     <p>Quando um segmento se perde, há duas formas clássicas de recuperar:</p>
@@ -47,7 +47,7 @@
                     retransmissão rápida); a lição usa os modelos de livro, com as confirmações sem perda.</p>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
+                    <h3 title="Enganos frequentes ao contar retransmissões e ao achar o fim da janela"><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
                     <ul>
                         <li>Contar reenvio de segmento que não existe: depois do perdido só saem os que existem até o fim.</li>
                         <li>Esquecer de contar o próprio segmento perdido no reenvio.</li>
@@ -55,7 +55,7 @@
                     </ul>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
+                    <h3 title="O limite da janela e a diferença entre os dois modos de reenvio, para consulta"><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
                     <ul>
                         <li>Último que pode sair = <span class="acad-valor" translate="no">base + W − 1</span>.</li>
                         <li>Go-Back-N reenvia o perdido e os que já saíram depois dele; a seletiva, só o perdido.</li>
@@ -65,7 +65,7 @@
         </section>
 
         <section class="acad-etapa" id="ver" aria-labelledby="ver-titulo">
-            <h2 class="acad-etapa-titulo" id="ver-titulo">
+            <h2 class="acad-etapa-titulo" id="ver-titulo" title="Animação do Go-Back-N com janela 4 perdendo o segmento 2 e reenviando a partir dele">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span>
                 Ver
             </h2>
@@ -87,13 +87,13 @@
         </section>
 
         <section class="acad-etapa" id="mexer" aria-labelledby="mexer-titulo">
-            <h2 class="acad-etapa-titulo" id="mexer-titulo">
+            <h2 class="acad-etapa-titulo" id="mexer-titulo" title="Área livre: mude segmentos, janela, perda e modo e compare quantas transmissões cada caso gasta">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">touch_app</span>
                 Mexer
             </h2>
             <div class="row g-3">
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="mexer-segmentos">
+                    <label for="mexer-segmentos" title="Tamanho da transferência em segmentos; quanto mais segmentos, mais vezes a janela anda">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">view_week</span>
                         Segmentos (1 a 64)
                     </label>
@@ -102,7 +102,7 @@
                     <span class="acad-eco" id="mexer-segmentos-eco"></span>
                 </div>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="mexer-janela">
+                    <label for="mexer-janela" title="Quantos segmentos o emissor pode ter no caminho antes de receber confirmação">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">width</span>
                         Janela (1 a 32)
                     </label>
@@ -111,7 +111,7 @@
                     <span class="acad-eco" id="mexer-janela-eco"></span>
                 </div>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="mexer-perdido">
+                    <label for="mexer-perdido" title="O segmento que some na primeira transmissão e obriga um reenvio">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">block</span>
                         Segmento perdido
                     </label>
@@ -120,7 +120,7 @@
                     <span class="acad-eco" id="mexer-perdido-eco"></span>
                 </div>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="mexer-modo">
+                    <label for="mexer-modo" title="Como o emissor recupera a perda: reenviando tudo depois dela ou só o segmento perdido">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">tune</span>
                         Retransmissão
                     </label>
@@ -139,14 +139,14 @@
         </section>
 
         <section class="acad-etapa acad-etapa-larga" id="provar" aria-labelledby="provar-titulo">
-            <h2 class="acad-etapa-titulo" id="provar-titulo">
+            <h2 class="acad-etapa-titulo" id="provar-titulo" title="Exercício sorteado sobre total de transmissões ou limite da janela, com a correção nomeando o engano">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span>
                 Provar
             </h2>
             <p class="acad-pergunta" id="provar-pergunta"></p>
             <form id="provar-form" class="row g-3 align-items-end" novalidate>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="provar-resposta">
+                    <label for="provar-resposta" title="Campo da resposta à pergunta sorteada acima; o rótulo diz o que é pedido">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">edit</span>
                         <span id="provar-rotulo">Sua resposta</span>
                     </label>

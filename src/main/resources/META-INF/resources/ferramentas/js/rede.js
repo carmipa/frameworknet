@@ -131,6 +131,7 @@
             q.opcoes.forEach(function (o) {
                 var b = document.createElement("button");
                 b.type = "button";
+                b.title = "Escolher esta resposta; a explicação aparece logo abaixo das opções";
                 b.className = "rede-q-opcao";
                 b.textContent = o[0];
                 b.addEventListener("click", function () {

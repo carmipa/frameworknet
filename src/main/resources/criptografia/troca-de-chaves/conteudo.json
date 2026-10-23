@@ -73,11 +73,18 @@
   "tabelas": [
     {
       "titulo": "Diffie-Hellman x ECDHE x RSA key transport",
+      "dica": "Compara os métodos de estabelecer a chave de sessão do TLS em forward secrecy, desempenho e status atual",
       "colunas": [
         "Aspecto",
         "DH clássico (grupo finito)",
         "ECDHE (curva elíptica)",
         "RSA key transport (obsoleto)"
+      ],
+      "dicas_colunas": [
+        "Critério de comparação entre os métodos",
+        "Diffie-Hellman sobre inteiros módulo um número primo grande",
+        "Diffie-Hellman efêmero sobre pontos de curva elíptica",
+        "Método em que o cliente cifra o segredo com a chave pública RSA do servidor"
       ],
       "linhas": [
         [
@@ -114,10 +121,16 @@
     },
     {
       "titulo": "Efêmero x estático",
+      "dica": "Mostra como gerar um par de chaves novo a cada sessão, em vez de reaproveitá-lo, limita o dano de um vazamento",
       "colunas": [
         "Critério",
         "Efêmero (ECDHE/DHE)",
         "Estático (DH/ECDH fixo)"
+      ],
+      "dicas_colunas": [
+        "Característica comparada entre os dois modos",
+        "Comportamento quando um par de chaves novo é gerado para cada sessão",
+        "Comportamento quando o mesmo par de chaves é reutilizado em várias sessões"
       ],
       "linhas": [
         [

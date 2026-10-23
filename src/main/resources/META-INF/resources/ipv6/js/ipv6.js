@@ -157,11 +157,13 @@
         row.className = "row g-2 align-items-end vlan-row mb-2";
         row.innerHTML =
             '<div class="col-lg-3 col-4"><input type="text" name="vlanId" class="aed-input form-control input-numeric" ' +
-            'inputmode="numeric" maxlength="4" placeholder="ID" required></div>' +
+            'inputmode="numeric" maxlength="4" placeholder="ID" required aria-label="VLAN ID" ' +
+            'title="Número da VLAN de 1 a 4094, por exemplo 10"></div>' +
             '<div class="col-lg-7 col-6"><input type="text" name="vlanNome" class="aed-input form-control" ' +
-            'placeholder="Nome da VLAN" autocomplete="off" required></div>' +
+            'placeholder="Nome da VLAN" autocomplete="off" required aria-label="Nome da VLAN" ' +
+            'title="Nome curto que identifica a VLAN no switch, por exemplo Servidores"></div>' +
             '<div class="col-lg-2 col-2 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm vlan-remove" ' +
-            'title="Remover"><span class="material-symbols-outlined" aria-hidden="true" translate="no">delete</span></button></div>';
+            'aria-label="Remover VLAN" title="Apaga esta linha do plano; se for a única, apenas limpa os campos"><span class="material-symbols-outlined" aria-hidden="true" translate="no">delete</span></button></div>';
         return row;
     }
 

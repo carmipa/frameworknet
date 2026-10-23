@@ -186,11 +186,18 @@
   "tabelas": [
     {
       "titulo": "Estados TCP durante abertura e fechamento",
+      "dica": "Segue a máquina de estados do TCP na abertura e no fechamento, útil para ler a saída de netstat ou ss",
       "colunas": [
         "Estado",
         "Quem",
         "Significado",
         "Próximo evento típico"
+      ],
+      "dicas_colunas": [
+        "Nome do estado da conexão como aparece em netstat e ss",
+        "Lado da conexão em que esse estado ocorre",
+        "Situação da conexão enquanto ela permanece nesse estado",
+        "Segmento ou evento que normalmente tira a conexão desse estado, e para onde ela vai"
       ],
       "linhas": [
         [
@@ -233,11 +240,18 @@
     },
     {
       "titulo": "Comparação: 3-way TCP x TLS x SSH",
+      "dica": "Coloca lado a lado os três apertos de mão para mostrar o que cada um garante e em que ordem acontecem numa conexão",
       "colunas": [
         "Aspecto",
         "TCP 3-way",
         "TLS (1.3)",
         "SSH"
+      ],
+      "dicas_colunas": [
+        "Critério de comparação entre os três handshakes",
+        "Como o estabelecimento de conexão do TCP atende a esse critério",
+        "Como o handshake do TLS na versão 1.3 atende a esse critério",
+        "Como a negociação inicial do SSH atende a esse critério"
       ],
       "linhas": [
         [
@@ -280,10 +294,16 @@
     },
     {
       "titulo": "Flags de controle e o papel no handshake",
+      "dica": "Explica os bits de controle do cabeçalho TCP e quais deles participam da abertura, do fechamento ou do fluxo de dados",
       "colunas": [
         "Flag",
         "Bits",
         "Papel no aperto de mãos"
+      ],
+      "dicas_colunas": [
+        "Nome do bit de controle no cabeçalho TCP",
+        "Quantos bits a flag ocupa no cabeçalho; cada uma é ligada ou desligada",
+        "O que a flag sinaliza quando ligada e em que segmentos costuma aparecer"
       ],
       "linhas": [
         [

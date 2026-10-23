@@ -96,10 +96,16 @@
   "tabelas": [
     {
       "titulo": "Comandos FTP essenciais",
+      "dica": "Reúne os comandos que o cliente envia ao servidor numa sessão típica, útil para ler um log ou uma captura de FTP",
       "colunas": [
         "Comando",
         "Função",
         "Canal / observação"
+      ],
+      "dicas_colunas": [
+        "Palavra enviada em texto pelo cliente na conexão de controle, normalmente seguida de argumento",
+        "O que o servidor faz ao receber o comando",
+        "Se o comando fica só na conexão de controle ou abre a de dados, com nota de segurança quando houver"
       ],
       "linhas": [
         [
@@ -151,10 +157,16 @@
     },
     {
       "titulo": "Códigos de resposta FTP",
+      "dica": "Explica as respostas numéricas de três dígitos do servidor FTP, primeiro por classe e depois os códigos mais vistos",
       "colunas": [
         "Código",
         "Classe (1º dígito)",
         "O que diz"
+      ],
+      "dicas_colunas": [
+        "Número de três dígitos devolvido pelo servidor; xx indica a família inteira",
+        "Família a que o código pertence, definida pelo primeiro dígito, que diz se deu certo, falta algo ou falhou",
+        "Situação que o servidor está relatando com esse código"
       ],
       "linhas": [
         [
@@ -226,12 +238,20 @@
     },
     {
       "titulo": "FTP x FTPS x SFTP x TFTP",
+      "dica": "Compara os quatro protocolos de transferência de arquivos para escolher o adequado conforme porta, transporte e proteção",
       "colunas": [
         "Protocolo",
         "Porta",
         "Transporte",
         "Cifra?",
         "Autenticação"
+      ],
+      "dicas_colunas": [
+        "Nome do protocolo de transferência de arquivos comparado",
+        "Número da porta padrão em que o servidor escuta, com a variação de modo quando existe",
+        "Protocolo da camada de transporte usado, ou o canal dentro do qual a sessão trafega",
+        "Se os dados e as credenciais trafegam cifrados, e por qual mecanismo",
+        "Como o cliente prova sua identidade ao servidor"
       ],
       "linhas": [
         [
@@ -266,10 +286,16 @@
     },
     {
       "titulo": "Opcodes do TFTP (RFC 1350)",
+      "dica": "Lista os tipos de pacote do TFTP, identificados pelo campo opcode, para reconhecer cada etapa de uma transferência",
       "colunas": [
         "Opcode",
         "Nome",
         "Função"
+      ],
+      "dicas_colunas": [
+        "Valor numérico de 2 bytes no início do pacote que identifica seu tipo",
+        "Sigla do tipo de pacote como aparece na especificação e em analisadores",
+        "Papel desse pacote na transferência"
       ],
       "linhas": [
         [

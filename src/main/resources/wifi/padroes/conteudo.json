@@ -73,6 +73,7 @@
   "tabelas": [
     {
       "titulo": "Padrão x banda x velocidade x largura de canal x técnica",
+      "dica": "Linha do tempo dos padrões IEEE 802.11 com banda, taxa teórica, largura de canal e a tecnologia que marca cada geração",
       "colunas": [
         "Padrão (nome comercial)",
         "Ano",
@@ -80,6 +81,14 @@
         "Velocidade máxima teórica",
         "Largura de canal",
         "Técnica principal"
+      ],
+      "dicas_colunas": [
+        "Designação IEEE 802.11 e, a partir do 802.11n, o nome Wi-Fi N adotado pela Wi-Fi Alliance",
+        "Ano em que o padrão foi aprovado ou chegou ao mercado",
+        "Faixas de frequência em que o padrão pode operar",
+        "Taxa física máxima somando todos os fluxos espaciais; a taxa real costuma ser bem menor",
+        "Larguras de canal suportadas, em MHz; canais mais largos permitem taxas maiores",
+        "Modulação e recursos de rádio que explicam o ganho de desempenho da geração"
       ],
       "linhas": [
         [
@@ -142,12 +151,20 @@
     },
     {
       "titulo": "Comparação das bandas de frequência",
+      "dica": "Compara 2,4, 5 e 6 GHz em canais disponíveis, alcance e interferência, para escolher a banda de cada uso",
       "colunas": [
         "Banda",
         "Canais não sobrepostos (20 MHz)",
         "Alcance",
         "Interferência",
         "Observação"
+      ],
+      "dicas_colunas": [
+        "Faixa de frequência de rádio usada pelo Wi-Fi",
+        "Quantos canais de 20 MHz podem operar lado a lado sem interferir entre si",
+        "Cobertura relativa; frequências mais baixas atravessam melhor paredes e obstáculos",
+        "Nível relativo de disputa com outras redes e aparelhos na mesma faixa",
+        "Particularidade da banda que pesa na escolha"
       ],
       "linhas": [
         [
@@ -175,12 +192,20 @@
     },
     {
       "titulo": "Recursos por geração (Wi-Fi 4 a 7)",
+      "dica": "Mostra em que geração cada recurso de rádio surgiu, ajudando a entender o que um equipamento mais novo acrescenta",
       "colunas": [
         "Recurso",
         "Wi-Fi 4",
         "Wi-Fi 5",
         "Wi-Fi 6/6E",
         "Wi-Fi 7"
+      ],
+      "dicas_colunas": [
+        "Tecnologia de rádio comparada entre as gerações",
+        "Suporte ao recurso no Wi-Fi 4, padrão 802.11n",
+        "Suporte ao recurso no Wi-Fi 5, padrão 802.11ac",
+        "Suporte ao recurso no Wi-Fi 6 e 6E, padrão 802.11ax; o 6E acrescenta a banda de 6 GHz",
+        "Suporte ao recurso no Wi-Fi 7, padrão 802.11be"
       ],
       "linhas": [
         [

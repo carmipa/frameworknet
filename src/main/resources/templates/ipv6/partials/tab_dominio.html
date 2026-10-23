@@ -1,12 +1,13 @@
 {! Aba "Domínio": resolve o registro AAAA (IPv6) e mostra a análise rica completa em largura total. !}
 <div class="calc-form-card mb-3">
-    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">language</span> Domínio → IPv6 (AAAA)</h2>
+    <h2 class="h6 calc-form-title" title="Consulta o DNS pelo registro AAAA de um nome e analisa o endereço IPv6 devolvido"><span class="material-symbols-outlined" translate="no" aria-hidden="true">language</span> Domínio → IPv6 (AAAA)</h2>
     <p class="calc-hint">O registro <code translate="no">AAAA</code> é o "A record" do IPv6: mapeia um nome ao endereço de 128 bits. A resolução acontece no servidor; endereços internos/privados são recusados.</p>
     <form id="formDom" class="row g-2 align-items-end" hx-post="/ipv6/api/dominio" hx-target="#saidaDom" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">
         <div class="col-lg-8">
-            <label for="ipv6Dominio" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio / hostname</label>
+            <label for="ipv6Dominio" class="form-label text-secondary" title="Nome cujo endereço IPv6 será buscado no DNS"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio / hostname</label>
             <input type="text" class="aed-input form-control" id="ipv6Dominio" name="dominio"
+                   title="Nome de domínio sem http e sem barra, por exemplo google.com"
                    placeholder="google.com" value="google.com" autocomplete="off" spellcheck="false" required>
         </div>
         <div class="col-lg-4 d-flex gap-2">

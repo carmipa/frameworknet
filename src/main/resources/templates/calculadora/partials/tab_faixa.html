@@ -1,7 +1,7 @@
 <div class="row g-4">
     <div class="col-lg-4">
         <div class="calc-form-card">
-            <h2 class="h6 calc-form-title">
+            <h2 class="h6 calc-form-title" title="Converte um intervalo arbitrário de endereços IPv4 na menor lista de blocos CIDR que o cobre sem sobras">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">linear_scale</span> Faixa de IPs para CIDR
             </h2>
             <p class="calc-hint">
@@ -15,13 +15,15 @@
                   hx-swap="innerHTML"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="faixaInicio" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span> IP inicial</label>
+                    <label for="faixaInicio" class="form-label text-secondary" title="Primeiro endereço que deve ficar dentro da faixa"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span> IP inicial</label>
                     <input type="text" class="aed-input form-control input-ipv4" id="faixaInicio" name="inicio"
+                           title="Endereço IPv4 em decimal pontuado, por exemplo 10.0.0.5"
                            value="10.0.0.5" spellcheck="false" autocomplete="off" required>
                 </div>
                 <div class="mb-3">
-                    <label for="faixaFim" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span> IP final</label>
+                    <label for="faixaFim" class="form-label text-secondary" title="Último endereço da faixa, incluído no resultado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span> IP final</label>
                     <input type="text" class="aed-input form-control input-ipv4" id="faixaFim" name="fim"
+                           title="Endereço IPv4 igual ou maior que o inicial, por exemplo 10.0.3.200"
                            value="10.0.3.200" spellcheck="false" autocomplete="off" required>
                 </div>
                 <button type="submit" class="aed-btn aed-btn-execute w-100"

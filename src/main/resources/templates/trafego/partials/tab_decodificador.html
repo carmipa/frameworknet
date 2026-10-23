@@ -14,10 +14,11 @@
       hx-swap="innerHTML"
       hx-disabled-elt="find button[type='submit']">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-        <label class="form-label small text-secondary mb-0" for="trafego-hex"><span class="material-symbols-outlined" aria-hidden="true" translate="no">data_object</span> Hex dump do pacote</label>
+        <label class="form-label small text-secondary mb-0" for="trafego-hex" title="Bytes brutos do quadro capturado, escritos em hexadecimal, que serão separados em cabeçalhos"><span class="material-symbols-outlined" aria-hidden="true" translate="no">data_object</span> Hex dump do pacote</label>
         <div class="d-flex flex-wrap align-items-center gap-2">
-            <label class="small text-secondary mb-0" for="trafego-camada"><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Camada inicial</label>
-            <select id="trafego-camada" name="camada" class="form-select form-select-sm bg-dark text-light border-secondary" style="width:auto;">
+            <label class="small text-secondary mb-0" for="trafego-camada" title="Diz em qual cabeçalho os primeiros bytes começam, útil quando a captura não inclui o quadro Ethernet"><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Camada inicial</label>
+            <select id="trafego-camada" name="camada" class="form-select form-select-sm bg-dark text-light border-secondary" style="width:auto;"
+                    title="Auto deduz pelo conteúdo; escolha IPv4, TCP e outros quando o dump começar direto nessa camada">
                 <option value="auto" selected>Auto</option>
                 <option value="ethernet">Ethernet</option>
                 <option value="ipv4">IPv4</option>
@@ -30,7 +31,8 @@
         </div>
     </div>
     <textarea id="trafego-hex" name="hex" class="form-control bg-dark text-light border-secondary trafego-hex"
-              rows="5" placeholder="ex.: 4500 003c 1c46 4000 4006 ...">aabb ccdd eeff 0211 2233 4455 0800
+              rows="5" placeholder="ex.: 4500 003c 1c46 4000 4006 ..."
+              title="Cole só dígitos 0-9 e letras a-f; espaços e quebras de linha são ignorados, como no Copy as Hex Stream do Wireshark">aabb ccdd eeff 0211 2233 4455 0800
 4500 0028 1c46 4000 4006 9d36 c0a8 0001 c0a8 0002
 d431 0050 0000 0000 0000 0000 5002 7210 e7fc 0000</textarea>
     <div class="form-text aed-ajuda">

@@ -1,7 +1,7 @@
 <div class="calc-resultado card-tech shadow">
     <div class="calc-resumo-head">
         <span class="aed-eyebrow">Sub-redes</span>
-        <h3 class="h5 mb-1">
+        <h3 class="h5 mb-1" title="Prefixo original e o tamanho de cada sub-rede resultante da divisão">
             <span class="material-symbols-outlined text-warning" aria-hidden="true" translate="no">grid_on</span>
             {d.baseCidr} dividido em /{d.prefixoAlvo}
         </h3>
@@ -31,7 +31,7 @@
     </div>
     {/if}
 
-    <h4 class="h6 calc-secao-titulo mt-3">
+    <h4 class="h6 calc-secao-titulo mt-3" title="As primeiras sub-redes em ordem crescente, com o primeiro e o último endereço de cada uma">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span>
         Sub-redes geradas <span class="calc-contador">{d.exibidas} de {d.quantidadeSubredes}</span>
     </h4>
@@ -39,10 +39,10 @@
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
             <thead>
                 <tr>
-                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span>#</th>
-                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span>Rede</th>
-                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span>Primeiro</th>
-                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span>Último</th>
+                    <th title="Posição da sub-rede na sequência, a partir de 1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span>#</th>
+                    <th title="Prefixo da sub-rede em notação CIDR compacta"><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span>Rede</th>
+                    <th title="Endereço inicial da sub-rede, com todos os bits de host em zero"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span>Primeiro</th>
+                    <th title="Endereço final da sub-rede, com todos os bits de host em 1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span>Último</th>
                 </tr>
             </thead>
             <tbody>

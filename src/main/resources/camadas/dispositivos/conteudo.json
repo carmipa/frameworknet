@@ -67,11 +67,18 @@
   "tabelas": [
     {
       "titulo": "Dispositivo x camada x o que decide",
+      "dica": "Compara cada equipamento pela camada em que atua e pelo efeito que tem sobre colisão e broadcast",
       "colunas": [
         "Dispositivo",
         "Camada OSI",
         "O que examina e decide",
         "Efeito nos domínios"
+      ],
+      "dicas_colunas": [
+        "Equipamento de rede analisado na linha",
+        "Camada do modelo OSI cuja informação o equipamento usa para trabalhar",
+        "Informação do quadro ou pacote que o equipamento lê para decidir o encaminhamento",
+        "Como o equipamento divide ou mantém os domínios de colisão e de broadcast da rede"
       ],
       "linhas": [
         [
@@ -120,11 +127,18 @@
     },
     {
       "titulo": "Camadas TCP/IP x OSI x unidade de dados",
+      "dica": "Mostra, para cada camada do TCP/IP, as camadas OSI que ela agrupa, o nome do dado e o endereço usado",
       "colunas": [
         "Camada TCP/IP",
         "Equivale no OSI",
         "PDU (unidade)",
         "Endereço usado"
+      ],
+      "dicas_colunas": [
+        "Uma das quatro camadas do modelo TCP/IP",
+        "Camadas do modelo OSI que essa camada do TCP/IP engloba, com o número entre parênteses",
+        "Nome dado ao bloco de dados enquanto ele está nessa camada",
+        "Tipo de identificador que essa camada usa para localizar origem e destino"
       ],
       "linhas": [
         [
@@ -155,11 +169,18 @@
     },
     {
       "titulo": "Hub x Switch x Roteador lado a lado",
+      "dica": "Coloca os três equipamentos lado a lado para ajudar a escolher qual deles resolve cada necessidade",
       "colunas": [
         "Critério",
         "Hub",
         "Switch",
         "Roteador"
+      ],
+      "dicas_colunas": [
+        "Característica usada para comparar os três equipamentos",
+        "Como o hub, que só repete o sinal elétrico, se comporta nesse critério",
+        "Como o switch, que encaminha quadros por endereço MAC, se comporta nesse critério",
+        "Como o roteador, que encaminha pacotes por endereço IP, se comporta nesse critério"
       ],
       "linhas": [
         [

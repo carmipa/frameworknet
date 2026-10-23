@@ -73,10 +73,16 @@
   "tabelas": [
     {
       "titulo": "Flags essenciais do curl",
+      "dica": "Opções do curl mais usadas para inspecionar requisições HTTP, cabeçalhos, redirecionamentos e problemas de TLS",
       "colunas": [
         "Flag",
         "O que faz",
         "Quando usar"
+      ],
+      "dicas_colunas": [
+        "Opção passada ao curl na linha de comando",
+        "Comportamento que a opção muda na requisição ou na saída exibida",
+        "Situação de diagnóstico em que a opção ajuda a isolar o problema"
       ],
       "linhas": [
         [
@@ -113,10 +119,16 @@
     },
     {
       "titulo": "openssl para TLS e certificados",
+      "dica": "Subcomandos e opções do openssl para testar o handshake TLS de um servidor e ler os campos de um certificado",
       "colunas": [
         "Comando / flag",
         "O que faz",
         "Leitura típica"
+      ],
+      "dicas_colunas": [
+        "Subcomando do openssl, como s_client e x509, ou opção acrescentada a ele",
+        "Ação executada pelo subcomando ou pela opção",
+        "Informação a procurar na saída e o que ela revela sobre a conexão ou o certificado"
       ],
       "linhas": [
         [

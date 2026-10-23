@@ -3,17 +3,17 @@
     <div class="mb-4">
         <span class="material-symbols-outlined icon-animated resultado-permit" translate="no" aria-hidden="true">check_circle</span>
     </div>
-    <h3 class="mb-3 resultado-permit">MATCH - PERMITIDO</h3>
+    <h3 class="mb-3 resultado-permit" title="O pacote casou com a ACL e a ação permit deixa ele seguir">MATCH - PERMITIDO</h3>
     {#else if veredito == 'BLOQUEADO'}
     <div class="mb-4">
         <span class="material-symbols-outlined icon-animated resultado-deny" translate="no" aria-hidden="true">cancel</span>
     </div>
-    <h3 class="mb-3 resultado-deny">MATCH - BLOQUEADO</h3>
+    <h3 class="mb-3 resultado-deny" title="O pacote casou com a ACL e a ação deny faz o firewall descartá-lo">MATCH - BLOQUEADO</h3>
     {#else}
     <div class="mb-4">
         <span class="material-symbols-outlined icon-animated resultado-nomatch" translate="no" aria-hidden="true">help_center</span>
     </div>
-    <h3 class="mb-3 resultado-nomatch">NO MATCH</h3>
+    <h3 class="mb-3 resultado-nomatch" title="Esta linha não se aplica ao pacote; numa ACL completa ele seguiria para a linha seguinte ou para o deny implícito do fim">NO MATCH</h3>
     {/if}
 
     <p class="text-secondary">{explicacao}</p>

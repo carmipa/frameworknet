@@ -106,10 +106,16 @@
   "tabelas": [
     {
       "titulo": "Request vs Reply (campo OPER)",
+      "dica": "Compara a pergunta e a resposta do ARP lado a lado, para reconhecer cada uma numa captura pelo valor do campo OPER",
       "colunas": [
         "Aspecto",
         "ARP Request (OPER=1)",
         "ARP Reply (OPER=2)"
+      ],
+      "dicas_colunas": [
+        "Característica comparada entre as duas mensagens, como destino do quadro, campo THA ou efeito no cache",
+        "Como a mensagem de pergunta, com OPER igual a 1, se comporta nesse aspecto",
+        "Como a mensagem de resposta, com OPER igual a 2, se comporta nesse aspecto"
       ],
       "linhas": [
         [
@@ -141,11 +147,18 @@
     },
     {
       "titulo": "Estados e tipos de entrada no cache ARP",
+      "dica": "Lista as situações em que um par IP e MAC pode estar no cache, para interpretar a saída de comandos como arp -a ou ip neigh",
       "colunas": [
         "Tipo/Estado",
         "Origem",
         "Expira?",
         "Significado"
+      ],
+      "dicas_colunas": [
+        "Classificação da entrada; entre parênteses, o nome do estado exibido pelo Linux",
+        "O que levou a entrada a existir ou a chegar a esse estado",
+        "Se a entrada some ou é revalidada sozinha com o tempo, sem ação do administrador",
+        "Como interpretar a entrada nesse estado ao diagnosticar a comunicação com o vizinho"
       ],
       "linhas": [
         [
@@ -182,10 +195,16 @@
     },
     {
       "titulo": "Ciclo de vida de uma entrada dinâmica",
+      "dica": "Acompanha uma entrada aprendida automaticamente desde a primeira necessidade de envio até a revalidação ou a remoção",
       "colunas": [
         "Fase",
         "O que acontece",
         "Estado típico (Linux)"
+      ],
+      "dicas_colunas": [
+        "Etapa do ciclo, numerada na ordem em que ocorre",
+        "Ação do host ou evento da rede que caracteriza essa etapa",
+        "Estado de vizinho que o Linux costuma mostrar no ip neigh durante essa etapa"
       ],
       "linhas": [
         [
@@ -222,10 +241,16 @@
     },
     {
       "titulo": "ARP no IPv4 vs equivalente no IPv6",
+      "dica": "Mostra como o IPv6 resolve endereço de enlace sem ARP, ajudando a mapear cada conceito do ARP para o NDP",
       "colunas": [
         "Característica",
         "ARP (IPv4)",
         "NDP (IPv6)"
+      ],
+      "dicas_colunas": [
+        "Aspecto do mecanismo de resolução comparado entre as duas versões do IP",
+        "Como o ARP trata esse aspecto em redes IPv4",
+        "Como o Neighbor Discovery, mensagens ICMPv6, trata o mesmo aspecto em redes IPv6"
       ],
       "linhas": [
         [

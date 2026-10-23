@@ -1,13 +1,15 @@
 <form method="POST" class="row g-3 calc-form" data-tab-form="autoip">
     <input type="hidden" name="tab" value="autoip">
     <div class="col-lg-8">
-        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Endereço IPv4</label>
+        <label class="form-label small text-secondary" title="O prefixo é deduzido pela classe do primeiro octeto: A vira /8, B vira /16 e C vira /24"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Endereço IPv4</label>
         <input type="text" name="ip" class="form-control input-ipv4 bg-dark text-light border-secondary {#if invalidFields.contains('ip')}is-invalid{/if}"
-               placeholder="Ex.: 172.19.44.116" value="{ipPre}" inputmode="text" autocomplete="off" spellcheck="false">
+               placeholder="Ex.: 172.19.44.116" value="{ipPre}"
+               title="Quatro números de 0 a 255 separados por ponto, sem a barra, como 172.19.44.116" inputmode="text" autocomplete="off" spellcheck="false">
     </div>
     <div class="col-lg-2">
-        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Régua</label>
-        <select aria-label="Régua" name="regua_count" class="form-select bg-dark text-light border-secondary">
+        <label class="form-label small text-secondary" title="A régua mostra as sub-redes vizinhas de mesmo tamanho, a partir da rede analisada"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Régua</label>
+        <select aria-label="Régua" name="regua_count" class="form-select bg-dark text-light border-secondary"
+                title="Escolha quantas linhas a régua vai listar no resultado, contando a própria rede analisada">
             <option value="5" {#if reguaCountPre == '5'}selected{/if}>5</option>
             <option value="10" {#if reguaCountPre == '10'}selected{/if}>10</option>
             <option value="15" {#if reguaCountPre == '15'}selected{/if}>15</option>

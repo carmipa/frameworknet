@@ -1,12 +1,13 @@
 {! Aba "Engenharia reversa": form em largura total; diagnóstico 100% abaixo (regra global de layout IPv6). !}
 <div class="calc-form-card mb-3">
-    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">manage_search</span> Engenharia reversa (Cisco IPv6)</h2>
+    <h2 class="h6 calc-form-title" title="Lê uma configuração IPv6 de roteador Cisco e reconstrói interfaces, endereços, rotas e problemas encontrados"><span class="material-symbols-outlined" translate="no" aria-hidden="true">manage_search</span> Engenharia reversa (Cisco IPv6)</h2>
     <p class="calc-hint">Cole uma configuração Cisco IPv6. Lê interfaces, endereços, rotas estáticas e OSPFv3/EIGRP, reconstrói o desenho e aponta achados.</p>
     <form id="formEng" hx-post="/ipv6/api/engenharia" hx-target="#saidaEng" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">
         <div class="mb-3">
-            <label for="engConfig" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> Configuração Cisco IPv6</label>
+            <label for="engConfig" class="form-label text-secondary" title="O texto da configuração do roteador que será interpretado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> Configuração Cisco IPv6</label>
             <textarea class="aed-input form-control font-monospace" id="engConfig" name="config" rows="12"
+                      title="Cole a saída do show running-config, um comando por linha, com hostname, interfaces e rotas IPv6"
                       spellcheck="false" placeholder="hostname R1&#10;ipv6 unicast-routing&#10;interface GigabitEthernet0/0&#10; ipv6 address 2001:db8:0:1::1/64&#10;interface Serial0/0/0&#10; ipv6 address 2001:db8:0:ffff::/127&#10;ipv6 route ::/0 2001:db8:0:ffff::1&#10;ipv6 router ospf 1" required>hostname R1
 ipv6 unicast-routing
 interface GigabitEthernet0/0

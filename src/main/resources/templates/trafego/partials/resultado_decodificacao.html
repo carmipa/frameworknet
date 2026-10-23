@@ -11,7 +11,7 @@
     {#for camada in resultado.camadas}
     <div class="aed-card card-tech trafego-camada">
         <div class="trafego-camada-head">
-            <h3 class="trafego-camada-nome">{camada.nome}</h3>
+            <h3 class="trafego-camada-nome" title="Cabeçalho desta camada separado campo a campo, com o valor lido nos bytes e o significado de cada um">{camada.nome}</h3>
             {#if camada.resumo}<span class="trafego-camada-resumo">{camada.resumo}</span>{/if}
         </div>
         <table class="trafego-campos">

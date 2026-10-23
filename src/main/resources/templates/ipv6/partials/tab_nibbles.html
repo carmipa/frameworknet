@@ -1,12 +1,13 @@
 {! Aba "Nibbles": expansão/compressão (RFC 4291/5952) e os 32 nibbles. Form 100% / resultado 100% abaixo. !}
 <div class="calc-form-card mb-3">
-    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">expand</span> Nibbles e expansão / compressão</h2>
+    <h2 class="h6 calc-form-title" title="Escreve o endereço por extenso e comprimido e o separa em 32 dígitos hexadecimais de 4 bits"><span class="material-symbols-outlined" translate="no" aria-hidden="true">expand</span> Nibbles e expansão / compressão</h2>
     <p class="calc-hint">Mostra a forma por extenso (RFC 4291), a comprimida (RFC 5952) e os 32 nibbles (4 bits cada) — a base do reverso <code translate="no">ip6.arpa</code>.</p>
     <form id="formNib" class="row g-3 align-items-end" hx-post="/ipv6/api/nibbles" hx-target="#saidaNib" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">
         <div class="col-lg-9 col-md-8">
-            <label for="ipv6NibEnd" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Endereço / prefixo IPv6</label>
+            <label for="ipv6NibEnd" class="form-label text-secondary" title="O endereço que será expandido, comprimido e quebrado em nibbles"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Endereço / prefixo IPv6</label>
             <input type="text" class="aed-input form-control" id="ipv6NibEnd" name="endereco"
+                   title="Endereço IPv6 em qualquer forma, com ou sem /prefixo, por exemplo 2001:db8::1"
                    placeholder="2001:db8::1" value="2001:db8::1" autocomplete="off" spellcheck="false" required>
         </div>
         <div class="col-lg-3 col-md-4 d-flex gap-2">

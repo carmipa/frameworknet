@@ -1,7 +1,7 @@
 <div class="calc-resultado card-tech shadow">
     <div class="calc-resumo-head">
         <span class="aed-eyebrow">Plano de rede IPv6</span>
-        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">architecture</span> {p.baseCidr} · {p.topologia}</h3>
+        <h3 class="h5 mb-1" title="Bloco base do projeto e a topologia escolhida para ligar as localidades"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">architecture</span> {p.baseCidr} · {p.topologia}</h3>
     </div>
 
     <div class="calc-kpis">
@@ -34,11 +34,11 @@
     </div>
     <textarea id="ipv6-plano-texto" class="d-none" readonly>{p.planoTexto}</textarea>
 
-    <h4 class="h6 calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> LANs (uma por localidade)</h4>
+    <h4 class="h6 calc-secao-titulo mt-3" title="A LAN atribuída a cada localidade, com o gateway e o primeiro e último endereço"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> LANs (uma por localidade)</h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
             <thead><tr>
-                <th>#</th><th>Localidade</th><th>Rede</th><th>Gateway</th><th>Primeiro</th><th>Último</th>
+                <th title="Ordem da localidade no projeto">#</th><th title="Nome do site informado no formulário">Localidade</th><th title="Prefixo da LAN em notação CIDR">Rede</th><th title="Endereço ::1 da LAN, configurado na interface do roteador local">Gateway</th><th title="Menor endereço da LAN">Primeiro</th><th title="Maior endereço da LAN">Último</th>
             </tr></thead>
             <tbody>
             {#for l in p.lans}
@@ -56,10 +56,10 @@
     </div>
 
     {#if p.wans.size > 0}
-    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cable</span> Enlaces WAN (/{p.prefixoWan}, RFC 6164)</h4>
+    <h4 class="h6 calc-secao-titulo mt-4" title="Os enlaces ponto a ponto entre roteadores, cada um com um prefixo próprio, normalmente /127"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cable</span> Enlaces WAN (/{p.prefixoWan}, RFC 6164)</h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
-            <thead><tr><th>#</th><th>Enlace</th><th>Rede</th><th>Lado A</th><th>Lado B</th></tr></thead>
+            <thead><tr><th title="Ordem do enlace no projeto">#</th><th title="Quais localidades o enlace liga">Enlace</th><th title="Prefixo do enlace ponto a ponto">Rede</th><th title="Roteador e endereço de uma ponta do enlace">Lado A</th><th title="Roteador e endereço da outra ponta do enlace">Lado B</th></tr></thead>
             <tbody>
             {#for w in p.wans}
                 <tr>
@@ -75,17 +75,17 @@
     </div>
     {/if}
 
-    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Rotas estáticas (alternativa)</h4>
+    <h4 class="h6 calc-secao-titulo mt-4" title="Comandos ipv6 route que substituem o protocolo dinâmico em redes pequenas"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Rotas estáticas (alternativa)</h4>
     <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{#for r in p.rotasEstaticas}{r}
 {/for}</pre>
 
-    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama de arquitetura ({p.topologia})</h4>
+    <h4 class="h6 calc-secao-titulo mt-4" title="Desenho dos roteadores, das LANs e dos enlaces WAN gerado a partir do projeto"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama de arquitetura ({p.topologia})</h4>
     <div class="ipv6-diagrama card-tech p-3 mb-2">
         <pre class="mermaid mb-0" translate="no">{p.topologyMermaid}</pre>
     </div>
     <div class="small text-secondary mb-2">Roteadores (um por localidade) e os enlaces WAN /{p.prefixoWan} da topologia {p.topologia}. Cada nó mostra a LAN /{p.prefixoLan}.</div>
 
-    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> CLI Cisco por roteador (OSPFv3 + EIGRP IPv6)</h4>
+    <h4 class="h6 calc-secao-titulo mt-4" title="Configuração completa de cada roteador, pronta para colar, com as duas opções de roteamento dinâmico"><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> CLI Cisco por roteador (OSPFv3 + EIGRP IPv6)</h4>
     <div class="row g-3">
         {#for rt in p.roteadores}
         <div class="col-12 col-lg-6">
@@ -97,7 +97,7 @@
         {/for}
     </div>
 
-    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Passo a passo</h4>
+    <h4 class="h6 calc-secao-titulo mt-4" title="A sequência de decisões que levou a este plano, do bloco base ao roteamento"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Passo a passo</h4>
     <ul class="small text-secondary mb-0">
         {#for passo in p.passos}<li>{passo}</li>{/for}
     </ul>

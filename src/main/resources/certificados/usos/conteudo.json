@@ -78,11 +78,18 @@
   "tabelas": [
     {
       "titulo": "Uso x EKU exigido x exemplo real",
+      "dica": "Liga cada uso de certificado ao EKU e OID exigidos, a quem apresenta o certificado e a um cenário real",
       "colunas": [
         "Uso",
         "EKU (nome / OID)",
         "Quem apresenta",
         "Exemplo"
+      ],
+      "dicas_colunas": [
+        "Cenário de aplicação do certificado",
+        "Nome do propósito na extensão Extended Key Usage e seu identificador numérico OID",
+        "Parte que envia o certificado para provar a própria identidade",
+        "Situação real em que esse uso acontece"
       ],
       "linhas": [
         [
@@ -113,11 +120,18 @@
     },
     {
       "titulo": "Assinatura x cifra: o que cada operação usa",
+      "dica": "Mostra qual chave do par cada operação usa e qual propriedade de segurança ela entrega ou deixa de fora",
       "colunas": [
         "Operação",
         "Chave usada",
         "Garante",
         "Não garante"
+      ],
+      "dicas_colunas": [
+        "Ação criptográfica realizada com o certificado ou com o par de chaves",
+        "Qual chave do par é aplicada e a quem ela pertence",
+        "Propriedade de segurança obtida com a operação",
+        "Propriedade que a operação sozinha não oferece e que depende de outro mecanismo"
       ],
       "linhas": [
         [

@@ -105,6 +105,9 @@
 
         if (typeof w.renderGeoRelatorio === "function" && reportRoot) {
             w.renderGeoRelatorio(reportRoot, j);
+            reportRoot.querySelectorAll("h3.geo-ip-readout:not([title])").forEach(function (h) {
+                h.title = "Endereço consultado; por ser reservado ou de rede local, não tem localização pública";
+            });
             if (okBox) okBox.classList.remove("d-none");
             if (failBox) failBox.classList.add("d-none");
         } else if (failBox && elMsg) {

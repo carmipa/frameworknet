@@ -1,7 +1,7 @@
 <div class="calc-resultado card-tech shadow">
     <div class="calc-resumo-head">
         <span class="aed-eyebrow">Engenharia reversa</span>
-        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">manage_search</span> {#if e.hostname}{e.hostname}{#else}Configuração Cisco IPv6{/if}</h3>
+        <h3 class="h5 mb-1" title="Roteador analisado, identificado pelo comando hostname da configuração colada"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">manage_search</span> {#if e.hostname}{e.hostname}{#else}Configuração Cisco IPv6{/if}</h3>
     </div>
 
     <div class="calc-kpis">
@@ -21,10 +21,10 @@
         </div>
     </div>
 
-    <h4 class="h6 calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">settings_ethernet</span> Interfaces e endereços</h4>
+    <h4 class="h6 calc-secao-titulo mt-3" title="Cada endereço IPv6 configurado, a interface onde está e o tipo de endereço"><span class="material-symbols-outlined" aria-hidden="true" translate="no">settings_ethernet</span> Interfaces e endereços</h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
-            <thead><tr><th>Interface</th><th>Endereço IPv6</th><th>Prefixo</th><th>Tipo (IANA)</th><th>Descrição</th></tr></thead>
+            <thead><tr><th title="Nome da porta do roteador onde o endereço está configurado">Interface</th><th title="Endereço configurado no comando ipv6 address">Endereço IPv6</th><th title="Tamanho do prefixo informado junto com o endereço">Prefixo</th><th title="Classificação do endereço pelas faixas da IANA, como global unicast ou link-local">Tipo (IANA)</th><th title="Texto do comando description da interface, quando existe">Descrição</th></tr></thead>
             <tbody>
             {#for ende in e.enderecos}
                 <tr>
@@ -43,15 +43,15 @@
     </div>
 
     {#if e.protocolos.size > 0}
-    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Protocolos de roteamento</h4>
+    <h4 class="h6 calc-secao-titulo mt-4" title="Processos de roteamento dinâmico IPv6 encontrados na configuração, como OSPFv3 e EIGRP"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Protocolos de roteamento</h4>
     <ul class="small text-light mb-0">{#for pr in e.protocolos}<li>{pr}</li>{/for}</ul>
     {/if}
 
     {#if e.rotas.size > 0}
-    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">alt_route</span> Rotas estáticas</h4>
+    <h4 class="h6 calc-secao-titulo mt-4" title="Rotas configuradas à mão com o comando ipv6 route"><span class="material-symbols-outlined" aria-hidden="true" translate="no">alt_route</span> Rotas estáticas</h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
-            <thead><tr><th>Destino</th><th>Próximo salto</th></tr></thead>
+            <thead><tr><th title="Prefixo que a rota alcança; ::/0 é a rota padrão">Destino</th><th title="Endereço do vizinho ou interface para onde o tráfego é enviado">Próximo salto</th></tr></thead>
             <tbody>
             {#for r in e.rotas}<tr><td class="font-monospace">{r.destino}</td><td class="font-monospace">{r.proximoSalto}</td></tr>{/for}
             </tbody>
@@ -59,7 +59,7 @@
     </div>
     {/if}
 
-    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">fact_check</span> Achados e recomendações</h4>
+    <h4 class="h6 calc-secao-titulo mt-4" title="Problemas e boas práticas detectados na configuração, com a correção sugerida"><span class="material-symbols-outlined" aria-hidden="true" translate="no">fact_check</span> Achados e recomendações</h4>
     {#for a in e.achados}
     <div class="alert alert-warning bg-dark border-warning text-light small py-2 mb-2">
         <span class="material-symbols-outlined align-middle" aria-hidden="true" translate="no">warning</span> {a}

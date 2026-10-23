@@ -1,7 +1,7 @@
 <div class="row g-4">
     <div class="col-lg-5">
         <div class="calc-form-card">
-            <h2 class="h6 calc-form-title">
+            <h2 class="h6 calc-form-title" title="Junta redes contíguas em um único prefixo maior, reduzindo o número de rotas anunciadas">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">merge</span> Sumarizar (rota resumo)
             </h2>
             <p class="calc-hint">
@@ -14,8 +14,9 @@
                   hx-swap="innerHTML"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="sumRedes" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> Redes, uma por linha</label>
+                    <label for="sumRedes" class="form-label text-secondary" title="As sub-redes IPv4 que você quer agregar em uma rota resumo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> Redes, uma por linha</label>
                     <textarea class="aed-input form-control calc-textarea" id="sumRedes" name="redes" rows="6"
+                              title="Uma rede por linha no formato endereço/prefixo, por exemplo 192.168.0.0/24"
                               spellcheck="false" required>192.168.0.0/24
 192.168.1.0/24
 192.168.2.0/24
@@ -35,7 +36,7 @@
         </div>
 
         <div class="calc-form-card mt-3">
-            <h2 class="h6 calc-form-title">
+            <h2 class="h6 calc-form-title" title="Verifica se dois blocos IPv4 se sobrepõem, se um contém o outro ou se são independentes">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">compare_arrows</span> Comparar dois blocos
             </h2>
             <p class="calc-hint">
@@ -48,13 +49,15 @@
                   hx-disabled-elt="find button[type='submit']">
                 <div class="row g-2 mb-3">
                     <div class="col-6">
-                        <label for="cmpA" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">square</span> Bloco A</label>
+                        <label for="cmpA" class="form-label text-secondary" title="Primeira rede da comparação"><span class="material-symbols-outlined" aria-hidden="true" translate="no">square</span> Bloco A</label>
                         <input type="text" class="aed-input form-control input-ipv4" id="cmpA" name="blocoA"
+                               title="Endereço com prefixo, por exemplo 10.0.0.0/16"
                                value="10.0.0.0/16" spellcheck="false" autocomplete="off" required>
                     </div>
                     <div class="col-6">
-                        <label for="cmpB" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">square</span> Bloco B</label>
+                        <label for="cmpB" class="form-label text-secondary" title="Segunda rede, que será testada contra o Bloco A"><span class="material-symbols-outlined" aria-hidden="true" translate="no">square</span> Bloco B</label>
                         <input type="text" class="aed-input form-control input-ipv4" id="cmpB" name="blocoB"
+                               title="Endereço com prefixo, por exemplo 10.0.5.0/24"
                                value="10.0.5.0/24" spellcheck="false" autocomplete="off" required>
                     </div>
                 </div>

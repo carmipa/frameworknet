@@ -1,6 +1,6 @@
 <div class="calc-resultado">
     <div class="calc-resumo-head">
-        <h3 class="h5 mb-1">
+        <h3 class="h5 mb-1" title="Bloco original e o prefixo de cada sub-rede resultante da divisão">
             <span class="material-symbols-outlined text-warning" aria-hidden="true" translate="no">grid_on</span>
             {plano.blocoBase}/{plano.prefixoBase} dividido em /{plano.prefixoAlvo}
         </h3>
@@ -39,7 +39,7 @@
         {plano.explicacao}
     </p>
 
-    <h4 class="h6 calc-secao-titulo">
+    <h4 class="h6 calc-secao-titulo" title="Para cada prefixo possível, quantas sub-redes cabem no bloco base e quantos hosts cada uma comporta">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span>
         Quantas cabem em cada prefixo — a partir de /{plano.prefixoBase}
     </h4>
@@ -68,7 +68,7 @@
         </table>
     </div>
 
-    <h4 class="h6 calc-secao-titulo mt-4">
+    <h4 class="h6 calc-secao-titulo mt-4" title="Cada sub-rede criada, com rede, faixa de hosts, broadcast e wildcard">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span>
         Sub-redes geradas
         <span class="calc-contador">{plano.exibidos} de {plano.totalSubredes}</span>

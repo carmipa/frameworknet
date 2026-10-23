@@ -86,10 +86,10 @@
 
     {! ---------- 8. Passo a passo ---------- !}
     <div class="card-tech p-3 mb-3">
-        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h3>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Cada operação feita sobre o endereço, na ordem, com o valor obtido em cada etapa"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h3>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm wizard-table mb-0">
-                <thead><tr><th>Etapa</th><th>Ação</th><th>Resultado</th></tr></thead>
+                <thead><tr><th title="Nome do passo do cálculo">Etapa</th><th title="Operação aplicada ao endereço neste passo">Ação</th><th title="Valor obtido ao fim do passo">Resultado</th></tr></thead>
                 <tbody>
                 {#for passo in r.wizard}
                 <tr><td>{passo.icone} {passo.etapa}</td><td>{passo.acao}</td><td class="font-monospace">{passo.resultado}</td></tr>
@@ -101,7 +101,7 @@
 
     {! ---------- 9. Linha do tempo do bloco (sem broadcast) ---------- !}
     <div class="card-tech p-3 mb-3">
-        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Linha do tempo do bloco</h3>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Do endereço de rede ao último endereço do bloco, com a faixa que pode ser dada a interfaces"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Linha do tempo do bloco</h3>
         <div class="timeline-bloco">
             <div class="timeline-step">
                 <div class="timeline-title">Rede</div>
@@ -123,39 +123,39 @@
     <div class="row g-3 mb-3">
         <div class="col-md-6">
             <div class="card-tech p-4 h-100 resumo-box">
-                <h3 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resultados</h3>
+                <h3 class="h6 text-info mb-3 d-flex align-items-center gap-2" title="Os principais endereços derivados do valor informado, em forma pronta para copiar"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resultados</h3>
                 <div class="table-responsive">
                     <table class="table table-dark table-bordered table-sm resultados-table mb-2">
                         <tbody>
-                            <tr><th>Comprimido (RFC 5952)</th><td class="font-monospace text-warning fw-bold">{r.base.comprimido}</td></tr>
-                            <tr><th>Expandido</th><td class="font-monospace">{r.base.expandido}</td></tr>
-                            <tr><th>Rede (/{r.base.prefixo})</th><td class="font-monospace">{r.base.rede}</td></tr>
-                            <tr><th>1º endereço</th><td class="font-monospace text-success">{r.base.primeiro}</td></tr>
-                            <tr><th>Último endereço</th><td class="font-monospace text-success">{r.base.ultimo}</td></tr>
-                            <tr><th>Interface ID</th><td class="font-monospace">{r.base.interfaceId}</td></tr>
-                            <tr><th>Solicited-node</th><td class="font-monospace">{r.base.solicitedNode}</td></tr>
-                            <tr><th>Reverso (ip6.arpa)</th><td class="font-monospace" style="word-break:break-all;">{r.base.reversePtr}</td></tr>
+                            <tr><th title="Forma curta canônica: sem zeros à esquerda e com :: no maior bloco de zeros">Comprimido (RFC 5952)</th><td class="font-monospace text-warning fw-bold">{r.base.comprimido}</td></tr>
+                            <tr><th title="Os 8 hextetos completos, com 4 dígitos hexadecimais cada">Expandido</th><td class="font-monospace">{r.base.expandido}</td></tr>
+                            <tr><th title="Endereço com todos os bits de interface zerados">Rede (/{r.base.prefixo})</th><td class="font-monospace">{r.base.rede}</td></tr>
+                            <tr><th title="Menor endereço do bloco, igual ao endereço de rede">1º endereço</th><td class="font-monospace text-success">{r.base.primeiro}</td></tr>
+                            <tr><th title="Maior endereço do bloco, com todos os bits de interface em 1">Último endereço</th><td class="font-monospace text-success">{r.base.ultimo}</td></tr>
+                            <tr><th title="Parte do endereço depois do prefixo, que identifica a interface">Interface ID</th><td class="font-monospace">{r.base.interfaceId}</td></tr>
+                            <tr><th title="Grupo multicast ff02::1:ff mais os 24 bits finais, usado pelo NDP no lugar do ARP">Solicited-node</th><td class="font-monospace">{r.base.solicitedNode}</td></tr>
+                            <tr><th title="Nome PTR do DNS reverso: os 32 nibbles invertidos seguidos de ip6.arpa">Reverso (ip6.arpa)</th><td class="font-monospace" style="word-break:break-all;">{r.base.reversePtr}</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <p class="small">Gateway sugerido: <span class="text-success fw-bold font-monospace">{r.gateway}</span> <span class="text-secondary">(::1 do prefixo, convenção)</span></p>
                 {#if r.provaItens.size > 0}
                 <hr class="border-secondary">
-                <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">edit_note</span> Resumo rápido (modo prova)</h3>
+                <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Os cinco dados que uma questão de prova costuma pedir sobre este bloco"><span class="material-symbols-outlined" translate="no" aria-hidden="true">edit_note</span> Resumo rápido (modo prova)</h3>
                 <table class="table table-dark table-bordered table-sm resumo-table mb-0">
-                    <tbody>{#for item in r.provaItens}<tr><th>{item.campo}</th><td class="font-monospace">{item.valor}</td></tr>{/for}</tbody>
+                    <tbody>{#for item in r.provaItens}<tr><th title="{#when item.campo}{#is '🏷️ Tipo'}Classificação do endereço pela faixa da IANA{#is '📏 Prefixo'}Quantos bits iniciais formam a rede{#is '🔢 Endereços'}Total de endereços do bloco, 2 elevado aos bits de interface{#is '🌐 Rede'}Endereço com os bits de interface zerados{#is '🔌 Interface ID'}Bits depois do prefixo, que identificam a interface{/when}">{item.campo}</th><td class="font-monospace">{item.valor}</td></tr>{/for}</tbody>
                 </table>
                 {/if}
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-tech p-4 h-100 resumo-box" style="border-left-color:#238636;">
-                <h3 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Capacidade</h3>
+                <h3 class="h6 text-info mb-3 d-flex align-items-center gap-2" title="Quantos bits ficam para a interface e quantos endereços o bloco tem no total"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Capacidade</h3>
                 <p>Bits de interface: <span class="fw-bold">{r.bitsInterface}</span></p>
                 <p>Endereços no bloco: {r.totalPotencia} = <span class="text-warning fw-bold">{r.totalEnderecos}</span></p>
                 <p class="small text-secondary">Sem broadcast e sem "hosts úteis = total − 2"; só o anycast Subnet-Router (identificador todo zero) e os anycast reservados do topo do /64 ficam fora do uso em host.</p>
                 <hr class="border-secondary">
-                <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Termos da rede (IPv6)</h3>
+                <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Glossário curto dos mecanismos IPv6 ligados a este endereço, como SLAAC, NDP e DHCPv6"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Termos da rede (IPv6)</h3>
                 <table class="table table-dark table-bordered table-sm termos-table mb-0">
                     <tbody>
                     {#for t in r.termos}
@@ -164,7 +164,7 @@
                     </tbody>
                 </table>
                 <hr class="border-secondary">
-                <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco (IPv6 / OSPFv3)</h3>
+                <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Comandos IOS de exemplo para usar este endereço no roteador, conforme o tipo; alguns tipos não se configuram em interface"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco (IPv6 / OSPFv3)</h3>
                 <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{r.ciscoOspfv3}</pre>
             </div>
         </div>
@@ -172,9 +172,9 @@
 
     {! ---------- 11. Delegação de prefixo ---------- !}
     <div class="card-tech p-3 mb-3">
-        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">account_tree</span> Delegação de prefixo — quantas sub-redes menores cabem</h3>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Quantos blocos /48, /56 e /64 cabem neste prefixo, os tamanhos usuais de entrega a clientes e LANs"><span class="material-symbols-outlined" translate="no" aria-hidden="true">account_tree</span> Delegação de prefixo — quantas sub-redes menores cabem</h3>
         <table class="table table-dark table-bordered table-sm interval-table mb-0">
-            <thead><tr><th>Prefixo</th><th>Quantas cabem</th><th>Uso típico</th></tr></thead>
+            <thead><tr><th title="Tamanho do bloco menor a delegar">Prefixo</th><th title="Número de blocos desse tamanho dentro do prefixo analisado">Quantas cabem</th><th title="Para quem esse tamanho costuma ser entregue">Uso típico</th></tr></thead>
             <tbody>
             {#for l in r.delegacao}
                 <tr><td class="font-monospace">{l.prefixo}</td><td class="fw-bold">{l.quantidade}</td><td class="small text-secondary">{l.uso}</td></tr>
@@ -186,10 +186,10 @@
     {! ---------- 12. Régua de sub-redes ---------- !}
     {#if r.regua.size > 0}
     <div class="card-tech p-3 mb-3">
-        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {r.reguaCount} de /{r.base.prefixo})</h3>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="O bloco atual e os blocos seguintes de mesmo tamanho, em sequência"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {r.reguaCount} de /{r.base.prefixo})</h3>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm regua-table mb-0">
-                <thead><tr><th>#</th><th>Rede</th><th>1º endereço</th><th>Último endereço</th></tr></thead>
+                <thead><tr><th title="Posição na régua; a primeira linha é o bloco analisado">#</th><th title="Prefixo do bloco em notação CIDR">Rede</th><th title="Primeiro endereço do bloco">1º endereço</th><th title="Último endereço do bloco">Último endereço</th></tr></thead>
                 <tbody>
                 {#for s in r.regua}
                 <tr class="{#if s_isFirst}regua-current{/if}">
@@ -207,7 +207,7 @@
         <div class="p-3 border-bottom border-secondary text-info fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">table_chart</span> Tabela de referência de prefixos IPv6</div>
         <div class="p-3 table-responsive">
             <table class="table table-dark table-bordered table-sm ref-table mb-0">
-                <thead><tr><th>Prefixo</th><th>Sub-redes /64</th><th>Endereços</th><th>Fronteira</th></tr></thead>
+                <thead><tr><th title="Tamanho do prefixo de referência">Prefixo</th><th title="Quantas LANs /64 cabem num bloco desse tamanho">Sub-redes /64</th><th title="Total de endereços do bloco">Endereços</th><th title="Se o prefixo termina num múltiplo de 4 bits, alinhado a um nibble, ou no meio de um">Fronteira</th></tr></thead>
                 <tbody>
                 {#for row in r.referencia}
                 <tr class="{#if row.atual}is-current{/if}">
@@ -224,7 +224,7 @@
         <div class="p-3 border-bottom border-secondary text-warning fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_horiz</span> Conversão (bits, nibbles, hextetos, hex)</div>
         <div class="p-3 table-responsive">
             <table class="table table-dark table-bordered table-sm conv-table mb-0">
-                <thead><tr><th>Referência</th><th>Bits</th><th>Nibbles</th><th>Hextetos</th><th>Hex</th></tr></thead>
+                <thead><tr><th title="A unidade de medida da linha">Referência</th><th title="Quantidade de bits da unidade">Bits</th><th title="Quantos grupos de 4 bits a unidade tem">Nibbles</th><th title="Quantos grupos de 16 bits a unidade tem">Hextetos</th><th title="Como a unidade aparece escrita em hexadecimal">Hex</th></tr></thead>
                 <tbody>
                 {#for row in r.conversao}
                 <tr><td>{row.referencia}</td><td>{row.bits}</td><td>{row.nibbles}</td><td>{row.hextetos}</td><td>{row.hex}</td></tr>
@@ -236,10 +236,10 @@
 
     {! ---------- 15. Cyber segurança (GRC) ---------- !}
     <div class="card-tech p-4 shadow mb-3">
-        <h3 class="h6 text-danger mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> Cyber segurança (GRC + contexto)</h3>
-        <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h3>
+        <h3 class="h6 text-danger mb-3 d-flex align-items-center gap-2" title="Riscos e controles recomendados conforme o tipo e o tamanho deste endereço"><span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> Cyber segurança (GRC + contexto)</h3>
+        <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Pontos de governança, risco e conformidade resumidos para quem decide"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h3>
         <ul class="small mb-3 grc-list">{#for linha in r.grcResumo}<li>{linha}</li>{/for}</ul>
-        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span> Alertas e recomendações</h3>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Avisos de configuração e segurança que se aplicam a este tipo de endereço"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span> Alertas e recomendações</h3>
         {#for dica in r.segurancaDicas}
         <div class="alert alert-{dica.tipo} bg-dark border-{dica.tipo} text-light small py-2 mb-2">
             <span>{dica.icon}</span> {dica.texto}
@@ -249,7 +249,7 @@
 
     {! ---------- 16. OSPFv3 / EIGRP IPv6 ---------- !}
     <div class="card-tech p-4 shadow mb-3 border border-secondary" style="border-left:0.312% solid #d29922 !important;">
-        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> OSPFv3 / EIGRP (IPv6)</h3>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Comandos de exemplo para ativar OSPFv3 e EIGRP para IPv6, que no IPv6 são habilitados por interface"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> OSPFv3 / EIGRP (IPv6)</h3>
         <p class="small text-secondary mb-2">{r.ciscoNota}</p>
         <div class="row g-3">
             <div class="col-md-6">
@@ -269,11 +269,11 @@
         <div class="p-3 small text-secondary">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <h3 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Linux</h3>
+                    <h3 class="h6 text-info d-flex align-items-center gap-2" title="Comandos do iproute2 para ver endereços e rotas IPv6 e testar alcance"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Linux</h3>
                     <ul class="mb-0"><li><code translate="no">ip -6 addr</code> — endereços IPv6</li><li><code translate="no">ip -6 route</code> — rotas IPv6</li><li><code translate="no">ping6 2606:4700:4700::1111</code> — testar alcance</li></ul>
                 </div>
                 <div class="col-md-6">
-                    <h3 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">desktop_windows</span> Windows</h3>
+                    <h3 class="h6 text-info d-flex align-items-center gap-2" title="Comandos do Prompt para listar endereços IPv6 e testar alcance e caminho"><span class="material-symbols-outlined" translate="no" aria-hidden="true">desktop_windows</span> Windows</h3>
                     <ul class="mb-0"><li><code translate="no">netsh interface ipv6 show address</code></li><li><code translate="no">ping -6 ipv6.google.com</code></li><li><code translate="no">tracert -6 2606:4700:4700::1111</code></li></ul>
                 </div>
             </div>
@@ -283,7 +283,7 @@
     {! ---------- 18. Banner contextual didático ---------- !}
     <div class="card-tech border border-info border-2 shadow mb-3 banner-contexto-didatico">
         <div class="p-3">
-            <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> {r.bannerTitulo}</h3>
+            <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Onde este prefixo se encaixa num plano de endereçamento e o que ele implica"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> {r.bannerTitulo}</h3>
             <p class="small text-secondary mb-3">{r.bannerSubtitulo}</p>
             <ul class="list-unstyled mb-0">
             {#for it in r.bannerItens}
@@ -299,7 +299,7 @@
     {! ---------- 19. Resposta tipo prova ---------- !}
     <div class="card-tech border border-warning border-opacity-50 shadow mb-3 enunciado-prova-mascara">
         <div class="p-3">
-            <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resposta tipo prova (IPv6) /{r.base.prefixo}</h3>
+            <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Frase-resumo com bits de rede, bits de interface e total de endereços, no formato de resposta de prova"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resposta tipo prova (IPv6) /{r.base.prefixo}</h3>
             <p class="frase-estilo-quadro p-3 rounded border border-info border-opacity-25 text-light small mb-3" style="background:rgba(31,111,235,0.08);">
                 <span class="text-info text-uppercase small d-block mb-1" style="letter-spacing:0.04em;">Resumo estilo quadro (aula)</span>
                 {r.provaFrase}

@@ -61,6 +61,22 @@
     // securityLevel "strict" (mantido: defesa contra rótulo malicioso) DESLIGA as diretivas `click`
     // do Mermaid — o painel "clique em um roteador" nunca abria. O clique é ligado aqui, depois da
     // renderização, pelo id do nó (…flowchart-<id>-<n>), só para ids que têm detalhe no mapa.
+    // O adaptador de dicas não converte nada dentro de SVG: cada nó clicável ganha a descrição por
+    // aria-describedby (texto único, fora do SVG) e um <title> SVG para o balão nativo do mouse.
+    const DICA_NO_TOPOLOGIA = "Mostra no painel de detalhes a rede, a máscara, o gateway e os endereços deste equipamento ou enlace";
+    function descricaoDoNo() {
+        let desc = document.getElementById("d-topologia-no");
+        if (!desc) {
+            desc = document.createElement("span");
+            desc.id = "d-topologia-no";
+            desc.setAttribute("role", "tooltip");
+            desc.className = "dica__texto";
+            desc.textContent = DICA_NO_TOPOLOGIA;
+            (document.querySelector(".topology-wrap") || document.body).appendChild(desc);
+        }
+        return desc.id;
+    }
+
     function ligarCliquesDaTopologia() {
         document.querySelectorAll(".topology-wrap .mermaid svg g.node").forEach((node) => {
             // Mermaid 10: "flowchart-R_1-0"; Mermaid 11: "mermaid-<ts>-flowchart-R_1-0".
@@ -72,6 +88,10 @@
             node.setAttribute("tabindex", "0");
             node.setAttribute("role", "button");
             node.setAttribute("aria-label", "Detalhes de " + bruto);
+            node.setAttribute("aria-describedby", descricaoDoNo());
+            const balaoNativo = document.createElementNS("http://www.w3.org/2000/svg", "title");
+            balaoNativo.textContent = DICA_NO_TOPOLOGIA;
+            node.prepend(balaoNativo);
             node.addEventListener("click", () => window.showTopologyDetail(bruto));
             node.addEventListener("keydown", (ev) => {
                 if (ev.key === "Enter" || ev.key === " ") {

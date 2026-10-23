@@ -78,12 +78,20 @@
   "tabelas": [
     {
       "titulo": "Formato x codificação x conteúdo x extensão",
+      "dica": "Compara os formatos de arquivo de certificado pela codificação, conteúdo e extensões usuais",
       "colunas": [
         "Formato",
         "Codificação",
         "Contém chave privada?",
         "Conteúdo típico",
         "Extensões"
+      ],
+      "dicas_colunas": [
+        "Nome do formato ou padrão de armazenamento",
+        "Se o arquivo é texto em Base64 ou binário, e se exige senha",
+        "Se esse formato pode carregar a chave privada junto do certificado",
+        "Que materiais costumam estar dentro de um arquivo desse formato",
+        "Extensões de arquivo usadas para esse formato, que não garantem o conteúdo real"
       ],
       "linhas": [
         [
@@ -125,12 +133,20 @@
     },
     {
       "titulo": "Matriz de conversão (de / para) com a ferramenta principal",
+      "dica": "Mostra o comando OpenSSL que converte cada formato de origem em cada formato de destino",
       "colunas": [
         "De \\ Para",
         "PEM",
         "DER",
         "PFX (PKCS#12)",
         "P7B (PKCS#7)"
+      ],
+      "dicas_colunas": [
+        "Formato de origem na linha e formato de destino nas colunas",
+        "Como chegar ao formato PEM, em texto Base64, a partir do formato da linha",
+        "Como chegar ao formato DER, binário com um único objeto, a partir do formato da linha",
+        "Como chegar ao PFX, que exige a chave privada, a partir do formato da linha",
+        "Como chegar ao P7B, que leva só certificados, a partir do formato da linha"
       ],
       "linhas": [
         [
@@ -165,10 +181,16 @@
     },
     {
       "titulo": "Quando usar cada formato",
+      "dica": "Recomenda o formato adequado para cada situação comum de instalação ou distribuição",
       "colunas": [
         "Cenário",
         "Formato recomendado",
         "Motivo"
+      ],
+      "dicas_colunas": [
+        "Situação prática em que um certificado precisa ser instalado ou enviado",
+        "Formato de arquivo mais adequado para essa situação",
+        "Por que esse formato atende a situação"
       ],
       "linhas": [
         [

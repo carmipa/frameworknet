@@ -73,11 +73,18 @@
   "tabelas": [
     {
       "titulo": "Banda 2.4 GHz - canais e sobreposição (20 MHz)",
+      "dica": "Canais de 2,4 GHz com frequência central e vizinhos sem sobreposição, para escolher um canal livre de interferência mútua",
       "colunas": [
         "Canal",
         "Frequência central",
         "Não sobrepõe com",
         "Observação"
+      ],
+      "dicas_colunas": [
+        "Número do canal na banda de 2,4 GHz",
+        "Frequência no centro do canal, em MHz; canais consecutivos ficam a 5 MHz um do outro",
+        "Canais que podem operar ao lado deste sem dividir espectro",
+        "Recomendação de uso e canais com que este se sobrepõe"
       ],
       "linhas": [
         [
@@ -126,11 +133,18 @@
     },
     {
       "titulo": "Comparação entre bandas",
+      "dica": "Compara as bandas de 2,4, 5 e 6 GHz em faixa, canais, alcance e interferência, para decidir qual usar",
       "colunas": [
         "Característica",
         "2.4 GHz",
         "5 GHz",
         "6 GHz"
+      ],
+      "dicas_colunas": [
+        "Critério comparado entre as bandas em cada linha",
+        "Valor do critério na banda de 2,4 GHz, a de maior alcance e mais congestionada",
+        "Valor do critério na banda de 5 GHz, com mais canais e DFS em parte deles",
+        "Valor do critério na banda de 6 GHz, aberta ao Wi-Fi a partir do Wi-Fi 6E"
       ],
       "linhas": [
         [
@@ -179,12 +193,20 @@
     },
     {
       "titulo": "Largura de canal x quantos canais independentes cabem",
+      "dica": "Mostra quantos canais sem sobreposição cada largura permite por banda, para equilibrar velocidade e convivência entre redes",
       "colunas": [
         "Largura",
         "2.4 GHz",
         "5 GHz",
         "6 GHz",
         "Efeito prático"
+      ],
+      "dicas_colunas": [
+        "Espectro ocupado por um canal; mais largura dá mais taxa e deixa menos canais independentes",
+        "Quantos canais dessa largura cabem sem sobreposição em 2,4 GHz",
+        "Quantos canais dessa largura cabem sem sobreposição em 5 GHz; varia com a regulamentação do país",
+        "Quantos canais dessa largura cabem sem sobreposição nos 1200 MHz da banda de 6 GHz",
+        "Cenário em que essa largura de canal costuma compensar"
       ],
       "linhas": [
         [

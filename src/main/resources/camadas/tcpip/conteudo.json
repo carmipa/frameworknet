@@ -73,12 +73,20 @@
   "tabelas": [
     {
       "titulo": "Mapeamento OSI <-> TCP/IP",
+      "dica": "Relaciona cada camada OSI à camada TCP/IP equivalente, com o nome do dado e a função",
       "colunas": [
         "Camada OSI",
         "Nº OSI",
         "Camada TCP/IP",
         "PDU (unidade de dados)",
         "Função principal"
+      ],
+      "dicas_colunas": [
+        "Nome da camada no modelo OSI",
+        "Posição da camada no modelo OSI, de 1 (base) a 7 (topo)",
+        "Camada do TCP/IP que absorve essa camada OSI",
+        "Nome dado ao bloco de dados nesse nível",
+        "O que essa camada faz pelo dado durante a comunicação"
       ],
       "linhas": [
         [
@@ -134,11 +142,18 @@
     },
     {
       "titulo": "Camadas TCP/IP x protocolos e dispositivos",
+      "dica": "Aponta, para cada camada do TCP/IP, os protocolos, o tipo de endereço e o equipamento típico",
       "colunas": [
         "Camada TCP/IP",
         "Protocolos típicos",
         "Endereçamento",
         "Dispositivo típico"
+      ],
+      "dicas_colunas": [
+        "Uma das quatro camadas do modelo TCP/IP",
+        "Protocolos mais encontrados funcionando nessa camada",
+        "Identificador que essa camada usa para achar o destino",
+        "Equipamento ou software que costuma operar nessa camada"
       ],
       "linhas": [
         [
@@ -169,10 +184,16 @@
     },
     {
       "titulo": "OSI vs. TCP/IP: por que TCP/IP venceu",
+      "dica": "Contrasta a origem e o uso dos dois modelos para explicar por que o TCP/IP virou o padrão real",
       "colunas": [
         "Critério",
         "OSI",
         "TCP/IP"
+      ],
+      "dicas_colunas": [
+        "Aspecto histórico ou prático usado na comparação",
+        "Como o modelo OSI da ISO se situa nesse aspecto",
+        "Como a pilha TCP/IP, nascida na ARPANET, se situa nesse aspecto"
       ],
       "linhas": [
         [

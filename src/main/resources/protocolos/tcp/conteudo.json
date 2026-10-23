@@ -155,10 +155,16 @@
   "tabelas": [
     {
       "titulo": "Flags de controle do TCP",
+      "dica": "Bits do cabeçalho TCP que controlam abertura, confirmação, congestionamento e encerramento, úteis para ler uma captura de pacotes",
       "colunas": [
         "Flag",
         "Nome",
         "Significado"
+      ],
+      "dicas_colunas": [
+        "Sigla do bit como aparece em ferramentas de captura, como Wireshark e tcpdump",
+        "Nome por extenso em inglês, do qual a sigla deriva",
+        "O que acontece na conexão quando o bit está ligado (valor 1)"
       ],
       "linhas": [
         [
@@ -210,10 +216,16 @@
     },
     {
       "titulo": "Principais estados da máquina TCP",
+      "dica": "Estados pelos quais uma conexão TCP passa da abertura ao fechamento, para interpretar a saída de netstat ou ss",
       "colunas": [
         "Estado",
         "Lado típico",
         "Quando ocorre"
+      ],
+      "dicas_colunas": [
+        "Nome do estado definido no TCP, mostrado com pequenas variações por netstat e ss",
+        "Ponta da conexão, cliente ou servidor, em que o estado normalmente aparece",
+        "Evento que leva a conexão a esse estado e o que ela aguarda para sair dele"
       ],
       "linhas": [
         [
@@ -260,10 +272,16 @@
     },
     {
       "titulo": "TCP vs UDP",
+      "dica": "Compara os dois protocolos de transporte em garantias e custo, para decidir qual combina com cada aplicação",
       "colunas": [
         "Característica",
         "TCP",
         "UDP"
+      ],
+      "dicas_colunas": [
+        "Propriedade do transporte avaliada nos dois protocolos",
+        "Como o TCP, orientado a conexão e confiável, trata a característica",
+        "Como o UDP, sem conexão e sem garantias de entrega, trata a característica"
       ],
       "linhas": [
         [
@@ -305,10 +323,16 @@
     },
     {
       "titulo": "Portas conhecidas famosas (well-known, 0-1023)",
+      "dica": "Portas padrão dos serviços mais comuns, para identificar o que roda numa porta aberta ou qual liberar no firewall",
       "colunas": [
         "Porta",
         "Serviço",
         "Descrição"
+      ],
+      "dicas_colunas": [
+        "Número da porta em que o serviço escuta por padrão; a barra separa portas de funções distintas",
+        "Protocolo de aplicação associado à porta",
+        "Para que o serviço é usado, com observações sobre segurança ou faixa da porta"
       ],
       "linhas": [
         [

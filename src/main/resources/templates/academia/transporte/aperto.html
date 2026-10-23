@@ -15,14 +15,14 @@
 
     <div class="acad-etapas">
         <section class="acad-etapa acad-etapa-larga acad-leitura" id="ler" aria-labelledby="ler-titulo">
-            <h2 class="acad-etapa-titulo" id="ler-titulo">
+            <h2 class="acad-etapa-titulo" id="ler-titulo" title="Texto sobre o aperto de mão em três vias e a numeração de bytes do TCP, para ler antes">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
                 Entenda
             </h2>
             <p class="acad-explica">Leia primeiro; depois siga os segmentos do aperto de mão na animação e mude os números no Mexer.</p>
             <div class="acad-leitura-texto">
                 <section class="acad-leitura-bloco">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
+                    <h3 title="Por que o TCP combina números antes de enviar dados, e por que o UDP dispensa isso"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
                     <p>O <strong>TCP</strong> entrega os dados completos e na ordem, mesmo que a rede perca ou embaralhe
                     pacotes. Para isso ele numera cada byte enviado e espera confirmação. Antes de mandar o primeiro dado, os
                     dois lados combinam o número por onde cada um começa: é o <strong>aperto de mão em três vias</strong>.</p>
@@ -31,7 +31,7 @@
                     jogos.</p>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
+                    <h3 title="Os três segmentos do aperto de mão e como seq e ack avançam com os dados, com exemplo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
                     <ol>
                         <li>O cliente envia <span class="acad-valor" translate="no">SYN</span> com o seu número inicial, <span class="acad-valor" translate="no">seq = x</span>.</li>
                         <li>O servidor responde <span class="acad-valor" translate="no">SYN-ACK</span> com o número dele, <span class="acad-valor" translate="no">seq = y</span>, e confirma o do cliente com
@@ -46,7 +46,7 @@
                     <span class="acad-valor" translate="no">4294967295</span> vem <span class="acad-valor" translate="no">0</span>.</p>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
+                    <h3 title="Enganos frequentes ao calcular o ack, como esquecer o número gasto pelo SYN"><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
                     <ul>
                         <li>Esquecer o <span class="acad-valor" translate="no">+ 1</span> do SYN no primeiro ack.</li>
                         <li>Confirmar o último byte recebido em vez do próximo esperado (um a menos).</li>
@@ -54,7 +54,7 @@
                     </ul>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
+                    <h3 title="Quanto cada tipo de segmento gasta da sequência, reunido para consulta"><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
                     <ul>
                         <li><span class="acad-valor" translate="no">SYN</span> e <span class="acad-valor" translate="no">FIN</span> gastam 1 número; <span class="acad-valor" translate="no">ACK</span> sozinho não gasta; dado gasta 1 por byte.</li>
                         <li><span class="acad-valor" translate="no">ack</span> = próximo byte esperado.</li>
@@ -64,7 +64,7 @@
         </section>
 
         <section class="acad-etapa" id="ver" aria-labelledby="ver-titulo">
-            <h2 class="acad-etapa-titulo" id="ver-titulo">
+            <h2 class="acad-etapa-titulo" id="ver-titulo" title="Animação dos segmentos SYN, SYN-ACK e ACK e de uma troca de dados, com seq e ack de cada um">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span>
                 Ver
             </h2>
@@ -83,13 +83,13 @@
         </section>
 
         <section class="acad-etapa" id="mexer" aria-labelledby="mexer-titulo">
-            <h2 class="acad-etapa-titulo" id="mexer-titulo">
+            <h2 class="acad-etapa-titulo" id="mexer-titulo" title="Área livre: mude os números iniciais e os bytes de cada lado e veja seq e ack recalculados">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">touch_app</span>
                 Mexer
             </h2>
             <div class="row g-3">
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="mexer-isn-cliente">
+                    <label for="mexer-isn-cliente" title="Número de sequência inicial que o cliente envia no SYN">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">computer</span>
                         ISN do cliente
                     </label>
@@ -99,7 +99,7 @@
                     <span class="acad-eco" id="mexer-isn-cliente-eco"></span>
                 </div>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="mexer-isn-servidor">
+                    <label for="mexer-isn-servidor" title="Número de sequência inicial que o servidor envia no SYN-ACK">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span>
                         ISN do servidor
                     </label>
@@ -109,7 +109,7 @@
                     <span class="acad-eco" id="mexer-isn-servidor-eco"></span>
                 </div>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="mexer-bytes-cliente">
+                    <label for="mexer-bytes-cliente" title="Tamanho dos dados do cliente; cada byte avança a sequência dele em 1">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">upload</span>
                         Bytes que o cliente envia
                     </label>
@@ -119,7 +119,7 @@
                     <span class="acad-eco" id="mexer-bytes-cliente-eco"></span>
                 </div>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="mexer-bytes-servidor">
+                    <label for="mexer-bytes-servidor" title="Tamanho da resposta do servidor; cada byte avança a sequência dele em 1">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">download</span>
                         Bytes que o servidor responde
                     </label>
@@ -135,14 +135,14 @@
         </section>
 
         <section class="acad-etapa acad-etapa-larga" id="provar" aria-labelledby="provar-titulo">
-            <h2 class="acad-etapa-titulo" id="provar-titulo">
+            <h2 class="acad-etapa-titulo" id="provar-titulo" title="Exercício sorteado: calcule o seq ou o ack de um segmento da conversa">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span>
                 Provar
             </h2>
             <p class="acad-pergunta" id="provar-pergunta"></p>
             <form id="provar-form" class="row g-3 align-items-end" novalidate>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="provar-resposta">
+                    <label for="provar-resposta" title="Campo da resposta à pergunta sorteada acima; o rótulo diz o que é pedido">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">edit</span>
                         <span id="provar-rotulo">Sua resposta</span>
                     </label>

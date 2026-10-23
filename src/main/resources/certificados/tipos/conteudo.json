@@ -78,11 +78,18 @@
   "tabelas": [
     {
       "titulo": "Níveis de validação: o que a CA realmente checa",
+      "dica": "Compara DV, OV e EV pelo rigor da verificação, prazo de emissão e diferença visível no navegador",
       "colunas": [
         "Nível",
         "O que a CA valida",
         "Emissão",
         "No browser moderno"
+      ],
+      "dicas_colunas": [
+        "Sigla e nome do nível de validação contratado na emissão",
+        "Verificações que a autoridade certificadora faz antes de assinar o certificado",
+        "Tempo típico e grau de automação até o certificado ficar pronto",
+        "Como o certificado é exibido hoje ao usuário na barra de endereço"
       ],
       "linhas": [
         [
@@ -107,11 +114,18 @@
     },
     {
       "titulo": "Escopo de nomes: quem cada certificado cobre",
+      "dica": "Mostra quais nomes de domínio cada tipo de certificado protege e o risco associado a cada escolha",
       "colunas": [
         "Tipo",
         "Cobre",
         "Não cobre",
         "Risco/observação"
+      ],
+      "dicas_colunas": [
+        "Forma de declarar os nomes protegidos pelo certificado",
+        "Nomes DNS que o navegador aceita como válidos com esse certificado",
+        "Nomes que geram erro de nome inválido se acessados com esse certificado",
+        "Consequência prática da escolha, como o raio de dano se a chave vazar"
       ],
       "linhas": [
         [
@@ -136,11 +150,18 @@
     },
     {
       "titulo": "Origem da confiança",
+      "dica": "Diferencia certificados de CA pública dos autoassinados ou de CA interna e mostra onde cada um faz sentido",
       "colunas": [
         "Origem",
         "Encadeia até raiz confiável?",
         "Onde usar",
         "Onde é erro"
+      ],
+      "dicas_colunas": [
+        "Quem assinou o certificado",
+        "Se a cadeia de assinaturas termina em uma raiz já presente no repositório de confiança do sistema ou do navegador",
+        "Ambientes em que esse tipo de certificado é adequado",
+        "Situações em que usá-lo gera aviso ou prática insegura; o hífen indica nenhuma"
       ],
       "linhas": [
         [
@@ -159,11 +180,18 @@
     },
     {
       "titulo": "Tipos por uso (Extended Key Usage)",
+      "dica": "Relaciona a finalidade do certificado ao valor de EKU que a autoriza e ao lugar onde conferir isso na prática",
       "colunas": [
         "Uso",
         "EKU técnico",
         "Exemplo",
         "Onde inspecionar"
+      ],
+      "dicas_colunas": [
+        "Finalidade para a qual o certificado é emitido",
+        "Nome do valor gravado na extensão Extended Key Usage que libera esse uso",
+        "Caso concreto em que esse tipo de certificado aparece",
+        "Ferramenta ou local em que se observa o certificado sendo apresentado ou verificado"
       ],
       "linhas": [
         [

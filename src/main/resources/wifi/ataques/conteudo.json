@@ -73,10 +73,16 @@
   "tabelas": [
     {
       "titulo": "Ataque, como funciona e defesa",
+      "dica": "Ataques comuns a redes Wi-Fi, o mecanismo de cada um e a contramedida que mais reduz o risco",
       "colunas": [
         "Ataque",
         "Como funciona",
         "Defesa principal"
+      ],
+      "dicas_colunas": [
+        "Nome pelo qual o ataque é conhecido",
+        "Mecanismo explorado pelo atacante e o que ele obtém",
+        "Configuração ou padrão que neutraliza ou reduz o ataque"
       ],
       "linhas": [
         [
@@ -108,10 +114,16 @@
     },
     {
       "titulo": "Bandas e canais 802.11 (contexto)",
+      "dica": "Bandas de frequência do Wi-Fi com seus canais e o efeito de cada uma sobre a exposição a ataques",
       "colunas": [
         "Banda",
         "Canais úteis",
         "Observação de segurança"
+      ],
+      "dicas_colunas": [
+        "Faixa de frequência de rádio usada pelo Wi-Fi",
+        "Numeração dos canais disponíveis na banda e as larguras de canal usuais",
+        "Como o alcance e as exigências da banda afetam a exposição a ataques"
       ],
       "linhas": [
         [

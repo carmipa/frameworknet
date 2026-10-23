@@ -1,9 +1,10 @@
 <form method="POST" class="row g-3 calc-form" data-tab-form="ipv6">
     <input type="hidden" name="tab" value="ipv6">
     <div class="col-lg-10">
-        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Endereço IPv6</label>
+        <label class="form-label small text-secondary" title="O endereço é mostrado na forma completa e na abreviada, com o tipo e a faixa a que pertence"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Endereço IPv6</label>
         <input type="text" name="ipv6" class="form-control bg-dark text-light border-secondary {#if invalidFields.contains('ipv6')}is-invalid{/if}"
-               placeholder="Ex.: 2001:db8::1" value="{ipv6Pre}" maxlength="45" autocomplete="off" spellcheck="false">
+               placeholder="Ex.: 2001:db8::1" value="{ipv6Pre}"
+               title="Até oito grupos hexadecimais separados por dois-pontos; :: resume uma sequência de grupos zero" maxlength="45" autocomplete="off" spellcheck="false">
     </div>
     <div class="col-lg-2 tab-actions d-grid gap-2">
         <button type="submit" name="modo" value="ipv6" class="aed-btn aed-btn-execute w-100"

@@ -109,7 +109,8 @@
     {#if comparadorOnly && comparadorCards}
     <div class="aed-card card-tech p-4 shadow mt-4">
         <span class="aed-eyebrow">Comparador</span>
-        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);">
+        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);"
+            title="O mesmo endereço recortado pelos dois prefixos, lado a lado, para ver o efeito de mudar a máscara">
             <span class="material-symbols-outlined text-warning" translate="no" aria-hidden="true">compare_arrows</span>
             Comparador — IP {comparadorIp}
         </h2>
@@ -117,9 +118,9 @@
             <table class="table table-dark table-bordered table-sm mb-0">
                 <thead>
                 <tr>
-                    <th>Métrica</th>
+                    <th title="Grandeza calculada em cada linha: máscara, salto entre redes, hosts, rede, broadcast e risco">Métrica</th>
                     {#for card in comparadorCards}
-                    <th>/{card.cidr}</th>
+                    <th title="Valores calculados para o mesmo IP usando este prefixo">/{card.cidr}</th>
                     {/for}
                 </tr>
                 </thead>
@@ -141,7 +142,8 @@
     {#if ipv6Res}
     <div class="aed-card card-tech p-4 shadow mt-4">
         <span class="aed-eyebrow aed-eyebrow-indigo">IPv6</span>
-        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);">
+        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);"
+            title="Forma completa e abreviada do endereço IPv6 informado, com tipo, faixa, prefixo e reverso DNS">
             <span class="material-symbols-outlined text-info" translate="no" aria-hidden="true">public</span>
             Resultado IPv6
         </h2>

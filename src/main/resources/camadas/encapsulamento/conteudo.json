@@ -70,11 +70,18 @@
   "tabelas": [
     {
       "titulo": "PDU por camada e o que o cabeçalho adiciona",
+      "dica": "Mostra o nome do dado em cada camada, o que cada cabeçalho acrescenta e quem o interpreta no caminho",
       "colunas": [
         "Camada",
         "Nome da PDU",
         "O que o cabeçalho adiciona",
         "Dispositivo que a lê"
+      ],
+      "dicas_colunas": [
+        "Camada da pilha por onde o dado passa ao ser encapsulado",
+        "Nome técnico do bloco de dados nessa camada",
+        "Campos de controle que essa camada acrescenta ao dado recebido da camada de cima",
+        "Equipamento ou software que lê e usa as informações dessa camada"
       ],
       "linhas": [
         [
@@ -111,10 +118,16 @@
     },
     {
       "titulo": "Overhead típico por cabeçalho (bytes de controle)",
+      "dica": "Lista quantos bytes cada cabeçalho consome, para estimar quanto do pacote não é dado útil",
       "colunas": [
         "Cabeçalho",
         "Tamanho típico",
         "Observação"
+      ],
+      "dicas_colunas": [
+        "Protocolo cujo cabeçalho acrescenta bytes de controle ao dado",
+        "Tamanho em bytes do cabeçalho na forma mais comum, sem campos opcionais",
+        "Variações de tamanho e particularidades desse cabeçalho"
       ],
       "linhas": [
         [
@@ -146,10 +159,16 @@
     },
     {
       "titulo": "MTU comum por tecnologia de Enlace",
+      "dica": "Compara o maior tamanho de carga por quadro em tecnologias de enlace comuns e o efeito disso",
       "colunas": [
         "Tecnologia",
         "MTU (payload)",
         "Impacto prático"
+      ],
+      "dicas_colunas": [
+        "Tecnologia ou encapsulamento da camada de enlace",
+        "Maior carga útil, em bytes, que cabe em um único quadro dessa tecnologia",
+        "O que esse tamanho de MTU muda no uso real da rede"
       ],
       "linhas": [
         [

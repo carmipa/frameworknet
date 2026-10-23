@@ -73,10 +73,16 @@
   "tabelas": [
     {
       "titulo": "O que cada ferramenta mede",
+      "dica": "Compara ping, traceroute e mtr pelo dado que cada um coleta, para escolher a ferramenta certa no diagnóstico de conectividade",
       "colunas": [
         "Ferramenta",
         "O que mede",
         "Quando usar"
+      ],
+      "dicas_colunas": [
+        "Comando de diagnóstico de rede descrito na linha",
+        "Métricas coletadas, como latência (RTT), perda de pacotes e saltos do caminho",
+        "Sintoma ou pergunta de diagnóstico que essa ferramenta responde melhor"
       ],
       "linhas": [
         [
@@ -98,10 +104,16 @@
     },
     {
       "titulo": "Flags-chave por ferramenta",
+      "dica": "Opções mais úteis de ping, traceroute e mtr, com o equivalente em Linux, macOS e Windows quando a sintaxe muda",
       "colunas": [
         "Comando",
         "Flag",
         "Efeito"
+      ],
+      "dicas_colunas": [
+        "Ferramenta à qual a opção pertence",
+        "Opção e seus argumentos; termos em maiúsculas como N, S, TAM e PORTA são valores a substituir",
+        "Comportamento que a opção ativa e, quando houver, a forma equivalente em outro sistema"
       ],
       "linhas": [
         [

@@ -78,11 +78,18 @@
   "tabelas": [
     {
       "titulo": "Passos do ciclo de vida",
+      "dica": "Ordena as etapas da vida de um certificado, da geração da chave até a revogação",
       "colunas": [
         "#",
         "Etapa",
         "O que acontece",
         "Quem executa"
+      ],
+      "dicas_colunas": [
+        "Ordem da etapa no ciclo de vida",
+        "Nome da etapa",
+        "Ações realizadas nessa etapa e o que é produzido",
+        "Quem é responsável por realizar a etapa"
       ],
       "linhas": [
         [
@@ -137,10 +144,16 @@
     },
     {
       "titulo": "O que vai no CSR x o que vai no certificado emitido",
+      "dica": "Separa o que o solicitante propõe no pedido do que a CA de fato grava no certificado",
       "colunas": [
         "Campo",
         "No CSR (você pede)",
         "No certificado (CA decide)"
+      ],
+      "dicas_colunas": [
+        "Informação ou elemento comparado entre o pedido e o certificado",
+        "Se esse elemento vai no pedido de assinatura e quem o define",
+        "Se esse elemento aparece no certificado emitido e como a CA o define"
       ],
       "linhas": [
         [

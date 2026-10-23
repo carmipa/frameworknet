@@ -64,8 +64,9 @@
                   hx-trigger="submit delay:1.2s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="pingHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio de destino</label>
+                    <label for="pingHost" class="form-label text-secondary" title="Máquina que vai receber os pedidos ICMP Echo para medir se responde e em quanto tempo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio de destino</label>
                     <input type="text" class="aed-input form-control" id="pingHost" name="host"
+                           title="Endereço IPv4 ou nome de domínio, ex.: 8.8.8.8 ou google.com"
                            value="8.8.8.8" placeholder="8.8.8.8" required>
                     <div class="form-text aed-ajuda">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
@@ -99,8 +100,9 @@
                   hx-trigger="submit delay:1s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="dnsDominio" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio para resolver</label>
+                    <label for="dnsDominio" class="form-label text-secondary" title="Nome cujos registros DNS serão consultados para descobrir os endereços IP ligados a ele"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio para resolver</label>
                     <input type="text" class="aed-input form-control" id="dnsDominio" name="dominio"
+                           title="Nome de domínio sem http://, ex.: google.com ou fiap.com.br"
                            value="google.com" placeholder="exemplo.com.br" required>
                     <div class="form-text aed-ajuda">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
@@ -134,8 +136,9 @@
                   hx-trigger="submit delay:1s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="traceHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio de destino</label>
+                    <label for="traceHost" class="form-label text-secondary" title="Ponto final da rota; cada roteador no caminho até ele aparece como um salto"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio de destino</label>
                     <input type="text" class="aed-input form-control" id="traceHost" name="host"
+                           title="Endereço IPv4 ou nome de domínio, ex.: 1.1.1.1 ou github.com"
                            value="1.1.1.1" placeholder="1.1.1.1" required>
                     <div class="form-text aed-ajuda">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
@@ -169,8 +172,9 @@
                   hx-trigger="submit delay:1s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="sweepRede" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Faixa / rede a varrer (CIDR)</label>
+                    <label for="sweepRede" class="form-label text-secondary" title="Bloco de endereços cujos hosts recebem um ping cada, para mapear quem está ligado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Faixa / rede a varrer (CIDR)</label>
                     <input type="text" class="aed-input form-control" id="sweepRede" name="rede"
+                           title="Rede no formato endereço/prefixo, ex.: 192.168.1.0/24"
                            value="192.168.1.0/24" placeholder="192.168.1.0/24" required>
                     <div class="form-text aed-ajuda">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
@@ -204,8 +208,9 @@
                   hx-trigger="submit delay:1.2s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="scanHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio alvo</label>
+                    <label for="scanHost" class="form-label text-secondary" title="Máquina cujas portas TCP serão sondadas com SYN para ver quais estão abertas, fechadas ou filtradas"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio alvo</label>
                     <input type="text" class="aed-input form-control" id="scanHost" name="host"
+                           title="Endereço IPv4 ou nome de domínio, ex.: scanme.nmap.org"
                            value="scanme.nmap.org" placeholder="scanme.nmap.org" required>
                     <div class="form-text aed-ajuda">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
@@ -239,8 +244,9 @@
                   hx-trigger="submit delay:1s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="spoofDominio" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio alvo da consulta</label>
+                    <label for="spoofDominio" class="form-label text-secondary" title="Nome que a vítima tenta resolver e para o qual o atacante forja a resposta falsa"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio alvo da consulta</label>
                     <input type="text" class="aed-input form-control" id="spoofDominio" name="dominio"
+                           title="Nome de domínio sem http://, ex.: banco.example.com"
                            value="banco.example.com" placeholder="banco.example.com" required>
                     <div class="form-text aed-ajuda">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>

@@ -73,11 +73,18 @@
   "tabelas": [
     {
       "titulo": "Principais tipos de scan e o que cada um faz",
+      "dica": "Opções de varredura do nmap comparadas pela técnica usada e pela exigência de privilégio de administrador",
       "colunas": [
         "Opção",
         "Nome",
         "O que faz",
         "Precisa de root?"
+      ],
+      "dicas_colunas": [
+        "Parâmetro do nmap que seleciona o tipo de varredura",
+        "Nome pelo qual a técnica é conhecida na documentação do nmap",
+        "Como a técnica sonda o alvo e que informação ela obtém",
+        "Se a técnica exige root ou administrador, em geral por montar pacotes brutos"
       ],
       "linhas": [
         [
@@ -120,10 +127,16 @@
     },
     {
       "titulo": "Estados de porta e o que significam",
+      "dica": "Como o nmap classifica cada porta a partir da resposta recebida, para interpretar o resultado da varredura",
       "colunas": [
         "Estado",
         "Resposta observada",
         "Interpretação"
+      ],
+      "dicas_colunas": [
+        "Classificação que o nmap atribui à porta no relatório",
+        "O que o alvo devolveu à sonda, como SYN/ACK, RST, ICMP ou silêncio",
+        "Conclusão que se tira sobre a porta e sobre o caminho até ela"
       ],
       "linhas": [
         [

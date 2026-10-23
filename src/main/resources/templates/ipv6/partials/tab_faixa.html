@@ -1,18 +1,20 @@
 {! Aba "Faixa → CIDR": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
 <div class="calc-form-card mb-3">
-    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">linear_scale</span> Faixa → CIDR</h2>
+    <h2 class="h6 calc-form-title" title="Converte um intervalo de endereços IPv6 na menor lista de prefixos CIDR que o cobre sem sobras"><span class="material-symbols-outlined" translate="no" aria-hidden="true">linear_scale</span> Faixa → CIDR</h2>
     <p class="calc-hint">Decompõe uma faixa de endereços na menor lista de blocos CIDR que a cobre exatamente.</p>
     <form id="formFaixa" hx-post="/ipv6/api/faixa" hx-target="#saidaFaixa" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">
         <div class="row g-3 align-items-start">
             <div class="col-lg-6 col-md-6">
-                <label for="ipv6FaixaIni" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span> Endereço inicial</label>
+                <label for="ipv6FaixaIni" class="form-label text-secondary" title="Primeiro endereço que deve ficar dentro da faixa"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span> Endereço inicial</label>
                 <input type="text" class="aed-input form-control" id="ipv6FaixaIni" name="inicio"
+                       title="Endereço IPv6 sem barra, por exemplo 2001:db8::"
                        placeholder="2001:db8::" value="2001:db8::" autocomplete="off" spellcheck="false" required>
             </div>
             <div class="col-lg-6 col-md-6">
-                <label for="ipv6FaixaFim" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span> Endereço final</label>
+                <label for="ipv6FaixaFim" class="form-label text-secondary" title="Último endereço da faixa, incluído no resultado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span> Endereço final</label>
                 <input type="text" class="aed-input form-control" id="ipv6FaixaFim" name="fim"
+                       title="Endereço IPv6 sem barra, igual ou maior que o inicial, por exemplo 2001:db8::ffff"
                        placeholder="2001:db8::ffff" value="2001:db8::ffff" autocomplete="off" spellcheck="false" required>
             </div>
         </div>

@@ -102,10 +102,16 @@
   "tabelas": [
     {
       "titulo": "Campos do tbsCertificate",
+      "dica": "Descreve os campos da parte assinada do certificado X.509, a que a CA aplica a assinatura",
       "colunas": [
         "Campo",
         "O que guarda",
         "Por que importa"
+      ],
+      "dicas_colunas": [
+        "Nome do campo na estrutura ASN.1 do tbsCertificate",
+        "Valor ou informação armazenada nesse campo",
+        "Para que esse campo serve na validação e no uso do certificado"
       ],
       "linhas": [
         [
@@ -152,10 +158,16 @@
     },
     {
       "titulo": "Extensões v3 mais comuns",
+      "dica": "Lista as extensões da versão 3 que mais aparecem e se costumam ser marcadas como críticas",
       "colunas": [
         "Extensão",
         "Função",
         "Criticidade típica"
+      ],
+      "dicas_colunas": [
+        "Nome da extensão definida para certificados X.509 versão 3",
+        "Que restrição ou informação a extensão acrescenta ao certificado",
+        "Se a extensão costuma vir marcada como crítica, o que obriga o verificador a entendê-la"
       ],
       "linhas": [
         [
@@ -192,10 +204,16 @@
     },
     {
       "titulo": "Tags DER mais usadas em um certificado",
+      "dica": "Relaciona os códigos de tipo da codificação DER aos tipos ASN.1 e aos campos onde surgem",
       "colunas": [
         "Tag (hex)",
         "Tipo ASN.1",
         "Onde aparece"
+      ],
+      "dicas_colunas": [
+        "Byte inicial, em hexadecimal, que identifica o tipo do elemento codificado",
+        "Tipo de dado ASN.1 que esse byte representa",
+        "Partes do certificado codificadas com esse tipo"
       ],
       "linhas": [
         [

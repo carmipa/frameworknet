@@ -5,14 +5,14 @@
 <div class="container py-5">
     {#include shared/project_header.html /}
 
-    <h2 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Região geográfica</h2>
+    <h2 class="text-info mb-2 d-flex align-items-center gap-2" title="Painel que estima país, região e provedor de um endereço IP pela base GeoLite2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Região geográfica</h2>
     <p class="small text-secondary mb-4">
         Nesta área você tem apenas o painel de <strong>região geográfica</strong> (o IP da sua conexão ou outro endereço que você informar).
         A base local <span class="text-info">GeoLite2</span> é usada por padrão; há <strong>fallback</strong> HTTP apenas quando o país não é identificado localmente.
     </p>
 
     <div class="card-tech p-4 shadow border-start border-warning border-3">
-        <h3 class="h5 text-warning mb-3">Região geográfica (GeoIP)</h3>
+        <h3 class="h5 text-warning mb-3" title="Consulta de localização aproximada; mostra a região do provedor, não o endereço exato de quem usa o IP">Região geográfica (GeoIP)</h3>
         <p class="small text-secondary mb-3">
             Podes <strong>indicar qualquer IPv4/IPv6</strong> para localizar a região, ou usar o IP aparente
             da sua conexão (<code translate="no">X-Forwarded-For</code> / <code translate="no">X-Real-IP</code> / remoto). Só se chama
@@ -21,9 +21,10 @@
 
         <form class="row g-2 align-items-end mb-3" id="form-geo-ip" onsubmit="return false;" autocomplete="off">
             <div class="col-12 col-md-6 col-lg-5">
-                <label for="geo-ip-digitar" class="form-label text-secondary small mb-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> IP a localizar (opcional)</label>
+                <label for="geo-ip-digitar" class="form-label text-secondary small mb-1" title="Endereço cuja região será estimada; em branco, a consulta usa o IP da sua conexão"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> IP a localizar (opcional)</label>
                 <input type="text" class="form-control form-control-sm bg-dark text-light border-secondary"
                        id="geo-ip-digitar" name="ip" value="{ipDigitadoPrefill}"
+                       title="IPv4 ou IPv6 público, ex.: 8.8.8.8 ou 2001:4860:4860::8888"
                        placeholder="ex.: 8.8.8.8 ou 2001:4860:4860::8888"
                        spellcheck="false" inputmode="text" maxlength="45" autocomplete="off">
             </div>
@@ -112,6 +113,9 @@
         }
         if (typeof renderGeoRelatorio === "function" && reportRoot) {
             renderGeoRelatorio(reportRoot, j);
+            reportRoot.querySelectorAll("h3.geo-ip-readout:not([title])").forEach((h) => {
+                h.title = "Endereço consultado; por ser reservado ou de rede local, não tem localização pública";
+            });
             if (okBox) okBox.classList.remove("d-none");
             if (failBox) failBox.classList.add("d-none");
         } else if (failBox && elMsg) {

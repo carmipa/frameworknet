@@ -16,14 +16,16 @@
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">restart_alt</span>
         <span>Recomeçar</span>
     </button>
-    <label title="Muda o ritmo da animação">
+    <label for="acad-velocidade" title="Muda o ritmo da animação">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">speed</span>
         <span>Velocidade</span>
-        <select class="form-select form-select-sm" data-acad-velocidade aria-label="Velocidade da animação">
+    </label>
+    <span>
+        <select id="acad-velocidade" class="form-select form-select-sm" data-acad-velocidade title="Escolha devagar para ler cada passo com calma, ou rápida para rever a animação" aria-label="Velocidade da animação">
             <option value="0.5">devagar</option>
             <option value="1" selected>normal</option>
             <option value="2">rápida</option>
         </select>
-    </label>
+    </span>
 </div>
 <p class="acad-legenda-passo" data-acad-legenda aria-live="polite"></p>

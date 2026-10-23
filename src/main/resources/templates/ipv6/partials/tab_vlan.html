@@ -1,29 +1,32 @@
 {! Aba "VLANs": um /64 por VLAN + gateway + trunk + Cisco SVI. Form 100% / resultado 100% abaixo. !}
 <div class="calc-form-card mb-3">
-    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span> Plano de VLANs IPv6</h2>
+    <h2 class="h6 calc-form-title" title="Distribui um bloco IPv6 entre as VLANs, uma LAN por VLAN, com gateway, trunk e configuração Cisco"><span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span> Plano de VLANs IPv6</h2>
     <p class="calc-hint">Cada VLAN recebe uma LAN /64 contígua, gateway (::1), o SVI Cisco (<code translate="no">interface VlanN</code>) e o trunk 802.1Q. Adicione quantas VLANs quiser.</p>
     <form id="formVlan" hx-post="/ipv6/api/vlan" hx-target="#saidaVlan" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">
         <div class="row g-3">
             <div class="col-lg-5 col-md-6">
-                <label for="vlanBase" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Bloco base (CIDR)</label>
+                <label for="vlanBase" class="form-label text-secondary" title="O prefixo maior de onde sai a LAN de cada VLAN"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Bloco base (CIDR)</label>
                 <input type="text" class="aed-input form-control" id="vlanBase" name="base"
+                       title="Prefixo IPv6 com a barra, por exemplo 2001:db8::/48"
                        placeholder="2001:db8::/48" value="2001:db8::/48" autocomplete="off" spellcheck="false" required>
             </div>
             <div class="col-lg-3 col-md-6">
-                <label for="vlanPfx" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo por VLAN</label>
+                <label for="vlanPfx" class="form-label text-secondary" title="Tamanho da LAN entregue a cada VLAN"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo por VLAN</label>
                 <input type="text" class="aed-input form-control input-cidr" id="vlanPfx" name="prefixoLan"
+                       title="Número sem a barra, maior que o do bloco base; use 64 para o SLAAC funcionar"
                        inputmode="numeric" maxlength="3" placeholder="64" value="64" required>
             </div>
             <div class="col-lg-4 col-md-12 d-flex align-items-end">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="vlanDhcp" name="dhcpv6" value="on">
-                    <label class="form-check-label text-secondary" for="vlanDhcp">DHCPv6 stateful (senão SLAAC/RA)</label>
+                    <input class="form-check-input" type="checkbox" id="vlanDhcp" name="dhcpv6" value="on"
+                           title="Marcado, gera o pool DHCPv6 e liga a flag M no RA; desmarcado, os hosts se autoconfiguram por SLAAC">
+                    <label class="form-check-label text-secondary" for="vlanDhcp" title="Escolhe quem entrega o endereço ao host: um servidor DHCPv6 ou o próprio host via SLAAC">DHCPv6 stateful (senão SLAAC/RA)</label>
                 </div>
             </div>
         </div>
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 mb-2">
-            <label class="form-label text-secondary mb-0"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> VLANs (ID 1–4094 + nome)</label>
+            <label class="form-label text-secondary mb-0" title="Uma linha por VLAN com o número e o nome que vão para o switch"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> VLANs (ID 1–4094 + nome)</label>
             <button type="button" class="aed-btn aed-btn-indigo btn-sm" id="vlan-add"
                     data-bs-toggle="tooltip" data-bs-placement="top" title="Adicionar uma VLAN">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">add</span> Adicionar VLAN
@@ -31,19 +34,19 @@
         </div>
         <div id="vlan-container">
             <div class="row g-2 align-items-end vlan-row mb-2">
-                <div class="col-lg-3 col-4"><input type="text" name="vlanId" class="aed-input form-control input-numeric" inputmode="numeric" maxlength="4" value="10" placeholder="ID" required></div>
-                <div class="col-lg-7 col-6"><input type="text" name="vlanNome" class="aed-input form-control" value="Servidores" placeholder="Nome da VLAN" autocomplete="off" required></div>
-                <div class="col-lg-2 col-2 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm vlan-remove" title="Remover"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
+                <div class="col-lg-3 col-4"><input type="text" name="vlanId" class="aed-input form-control input-numeric" inputmode="numeric" maxlength="4" value="10" placeholder="ID" required aria-label="VLAN ID" title="Número da VLAN de 1 a 4094, por exemplo 10"></div>
+                <div class="col-lg-7 col-6"><input type="text" name="vlanNome" class="aed-input form-control" value="Servidores" placeholder="Nome da VLAN" autocomplete="off" required aria-label="Nome da VLAN" title="Nome curto que identifica a VLAN no switch, por exemplo Servidores"></div>
+                <div class="col-lg-2 col-2 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm vlan-remove" aria-label="Remover VLAN" title="Apaga esta linha do plano; se for a única, apenas limpa os campos"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
             </div>
             <div class="row g-2 align-items-end vlan-row mb-2">
-                <div class="col-lg-3 col-4"><input type="text" name="vlanId" class="aed-input form-control input-numeric" inputmode="numeric" maxlength="4" value="20" placeholder="ID" required></div>
-                <div class="col-lg-7 col-6"><input type="text" name="vlanNome" class="aed-input form-control" value="Wi-Fi" placeholder="Nome da VLAN" autocomplete="off" required></div>
-                <div class="col-lg-2 col-2 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm vlan-remove" title="Remover"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
+                <div class="col-lg-3 col-4"><input type="text" name="vlanId" class="aed-input form-control input-numeric" inputmode="numeric" maxlength="4" value="20" placeholder="ID" required aria-label="VLAN ID" title="Número da VLAN de 1 a 4094, por exemplo 10"></div>
+                <div class="col-lg-7 col-6"><input type="text" name="vlanNome" class="aed-input form-control" value="Wi-Fi" placeholder="Nome da VLAN" autocomplete="off" required aria-label="Nome da VLAN" title="Nome curto que identifica a VLAN no switch, por exemplo Servidores"></div>
+                <div class="col-lg-2 col-2 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm vlan-remove" aria-label="Remover VLAN" title="Apaga esta linha do plano; se for a única, apenas limpa os campos"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
             </div>
             <div class="row g-2 align-items-end vlan-row mb-2">
-                <div class="col-lg-3 col-4"><input type="text" name="vlanId" class="aed-input form-control input-numeric" inputmode="numeric" maxlength="4" value="30" placeholder="ID" required></div>
-                <div class="col-lg-7 col-6"><input type="text" name="vlanNome" class="aed-input form-control" value="Voz" placeholder="Nome da VLAN" autocomplete="off" required></div>
-                <div class="col-lg-2 col-2 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm vlan-remove" title="Remover"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
+                <div class="col-lg-3 col-4"><input type="text" name="vlanId" class="aed-input form-control input-numeric" inputmode="numeric" maxlength="4" value="30" placeholder="ID" required aria-label="VLAN ID" title="Número da VLAN de 1 a 4094, por exemplo 10"></div>
+                <div class="col-lg-7 col-6"><input type="text" name="vlanNome" class="aed-input form-control" value="Voz" placeholder="Nome da VLAN" autocomplete="off" required aria-label="Nome da VLAN" title="Nome curto que identifica a VLAN no switch, por exemplo Servidores"></div>
+                <div class="col-lg-2 col-2 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm vlan-remove" aria-label="Remover VLAN" title="Apaga esta linha do plano; se for a única, apenas limpa os campos"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
             </div>
         </div>
         <div class="d-flex gap-2 mt-2">

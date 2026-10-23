@@ -1,12 +1,13 @@
 {! Aba "Sumarizar": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
 <div class="calc-form-card mb-3">
-    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">merge</span> Sumarizar prefixos</h2>
+    <h2 class="h6 calc-form-title" title="Acha o menor prefixo que cobre todos os informados e junta os vizinhos no menor conjunto de blocos"><span class="material-symbols-outlined" translate="no" aria-hidden="true">merge</span> Sumarizar prefixos</h2>
     <p class="calc-hint">Encontra o menor prefixo (supernet) que cobre todos e mescla no conjunto mínimo. Um prefixo por linha.</p>
     <form id="formSum" hx-post="/ipv6/api/sumarizar" hx-target="#saidaSum" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">
         <div class="mb-3">
-            <label for="ipv6SumPrefixos" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> Prefixos IPv6 (um por linha)</label>
+            <label for="ipv6SumPrefixos" class="form-label text-secondary" title="Os prefixos IPv6 que você quer agregar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> Prefixos IPv6 (um por linha)</label>
             <textarea class="aed-input form-control" id="ipv6SumPrefixos" name="prefixos" rows="5"
+                      title="Um prefixo por linha com a barra, por exemplo 2001:db8:0:1::/64"
                       placeholder="2001:db8:0:1::/64&#10;2001:db8:0:2::/64&#10;2001:db8:0:3::/64" spellcheck="false" required>2001:db8:0:0::/64
 2001:db8:0:1::/64
 2001:db8:0:2::/64

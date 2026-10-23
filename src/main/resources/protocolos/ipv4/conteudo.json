@@ -173,11 +173,18 @@
   "tabelas": [
     {
       "titulo": "Classes históricas de endereçamento (pré-CIDR)",
+      "dica": "Mostra como o primeiro octeto definia a classe e o tamanho da rede antes do CIDR, base de termos que ainda aparecem",
       "colunas": [
         "Classe",
         "Faixa do 1º octeto",
         "Bits de rede",
         "Uso típico"
+      ],
+      "dicas_colunas": [
+        "Letra que identifica a classe do endereço",
+        "Valores decimais do primeiro octeto que pertencem à classe",
+        "Quantos bits iniciais do endereço identificam a rede; o restante identifica o host",
+        "Para que tipo de rede ou finalidade a classe era destinada"
       ],
       "linhas": [
         [
@@ -214,10 +221,16 @@
     },
     {
       "titulo": "Faixas especiais: privadas (RFC 1918), loopback e APIPA",
+      "dica": "Reúne os blocos de endereço reservados que não são roteados na internet, para reconhecer um IP interno ou autoconfigurado",
       "colunas": [
         "Faixa",
         "Prefixo CIDR",
         "Finalidade"
+      ],
+      "dicas_colunas": [
+        "Primeiro e último endereço do bloco reservado",
+        "O mesmo bloco escrito em notação CIDR, endereço de rede e tamanho do prefixo",
+        "Uso a que o bloco é reservado e onde costuma aparecer"
       ],
       "linhas": [
         [
@@ -249,10 +262,16 @@
     },
     {
       "titulo": "Números de protocolo comuns (campo Protocolo)",
+      "dica": "Associa os valores do campo Protocolo do cabeçalho IPv4 ao protocolo que vai dentro do pacote",
       "colunas": [
         "Número",
         "Protocolo",
         "Camada / função"
+      ],
+      "dicas_colunas": [
+        "Valor decimal gravado no campo Protocolo, atribuído pela IANA",
+        "Protocolo cujos dados são carregados pelo pacote IP com esse número",
+        "Função desse protocolo e a que parte da pilha ele pertence"
       ],
       "linhas": [
         [
@@ -284,10 +303,16 @@
     },
     {
       "titulo": "Campo Flags e fragmentação",
+      "dica": "Detalha os 3 bits de Flags e o deslocamento do fragmento, que controlam se e como o pacote é dividido no caminho",
       "colunas": [
         "Bit / campo",
         "Nome",
         "Significado quando ligado"
+      ],
+      "dicas_colunas": [
+        "Posição do bit dentro do campo Flags ou tamanho do campo vizinho",
+        "Nome do bit ou do campo no cabeçalho IPv4",
+        "O que o bit sinaliza quando vale 1, ou o que o campo informa"
       ],
       "linhas": [
         [

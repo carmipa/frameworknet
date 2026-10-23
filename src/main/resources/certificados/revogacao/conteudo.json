@@ -78,11 +78,18 @@
   "tabelas": [
     {
       "titulo": "CRL x OCSP x OCSP stapling",
+      "dica": "Compara os três mecanismos de consulta de revogação em latência, privacidade, atualidade e custo",
       "colunas": [
         "Aspecto",
         "CRL",
         "OCSP (direto)",
         "OCSP stapling"
+      ],
+      "dicas_colunas": [
+        "Critério de comparação avaliado em cada linha",
+        "Comportamento da lista de certificados revogados que a CA publica e assina periodicamente",
+        "Comportamento quando o próprio cliente consulta o responder OCSP da CA",
+        "Comportamento quando o servidor obtém a resposta OCSP e a entrega junto no handshake TLS"
       ],
       "linhas": [
         [
@@ -125,10 +132,16 @@
     },
     {
       "titulo": "Estados de resposta OCSP",
+      "dica": "Lista os três status que um responder OCSP pode devolver e como o cliente deve reagir a cada um",
       "colunas": [
         "Estado",
         "Significado",
         "O que o cliente deve fazer"
+      ],
+      "dicas_colunas": [
+        "Valor literal do campo de status na resposta OCSP assinada",
+        "O que o responder afirma sobre o certificado consultado",
+        "Reação esperada do navegador ou da aplicação ao receber esse status"
       ],
       "linhas": [
         [

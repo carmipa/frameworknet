@@ -1,17 +1,19 @@
 {! Aba "Comparador": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
 <div class="calc-form-card mb-3">
-    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">compare_arrows</span> Comparar dois endereços</h2>
+    <h2 class="h6 calc-form-title" title="Mostra quantos bits iniciais dois endereços IPv6 têm em comum, se dividem a mesma /64 e a distância entre eles"><span class="material-symbols-outlined" translate="no" aria-hidden="true">compare_arrows</span> Comparar dois endereços</h2>
     <p class="calc-hint">Descobre se caem na mesma <code translate="no">/64</code>, se um contém o outro, o prefixo comum e a distância entre eles.</p>
     <form id="formComp" class="row g-3 align-items-end" hx-post="/ipv6/api/comparar" hx-target="#saidaComp" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">
         <div class="col-lg-5 col-md-6">
-            <label for="ipv6CompA" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">looks_one</span> Endereço A</label>
+            <label for="ipv6CompA" class="form-label text-secondary" title="Primeiro endereço ou prefixo da comparação"><span class="material-symbols-outlined" aria-hidden="true" translate="no">looks_one</span> Endereço A</label>
             <input type="text" class="aed-input form-control" id="ipv6CompA" name="a"
+                   title="Endereço IPv6, com ou sem /prefixo, por exemplo 2001:db8:0:1::/64"
                    placeholder="2001:db8:0:1::/64" value="2001:db8:0:1::/64" autocomplete="off" spellcheck="false" required>
         </div>
         <div class="col-lg-5 col-md-6">
-            <label for="ipv6CompB" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">looks_two</span> Endereço B</label>
+            <label for="ipv6CompB" class="form-label text-secondary" title="Segundo endereço ou prefixo, comparado com o Endereço A"><span class="material-symbols-outlined" aria-hidden="true" translate="no">looks_two</span> Endereço B</label>
             <input type="text" class="aed-input form-control" id="ipv6CompB" name="b"
+                   title="Endereço IPv6, com ou sem /prefixo, por exemplo 2001:db8:0:1:abcd::1"
                    placeholder="2001:db8:0:1:abcd::1" value="2001:db8:0:1:abcd::1" autocomplete="off" spellcheck="false" required>
         </div>
         <div class="col-lg-2 col-md-12 d-flex gap-2">
