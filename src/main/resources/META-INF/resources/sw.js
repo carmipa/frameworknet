@@ -30,8 +30,10 @@
 /* v3: expurga caches anteriores, que guardavam export/API e páginas com dado pessoal da sessão.
    v4: a casca offline passa a levar o offline.css (a página offline aparecia sem estilo, FRONT-14).
    v5: CSS em largura cheia e rem (Regra 27) e Bootstrap/mermaid/Chart.js/Leaflet servidos pelo próprio site —
-       mesma origem, então entram no cache na primeira visita e o menu funciona offline. */
-const VERSAO = 'framework-net-v5';
+       mesma origem, então entram no cache na primeira visita e o menu funciona offline.
+   v6: a página offline passa a sair do template das páginas de erro (mesmo visual de todas elas);
+       a casca leva o CSS, a fonte, o script e as bandeiras que ela usa, e o offline.css sai. */
+const VERSAO = 'framework-net-v6';
 const CACHE_ESTATICO = `${VERSAO}-estatico`;
 const PAGINA_OFFLINE = '/offline.html';
 
@@ -40,8 +42,15 @@ const PRE_CACHE = [
   PAGINA_OFFLINE,
   '/web/css/app.css',
   '/web/css/aed-command-center.css',
-  '/web/css/offline.css',
   '/pwa/icone-192.png',
+  // O que a página offline (gerada do template das páginas de erro) carrega do próprio site.
+  '/icone.png?v=20260710c',
+  '/paginaErros/css/erro.css?v=20261023',
+  '/paginaErros/js/erro-matrix.js?v=20260810',
+  '/web/js/i18n-translate.js?v=20261002',
+  '/web/img/bandeiras/br.png?v=20261001',
+  '/web/img/bandeiras/us.png?v=20261001',
+  '/web/img/bandeiras/es.png?v=20261001',
   // Fonte de ícones local: sem ela, offline, o glifo aparece como a palavra do nome.
   '/web/css/material-symbols.css?v=20261022',
   '/web/fonts/material-symbols-outlined.woff2?v=20260925',

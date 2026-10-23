@@ -151,7 +151,37 @@ public class PaginaErroService {
          * FALHA: não falha; o código vem do próprio erro já classificado.
          */
         public String tituloDaAba() {
-            return codigo + " | Framework de Redes A&D";
+            return (semRede() ? "Sem conexão" : String.valueOf(codigo)) + " | Framework de Redes A&D";
+        }
+
+        /**
+         * Diz se a página representa o aparelho sem rede, e não uma resposta HTTP.
+         * PROPÓSITO DE NEGÓCIO: a página offline sai do mesmo template das páginas de erro.
+         * INVARIANTES: só o código reservado {@code CatalogoErros.SEM_CONEXAO} responde verdadeiro.
+         * FALHA: não falha.
+         */
+        public boolean semRede() {
+            return codigo == org.framework.net.paginaErros.domain.CatalogoErros.SEM_CONEXAO;
+        }
+
+        /**
+         * O número grande da tela.
+         * PROPÓSITO DE NEGÓCIO: sem rede não existe código HTTP; mostrar "0" seria ruído.
+         * INVARIANTES: código HTTP real aparece como veio; sem rede aparece "OFF".
+         * FALHA: não falha.
+         */
+        public String codigoExibido() {
+            return semRede() ? "OFF" : String.valueOf(codigo);
+        }
+
+        /**
+         * Texto da pílula de status do topo.
+         * PROPÓSITO DE NEGÓCIO: diz em uma palavra de onde veio o erro.
+         * INVARIANTES: "HTTP &lt;código&gt;" para resposta real; "SEM REDE" quando nada respondeu.
+         * FALHA: não falha.
+         */
+        public String statusLinha() {
+            return semRede() ? "SEM REDE" : "HTTP " + codigo;
         }
     }
 }

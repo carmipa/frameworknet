@@ -206,6 +206,56 @@ class PaginaErroProxyGeneratorTest {
                         + " quando a aplicação está fora:\n  " + String.join("\n  ", problemas));
     }
 
+    /** A página que o service worker mostra quando o aparelho está sem rede. */
+    private static final Path OFFLINE = RAIZ_ESTATICOS.resolve("offline.html");
+
+    /**
+     * Gera a página offline do mesmo template e do mesmo catálogo das páginas de erro.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> a página offline era um HTML escrito à mão, com visual diferente
+     * de todas as outras telas de erro do site. Gerada daqui, ela acompanha o template como as do
+     * proxy.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> ao contrário das páginas do proxy, os recursos continuam como
+     * {@code <link>}/{@code <script>} para o próprio site — quem a serve é o service worker, a partir da
+     * casca pré-cacheada (a guarda {@code ServiceWorkerCacheGuardTest} exige cada um deles na casca), e
+     * embutir a fonte de ícones faria cada visitante baixar quase meio megabyte na instalação. Os
+     * scripts que só servem à aplicação viva saem, como no proxy.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> o teste falha se o arquivo versionado divergir do gerado
+     * ou se a página perder o texto do catálogo ou o botão de recarregar.</p>
+     */
+    @Test
+    @DisplayName("gera a página offline do mesmo template das páginas de erro")
+    void geraPaginaOffline() {
+        CatalogoErros.ErroApresentado erro = CatalogoErros.semConexao();
+        DadosPaginaErro dados = new DadosPaginaErro(erro, CatalogoErros.SEM_CONEXAO,
+                "o pedido não saiu do aparelho", "", "sem trace — nenhuma requisição chegou ao servidor");
+        String html = erroTemplate.data("erro", erro).data("dados", dados).render();
+        for (Pattern descartavel : JS_DESCARTAVEIS) {
+            html = descartavel.matcher(html).replaceAll("");
+        }
+        html = html.replace("<head>", "<head>\n    <!-- GERADO AUTOMATICAMENTE por PaginaErroProxyGeneratorTest a partir de\n"
+                + "     templates/paginaErros/erro.html + CatalogoErros.semConexao().\n"
+                + "     NAO EDITE ESTE ARQUIVO A MAO. Servido pelo service worker quando o aparelho\n"
+                + "     esta sem rede; cada recurso daqui precisa estar na casca PRE_CACHE do sw.js. -->");
+
+        criarDiretorio();
+        Path arquivo = REGENERAR ? OFFLINE : GERADO.resolve("offline.html");
+        escrever(arquivo, html);
+        if (!REGENERAR) {
+            assertTrue(ler(OFFLINE).replace("\r\n", "\n").equals(html.replace("\r\n", "\n")),
+                    "offline.html versionado está desatualizado em relação ao template: rode"
+                            + " REGENERAR_ERRO_PROXY=1 ./gradlew test --tests '*PaginaErroProxyGeneratorTest' e comite");
+        }
+        String gravado = ler(arquivo);
+        assertTrue(gravado.contains(erro.titulo()) && gravado.contains(erro.badge()),
+                "A página offline perdeu o texto do catálogo.");
+        assertTrue(gravado.contains("Sem conexão | Framework de Redes"), "A aba da página offline perdeu o título.");
+        assertTrue(gravado.contains("location.reload()"), "A página offline perdeu o botão de tentar de novo.");
+        assertFalse(gravado.contains("HTTP 0"), "Sem rede não existe código HTTP para mostrar.");
+    }
+
     @Test
     @DisplayName("as três páginas trazem o texto do catálogo, não um texto paralelo")
     void usamOTextoDoCatalogo() {

@@ -724,12 +724,15 @@ for (const caso of [
     await page.context().setOffline(true);
     await page.goto(BASE + '/pagina-que-nunca-entrou-no-cache-' + Date.now(), { waitUntil: 'load', timeout: 15000 }).catch(() => {});
     estilo = await page.evaluate(() => {
-      const el = document.querySelector('.offline-wrap');
-      return { titulo: document.title, wrap: !!el, display: el ? getComputedStyle(el).display : '' };
+      // A página offline sai do template das páginas de erro: o estilo dela vem do erro.css (cor de acento
+      // na classe err-0 do body e o bloco .hero em grid).
+      const el = document.querySelector('.hero');
+      return { titulo: document.title, wrap: !!el && document.body.classList.contains('err-0'),
+        display: el ? getComputedStyle(el).display : '' };
     });
     await page.context().setOffline(false);
   }
-  registrar('FRONT-14 página offline estilizada', pronto && estilo.wrap && estilo.display === 'flex',
+  registrar('FRONT-14 página offline estilizada', pronto && estilo.wrap && estilo.display !== '' && estilo.display !== 'inline',
     `casca offline no cache=${pronto} ${JSON.stringify(estilo)}`);
   await page.context().close();
 }

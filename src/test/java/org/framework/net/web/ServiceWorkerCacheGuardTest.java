@@ -65,7 +65,10 @@ class ServiceWorkerCacheGuardTest {
         List<String> preCache = array(js, "PRE_CACHE");
         String offline = Files.readString(Path.of("src/main/resources/META-INF/resources/offline.html"),
                 java.nio.charset.StandardCharsets.UTF_8);
-        Matcher m = Pattern.compile("(?:href|src)=\"(/[^\"]+)\"").matcher(offline);
+        // Só recurso que a página CARREGA (CSS, JS, imagem, fonte). Link de navegação (href="/analise")
+        // não é carregado sem clique, e sem rede ele cai de novo nesta mesma página — não precisa de casca.
+        Matcher m = Pattern.compile("(?:href|src)=\"(/[^\"]+\\.(?:css|js|png|jpg|svg|ico|woff2?)(?:\\?[^\"]*)?)\"")
+                .matcher(offline);
         List<String> faltando = new ArrayList<>();
         int recursos = 0;
         while (m.find()) {

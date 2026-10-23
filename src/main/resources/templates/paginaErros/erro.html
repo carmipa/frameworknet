@@ -18,7 +18,7 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="/web/css/material-symbols.css?v=20261022">
-    <link rel="stylesheet" href="/paginaErros/css/erro.css?v=20261022">
+    <link rel="stylesheet" href="/paginaErros/css/erro.css?v=20261023">
     <link rel="stylesheet" href="/web/css/dica-camada.css?v=20261022">
 </head>
 
@@ -39,23 +39,23 @@
                 <div class="langs">
                     <button type="button" class="lang is-on" onclick="aedTranslate('pt')"
                             title="Traduzir para Português (Brasil)" aria-label="Traduzir para Português">
-                        <img class="flag" src="/web/img/bandeiras/br.png?v=20261001" alt="" loading="lazy">
+                        <img class="flag" src="/web/img/bandeiras/br.png?v=20261001" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">PT</span>
                     </button>
                     <button type="button" class="lang" onclick="aedTranslate('en')"
                             title="Traduzir para English (US)" lang="en" aria-label="Translate to English">
-                        <img class="flag" src="/web/img/bandeiras/us.png?v=20261001" alt="" loading="lazy">
+                        <img class="flag" src="/web/img/bandeiras/us.png?v=20261001" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">EN</span>
                     </button>
                     <button type="button" class="lang" onclick="aedTranslate('es')"
                             title="Traduzir para Español" lang="es" aria-label="Traducir al Español">
-                        <img class="flag" src="/web/img/bandeiras/es.png?v=20261001" alt="" loading="lazy">
+                        <img class="flag" src="/web/img/bandeiras/es.png?v=20261001" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">ES</span>
                     </button>
                 </div>
-                <div class="status-pill" role="status" title="Código de status HTTP do erro">
+                <div class="status-pill" role="status" title="{#if dados.semRede}Nenhuma resposta chegou: o aparelho está sem rede{#else}Código de status HTTP do erro{/if}">
                     <span class="dot" aria-hidden="true"></span>
-                    <span class="status-txt">HTTP {dados.codigo}</span>
+                    <span class="status-txt">{dados.statusLinha}</span>
                 </div>
             </div>
         </div>
@@ -77,15 +77,21 @@
                         </div>
 
                         <div class="code-stack">
-                            <div class="code-ghost" aria-hidden="true">{dados.codigo}</div>
-                            <div class="code-main">{dados.codigo}</div>
+                            <div class="code-ghost" aria-hidden="true">{dados.codigoExibido}</div>
+                            <div class="code-main">{dados.codigoExibido}</div>
                         </div>
 
                         <h1 class="err-title">{erro.titulo}</h1>
                         <p class="err-desc">{erro.descricao}</p>
 
                         <div class="cta-row">
-                            <a class="btn btn-primary" href="/" title="Retornar à página inicial da aplicação">
+                            {#if dados.semRede}
+                            <button type="button" class="btn btn-primary" onclick="location.reload()" title="Recarrega esta página; funciona assim que a internet do aparelho voltar">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">refresh</span>
+                                Tentar de novo
+                            </button>
+                            {/if}
+                            <a class="btn {#if dados.semRede}btn-ghost{#else}btn-primary{/if}" href="/" title="Retornar à página inicial da aplicação">
                                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">home</span>
                                 Voltar ao Início
                             </a>
@@ -136,7 +142,8 @@
                                     </div>
                                     <div class="core-tag">{erro.artTag}</div>
                                     <div class="core-sub">
-                                        {#if erro.cliente}REQUISIÇÃO INTERROMPIDA · SEM ROTA DE RETORNO
+                                        {#if dados.semRede}SEM ENLACE · NADA SAIU DO APARELHO
+                                        {#else if erro.cliente}REQUISIÇÃO INTERROMPIDA · SEM ROTA DE RETORNO
                                         {#else}PROCESSAMENTO INTERROMPIDO · EVENTO REGISTRADO{/if}
                                     </div>
                                 </div>

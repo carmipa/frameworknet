@@ -237,6 +237,33 @@ public final class CatalogoErros {
                     "403 Forbidden",
                     "Permissão ausente ou token de formulário vencido."));
 
+    /** Código reservado ao estado "sem conexão": não é status HTTP, porque nenhuma resposta chegou. */
+    public static final int SEM_CONEXAO = 0;
+
+    /**
+     * Estado da página offline: o aparelho do visitante está sem rede.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> a página {@code /offline.html} que o service worker mostra sem rede
+     * tinha visual próprio, diferente de todas as outras telas de erro do site. Ela passa a sair do mesmo
+     * template e deste catálogo, no mesmo vocabulário de redes ("LINK LOCAL CAÍDO").</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> o código é {@link #SEM_CONEXAO}, nunca um status HTTP real — mostrar
+     * 503 diria que o servidor respondeu, quando o pedido nem saiu do aparelho; não entra em
+     * {@link #codigos()}, porque não é resposta que a aplicação devolva.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não falha; o valor é constante.</p>
+     */
+    public static ErroApresentado semConexao() {
+        return new ErroApresentado(SEM_CONEXAO, "SEM CONEXÃO", "wifi_off",
+                "LINK LOCAL CAÍDO",
+                "Sem conexão com a internet.",
+                "O Framework de Redes precisa de internet para calcular, resolver DNS e consultar "
+                        + "geolocalização — nada disso roda no seu aparelho. Assim que a conexão voltar, "
+                        + "recarregue a página.",
+                "Sem resposta HTTP — rede indisponível",
+                "Confira o Wi-Fi ou os dados móveis e toque em Tentar de novo.");
+    }
+
     /** Os códigos cobertos, na ordem do catálogo — usados pela guarda de cobertura nos testes. */
     public static List<Integer> codigos() {
         return List.copyOf(CATALOGO.keySet());
