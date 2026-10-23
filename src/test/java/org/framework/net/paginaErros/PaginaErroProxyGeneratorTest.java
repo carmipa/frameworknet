@@ -84,7 +84,7 @@ class PaginaErroProxyGeneratorTest {
     private static final Pattern CSS_DO_APP =
             Pattern.compile("<link rel=\"stylesheet\" href=\"/paginaErros/css/erro\\.css[^\"]*\">");
     /**
-     * Fonte de ícones LOCAL do app (regra de UX: nunca CDN). A página do proxy aparece com o app
+     * Fonte de ícones LOCAL do app (nunca CDN). A página do proxy aparece com o app
      * fora do ar, então o CSS vai embutido e a fonte vai em {@code data:} — nem CDN, nem app.
      */
     private static final Pattern CSS_ICONES =

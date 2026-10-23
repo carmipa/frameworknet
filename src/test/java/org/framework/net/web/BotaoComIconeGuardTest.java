@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Regra de UX do projeto: todo botão com rótulo tem ícone junto (auditoria FRONT-19 — 23 botões sem ícone:
+ * Todo botão com rótulo tem ícone junto (auditoria FRONT-19 — 23 botões sem ícone:
  * Detalhes, Aplicar, Localizar, Anterior/Próxima…). Vale para button e para link com cara de botão
  * (.aed-btn/.btn). A Academia tem guarda própria e fica de fora.
  */

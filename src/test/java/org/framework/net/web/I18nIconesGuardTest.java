@@ -116,8 +116,8 @@ class I18nIconesGuardTest {
     }
 
     /**
-     * As bandeiras do seletor de idioma são ícones de interface: servidas pelo próprio site (regra de UX,
-     * blindagem 5). Com o CDN fora, o seletor virava três imagens quebradas — justamente o controle que
+     * As bandeiras do seletor de idioma são ícones de interface: servidas pelo próprio site.
+     * Com o CDN fora, o seletor virava três imagens quebradas — justamente o controle que
      * quem não lê português procura. As bandeiras de PAÍS da análise de GeoIP (uma por país, montadas no
      * JS) não são o seletor e ficam fora desta guarda.
      */

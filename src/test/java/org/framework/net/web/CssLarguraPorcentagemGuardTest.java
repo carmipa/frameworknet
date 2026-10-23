@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Guarda da REGRA 27 do Paulo (canônica desde 15/10/2026): largura cheia e unidade relativa em toda tela.
+ * Guarda de largura cheia e unidade relativa em toda tela.
  *
  * <p><b>PROPÓSITO DE NEGÓCIO:</b> o site tem de aproveitar a tela inteira, do celular de 320 px ao monitor de
  * 2560 px, e acompanhar o tamanho de fonte que a pessoa escolheu no navegador. Contêiner com {@code max-width} e

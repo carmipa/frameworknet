@@ -374,7 +374,7 @@
 
     /**
      * Título da página (h1) sem dica: o "?" ao lado dele explica o que a página contém com a descrição que a
-     * própria página já publica (meta description, única por página). Regra 6-A: título diz o que a área contém.
+     * própria página já publica (meta description, única por página). O título diz o que a área contém.
      * Acima de 160 caracteres, corta na última palavra inteira.
      */
     function dicaDoTitulo() {

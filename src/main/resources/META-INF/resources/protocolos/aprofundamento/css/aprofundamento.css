@@ -355,7 +355,7 @@
     }
 }
 
-/* Ícone do item do índice: o mesmo do título da seção para onde ele leva (regra de UX, UX-10). */
+/* Ícone do item do índice: o mesmo do título da seção para onde ele leva (UX-10). */
 .aprof-indice .material-symbols-outlined {
     font-size: 1.05em;
     vertical-align: -0.18em;

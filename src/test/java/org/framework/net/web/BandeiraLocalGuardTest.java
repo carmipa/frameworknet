@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Bandeira de país é local (auditoria FRONT-18, regra de UX: ícone local, nunca CDN). Com o flagcdn fora,
+ * Bandeira de país é local (auditoria FRONT-18: ícone local, nunca CDN). Com o flagcdn fora,
  * a imagem quebrava; agora é emoji pelo código ISO. Nenhum asset, template ou CSP volta a citar o CDN.
  */
 class BandeiraLocalGuardTest {

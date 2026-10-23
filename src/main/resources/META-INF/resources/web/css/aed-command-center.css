@@ -59,7 +59,7 @@ body.aed-app {
     overflow-wrap: break-word;
 }
 
-/* REGRA 27 (largura cheia): o contêiner da página ocupa a tela inteira, do celular ao monitor de 2560 px,
+/* Largura cheia: o contêiner da página ocupa a tela inteira, do celular ao monitor de 2560 px,
    com respiro lateral em porcentagem. Antes era max-width 80rem (+ 96%/98% no app.css) centralizado pelo
    Bootstrap — no monitor largo o conteúdo virava uma coluna no meio. O mínimo em rem segura o celular
    (2% de 320 px seriam 6 px de borda). */
@@ -979,7 +979,7 @@ body.aed-app .main-menu-wrap {
  * display:none — os seis links do topo ficavam SEM NOME na árvore de acessibilidade (o leitor de
  * tela dizia só "link") e os menus suspensos abriam como listas de ícones mudos, sem texto. E o
  * menu suspenso, ancorado no botão com largura mínima de 15rem, passava da borda (IPv4 até 447 px
- * numa tela de 320). Agora o menu vira uma grade de itens com ícone E rótulo (regra de UX: o ícone
+ * numa tela de 320). Agora o menu vira uma grade de itens com ícone E rótulo (o ícone
  * reforça, nunca substitui o texto), e o menu suspenso abre como painel da largura do menu.
  */
 @media (max-width: 36em) {
@@ -1097,7 +1097,7 @@ thead th[title] {
     }
 }
 
-/* Ícone de rótulo de campo (regra de UX: ícone junto do rótulo) — do tamanho do texto, em qualquer tela. A
+/* Ícone de rótulo de campo (ícone junto do rótulo) — do tamanho do texto, em qualquer tela. A
    Calculadora já tinha a sua regra; esta vale para os demais formulários (UX-10, 22/10/2026). */
 label .material-symbols-outlined {
     font-size: 1.15em;
