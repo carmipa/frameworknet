@@ -20,7 +20,7 @@
 #   Para atualizar depois de mexer no visual do site:
 #       ./gradlew test --tests "*PaginaErroProxyGenerator*"   (na maquina de dev)
 #       git commit && git push
-#       na VPS: cd /opt/framework-net-java-quarkus && git pull && bash scripts/proxy-paginas-erro.sh
+#       na VPS: cd /opt/frameworknet && git pull && bash scripts/proxy-paginas-erro.sh
 #
 # ESCOPO: o server_proxy.conf e incluido no server{} de TODO proxy host da VPS,
 #   entao estas paginas respondem pelos QUATRO dominios. Elas levam a marca

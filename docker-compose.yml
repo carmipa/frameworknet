@@ -6,6 +6,10 @@
 #   docker compose up -d
 #
 # GeoIP opcional: copie GeoLite2-City.mmdb para ./data/geo/ e descomente o volume abaixo.
+# Nome do projeto FIXO: sem ele o Compose usa o nome da pasta, e mudar a pasta na VPS criaria
+# volume, rede e containers novos (dados no volume framework-net-java-quarkus_framework-net-data).
+name: framework-net-java-quarkus
+
 
 services:
   framework-net:

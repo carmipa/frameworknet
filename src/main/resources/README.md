@@ -891,7 +891,7 @@ As chaves são definidas em `application.properties` (dev) e `application-prod.p
 Comandos seguros de deploy na VPS:
 
 ```bash
-cd /opt/framework-net-java-quarkus
+cd /opt/frameworknet
 git pull origin main
 test -f .env || cp .env.example .env
 docker compose up -d --build
@@ -902,7 +902,7 @@ docker compose logs --tail=20 -f
 Deploy automatizado:
 
 ```bash
-cd /opt/framework-net-java-quarkus
+cd /opt/frameworknet
 chmod +x scripts/deploy.sh
 scripts/deploy.sh
 ```
