@@ -78,9 +78,10 @@
         row.className = "row g-2 align-items-end proj-local-row mb-2";
         row.innerHTML =
             '<div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" ' +
-            'placeholder="Nome da localidade / VLAN" autocomplete="off" required></div>' +
+            'placeholder="Nome da localidade / VLAN" aria-label="Nome da localidade" autocomplete="off" required ' +
+            'title="Nome curto da localidade, setor ou VLAN; cada linha recebe uma LAN própria no plano"></div>' +
             '<div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" ' +
-            'title="Remover esta localidade"><span class="material-symbols-outlined" aria-hidden="true" translate="no">delete</span></button></div>';
+            'aria-label="Remover esta localidade" title="Tira esta linha do plano; se for a única, só apaga o nome digitado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">delete</span></button></div>';
         return row;
     }
 
@@ -258,7 +259,7 @@
             return "<tr class=\"small\"><td class=\"text-secondary\">" + escaparHtml(quando) + "</td>"
                 + "<td class=\"font-monospace\">" + e + "</td>"
                 + "<td><button type=\"button\" class=\"aed-btn aed-btn-neutral btn-sm\" data-replay=\"" + e
-                + "\"><span class=\"material-symbols-outlined\">replay</span> Replay</button></td></tr>";
+                + "\" title=\"Refaz a análise deste endereço na aba Análise\"><span class=\"material-symbols-outlined\" aria-hidden=\"true\" translate=\"no\">replay</span> Replay</button></td></tr>";
         }).join("");
     }
 

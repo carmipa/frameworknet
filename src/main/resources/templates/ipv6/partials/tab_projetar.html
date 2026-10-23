@@ -1,46 +1,52 @@
 {! Aba "Projetar": form em largura total; plano 100% abaixo (regra global de layout IPv6). !}
 <div class="calc-form-card mb-3">
-    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">architecture</span> Projetar rede IPv6</h2>
+    <h2 class="h6 calc-form-title" title="Gera o plano IPv6 completo: uma LAN por localidade, enlaces WAN, gateways, rotas e comandos Cisco"><span class="material-symbols-outlined" translate="no" aria-hidden="true">architecture</span> Projetar rede IPv6</h2>
     <p class="calc-hint">Informe o bloco base, os prefixos de LAN/WAN, a topologia e as localidades (uma por linha). Gera plano de endereçamento, enlaces, gateways, rotas e CLI Cisco (OSPFv3/EIGRP).</p>
     <form id="formProjetar" hx-post="/ipv6/api/projetar" hx-target="#saidaProjetar" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">
         <div class="row g-3">
             <div class="col-lg-4 col-md-6">
-                <label for="projBase" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Bloco base (CIDR)</label>
+                <label for="projBase" class="form-label text-secondary" title="O prefixo IPv6 de onde saem todas as LANs e enlaces do projeto"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Bloco base (CIDR)</label>
                 <input type="text" class="aed-input form-control" id="projBase" name="base"
-                       placeholder="2001:db8::/48" value="2001:db8::/48" autocomplete="off" spellcheck="false" required>
+                       placeholder="2001:db8::/48" value="2001:db8::/48" autocomplete="off" spellcheck="false" required
+                       title="Endereço IPv6 com barra e prefixo, por exemplo 2001:db8::/48, o tamanho típico entregue a um site">
             </div>
             <div class="col-lg-2 col-md-3 col-6">
-                <label for="projLan" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo LAN</label>
+                <label for="projLan" class="form-label text-secondary" title="Tamanho de cada LAN das localidades; /64 é o padrão porque o SLAAC exige 64 bits de host"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo LAN</label>
                 <input type="text" class="aed-input form-control input-cidr" id="projLan" name="prefixoLan"
-                       inputmode="numeric" maxlength="3" placeholder="64" value="64" required>
+                       inputmode="numeric" maxlength="3" placeholder="64" value="64" required
+                       title="Número de 0 a 128, sem a barra; maior ou igual ao prefixo do bloco base">
             </div>
             <div class="col-lg-2 col-md-3 col-6">
-                <label for="projWan" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cable</span> Prefixo WAN</label>
+                <label for="projWan" class="form-label text-secondary" title="Tamanho de cada enlace ponto a ponto entre roteadores; /127 é o recomendado pela RFC 6164"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cable</span> Prefixo WAN</label>
                 <input type="text" class="aed-input form-control input-cidr" id="projWan" name="prefixoWan"
-                       inputmode="numeric" maxlength="3" placeholder="127" value="127" required>
+                       inputmode="numeric" maxlength="3" placeholder="127" value="127" required
+                       title="Número de 0 a 128, sem a barra; /127 dá exatamente os 2 endereços do enlace">
             </div>
             <div class="col-lg-4 col-md-12">
-                <label for="projTopo" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Topologia</label>
-                <select id="projTopo" name="topologia" class="aed-input form-select">
+                <label for="projTopo" class="form-label text-secondary" title="Como os roteadores das localidades se ligam, o que define quantos enlaces WAN o plano cria"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Topologia</label>
+                <select id="projTopo" name="topologia" class="aed-input form-select"
+                        title="Estrela liga tudo à 1ª localidade; malha completa liga cada par de localidades entre si">
                     <option value="estrela">Estrela — hub = 1ª localidade (N-1 enlaces)</option>
                     <option value="estrela-estendida">Estrela estendida — núcleo + distribuição + acesso (N-1)</option>
                     <option value="malha">Malha completa (N·(N-1)/2)</option>
                 </select>
             </div>
             <div class="col-lg-3 col-md-6">
-                <label for="projOspf" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Processo OSPFv3</label>
+                <label for="projOspf" class="form-label text-secondary" title="Número local do processo OSPFv3 usado nos comandos gerados; não precisa ser igual entre roteadores"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Processo OSPFv3</label>
                 <input type="text" class="aed-input form-control input-numeric" id="projOspf" name="ospfProc"
-                       inputmode="numeric" maxlength="5" placeholder="1" value="1">
+                       inputmode="numeric" maxlength="5" placeholder="1" value="1"
+                       title="Número inteiro de 1 a 65535, por exemplo 1">
             </div>
             <div class="col-lg-3 col-md-6">
-                <label for="projEigrp" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span> AS EIGRP</label>
+                <label for="projEigrp" class="form-label text-secondary" title="Número do sistema autônomo EIGRP; tem de ser o mesmo em todos os roteadores para virarem vizinhos"><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span> AS EIGRP</label>
                 <input type="text" class="aed-input form-control input-numeric" id="projEigrp" name="eigrpAs"
-                       inputmode="numeric" maxlength="5" placeholder="100" value="100">
+                       inputmode="numeric" maxlength="5" placeholder="100" value="100"
+                       title="Número inteiro de 1 a 65535, por exemplo 100">
             </div>
             <div class="col-12">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                    <label class="form-label text-secondary mb-0"><span class="material-symbols-outlined" aria-hidden="true" translate="no">apartment</span> Localidades / departamentos / VLANs (adicione quantas quiser)</label>
+                    <label class="form-label text-secondary mb-0" title="Cada linha é um local ou VLAN que vai receber sua própria LAN, na ordem em que aparece"><span class="material-symbols-outlined" aria-hidden="true" translate="no">apartment</span> Localidades / departamentos / VLANs (adicione quantas quiser)</label>
                     <button type="button" class="aed-btn aed-btn-indigo btn-sm" id="proj-add-local"
                             data-bs-toggle="tooltip" data-bs-placement="top" title="Adicionar uma nova localidade">
                         <span class="material-symbols-outlined" translate="no" aria-hidden="true">add</span> Adicionar localidade
@@ -49,20 +55,28 @@
                 <div id="proj-locais-container">
                     {! As linhas iniciais; o usuário adiciona/remove livremente via JS. !}
                     <div class="row g-2 align-items-end proj-local-row mb-2">
-                        <div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" value="Matriz" placeholder="Nome da localidade / VLAN" autocomplete="off" required></div>
-                        <div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" title="Remover esta localidade"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
+                        <div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" value="Matriz" placeholder="Nome da localidade / VLAN" aria-label="Nome da localidade" autocomplete="off" required
+                               title="Nome curto da localidade, setor ou VLAN; cada linha recebe uma LAN própria no plano"></div>
+                        <div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" aria-label="Remover esta localidade"
+                               title="Tira esta linha do plano; se for a única, só apaga o nome digitado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
                     </div>
                     <div class="row g-2 align-items-end proj-local-row mb-2">
-                        <div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" value="Filial-SP" placeholder="Nome da localidade / VLAN" autocomplete="off" required></div>
-                        <div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" title="Remover esta localidade"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
+                        <div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" value="Filial-SP" placeholder="Nome da localidade / VLAN" aria-label="Nome da localidade" autocomplete="off" required
+                               title="Nome curto da localidade, setor ou VLAN; cada linha recebe uma LAN própria no plano"></div>
+                        <div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" aria-label="Remover esta localidade"
+                               title="Tira esta linha do plano; se for a única, só apaga o nome digitado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
                     </div>
                     <div class="row g-2 align-items-end proj-local-row mb-2">
-                        <div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" value="Data Center" placeholder="Nome da localidade / VLAN" autocomplete="off" required></div>
-                        <div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" title="Remover esta localidade"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
+                        <div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" value="Data Center" placeholder="Nome da localidade / VLAN" aria-label="Nome da localidade" autocomplete="off" required
+                               title="Nome curto da localidade, setor ou VLAN; cada linha recebe uma LAN própria no plano"></div>
+                        <div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" aria-label="Remover esta localidade"
+                               title="Tira esta linha do plano; se for a única, só apaga o nome digitado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
                     </div>
                     <div class="row g-2 align-items-end proj-local-row mb-2">
-                        <div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" value="Wi-Fi" placeholder="Nome da localidade / VLAN" autocomplete="off" required></div>
-                        <div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" title="Remover esta localidade"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
+                        <div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" value="Wi-Fi" placeholder="Nome da localidade / VLAN" aria-label="Nome da localidade" autocomplete="off" required
+                               title="Nome curto da localidade, setor ou VLAN; cada linha recebe uma LAN própria no plano"></div>
+                        <div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" aria-label="Remover esta localidade"
+                               title="Tira esta linha do plano; se for a única, só apaga o nome digitado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
                     </div>
                 </div>
                 <div class="form-text text-muted">Cada localidade recebe uma LAN contígua no prefixo alvo. Em estrela, a 1ª é o hub.</div>

@@ -165,14 +165,15 @@
             <h2 class="h6 text-info mb-0 d-flex align-items-center gap-2" title="Suas consultas ficam só neste navegador e somem ao fechá-lo; outras pessoas não as veem"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico deste navegador</h2>
             <form method="GET" action="/analise" class="d-flex flex-wrap align-items-center gap-2 small">
                 <input type="hidden" name="tab" value="{activeTabPre}">
-                <label class="text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> Por página</label>
-                <select aria-label="Por página" name="history_limit" class="form-select form-select-sm bg-dark text-light border-secondary" style="width:auto;">
+                <label class="text-secondary" title="Define quantas consultas do histórico aparecem de cada vez na tabela abaixo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> Por página</label>
+                <select aria-label="Por página" name="history_limit" class="form-select form-select-sm bg-dark text-light border-secondary" style="width:auto;"
+                        title="Escolha 5, 10 ou 20 linhas e clique em Aplicar para recarregar a lista">
                     <option value="5" {#if historyLimitPre == '5'}selected{/if}>5</option>
                     <option value="10" {#if historyLimitPre == '10'}selected{/if}>10</option>
                     <option value="20" {#if historyLimitPre == '20'}selected{/if}>20</option>
                 </select>
                 <input type="hidden" name="history_page" value="{historyPage}">
-                <button type="submit" class="btn btn-sm btn-outline-info"><span class="material-symbols-outlined" translate="no" aria-hidden="true">check</span> Aplicar</button>
+                <button type="submit" class="btn btn-sm btn-outline-info" title="Recarrega a tabela do histórico mostrando a quantidade de linhas escolhida ao lado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">check</span> Aplicar</button>
             </form>
         </div>
         <p class="small text-secondary mb-2">Página {historyPage} de {totalHistoryPages} · {historyPageItems.size} registro(s) nesta página</p>
@@ -180,7 +181,7 @@
             <table class="table table-dark table-sm table-bordered mb-0">
                 <thead>
                 <tr class="small text-secondary">
-                    <th><span class="visually-hidden">Ação</span></th><th>Data</th><th>Modo</th><th>Entrada</th><th>Rede</th><th>Tema</th>
+                    <th title="Botão que reabre a análise daquela linha com os mesmos dados"><span class="visually-hidden">Ação</span></th><th title="Dia e hora da consulta, no fuso UTC (3 horas à frente do horário de Brasília)">Data</th><th title="Qual aba da análise foi usada na consulta, como CIDR, máscara ou wildcard">Modo</th><th title="O endereço IPv4 ou IPv6 que foi digitado na consulta">Entrada</th><th title="O endereço de rede calculado a partir da entrada e do prefixo">Rede</th><th title="Nível de risco do tamanho do bloco: quanto menor o prefixo, maior a rede e o risco">Tema</th>
                 </tr>
                 </thead>
                 <tbody>

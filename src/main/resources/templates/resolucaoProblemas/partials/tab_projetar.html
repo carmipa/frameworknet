@@ -47,13 +47,13 @@
 
     <div class="aed-card card-tech problem-box p-3 mb-3">
         <span class="aed-eyebrow">Cenário</span>
-        <h2 class="h5 text-light mb-3 problem-title d-flex align-items-center gap-2">
+        <h2 class="h5 text-light mb-3 problem-title d-flex align-items-center gap-2" title="Os dados do exercício: rede base, parâmetros de WAN e roteamento e as localidades com seus hosts">
             <span class="material-symbols-outlined text-info" translate="no" aria-hidden="true">input</span><span>Cenário de entrada</span>
         </h2>
         <form method="POST" action="/resolucao-problemas" id="resolucao-form">
             <div class="row g-3 align-items-end">
                 <div class="col-lg-4 col-md-6">
-                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> IP da rede base (IPv4)</label>
+                    <label class="form-label text-secondary" title="O bloco IPv4 de onde saem as LANs de todas as localidades e os enlaces WAN entre os roteadores"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> IP da rede base (IPv4)</label>
                     <input
                         type="text"
                         class="form-control input-ipv4 input-ipv4-network {#if invalidFields.contains('base_network')}is-invalid{/if}"
@@ -72,7 +72,7 @@
                     <div class="form-text text-secondary">IPv4 completo com pontos (ex.: <code translate="no">172.19.0.0</code>) ou com barra <code translate="no">/16</code>.</div>
                 </div>
                 <div class="col-lg-2 col-md-6">
-                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> CIDR da rede base</label>
+                    <label class="form-label text-secondary" title="Tamanho do bloco base em bits de rede; define quantos endereços existem para dividir entre as localidades"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> CIDR da rede base</label>
                     <input
                         type="text"
                         class="form-control input-cidr {#if invalidFields.contains('base_network')}is-invalid{/if}"
@@ -88,7 +88,7 @@
                     >
                 </div>
                 <div class="col-lg-2 col-md-6">
-                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cable</span> Prefixo WAN</label>
+                    <label class="form-label text-secondary" title="Tamanho de cada sub-rede ponto a ponto que liga dois roteadores na WAN"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cable</span> Prefixo WAN</label>
                     <input
                         type="text"
                         class="form-control input-cidr {#if invalidFields.contains('wan_prefix')}is-invalid{/if}"
@@ -103,7 +103,7 @@
                     >
                 </div>
                 <div class="col-lg-4 col-md-6">
-                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Topologia WAN</label>
+                    <label class="form-label text-secondary" title="Desenho das ligações entre os roteadores; muda quantos enlaces WAN o cálculo precisa endereçar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Topologia WAN</label>
                     <select aria-label="Topologia WAN"
                         name="topology_type"
                         class="form-select {#if invalidFields.contains('topology_type')}is-invalid{/if}"
@@ -119,7 +119,7 @@
             </div>
             <div class="row g-3 align-items-end mt-1">
                 <div class="col-lg-3 col-md-6">
-                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span> AS EIGRP <span class="text-secondary">(opcional)</span></label>
+                    <label class="form-label text-secondary" title="Número do sistema autônomo EIGRP; todos os roteadores do domínio EIGRP precisam usar o mesmo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span> AS EIGRP <span class="text-secondary">(opcional)</span></label>
                     <input
                         type="text"
                         class="form-control input-numeric {#if invalidFields.contains('eigrp_as')}is-invalid{/if}"
@@ -135,7 +135,7 @@
                     >
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Processo OSPF <span class="text-secondary">(opcional)</span></label>
+                    <label class="form-label text-secondary" title="Número local do processo OSPF nos comandos gerados; dois roteadores viram vizinhos mesmo com números diferentes"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Processo OSPF <span class="text-secondary">(opcional)</span></label>
                     <input
                         type="text"
                         class="form-control input-numeric {#if invalidFields.contains('ospf_process')}is-invalid{/if}"
@@ -151,7 +151,7 @@
                     >
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">settings_remote</span> Acesso remoto (VTY)</label>
+                    <label class="form-label text-secondary" title="As linhas VTY recebem as conexões de gerência remota do roteador; SSH criptografa a sessão, Telnet não"><span class="material-symbols-outlined" aria-hidden="true" translate="no">settings_remote</span> Acesso remoto (VTY)</label>
                     <select aria-label="Acesso remoto (VTY)"
                         name="remote_access"
                         class="form-select"
@@ -165,7 +165,7 @@
                     </select>
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Distribuição EIGRP/OSPF</label>
+                    <label class="form-label text-secondary" title="Escolhe quais roteadores do cenário rodam EIGRP e quais rodam OSPF nos scripts gerados"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Distribuição EIGRP/OSPF</label>
                     <select aria-label="Distribuição EIGRP/OSPF"
                         name="routing_mode"
                         id="routing-mode-select"
@@ -191,7 +191,7 @@
             </div>
             <hr class="border-secondary">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                <h3 class="h6 text-warning mb-0 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">apartment</span><span>Localidades dinâmicas (N cenários)</span></h3>
+                <h3 class="h6 text-warning mb-0 problem-title" title="As unidades do cenário; cada linha vira uma LAN com tamanho calculado pela quantidade de hosts"><span class="material-symbols-outlined" translate="no" aria-hidden="true">apartment</span><span>Localidades dinâmicas (N cenários)</span></h3>
                 <button
                     type="button"
                     class="aed-btn aed-btn-indigo btn-sm"
@@ -208,7 +208,7 @@
                 {#for loc in locations}
                 <div class="row g-2 align-items-end location-row mb-2">
                     <div class="col-lg-7 col-md-12">
-                        <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">apartment</span> Nome da localidade</label>
+                        <label class="form-label text-secondary" title="Identifica a unidade no plano de endereços, nos scripts dos roteadores e na topologia gerada"><span class="material-symbols-outlined" aria-hidden="true" translate="no">apartment</span> Nome da localidade</label>
                         <input
                             type="text"
                             name="loc_name"
@@ -222,7 +222,7 @@
                         >
                     </div>
                     <div class="col-lg-3 col-md-6">
-                        <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> Qtd. hosts <span class="text-secondary">(inteiro)</span></label>
+                        <label class="form-label text-secondary" title="Quantos dispositivos a LAN desta localidade precisa; o cálculo escolhe a menor sub-rede que os comporta"><span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> Qtd. hosts <span class="text-secondary">(inteiro)</span></label>
                         <input
                             type="text"
                             name="loc_hosts"
@@ -239,13 +239,13 @@
                         >
                     </div>
                     <div class="col-lg-2 col-md-6 d-grid">
-                        <label class="form-label text-secondary spacer-label d-none d-md-block" aria-hidden="true">&nbsp;</label>
+                        <div class="form-label text-secondary spacer-label d-none d-md-block" aria-hidden="true">&nbsp;</div>
                         <button
                             type="button"
                             class="aed-btn aed-btn-danger btn-remove-location"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            title="Remove esta localidade do cenário."
+                            title="Tira esta localidade do cenário; fica desabilitado quando só resta uma, porque o cálculo precisa de ao menos uma"
                         ><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span> Remover</button>
                     </div>
                 </div>
@@ -277,7 +277,7 @@
 
     <div class="aed-card card-tech problem-box p-3 mb-3">
         <span class="aed-eyebrow aed-eyebrow-amber">Turma</span>
-        <h2 class="h5 text-warning mb-2 problem-title d-flex align-items-center gap-2">
+        <h2 class="h5 text-warning mb-2 problem-title d-flex align-items-center gap-2" title="Gera de uma vez um laboratório por aluno a partir das linhas copiadas da planilha da turma">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">groups</span><span>Importar turma (Excel → ZIP por aluno)</span>
         </h2>
         <p class="small text-secondary mb-2">
@@ -293,7 +293,7 @@
             <input type="hidden" name="remote_access" value="{formData.remoteAccess}">
             <input type="hidden" name="routing_mode" value="{formData.routingMode}">
             <div class="col-12">
-                <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">content_paste</span> Colagem da planilha</label>
+                <label class="form-label text-secondary" title="Área para as linhas copiadas do Excel, uma por aluno, com as colunas separadas por TAB"><span class="material-symbols-outlined" aria-hidden="true" translate="no">content_paste</span> Colagem da planilha</label>
                 <textarea
                     name="class_roster_paste"
                     class="form-control font-monospace {#if invalidFields.contains('class_roster_paste')}is-invalid{/if}"
@@ -301,6 +301,7 @@
                     placeholder="João Silva&#9;172.51.0.0&#9;400&#9;390&#10;Maria Souza&#9;172.52.0.0&#9;350&#9;300"
                     spellcheck="false"
                     autocomplete="off"
+                    title="Cole aqui nome, rede base e as quantidades de hosts de cada aluno, como copiadas do Excel"
                 >{classRosterPaste}</textarea>
                 <div class="form-text text-secondary">Usa os parâmetros WAN/roteamento do formulário acima (topologia, prefixo WAN, EIGRP, OSPF, VTY).</div>
             </div>

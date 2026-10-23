@@ -123,16 +123,16 @@
         row.className = "row g-2 align-items-end location-row mb-2";
         row.innerHTML =
             '<div class="col-lg-7 col-md-12">' +
-            '<label class="form-label text-secondary">Nome da localidade</label>' +
+            '<label class="form-label text-secondary" title="Identifica a unidade no plano de endereços, nos scripts dos roteadores e na topologia gerada">Nome da localidade</label>' +
             '<input type="text" name="loc_name" aria-label="Nome da localidade" class="form-control" value="' + (defaultName || "") + '" data-bs-toggle="tooltip" data-bs-placement="top" title="Nome da unidade (ex.: Matriz, Filial I, CPD)." required>' +
             '</div>' +
             '<div class="col-lg-3 col-md-6">' +
-            '<label class="form-label text-secondary">Qtd. hosts <span class="text-secondary">(inteiro)</span></label>' +
+            '<label class="form-label text-secondary" title="Quantos dispositivos a LAN desta localidade precisa; o cálculo escolhe a menor sub-rede que os comporta">Qtd. hosts <span class="text-secondary">(inteiro)</span></label>' +
             '<input type="text" name="loc_hosts" aria-label="Qtd. hosts (inteiro)" class="form-control input-numeric" inputmode="numeric" maxlength="6" value="' + (defaultHosts || "") + '" placeholder="ex.: 400" data-bs-toggle="tooltip" data-bs-placement="top" title="Quantidade de hosts necessária (número inteiro). Não use endereço IP aqui." required>' +
             '</div>' +
             '<div class="col-lg-2 col-md-6 d-grid">' +
-            '<label class="form-label text-secondary spacer-label d-none d-md-block" aria-hidden="true">&nbsp;</label>' +
-            '<button type="button" class="aed-btn aed-btn-danger btn-remove-location" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove esta localidade do cenário."><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span> Remover</button>' +
+            '<div class="form-label text-secondary spacer-label d-none d-md-block" aria-hidden="true">&nbsp;</div>' +
+            '<button type="button" class="aed-btn aed-btn-danger btn-remove-location" data-bs-toggle="tooltip" data-bs-placement="top" title="Tira esta localidade do cenário; fica desabilitado quando só resta uma, porque o cálculo precisa de ao menos uma"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span> Remover</button>' +
             '</div>';
         return row;
     }
