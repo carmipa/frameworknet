@@ -7,10 +7,11 @@
 # externa a cada acesso.
 #
 # ISTO NAO E CONTROLE DE ACESSO. O arquivo e publico e so vale para o robo que
-# escolhe obedecer. Quem fecha /telemetria, /admin e /login e o login pelo
-# GitHub e o AdminApiKeyFilter -- nada aqui substitui aquilo. Por isso nenhuma
-# rota que ja nao esteja publica no menu ou na home aparece nesta lista: um
-# robots.txt e um mapa para quem quiser ler.
+# escolhe obedecer. Area autenticada NAO aparece aqui, nem em comentario: um
+# robots.txt e um mapa para quem quiser ler. Ela se protege com o login e com o
+# cabecalho X-Robots-Tag: noindex que a aplicacao manda (XRobotsTagHttpTest).
+# Tela de entrada que nao deve indexar tambem fica FORA do Disallow: robo que
+# obedece ao Disallow nunca busca a pagina e nunca le o noindex dela.
 #
 # ARMADILHA AO EDITAR: o robots.txt NAO soma grupos. Um robo obedece apenas ao
 # bloco mais especifico que casa com o nome dele. Por isso a lista de Disallow
@@ -19,7 +20,6 @@
 # uma rota /*/api/ nova nascer no codigo sem entrar aqui.
 #
 # Por que cada bloqueio existe:
-#   /admin /login /telemetria   area autenticada (as paginas ja tem meta noindex)
 #   /history                    historico de consultas, com o IP de quem consultou
 #   /export                     gera PDF/JSON sob demanda a cada acesso
 #   /informacoes                cada GET dispara consulta geografica externa
@@ -50,9 +50,6 @@ User-agent: Googlebot
 User-agent: Bingbot
 User-agent: DuckDuckBot
 Allow: /
-Disallow: /admin
-Disallow: /login
-Disallow: /telemetria
 Disallow: /history
 Disallow: /export
 Disallow: /informacoes
@@ -98,9 +95,6 @@ Disallow: /
 # --- Demais robos: navegacao liberada, com ritmo e as mesmas rotas fechadas ---
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /login
-Disallow: /telemetria
 Disallow: /history
 Disallow: /export
 Disallow: /informacoes

@@ -138,7 +138,9 @@ echo "== item 2: robots.txt proprio =="
   grep -vE '^[[:space:]]*#' "$FONTE_ROBOTS" | grep -vE '^[[:space:]]*$'
 } > "$ROBOTS/$DOM.txt"
 grep -q "^Sitemap:" "$ROBOTS/$DOM.txt" || erro "a politica versionada perdeu a linha Sitemap:"
-grep -q "^Disallow: /telemetria$" "$ROBOTS/$DOM.txt" || erro "a politica gerada nao fecha /telemetria — abortado"
+grep -q "^Disallow: /api$" "$ROBOTS/$DOM.txt" || erro "a politica gerada nao fecha /api — abortado"
+# Area autenticada fica FORA do arquivo publico (sai do indice pelo X-Robots-Tag da aplicacao).
+! grep -qE "/(admin|login|telemetria)([^A-Za-z0-9_-]|$)" "$ROBOTS/$DOM.txt" || erro "a politica gerada lista caminho da area autenticada — abortado"
 echo "   $ROBOTS/$DOM.txt gerado da politica VERSIONADA ($(grep -c '^Disallow' "$ROBOTS/$DOM.txt") regras Disallow, $(grep -c '^User-agent' "$ROBOTS/$DOM.txt") grupos)"
 
 if grep -q "$DOM" "$MAPA"; then

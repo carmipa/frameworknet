@@ -155,7 +155,7 @@ class SeoHttpTest {
     }
 
     @Test
-    @DisplayName("rota fechada no robots renderiza o layout e ainda assim não recebe canonical")
+    @DisplayName("rota fora da lista pública renderiza o layout e ainda assim não recebe canonical")
     void rotaFechadaNaoRecebeCanonical() {
         // A escolha destas duas rotas é deliberada, e a calibração da guarda foi
         // quem a ditou. Na primeira versão os controles eram /login e uma rota
@@ -174,7 +174,7 @@ class SeoHttpTest {
                     () -> "A rota " + rota + " deixou de renderizar o layout; como controle ela"
                             + " não vale mais, porque passaria sem verificar nada.\n" + cabeca(html));
             assertFalse(CANONICAL.matcher(html).find(),
-                    () -> "A rota " + rota + " está fechada no robots.txt e não pode declarar"
+                    () -> "A rota " + rota + " está fora da lista de páginas públicas e não pode declarar"
                             + " canonical.\n" + cabeca(html));
         }
     }

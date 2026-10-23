@@ -88,7 +88,7 @@ class SitemapHttpTest {
         List<String> faltando = new ArrayList<>();
 
         for (String link : menu) {
-            boolean fechadoParaRobo = disallows.stream().anyMatch(link::startsWith);
+            boolean fechadoParaRobo = disallows.stream().anyMatch(link::startsWith) || RobotsTxt.areaAutenticada(link);
             if (!fechadoParaRobo && !caminhos.contains(link)) {
                 faltando.add(link);
             }
@@ -180,7 +180,7 @@ class SitemapHttpTest {
                 String alvo = m.group(1).replaceAll("/$", "");
                 links++;
                 boolean excluida = alvo.isEmpty() || alvo.contains("/api/") || alvo.contains("/export")
-                        || fechadas.stream().anyMatch(alvo::startsWith);
+                        || fechadas.stream().anyMatch(alvo::startsWith) || RobotsTxt.areaAutenticada(alvo);
                 if (!excluida && !noSitemap.contains(alvo)) {
                     faltando.add(alvo + "  (linkada em " + pagina + ")");
                 }

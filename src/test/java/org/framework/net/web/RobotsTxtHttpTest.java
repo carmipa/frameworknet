@@ -59,12 +59,20 @@ class RobotsTxtHttpTest {
 
     /** Rotas que nenhum robô deve rastrear, com exemplos de subcaminho real. */
     private static final List<String> ROTAS_FECHADAS = List.of(
-            "/admin", "/admin/login", "/login", "/login/chave",
-            "/telemetria", "/telemetria/api/exportar",
             "/history", "/history/catalog",
             "/export/json", "/export/pdf",
             "/informacoes", "/mascara-referencia", "/health",
             "/api/informacoes/geo");
+
+    /**
+     * Área autenticada e telas de entrada: ficam FORA do arquivo.
+     *
+     * <p>O robots.txt é público, então listar caminho privado nele é entregar o mapa de onde
+     * procurar; e rota em {@code Disallow} nunca é buscada, logo o {@code noindex} dela nunca é
+     * lido. Quem tira estas rotas do índice é o cabecalho {@code X-Robots-Tag}
+     * ({@code XRobotsTagHttpTest}), e quem as fecha é o login.</p>
+     */
+    private static final List<String> FORA_DO_ARQUIVO = RobotsTxt.AREA_AUTENTICADA;
 
     /** Páginas didáticas que existem para ser encontradas. */
     private static final List<String> PAGINAS_ABERTAS = List.of(
@@ -106,6 +114,22 @@ class RobotsTxtHttpTest {
         assertTrue(faltando.isEmpty(), () -> "Um robô obedece só ao bloco mais específico que casa "
                 + "com o nome dele: o que faltar no grupo dele fica liberado.\n  - "
                 + String.join("\n  - ", faltando));
+    }
+
+    @Test
+    @DisplayName("área autenticada e tela de entrada não aparecem no robots.txt, nem em comentário")
+    void areaPrivadaNaoApareceNoArquivo() {
+        String corpo = given().when().get("/robots.txt").then().statusCode(200).extract().asString();
+        // Controle: o arquivo lido tem regras de verdade; sem isso "não encontrei" seria cegueira.
+        assertTrue(corpo.contains("Disallow: /api"), "O robots.txt lido não tem as regras esperadas.");
+
+        List<String> listadas = FORA_DO_ARQUIVO.stream()
+                .filter(prefixo -> java.util.regex.Pattern.compile(
+                        java.util.regex.Pattern.quote(prefixo) + "(?![A-Za-z0-9_-])").matcher(corpo).find())
+                .toList();
+        assertTrue(listadas.isEmpty(), () -> "Caminho de área autenticada listado no robots.txt público: "
+                + listadas + ". Ele vira mapa para quem quer atacar, e o Disallow impede o buscador de ler o"
+                + " noindex da página.");
     }
 
     @Test
@@ -220,6 +244,8 @@ class RobotsTxtHttpTest {
         }
 
         return rotas.stream()
+                // API da área autenticada não entra no arquivo público: é fechada pelo login.
+                .filter(rota -> !RobotsTxt.areaAutenticada(rota))
                 // F26: além de API, todo export (gera PDF/CSV sob demanda, custo sem valor de índice)
                 // nasce fechado — antes só /api/ era descoberto sozinho e /<modulo>/export novo escapava.
                 .filter(rota -> rota.contains("/api/") || rota.endsWith("/api")

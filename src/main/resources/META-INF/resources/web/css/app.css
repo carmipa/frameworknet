@@ -1006,6 +1006,7 @@ html {
     color: var(--aed-text, #e6edf7);
     outline: 2px solid var(--aed-teal, #2dd4bf);
 }
-#conteudo:focus {
+#conteudo:focus,
+.aed-inicio-conteudo:focus {
     outline: none;
 }

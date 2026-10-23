@@ -242,6 +242,35 @@ class SemanticaPaginaPublicaHttpTest {
                 () -> "Página pública 200 não muda com HX-Request e não deve declarar Vary por ele: " + varyPagina);
     }
 
+    @Test
+    @DisplayName("o link de pular para o conteúdo leva a um ponto depois do menu, e não de volta a ele")
+    void pularParaOConteudoPassaDoMenu() {
+        assertTrue(alvoDoPularDepoisDoMenu("<a href=\"#x\">p</a><nav class=\"aed-topnav\">m</nav><span id=\"x\"></span>"));
+        assertFalse(alvoDoPularDepoisDoMenu("<a href=\"#x\">p</a><main id=\"x\"><nav class=\"aed-topnav\">m</nav></main>"),
+                "Alvo antes do menu tem de reprovar: o foco volta ao primeiro link do menu.");
+        assertFalse(alvoDoPularDepoisDoMenu("<a href=\"#y\">p</a><nav class=\"aed-topnav\">m</nav><span id=\"x\"></span>"),
+                "Alvo inexistente tem de reprovar.");
+
+        List<String> defeitos = new ArrayList<>();
+        for (String rota : rotasComLayout()) {
+            if (!alvoDoPularDepoisDoMenu(corpo(rota))) {
+                defeitos.add(rota);
+            }
+        }
+        assertTrue(defeitos.isEmpty(), () -> "Link de pular que devolve o foco ao menu (ou sem alvo): " + defeitos);
+    }
+
+    private static boolean alvoDoPularDepoisDoMenu(String html) {
+        Matcher pular = Pattern.compile("<a [^>]*href=\"#([A-Za-z0-9_-]+)\"[^>]*>").matcher(html);
+        if (!pular.find()) {
+            return false;
+        }
+        int alvo = html.indexOf("id=\"" + pular.group(1) + "\"");
+        int menu = html.indexOf("class=\"aed-topnav\"");
+        int fimDoMenu = menu < 0 ? -1 : html.indexOf("</nav>", menu);
+        return alvo >= 0 && (menu < 0 || (fimDoMenu >= 0 && alvo > fimDoMenu));
+    }
+
     private static List<String> rotasComLayout() {
         List<String> rotas = PaginasPublicas.rotas();
         assertFalse(rotas.isEmpty(), "A lista de páginas públicas está vazia: a guarda não verificou nada.");

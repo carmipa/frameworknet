@@ -77,4 +77,17 @@ final class RobotsTxt {
     static boolean bloqueado(List<String> disallows, String caminho) {
         return disallows.stream().anyMatch(caminho::startsWith);
     }
+
+    /**
+     * Raízes da área autenticada e das telas de entrada. Ficam fora do robots.txt público (listar
+     * caminho privado é entregar o mapa) e saem do índice pelo cabeçalho {@code X-Robots-Tag}; também
+     * não entram no sitemap.
+     */
+    static final List<String> AREA_AUTENTICADA = List.of("/admin", "/login", "/telemetria");
+
+    /** Diz se o caminho está na área autenticada: a raiz exata ou abaixo dela ({@code /loginx} não está). */
+    static boolean areaAutenticada(String caminho) {
+        return caminho != null && AREA_AUTENTICADA.stream()
+                .anyMatch(raiz -> caminho.equals(raiz) || caminho.startsWith(raiz + "/"));
+    }
 }
