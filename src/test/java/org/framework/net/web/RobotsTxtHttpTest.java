@@ -160,6 +160,24 @@ class RobotsTxtHttpTest {
     }
 
     @Test
+    @DisplayName("o leitor casa curinga e fim de linha como os buscadores, e não fecha página vizinha")
+    void leitorCasaCuringaComoOsBuscadores() {
+        // Defeito que a regra existe para fechar: API e exportação de qualquer módulo.
+        assertTrue(RobotsTxt.casa("/*/api", "/calculadora/api/dividir"));
+        assertTrue(RobotsTxt.casa("/*/api", "/ipv6/api"));
+        assertTrue(RobotsTxt.casa("/*/export", "/ipv6/export/pdf"));
+        assertTrue(RobotsTxt.casa("*/api", "/academia/api"), "curinga no início também casa");
+        // Fronteira: o mesmo trecho "api" sem a barra de módulo antes não é rota de API de módulo.
+        assertFalse(RobotsTxt.casa("/*/api", "/api-docs"));
+        assertFalse(RobotsTxt.casa("/*/api", "/portas"));
+        assertFalse(RobotsTxt.casa("/*/export", "/protocolos/dns"));
+        // "$" ancora o fim; sem ele, é prefixo.
+        assertTrue(RobotsTxt.casa("/health$", "/health"));
+        assertFalse(RobotsTxt.casa("/health$", "/healthz"));
+        assertTrue(RobotsTxt.casa("/health", "/healthz"));
+    }
+
+    @Test
     @DisplayName("controle: as páginas didáticas continuam abertas")
     void paginasDidaticasContinuamAbertas() {
         // Este teste é o caso-controle dos outros: prova que a leitura do arquivo

@@ -73,9 +73,32 @@ final class RobotsTxt {
         return grupos;
     }
 
-    /** Casamento por prefixo, que é como o robots.txt decide. */
+    /**
+     * Casamento como o robots.txt decide (RFC 9309, seção 2.2.2): a regra casa a partir do início do caminho,
+     * {@code *} casa qualquer sequência (inclusive vazia, inclusive {@code /}) e {@code $} no fim ancora o fim
+     * do caminho. Sem curinga, é o casamento por prefixo de sempre.
+     */
     static boolean bloqueado(List<String> disallows, String caminho) {
-        return disallows.stream().anyMatch(caminho::startsWith);
+        return disallows.stream().anyMatch(regra -> casa(regra, caminho));
+    }
+
+    static boolean casa(String regra, String caminho) {
+        if (regra == null || regra.isEmpty() || caminho == null) {
+            return false;
+        }
+        boolean ancoradoNoFim = regra.endsWith("$");
+        String corpo = ancoradoNoFim ? regra.substring(0, regra.length() - 1) : regra;
+        StringBuilder expressao = new StringBuilder("^");
+        String[] pedacos = corpo.split("\\*", -1);
+        for (int i = 0; i < pedacos.length; i++) {
+            if (i > 0) {
+                expressao.append(".*");
+            }
+            expressao.append(java.util.regex.Pattern.quote(pedacos[i]));
+        }
+        expressao.append(ancoradoNoFim ? "$" : ".*");
+        return java.util.regex.Pattern.compile(expressao.toString(), java.util.regex.Pattern.DOTALL)
+                .matcher(caminho).matches();
     }
 
     /**

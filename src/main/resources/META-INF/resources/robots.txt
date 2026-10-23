@@ -19,6 +19,8 @@
 # RobotsTxtHttpTest reprova o build se um grupo esquecer uma rota, e tambem se
 # uma rota /*/api/ nova nascer no codigo sem entrar aqui.
 #
+# Curinga (RFC 9309, aceito por Google e Bing): "/*/api" e "/*/export" fecham a API e a
+# exportacao de TODO modulo, inclusive o que nascer depois, sem precisar listar um por um.
 # Por que cada bloqueio existe:
 #   /history                    historico de consultas, com o IP de quem consultou
 #   /export                     gera PDF/JSON sob demanda a cada acesso
@@ -56,16 +58,8 @@ Disallow: /informacoes
 Disallow: /mascara-referencia
 Disallow: /health
 Disallow: /api
-Disallow: /calculadora/api
-Disallow: /calculadora/export
-Disallow: /ipv6/api
-Disallow: /ipv6/export
-Disallow: /diagnostico/api
-Disallow: /localizacao/api
-Disallow: /seguranca/api
-Disallow: /simuladores/api
-Disallow: /trafego/api
-Disallow: /academia/api
+Disallow: /*/api
+Disallow: /*/export
 
 # --- Coleta em massa para treinar modelo, e robo de SEO: nao autorizados ---
 # Mesma lista do robots.txt compartilhado da VPS, para que as duas politicas
@@ -101,16 +95,8 @@ Disallow: /informacoes
 Disallow: /mascara-referencia
 Disallow: /health
 Disallow: /api
-Disallow: /calculadora/api
-Disallow: /calculadora/export
-Disallow: /ipv6/api
-Disallow: /ipv6/export
-Disallow: /diagnostico/api
-Disallow: /localizacao/api
-Disallow: /seguranca/api
-Disallow: /simuladores/api
-Disallow: /trafego/api
-Disallow: /academia/api
+Disallow: /*/api
+Disallow: /*/export
 Crawl-delay: 10
 
 # Mapa do site, servido por SitemapResource: so as paginas didaticas, as mesmas
