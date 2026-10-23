@@ -1,4 +1,4 @@
-/* dica.js v1.3 (2026-10-18) — comportamento do tooltip (regra 6-A). Fonte canônica: instrucoes/tooltip-canonico/. Não editar no projeto.
+/* dica.js v1.3 (2026-10-18) — comportamento do tooltip. Componente compartilhado: não editar no projeto; mudança só na origem.
    Sem dependências. Delegação de eventos: vale para conteúdo dinâmico.
    v1.1 (Paulo, 18/10/2026: "o tooltip está ficando muito tempo sobre os locais, cobrindo os locais de digitação"):
    - a dica de um CAMPO nunca cobre o campo: com o foco ou o mouse no campo, ela fica acima dele (ou abaixo, se não

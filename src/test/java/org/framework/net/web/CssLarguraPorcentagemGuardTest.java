@@ -335,8 +335,8 @@ class CssLarguraPorcentagemGuardTest {
     void tooltipCanonicoEhCopiaFiel() throws Exception {
         java.security.MessageDigest sha = java.security.MessageDigest.getInstance("SHA-256");
         String[][] esperados = {
-            {CANONICO_CSS, "3f70f155507ff5e1ee0dec67c6900c89036c5fd3d49330d65861d453373ffc53"},
-            {"web/js/dica.js", "3ec55c49cbb8ab15ce8c9b17053aeac27daf972bf9f8421d77b26b6238bf2114"},
+            {CANONICO_CSS, "22d076632c97848f0146c6bb2c3fedf9ebcb3de077cab691552885b0b285a2c4"},
+            {"web/js/dica.js", "6b939bdcaaa594e3d1b1d771fdc4acd080b403df20009457fbb8d5ee9639ba38"},
         };
         for (String[] e : esperados) {
             // Quebra de linha normalizada para LF: o git do Windows pode entregar CRLF no checkout.

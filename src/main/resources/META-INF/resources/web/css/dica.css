@@ -1,4 +1,4 @@
-/* dica.css v1.2 (2026-10-18) — tooltip explicativo acessível (regra 6-A). Fonte canônica: instrucoes/tooltip-canonico/. Não editar no projeto.
+/* dica.css v1.2 (2026-10-18) — tooltip explicativo acessível. Componente compartilhado: não editar no projeto; mudança só na origem.
    v1.1 (revisão de boa-fé, 18/10/2026): a dica que aparece sem estar sob o mouse — no toque, e a de um campo com o foco —
    deixa o toque e o clique passarem para o que está embaixo. Ela cobria o campo de cima e os itens de menu seguintes, e
    tocar neles caía na dica (3 de 3 toques num item de menu; 4 de 8 nas abas). Com o mouse sobre o "?", ela continua

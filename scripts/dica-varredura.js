@@ -1,4 +1,4 @@
-/* dica-varredura.js v1.0 (2026-10-05) — fonte canônica: instrucoes/tooltip-canonico/. Lista elementos do escopo SEM tooltip acessível. Retorna [] quando está tudo certo.
+/* dica-varredura.js v1.0 (2026-10-05) — componente compartilhado (mudança só na origem). Lista elementos do escopo SEM tooltip acessível. Retorna [] quando está tudo certo.
    Exceção: data-dica-excecao="motivo" (motivo precisa estar registrado em decisoes/). */
 function varreduraDica(raiz = document) {
   const falhas = [];
