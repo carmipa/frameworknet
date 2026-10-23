@@ -78,10 +78,16 @@
   "tabelas": [
     {
       "titulo": "Porta, banco e o default perigoso",
+      "dica": "As portas padrão dos bancos mais comuns e a configuração de fábrica que mais causou vazamentos",
       "colunas": [
         "Porta",
         "Banco de dados",
         "Default historicamente perigoso"
+      ],
+      "dicas_colunas": [
+        "Número da porta TCP padrão",
+        "Sistema que escuta nessa porta",
+        "Configuração de fábrica ou erro comum que deixou bancos abertos"
       ],
       "linhas": [
         [
@@ -123,10 +129,16 @@
     },
     {
       "titulo": "Exposto na internet x bind local: o que muda",
+      "dica": "A diferença entre o banco escutar em todas as interfaces e só no endereço local",
       "colunas": [
         "Aspecto",
         "Exposto (bind 0.0.0.0, sem firewall)",
         "Protegido (bind 127.0.0.1 ou rede privada)"
+      ],
+      "dicas_colunas": [
+        "O ponto comparado",
+        "Banco escutando em todas as interfaces, sem filtro de firewall",
+        "Banco escutando só na própria máquina ou na rede privada"
       ],
       "linhas": [
         [
@@ -158,10 +170,16 @@
     },
     {
       "titulo": "Como cada banco liga a autenticação",
+      "dica": "Onde ligar a exigência de senha em cada banco",
       "colunas": [
         "Banco",
         "Como exigir senha",
         "Observação"
+      ],
+      "dicas_colunas": [
+        "Sistema de banco de dados",
+        "A opção ou o arquivo que ativa a autenticação",
+        "O comportamento quando a opção falta ou a versão muda"
       ],
       "linhas": [
         [

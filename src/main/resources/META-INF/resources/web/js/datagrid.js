@@ -230,7 +230,9 @@
             return filtered;
         };
 
-        table && table.querySelectorAll(".sortable").forEach((th) => th.addEventListener("click", () => {
+        // O "?" de ajuda dentro do cabeçalho abre a dica; não pode reordenar a tabela de quem só queria ler.
+        table && table.querySelectorAll(".sortable").forEach((th) => th.addEventListener("click", (ev) => {
+            if (ev.target.closest && ev.target.closest(".dica")) return;
             const key = th.dataset.sortKey;
             if (sortKey === key) sortDir *= -1;
             else {
@@ -302,6 +304,8 @@
             });
             const icone = botao.querySelector(".material-symbols-outlined");
             const iconeOriginal = icone ? icone.textContent : "";
+            // O botão só tem ícone: o aria-label é o nome dele. O aviso usa o nome por instantes e o devolve.
+            const nomeOriginal = botao.getAttribute("aria-label");
             let mensagem;
             try {
                 await navigator.clipboard.writeText(JSON.stringify(dados, null, 2));
@@ -315,7 +319,8 @@
             avisar(mensagem);
             setTimeout(() => {
                 if (icone) icone.textContent = iconeOriginal;
-                botao.removeAttribute("aria-label");
+                if (nomeOriginal) botao.setAttribute("aria-label", nomeOriginal);
+                else botao.removeAttribute("aria-label");
             }, 1800);
         }
 

@@ -83,11 +83,18 @@
   "tabelas": [
     {
       "titulo": "Porta x função x claro/seguro",
+      "dica": "Cada porta de e-mail, o protocolo dela, o papel no envio ou na leitura e se a conexão é cifrada",
       "colunas": [
         "Porta",
         "Protocolo",
         "Função",
         "Cifrado?"
+      ],
+      "dicas_colunas": [
+        "Número da porta TCP",
+        "Protocolo de e-mail que responde nessa porta",
+        "Se a porta serve para enviar, repassar ou ler mensagens",
+        "Se e como a conexão nessa porta usa TLS"
       ],
       "linhas": [
         [
@@ -136,10 +143,16 @@
     },
     {
       "titulo": "STARTTLS x TLS implícito",
+      "dica": "As duas formas de pôr TLS numa conexão de e-mail e o risco de cada uma",
       "colunas": [
         "Aspecto",
         "STARTTLS (ex.: 587)",
         "TLS implícito (ex.: 465, 993, 995)"
+      ],
+      "dicas_colunas": [
+        "O ponto da comparação",
+        "Conexão que começa em claro e pede TLS com o comando STARTTLS",
+        "Conexão que já abre cifrada, sem trecho em texto claro"
       ],
       "linhas": [
         [
@@ -171,10 +184,16 @@
     },
     {
       "titulo": "Quando usar cada porta",
+      "dica": "Guia rápido para escolher a porta conforme o que o programa ou o servidor precisa fazer",
       "colunas": [
         "Situação",
         "Porta certa",
         "Por quê"
+      ],
+      "dicas_colunas": [
+        "O que se quer fazer com o e-mail",
+        "A porta indicada para essa tarefa hoje",
+        "O motivo da escolha"
       ],
       "linhas": [
         [

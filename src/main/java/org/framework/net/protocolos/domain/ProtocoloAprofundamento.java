@@ -48,9 +48,30 @@ public record ProtocoloAprofundamento(
     public record Conceito(String titulo, String icone, String texto, String destaque) {
     }
 
-    /** Tabela genérica (métodos HTTP, códigos de status, comandos FTP, portas…). */
+    /**
+     * Tabela genérica (métodos HTTP, códigos de status, comandos FTP, portas…).
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> além do título e das colunas, a tabela pode trazer a dica do
+     * título ({@code dica}) e uma dica por coluna ({@code dicasColunas}), que a página mostra no
+     * balão de ajuda de cada cabeçalho — o que a coluna significa, não a repetição do nome dela.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> as dicas são opcionais; quando {@code dicasColunas} vem,
+     * tem exatamente uma dica por coluna, na mesma ordem — dica desalinhada explicaria a coluna
+     * errada, e isso é pior que nenhuma dica.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> {@code dicasColunas} com tamanho diferente de
+     * {@code colunas} lança {@link IllegalArgumentException}; na leitura do JSON isso vira erro
+     * de carga, e o catálogo impede a subida nomeando o recurso.</p>
+     */
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-    public record Tabela(String titulo, List<String> colunas, List<List<String>> linhas) {
+    public record Tabela(String titulo, List<String> colunas, List<List<String>> linhas,
+                         String dica, List<String> dicasColunas) {
+        public Tabela {
+            if (dicasColunas != null && (colunas == null || dicasColunas.size() != colunas.size())) {
+                throw new IllegalArgumentException("Tabela \"" + titulo + "\": " + dicasColunas.size()
+                        + " dica(s) de coluna para " + (colunas == null ? 0 : colunas.size()) + " coluna(s)");
+            }
+        }
     }
 
     /** Um ataque conhecido, com sinal observável e gravidade. */

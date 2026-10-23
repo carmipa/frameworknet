@@ -78,11 +78,18 @@
   "tabelas": [
     {
       "titulo": "Porta x serviço x segurança",
+      "dica": "As portas de administração remota, se protegem o tráfego e como devem ser tratadas",
       "colunas": [
         "Porta",
         "Serviço",
         "Cifrado?",
         "Situação"
+      ],
+      "dicas_colunas": [
+        "Número da porta TCP padrão",
+        "Protocolo de acesso remoto nessa porta",
+        "Se a sessão viaja cifrada pela rede",
+        "O que fazer com essa porta hoje"
       ],
       "linhas": [
         [
@@ -113,11 +120,18 @@
     },
     {
       "titulo": "Expor direto na internet x atrás de VPN",
+      "dica": "Quanto risco cada forma de publicar o acesso remoto cria, do pior ao recomendado",
       "colunas": [
         "Cenário",
         "Superfície de ataque",
         "Força bruta possível?",
         "Recomendação"
+      ],
+      "dicas_colunas": [
+        "Como a porta está publicada",
+        "Quanto do serviço fica ao alcance de qualquer um",
+        "Se dá para tentar senhas em massa contra a porta",
+        "A ação indicada para esse cenário"
       ],
       "linhas": [
         [
@@ -154,10 +168,16 @@
     },
     {
       "titulo": "Telnet x SSH lado a lado",
+      "dica": "O que muda na prática ao trocar Telnet por SSH",
       "colunas": [
         "Aspecto",
         "Telnet (23)",
         "SSH (22)"
+      ],
+      "dicas_colunas": [
+        "O ponto comparado",
+        "Comportamento do Telnet, que não cifra nada",
+        "Comportamento do SSH, que cifra a sessão inteira"
       ],
       "linhas": [
         [

@@ -26,7 +26,7 @@
 
     <div class="card-tech p-3 mb-3 portas-faixas-bloco">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
-            <h2 class="h3 portas-faixas-titulo mb-0"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> As três faixas de portas (16 bits)</h2>
+            <h2 class="h3 portas-faixas-titulo mb-0" title="A divisão oficial dos números de porta em três grupos, desenhada na proporção do tamanho de cada um"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> As três faixas de portas (16 bits)</h2>
             <a href="/portas/anatomia" class="aed-btn aed-btn-teal btn-sm" title="Entender portas por dentro: 16 bits, socket, portas efêmeras e NAT/PAT">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span> Anatomia das portas
             </a>
@@ -58,9 +58,10 @@
                 <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">content_copy</span>Copie ou abra detalhes por linha</span>
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-25">
-                <label class="small text-secondary mb-0 d-flex align-items-center gap-2 flex-wrap">
+                <label for="portasLinhasPorPagina" class="small text-secondary mb-0 d-flex align-items-center gap-2" title="Quantas portas a tabela mostra de cada vez">
                     <span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> <span>Linhas por página</span>
-                    <select class="form-select form-select-sm bg-dark text-light border-secondary" style="width: auto; min-width: 12rem;" data-grid-page-size="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Paginação da tabela: escolha quantos registros ver de cada vez ou exiba todos de uma vez.">
+                </label>
+                    <select id="portasLinhasPorPagina" aria-label="Linhas por página" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: auto; min-width: 12rem;" data-grid-page-size="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Paginação da tabela: escolha quantos registros ver de cada vez ou exiba todos de uma vez.">
                         <option value="8" selected>8</option>
                         <option value="10">10</option>
                         <option value="25">25</option>
@@ -68,7 +69,6 @@
                         <option value="100">100</option>
                         <option value="all">Todos (sem paginar)</option>
                     </select>
-                </label>
             </div>
             <div class="row g-2 align-items-end mb-3">
                 <div class="col-lg-3">
@@ -154,7 +154,7 @@
                             <td class="small text-info">{item.alternativaSegura ?: "-"}</td>
                             <td class="text-nowrap text-center">
                                 <div class="d-inline-flex align-items-center justify-content-center gap-1">
-                                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-copy="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Copiar dados desta linha."><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span></button>
+                                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-copy="portas" aria-label="Copiar linha" data-bs-toggle="tooltip" data-bs-placement="top" title="Copia os dados desta porta para a área de transferência, em formato JSON"><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span></button>
                                     <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Abrir detalhes desta porta."><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
                                     {#if item.aprofundamentoRota}
                                     <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Abrir o aprofundamento do protocolo desta porta"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span></a>
@@ -201,7 +201,7 @@
                             </div>
                         </dl>
                         <div class="mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center gap-2">
-                            <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-copy="portas" data-bs-toggle="tooltip" title="Copiar linha"><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span></button>
+                            <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-copy="portas" aria-label="Copiar linha" data-bs-toggle="tooltip" title="Copia os dados desta porta para a área de transferência, em formato JSON"><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span></button>
                             <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="portas" data-bs-toggle="tooltip" title="Detalhes"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
                             {#if item.aprofundamentoRota}
                             <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm" data-bs-toggle="tooltip" title="Aprofundamento do protocolo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Aprofundar</a>
@@ -214,9 +214,9 @@
             <div class="d-flex flex-column align-items-center gap-2 mt-2">
                 <div class="small text-secondary text-center" data-grid-counter="portas"></div>
                 <div class="d-flex gap-2 align-items-center justify-content-center">
-                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-prev="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Volta para a página anterior dos resultados filtrados."><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_left</span></button>
+                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-prev="portas" aria-label="Página anterior" data-bs-toggle="tooltip" data-bs-placement="top" title="Volta para a página anterior dos resultados filtrados"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_left</span></button>
                     <span class="small text-secondary" data-grid-page-label="portas"></span>
-                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-next="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Avança para a próxima página dos resultados filtrados."><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_right</span></button>
+                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-next="portas" aria-label="Próxima página" data-bs-toggle="tooltip" data-bs-placement="top" title="Avança para a próxima página dos resultados filtrados"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_right</span></button>
                 </div>
             </div>
         </div>
@@ -236,7 +236,7 @@
 </div>
 {/content}
 {#extraScripts}
-<script src="/web/js/datagrid.js?v=20261002"></script>
+<script src="/web/js/datagrid.js?v=20261024"></script>
 <script>
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => new bootstrap.Tooltip(el));
     document.querySelectorAll('[data-bs-toggle="popover"]').forEach((el) => new bootstrap.Popover(el));

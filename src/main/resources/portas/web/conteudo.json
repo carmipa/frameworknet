@@ -78,11 +78,18 @@
   "tabelas": [
     {
       "titulo": "Portas web x uso pretendido",
+      "dica": "Para que serve cada porta web comum e se ela pode ou não ser alcançada pela internet",
       "colunas": [
         "Porta",
         "Protocolo/uso",
         "Onde deve ficar",
         "Expor na internet?"
+      ],
+      "dicas_colunas": [
+        "Número da porta TCP",
+        "O que costuma rodar nessa porta",
+        "Em que parte da rede essa porta deveria estar aberta",
+        "Se é aceitável abrir essa porta para qualquer endereço da internet"
       ],
       "linhas": [
         [
@@ -125,10 +132,16 @@
     },
     {
       "titulo": "Texto claro (80) x cifrado (443)",
+      "dica": "Comparação, ponto a ponto, do que muda quando o mesmo site passa de HTTP para HTTPS",
       "colunas": [
         "Aspecto",
         "HTTP na porta 80",
         "HTTPS na porta 443"
+      ],
+      "dicas_colunas": [
+        "A propriedade de segurança comparada na linha",
+        "Como fica essa propriedade sem criptografia",
+        "Como fica essa propriedade com o TLS protegendo o HTTP"
       ],
       "linhas": [
         [
@@ -160,11 +173,18 @@
     },
     {
       "titulo": "Portas de dev que não podem ir a produção",
+      "dica": "Portas de servidores de desenvolvimento que aparecem expostas por engano e o que fazer com cada uma",
       "colunas": [
         "Porta",
         "Ferramenta comum",
         "Por que é perigoso exposto",
         "Ação correta"
+      ],
+      "dicas_colunas": [
+        "Número da porta TCP padrão da ferramenta",
+        "Frameworks e painéis que usam essa porta por padrão",
+        "O que um atacante consegue se a porta ficar aberta",
+        "Como publicar ou proteger o serviço do jeito certo"
       ],
       "linhas": [
         [

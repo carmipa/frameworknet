@@ -83,11 +83,18 @@
   "tabelas": [
     {
       "titulo": "Portas da família: serviço e risco",
+      "dica": "As portas de transferência e compartilhamento de arquivos e o principal risco de cada uma",
       "colunas": [
         "Porta",
         "Serviço",
         "Transporte",
         "Risco principal"
+      ],
+      "dicas_colunas": [
+        "Número da porta; no FTP, a 21 é de controle e a 20 é de dados no modo ativo",
+        "Protocolo que responde nessa porta",
+        "Se usa TCP, UDP ou os dois",
+        "A falha ou o abuso mais explorado nesse serviço"
       ],
       "linhas": [
         [
@@ -124,10 +131,16 @@
     },
     {
       "titulo": "Em texto claro versus versão segura",
+      "dica": "Para cada protocolo inseguro, a alternativa segura e o que ela passa a proteger",
       "colunas": [
         "Inseguro (evitar)",
         "Seguro (usar)",
         "O que muda"
+      ],
+      "dicas_colunas": [
+        "Protocolo ou configuração que expõe dados ou login",
+        "O substituto recomendado",
+        "A proteção que a troca traz"
       ],
       "linhas": [
         [
@@ -159,10 +172,16 @@
     },
     {
       "titulo": "O que fazer com cada porta na borda",
+      "dica": "A decisão de firewall para cada porta de arquivos na borda da rede",
       "colunas": [
         "Porta",
         "Expor na internet?",
         "Recomendação"
+      ],
+      "dicas_colunas": [
+        "Número da porta e o serviço",
+        "Se a porta pode ser aberta para a internet",
+        "O que fazer em vez de expor"
       ],
       "linhas": [
         [

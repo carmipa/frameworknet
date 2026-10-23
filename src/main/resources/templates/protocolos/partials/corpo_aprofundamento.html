@@ -16,12 +16,12 @@
 </nav>
 
 <section id="conceitos" class="aprof-secao">
-    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Como funciona, na essência</h2>
+    <h2 class="aprof-secao-titulo" title="As ideias centrais do tema, uma por cartão, antes das tabelas, dos ataques e do laboratório"><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Como funciona, na essência</h2>
     <div class="row g-3">
         {#for item in conteudo.conceitos}
         <div class="col-12 col-lg-6">
             <article class="card-tech p-3 h-100 aprof-conceito">
-                <h3 class="aprof-conceito-titulo">
+                <h3 class="aprof-conceito-titulo" title="{#if item.destaque}Conceito-chave: o texto explica a ideia e o destaque aponta o ponto que mais costuma confundir{#else}Conceito-chave do tema, explicado no texto deste cartão{/if}">
                     <span class="material-symbols-outlined" aria-hidden="true" translate="no">{item.icone}</span>
                     {item.titulo}
                 </h3>
@@ -39,14 +39,14 @@
 
 {#if conteudo.tabelas}
 <section id="tabelas" class="aprof-secao">
-    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_view</span> Tabelas de referência</h2>
+    <h2 class="aprof-secao-titulo" title="Dados de consulta rápida do tema, organizados em tabelas comparativas"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_view</span> Tabelas de referência</h2>
     {#for tab in conteudo.tabelas}
     <div class="aprof-tabela-bloco">
-        <h3 class="aprof-tabela-titulo">{tab.titulo}</h3>
+        <h3 class="aprof-tabela-titulo"{#if tab.dica} title="{tab.dica}"{/if}>{tab.titulo}</h3>
         <div class="table-responsive border border-secondary border-opacity-25 rounded">
             <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
                 <thead>
-                    <tr>{#for col in tab.colunas}<th>{col}</th>{/for}</tr>
+                    <tr>{#for col in tab.colunas}<th{#if tab.dicasColunas} title="{tab.dicasColunas.get(col_index)}"{/if}>{col}</th>{/for}</tr>
                 </thead>
                 <tbody>
                     {#for linha in tab.linhas}
@@ -62,14 +62,14 @@
 
 {#if conteudo.ataques}
 <section id="ataques" class="aprof-secao">
-    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques conhecidos</h2>
+    <h2 class="aprof-secao-titulo" title="Ataques que exploram este tema, com o sinal que cada um deixa na rede e a gravidade"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques conhecidos</h2>
     <p class="small text-secondary">Cada cartão traz como o ataque funciona, o sinal observável na rede e a gravidade.</p>
     <div class="row g-3">
         {#for at in conteudo.ataques}
         <div class="col-12 col-xl-6">
             <article class="card-tech p-3 h-100 aprof-ataque aprof-ataque-{at.gravidadeCor}">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                    <h3 class="aprof-ataque-titulo mb-0">
+                    <h3 class="aprof-ataque-titulo mb-0" title="Ataque: o cartão mostra como ele funciona, o sinal que deixa na rede e a gravidade">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">{#if at.gravidadeCor == 'danger'}local_fire_department{#else if at.gravidadeCor == 'warning'}warning{#else if at.gravidadeCor == 'info'}info{#else}report{/if}</span>
                         {at.nome}
                     </h3>
@@ -89,12 +89,12 @@
 
 {#if conteudo.mitigacoes}
 <section id="mitigacoes" class="aprof-secao">
-    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</h2>
+    <h2 class="aprof-secao-titulo" title="Proteções recomendadas, com o que cada uma bloqueia e o que ela deixa de fora"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</h2>
     <p class="small text-secondary">A coluna "não cobre" existe de propósito: tratar uma defesa como bala de prata é por onde o furo entra.</p>
     <div class="table-responsive border border-secondary border-opacity-25 rounded">
         <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
             <thead>
-                <tr><th>Defesa</th><th>Como funciona</th><th>Cobre</th><th>Não cobre</th></tr>
+                <tr><th title="Nome da proteção ou da boa prática">Defesa</th><th title="O mecanismo que faz a proteção funcionar">Como funciona</th><th title="Os ataques ou riscos que a proteção de fato bloqueia">Cobre</th><th title="O que continua possível mesmo com a proteção ativa: é o limite dela">Não cobre</th></tr>
             </thead>
             <tbody>
                 {#for mit in conteudo.mitigacoes}
@@ -113,12 +113,12 @@
 
 {#if conteudo.laboratorios}
 <section id="laboratorio" class="aprof-secao">
-    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</h2>
+    <h2 class="aprof-secao-titulo" title="Exercícios práticos com comandos prontos para copiar e rodar no seu próprio ambiente"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</h2>
     <div class="row g-3">
         {#for lab in conteudo.laboratorios}
         <div class="col-12 col-xl-6">
             <article class="card-tech p-3 h-100 aprof-lab">
-                <h3 class="aprof-lab-titulo">{lab.titulo}</h3>
+                <h3 class="aprof-lab-titulo" title="Roteiro prático: o cenário, os comandos para copiar{#if lab.explicacao} e o que observar na saída{/if}">{lab.titulo}</h3>
                 <p class="small text-secondary mb-2">{lab.cenario}</p>
                 <pre class="aprof-codigo" id="aprof-lab-{lab_count}" translate="no">{lab.comandos}</pre>
                 <div class="d-flex justify-content-end mb-2">
@@ -137,12 +137,12 @@
 
 {#if conteudo.diagnosticos}
 <section id="troubleshooting" class="aprof-secao">
-    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</h2>
+    <h2 class="aprof-secao-titulo" title="Sintomas comuns de problema, a causa provável de cada um e como confirmar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</h2>
     <div class="row g-3">
         {#for diag in conteudo.diagnosticos}
         <div class="col-12 col-xl-6">
             <article class="card-tech p-3 h-100 aprof-diag">
-                <h3 class="aprof-diag-sintoma">
+                <h3 class="aprof-diag-sintoma" title="Sintoma: a causa provável{#if diag.comando}, o comando que confirma{/if} e como ler o resultado">
                     <span class="material-symbols-outlined" aria-hidden="true" translate="no">bug_report</span>
                     {diag.sintoma}
                 </h3>

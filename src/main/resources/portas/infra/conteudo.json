@@ -78,12 +78,20 @@
   "tabelas": [
     {
       "titulo": "Porta x serviço x transporte x amplificação",
+      "dica": "Serviços de infraestrutura, o transporte de cada um e quanto a resposta pode ser maior que a pergunta",
       "colunas": [
         "Porta",
         "Serviço",
         "Transporte",
         "Fator de amplificação típico",
         "Exposição recomendada"
+      ],
+      "dicas_colunas": [
+        "Número da porta; com barra, as duas portas que o serviço usa",
+        "Protocolo de infraestrutura nessa porta",
+        "Se usa UDP, TCP ou os dois; o UDP, sem conexão, é o que permite a reflexão",
+        "Quantas vezes a resposta é maior que a consulta forjada, o que multiplica o ataque",
+        "Quem deve poder alcançar o serviço"
       ],
       "linhas": [
         [
@@ -132,11 +140,18 @@
     },
     {
       "titulo": "Em claro versus variante segura",
+      "dica": "Para cada serviço, a versão em texto claro, a versão protegida e o que a troca garante",
       "colunas": [
         "Serviço",
         "Versão/porta em claro",
         "Versão/porta segura",
         "O que a versão segura protege"
+      ],
+      "dicas_colunas": [
+        "Protocolo de infraestrutura",
+        "Versão ou porta sem proteção",
+        "Versão ou porta que acrescenta autenticação ou criptografia",
+        "A garantia que se ganha com a troca"
       ],
       "linhas": [
         [
@@ -167,11 +182,18 @@
     },
     {
       "titulo": "O que expor, restringir ou nunca expor",
+      "dica": "Onde cada serviço de infraestrutura pode ficar visível e onde ele nunca deve aparecer",
       "colunas": [
         "Serviço",
         "Público",
         "Interno/gerência",
         "Nunca na Internet"
+      ],
+      "dicas_colunas": [
+        "Serviço de infraestrutura",
+        "Se pode responder a qualquer endereço da internet, e com que limite",
+        "Se deve ficar restrito à rede interna ou à de gerência",
+        "A forma do serviço que jamais pode ficar exposta"
       ],
       "linhas": [
         [
