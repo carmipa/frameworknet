@@ -135,6 +135,33 @@ wait_for_health
 echo "Logs recentes:"
 compose logs --tail=20 "$COMPOSE_SERVICE"
 
+# robots.txt da borda (23/10/2026). Em producao o /robots.txt NAO vem do jar: o nginx do proxy o
+# serve de /opt/infra-proxy/data/robots/<host>.txt (map $host). Sem este passo o arquivo do
+# repositorio mudava e o da borda ficava velho. Roda so depois da aplicacao saudavel e nao derruba
+# o deploy (a aplicacao esta certa): no fim sai 3 para o operador ver.
+DOMINIO="${DOMINIO:-frameworknet.carminati.dev.br}"
+ROBOTS_BORDA="${ROBOTS_BORDA:-/opt/infra-proxy/data/robots/${DOMINIO}.txt}"
+borda_ok="sim"
+if [ -d "$(dirname "$ROBOTS_BORDA")" ]; then
+  if bash "$APP_DIR/scripts/gerar-robots-borda.sh" \
+      "$APP_DIR/src/main/resources/META-INF/resources/robots.txt" "$ROBOTS_BORDA"; then
+    servido=$(curl -s -m 8 "https://${DOMINIO}/robots.txt" | sha256sum | cut -d' ' -f1 || true)
+    esperado=$(sha256sum "$ROBOTS_BORDA" | cut -d' ' -f1)
+    if [ "$servido" = "$esperado" ]; then
+      echo "robots.txt servido = gerado do repositorio (sha ${esperado:0:12})"
+    else
+      echo "!! robots.txt servido em https://${DOMINIO}/robots.txt difere do arquivo gerado."
+      borda_ok=""
+    fi
+  else
+    echo "!! a geracao do robots da borda reprovou; o arquivo anterior foi mantido."
+    borda_ok=""
+  fi
+else
+  echo "!! pasta da borda $(dirname "$ROBOTS_BORDA") ausente: robots.txt NAO VERIFICADO."
+  borda_ok=""
+fi
+
 echo
 echo "Deploy concluído."
 echo "Porta local: 127.0.0.1:$(get_env_value HTTP_PORT)"
@@ -146,4 +173,9 @@ if [ "$SHOW_ADMIN_KEY" = "1" ]; then
   echo "Para lê-la:  sudo grep '^ADMIN_API_KEY=' $ENV_FILE | cut -d= -f2-"
 else
   echo "ADMIN_API_KEY já existe em $ENV_FILE. Use --show-admin-key para ver como obtê-la."
+fi
+
+if [ -z "$borda_ok" ]; then
+  echo "Aplicação no ar, mas o robots.txt da borda NÃO confere (sem rollback: a aplicação está certa)."
+  exit 3
 fi

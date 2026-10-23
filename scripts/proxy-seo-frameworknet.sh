@@ -129,19 +129,8 @@ echo "== item 2: robots.txt proprio =="
 #
 # Os comentarios saem: explicam a politica para quem mexe no codigo e citam caminho
 # interno da VPS. O robots.txt e publico, e o robo le regras, nao comentario.
-[ -f "$FONTE_ROBOTS" ] || erro "nao achei a politica versionada em $FONTE_ROBOTS"
-{
-  echo "# Politica versionada em src/main/resources/META-INF/resources/robots.txt"
-  echo "# do repositorio framework-net-java-quarkus. Nao edite aqui: rode"
-  echo "# scripts/proxy-seo-frameworknet.sh depois de um git pull."
-  echo
-  grep -vE '^[[:space:]]*#' "$FONTE_ROBOTS" | grep -vE '^[[:space:]]*$'
-} > "$ROBOTS/$DOM.txt"
-grep -q "^Sitemap:" "$ROBOTS/$DOM.txt" || erro "a politica versionada perdeu a linha Sitemap:"
-grep -q "^Disallow: /api$" "$ROBOTS/$DOM.txt" || erro "a politica gerada nao fecha /api — abortado"
-# Area autenticada fica FORA do arquivo publico (sai do indice pelo X-Robots-Tag da aplicacao).
-! grep -qE "/(admin|login|telemetria)([^A-Za-z0-9_-]|$)" "$ROBOTS/$DOM.txt" || erro "a politica gerada lista caminho da area autenticada — abortado"
-echo "   $ROBOTS/$DOM.txt gerado da politica VERSIONADA ($(grep -c '^Disallow' "$ROBOTS/$DOM.txt") regras Disallow, $(grep -c '^User-agent' "$ROBOTS/$DOM.txt") grupos)"
+bash "$(dirname "${BASH_SOURCE[0]}")/gerar-robots-borda.sh" "$FONTE_ROBOTS" "$ROBOTS/$DOM.txt" \
+  || erro "a geracao do robots da borda reprovou (nada foi gravado)"
 
 if grep -q "$DOM" "$MAPA"; then
   echo "   ja mapeado no map \$host (idempotente)"
