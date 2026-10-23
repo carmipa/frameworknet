@@ -1,6 +1,6 @@
 # 🛡️ Framework de Redes - Análise Didática Avançada
 
-> **Versão Java/Quarkus** (`framework-net-java-quarkus`) — Java 25 + Quarkus 3.37.
+> **Versão Java/Quarkus** (repositório `frameworknet`) — Java 25 + Quarkus 3.37.
 > Migração do projeto original Python/Flask. Esta documentação é renderizada dentro da própria aplicação em `/documentacao`.
 
 <p align="center">
@@ -1010,7 +1010,7 @@ conscientemente a divergência entre os dois modelos.
 ## 🗂️ Estrutura de Pastas
 
 ```text
-framework-net-java-quarkus/
+frameworknet/
 ├── build.gradle · settings.gradle · gradle.properties · gradlew(.bat)
 ├── Dockerfile · docker-compose.yml · docker-compose.dev.yml · .env.example
 ├── logs/

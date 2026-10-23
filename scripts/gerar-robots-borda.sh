@@ -32,7 +32,7 @@ TMP="$(mktemp "${DESTINO}.novo.XXXXXX")"
 trap 'rm -f "$TMP"' EXIT
 {
   echo "# Politica versionada em src/main/resources/META-INF/resources/robots.txt"
-  echo "# do repositorio framework-net-java-quarkus. Nao edite aqui: o deploy"
+  echo "# do repositorio github.com/carmipa/frameworknet. Nao edite aqui: o deploy"
   echo "# (scripts/deploy.sh) regrava este arquivo a cada publicacao."
   echo
   tr -d '\r' < "$FONTE" | grep -vE '^[[:space:]]*#' | grep -vE '^[[:space:]]*$'
