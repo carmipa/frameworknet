@@ -1,0 +1,323 @@
+{
+  "resumo": "Uma porta de rede é um número de 16 bits (de 0 a 65535) que funciona como o \"apartamento\" dentro do \"prédio\" que é o endereço IP: ela permite que um único IP multiplexe vários serviços ao mesmo tempo, entregando cada segmento ou datagrama ao processo certo. A combinação IP + porta + protocolo (TCP ou UDP) forma um socket, o identificador exato de uma ponta da conversa. Do ponto de vista de segurança, cada porta aberta é uma superfície de ataque: a regra de ouro é expor apenas o que precisa ser exposto e manter todo o resto fechado ou filtrado por firewall.",
+  "ficha": [
+    {
+      "rotulo": "Tamanho do campo de porta",
+      "valor": "16 bits (0 a 65535)",
+      "dica": "2^16 = 65536 valores possíveis. Há um campo de origem e um de destino, somando 32 bits (4 bytes) no início de todo segmento/datagrama."
+    },
+    {
+      "rotulo": "Faixa well-known",
+      "valor": "0 a 1023 (até 0x03FF)",
+      "dica": "Serviços padronizados; em sistemas Unix só root/admin pode abrir (bind) portas abaixo de 1024."
+    },
+    {
+      "rotulo": "Faixa registered",
+      "valor": "1024 a 49151",
+      "dica": "Atribuídas pela IANA a fabricantes/aplicações específicas (ex.: 3306 MySQL, 5432 PostgreSQL)."
+    },
+    {
+      "rotulo": "Faixa dynamic/efêmera",
+      "valor": "49152 a 65535 (até 0xFFFF)",
+      "dica": "Usada pelo cliente como porta de origem temporária em cada nova conexão."
+    },
+    {
+      "rotulo": "Transporte",
+      "valor": "TCP e UDP (espaços separados)",
+      "dica": "A porta só faz sentido junto do protocolo: 53/TCP e 53/UDP são entradas distintas."
+    },
+    {
+      "rotulo": "Referência normativa",
+      "valor": "RFC 6335 (IANA), RFC 793/9293 (TCP), RFC 768 (UDP)",
+      "dica": "A RFC 6335 define as três faixas e o processo de registro de portas."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Socket = IP + porta + protocolo",
+      "icone": "lan",
+      "texto": "Uma porta sozinha não identifica nada; ela só tem sentido colada a um endereço IP e a um protocolo de transporte. Esse trio (por exemplo 203.0.113.10:443 via TCP) é chamado de socket e representa uma ponta exata da comunicação. É por isso que o mesmo servidor pode atender milhares de clientes na porta 443 ao mesmo tempo.",
+      "destaque": "IP diz ONDE; porta diz QUAL serviço; protocolo diz COMO."
+    },
+    {
+      "titulo": "Well-known, registered e dynamic",
+      "icone": "dns",
+      "texto": "As portas 0 a 1023 (well-known) são reservadas a serviços clássicos como 80 (HTTP), 443 (HTTPS) e 22 (SSH). De 1024 a 49151 estão as registered, ligadas a aplicações específicas. De 49152 a 65535 ficam as dynamic/efêmeras, de uso temporário. Conhecer a faixa ajuda a farejar o que deveria (ou não) estar escutando.",
+      "destaque": "Número baixo raramente muda; número alto quase sempre é temporário."
+    },
+    {
+      "titulo": "Portas efêmeras do cliente",
+      "icone": "bolt",
+      "texto": "Quando seu navegador abre um site, o sistema operacional sorteia uma porta livre na faixa alta (ex.: 51000) para ser a porta de ORIGEM daquela conexão. O destino é a porta do serviço (ex.: 443), mas a origem muda a cada conexão. É isso que permite ao cliente ter várias abas/conexões ao mesmo servidor sem se confundir.",
+      "destaque": "O cliente não escuta; ele apenas emprega uma porta alta e descartável."
+    },
+    {
+      "titulo": "TCP e UDP têm espaços SEPARADOS",
+      "icone": "router",
+      "texto": "Existe uma porta 53 no mundo TCP e outra porta 53, totalmente independente, no mundo UDP. O DNS, por exemplo, usa 53/UDP para consultas rápidas e 53/TCP para transferências grandes. Ao configurar firewall ou ler um scan, sempre pergunte: aberta em qual protocolo? (Há aprofundamento dedicado ao DNS no site.)",
+      "destaque": "53/TCP != 53/UDP: são duas entradas distintas."
+    },
+    {
+      "titulo": "Uma porta, um LISTEN",
+      "icone": "lock",
+      "texto": "Num mesmo IP e protocolo, apenas um processo pode ficar em estado LISTEN numa dada porta. Se um segundo processo tentar, recebe erro 'address already in use'. Por isso descobrir QUEM está escutando (o PID e o binário) é um passo de segurança: um serviço inesperado na escuta pode ser configuração errada ou algo malicioso.",
+      "destaque": "Porta ocupada é pista: sempre confira qual processo a segura."
+    },
+    {
+      "titulo": "NAT/PAT reescreve a origem",
+      "icone": "security",
+      "texto": "Na sua rede doméstica vários aparelhos compartilham um só IP público. O roteador usa NAT/PAT: ao sair, ele troca a porta de origem por outra única e anota isso numa tabela; ao voltar, a resposta chega nessa porta e ele reescreve de volta para o aparelho certo. É o que faz milhares de dispositivos caberem num único IP público.",
+      "destaque": "O que o servidor vê como sua porta de origem quase nunca é a sua real."
+    }
+  ],
+  "cabecalho": {
+    "titulo": "Os dois campos de porta que abrem todo segmento TCP e todo datagrama UDP",
+    "nota": "São 16 + 16 = 32 bits (4 bytes) logo no início do cabeçalho. Cada campo de 16 bits comporta 2^16 = 65536 valores (0 a 65535). As três faixas definidas pela IANA (RFC 6335): well-known 0-1023 (até 0x03FF em hexadecimal, ou 0000001111111111 em binário), registered 1024-49151, e dynamic/efêmeras 49152-65535 (até 0xFFFF, ou 1111111111111111 em binário). O valor 0 é reservado e nunca deve aparecer como porta real numa conexão estabelecida.",
+    "campos": [
+      {
+        "nome": "Porta de origem",
+        "bits": 16,
+        "descricao": "Quem está falando. No cliente costuma ser uma porta efêmera sorteada (ex.: 51000); pode ser reescrita pelo NAT/PAT no caminho.",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "Porta de destino",
+        "bits": 16,
+        "descricao": "A qual serviço a mensagem se dirige. É o que decide se o pacote vai para o HTTPS (443), SSH (22), DNS (53) etc.",
+        "cor": "#d97706"
+      }
+    ]
+  },
+  "diagrama": {
+    "titulo": "Cliente atrás de NAT/PAT conversando com um servidor HTTPS",
+    "definicao": "sequenceDiagram\n    participant C as Cliente (porta efêmera 51000)\n    participant R as Roteador NAT/PAT\n    participant S as Servidor (porta 443)\n    C->>R: Origem 51000, Destino 443 (pedido HTTPS)\n    Note over R: Reescreve a porta de origem 51000 para 60123 e anota na tabela\n    R->>S: Origem 60123, Destino 443\n    S-->>R: Origem 443, Destino 60123 (resposta)\n    Note over R: Consulta a tabela e traduz 60123 de volta para 51000\n    R-->>C: Origem 443, Destino 51000 (resposta entregue)",
+    "legenda": "O cliente usa uma porta alta e temporária (51000) como origem e mira a porta fixa do serviço (443). O roteador troca a porta de origem por uma única (60123), guarda o mapeamento e, na volta, desfaz a tradução para entregar a resposta ao aparelho certo. Para o servidor, o cliente sempre 'aparece' com a porta reescrita pelo NAT."
+  },
+  "tabelas": [
+    {
+      "titulo": "As três faixas de portas (RFC 6335)",
+      "colunas": [
+        "Faixa",
+        "Intervalo",
+        "Quem atribui / usa",
+        "Exemplos"
+      ],
+      "linhas": [
+        [
+          "Well-known",
+          "0 a 1023 (até 0x03FF)",
+          "IANA; abrir exige privilégio (root/admin) no Unix",
+          "22 SSH, 25 SMTP, 53 DNS, 80 HTTP, 443 HTTPS"
+        ],
+        [
+          "Registered",
+          "1024 a 49151",
+          "IANA registra a pedido de fabricantes/apps",
+          "3306 MySQL, 5432 PostgreSQL, 6379 Redis, 8080 HTTP alt"
+        ],
+        [
+          "Dynamic / efêmera",
+          "49152 a 65535 (até 0xFFFF)",
+          "Sorteada pelo SO do cliente por conexão",
+          "51000, 60123 (porta de origem temporária)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Portas famosas x serviço x transporte",
+      "colunas": [
+        "Porta",
+        "Serviço",
+        "Transporte",
+        "Observação de segurança"
+      ],
+      "linhas": [
+        [
+          "22",
+          "SSH",
+          "TCP",
+          "Acesso remoto. Restrinja por IP/firewall. Há aprofundamento dedicado ao SSH."
+        ],
+        [
+          "25 / 587 / 465",
+          "SMTP",
+          "TCP",
+          "Envio de e-mail. Há aprofundamento dedicado ao SMTP/POP3/IMAP."
+        ],
+        [
+          "53",
+          "DNS",
+          "UDP e TCP",
+          "Consultas em UDP, transferências em TCP. Aprofundamento dedicado ao DNS."
+        ],
+        [
+          "80 / 443",
+          "HTTP / HTTPS",
+          "TCP",
+          "Web. Prefira 443 (TLS). Aprofundamentos dedicados a HTTP e TLS."
+        ],
+        [
+          "23",
+          "Telnet",
+          "TCP",
+          "Texto em claro, inseguro. Nunca exponha. Aprofundamento dedicado ao Telnet."
+        ],
+        [
+          "21",
+          "FTP",
+          "TCP",
+          "Legado, credencial em claro. Aprofundamento dedicado ao FTP."
+        ],
+        [
+          "3306 / 5432 / 6379",
+          "MySQL / PostgreSQL / Redis",
+          "TCP",
+          "Bancos: NUNCA exponha à internet; bind em 127.0.0.1 ou rede interna."
+        ]
+      ]
+    },
+    {
+      "titulo": "A 5-tupla que identifica uma conexão (o socket completo)",
+      "colunas": [
+        "Elemento",
+        "Exemplo",
+        "Papel"
+      ],
+      "linhas": [
+        [
+          "IP de origem",
+          "198.51.100.7",
+          "Endereço de quem inicia"
+        ],
+        [
+          "Porta de origem",
+          "51000",
+          "Porta efêmera do cliente"
+        ],
+        [
+          "IP de destino",
+          "203.0.113.10",
+          "Endereço do servidor"
+        ],
+        [
+          "Porta de destino",
+          "443",
+          "Porta do serviço alvo"
+        ],
+        [
+          "Protocolo",
+          "TCP",
+          "Transporte (TCP ou UDP); define espaços de porta separados"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Port scan (SYN / connect / UDP)",
+      "como_funciona": "O atacante envia pacotes a muitas portas para mapear o que está aberto. O SYN scan (half-open) manda só o SYN e lê a resposta sem completar a conexão; o connect scan abre a conexão TCP inteira (mais barulhento); o UDP scan envia datagramas e infere pela ausência de resposta ou por mensagens ICMP 'porta inalcançável'. É quase sempre o primeiro passo de um ataque: descobrir a superfície.",
+      "sinal": "Muitas conexões curtas ou SYN sem ACK vindos de um mesmo IP em várias portas num curto intervalo; picos de ICMP port unreachable.",
+      "gravidade": "Média (reconhecimento)",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Serviço exposto sem querer",
+      "como_funciona": "Um banco de dados, painel de administração ou API de debug sobe escutando em 0.0.0.0 (todas as interfaces) em vez de 127.0.0.1, e um firewall permissivo deixa a porta acessível pela internet. O invasor encontra o serviço num scan e explora credenciais padrão ou falta de autenticação. É uma das causas mais comuns de vazamento de dados.",
+      "sinal": "Um ss/netstat mostrando LISTEN em 0.0.0.0 para porta de banco/admin; acessos externos inesperados a portas internas.",
+      "gravidade": "Alta (acesso direto a dados)",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Port knocking mal entendido",
+      "como_funciona": "Port knocking esconde um serviço até receber uma sequência secreta de tentativas em certas portas. O erro comum é tratar isso como se fosse criptografia ou autenticação forte: a sequência trafega em claro, pode ser capturada (sniffing) ou repetida (replay), e dá falsa sensação de segurança fazendo relaxar controles reais como firewall e senhas fortes.",
+      "sinal": "Serviço crítico dependendo apenas da 'batida secreta', sem TLS, sem chave, sem limitação de origem.",
+      "gravidade": "Média (falsa segurança)",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Sequestro de porta / rebind local",
+      "como_funciona": "Um processo malicioso ou mal configurado ocupa uma porta esperada por outro serviço, ou um serviço legítimo cai e outro assume a mesma porta. Clientes passam a falar com o processo errado. Também inclui abusar de portas altas liberadas para exfiltrar dados driblando o firewall.",
+      "sinal": "Binário inesperado segurando o LISTEN de uma porta conhecida; PID que não bate com o serviço esperado.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Firewall default-deny",
+      "como_funciona": "Configure o firewall para NEGAR tudo por padrão e liberar explicitamente apenas as portas necessárias, de preferência limitando a origem (faixas de IP confiáveis). Assim, qualquer serviço novo que suba fica bloqueado até ser autorizado de propósito.",
+      "cobre": "Serviço exposto sem querer, reduz superfície do port scan",
+      "limite": "Não protege contra abuso do que foi legitimamente liberado; regras erradas anulam o benefício."
+    },
+    {
+      "nome": "Bind em 127.0.0.1 (loopback)",
+      "como_funciona": "Faça serviços que só precisam ser acessados localmente (bancos, caches, painéis internos) escutarem apenas em 127.0.0.1 em vez de 0.0.0.0. Eles ficam invisíveis para a rede externa mesmo sem firewall, pois não há interface de rede pública ligada àquela porta.",
+      "cobre": "Serviço exposto sem querer, banco na internet",
+      "limite": "Não ajuda quando o serviço realmente precisa ser remoto; não substitui autenticação para acessos locais."
+    },
+    {
+      "nome": "Fechar o que não se usa",
+      "como_funciona": "Desative e desinstale serviços que não são necessários. Menos processos em LISTEN significa menos portas abertas e menos superfície de ataque. Faça inventário periódico do que está escutando e questione cada porta.",
+      "cobre": "Todos os ataques baseados em superfície exposta",
+      "limite": "Exige disciplina contínua; serviços podem voltar após atualizações ou instalações."
+    },
+    {
+      "nome": "Segmentação de rede",
+      "como_funciona": "Separe a rede em zonas (DMZ, rede interna, rede de banco de dados) com regras entre elas. Mesmo que um serviço exposto seja comprometido, o atacante não alcança diretamente os sistemas internos por não haver rota nem porta liberada entre os segmentos.",
+      "cobre": "Movimento lateral após invasão, serviço exposto",
+      "limite": "Complexa de manter; erros de roteamento ou regras frouxas entre zonas reduzem a eficácia."
+    },
+    {
+      "nome": "Nunca confiar só em port knocking",
+      "como_funciona": "Trate o port knocking (ou 'esconder a porta') como camada extra opcional, jamais como única defesa. Mantenha autenticação forte, TLS e firewall por origem. Segurança por obscuridade complementa, mas nunca substitui controles reais.",
+      "cobre": "Port knocking mal entendido",
+      "limite": "Não adiciona segurança criptográfica; a sequência pode ser capturada ou repetida."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Descobrir quem está escutando na sua máquina",
+      "cenario": "Antes de proteger, é preciso saber o que está aberto. O comando ss lista sockets TCP e UDP em escuta, com o processo dono de cada porta. É o primeiro passo de qualquer auditoria de portas.",
+      "comandos": "# Linux: sockets TCP/UDP em LISTEN, com PID e programa (precisa de sudo para ver o processo)\nsudo ss -tulpn\n\n# Legado equivalente (onde ss não existir)\nsudo netstat -tulpn\n\n# Windows (PowerShell): conexões e portas em escuta com o PID\nnetstat -ano | findstr LISTENING\nGet-NetTCPConnection -State Listen | Select-Object LocalAddress,LocalPort,OwningProcess",
+      "explicacao": "Observe a coluna de endereço local: 0.0.0.0:porta ou [::]:porta significa exposto a TODAS as interfaces (potencialmente à internet); 127.0.0.1:porta significa acessível apenas localmente. Um banco de dados escutando em 0.0.0.0 é um alerta imediato. As flags do ss: -t TCP, -u UDP, -l apenas LISTEN, -p processo, -n números (não resolve nomes)."
+    },
+    {
+      "titulo": "Varredura didática com nmap (SO próprio ou com autorização)",
+      "cenario": "Ver a rede pelos olhos de quem faz reconhecimento ajuda a entender o que um atacante enxergaria. Escaneie APENAS máquinas suas ou com permissão explícita por escrito; escanear terceiros pode ser ilegal.",
+      "comandos": "# TCP connect scan (não precisa de privilégio) nas portas mais comuns do seu próprio host\nnmap -sT localhost\n\n# TCP SYN scan (half-open, mais rápido; requer privilégio)\nsudo nmap -sS 127.0.0.1\n\n# UDP scan básico (lento; UDP não confirma como o TCP)\nsudo nmap -sU --top-ports 20 127.0.0.1\n\n# Identificar versão dos serviços encontrados\nnmap -sV 127.0.0.1",
+      "explicacao": "O nmap classifica cada porta como open (serviço atende), closed (host respondeu que nada escuta) ou filtered (não houve resposta, tipicamente firewall descartando o pacote). Comparar -sT com -sU mostra na prática que TCP e UDP têm espaços de porta separados. Nunca aponte para IPs que não são seus sem autorização."
+    },
+    {
+      "titulo": "Testar uma porta específica de forma pontual",
+      "cenario": "Às vezes você só quer confirmar se uma porta específica está acessível a partir de um cliente, sem varrer tudo. Ferramentas leves resolvem isso.",
+      "comandos": "# Testar conexão TCP a uma porta (Linux/macOS)\nnc -vz 203.0.113.10 443\n\n# Alternativa sem nc, usando o próprio bash\ntimeout 3 bash -c '</dev/tcp/203.0.113.10/443' && echo aberta || echo fechada/filtrada\n\n# Windows (PowerShell)\nTest-NetConnection 203.0.113.10 -Port 443",
+      "explicacao": "Uma resposta rápida de sucesso indica porta aberta. Se vier RST na hora, a porta está fechada (host acessível, serviço ausente). Se travar até o timeout sem resposta, tipicamente está filtrada por firewall. Essa distinção é a base do diagnóstico da próxima seção."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Conexão recusada na hora (connection refused)",
+      "causa_provavel": "Porta FECHADA: o host está acessível, mas nenhum processo escuta naquela porta. Em TCP o SO responde com um pacote RST imediatamente.",
+      "comando": "nc -vz host porta   # 'Connection refused' = fechada",
+      "leitura": "O host existe e responde, só não há serviço ali. Diferente de filtrada: aqui houve resposta ativa (RST)."
+    },
+    {
+      "sintoma": "Conexão trava e estoura por timeout",
+      "causa_provavel": "Porta FILTRADA: um firewall descarta os pacotes silenciosamente (DROP), sem enviar RST nem aceitar. Nada volta.",
+      "comando": "nmap -p porta host   # estado 'filtered'",
+      "leitura": "Ausência de resposta é o comportamento default-deny funcionando. Confirme se é intencional; se for um serviço seu que deveria responder, revise a regra de firewall."
+    },
+    {
+      "sintoma": "Serviço responde imediatamente e aceita a conexão",
+      "causa_provavel": "Porta ABERTA: há um processo em LISTEN que completa o handshake (SYN, SYN-ACK, ACK em TCP).",
+      "comando": "sudo ss -tulpn | grep :porta",
+      "leitura": "Confirme QUAL processo está atendendo. Porta aberta esperada é normal; porta aberta inesperada (banco, admin) é incidente a investigar."
+    },
+    {
+      "sintoma": "UDP aparece como 'open|filtered' no scan",
+      "causa_provavel": "Ambiguidade natural do UDP: como ele não confirma recebimento, a ausência de resposta pode significar tanto porta aberta e calada quanto pacote filtrado.",
+      "comando": "sudo nmap -sU -p porta host",
+      "leitura": "UDP não dá a certeza binária do TCP. Cruze com ss/netstat no próprio host e, se possível, com tráfego da aplicação para desambiguar."
+    }
+  ]
+}

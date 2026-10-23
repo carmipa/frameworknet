@@ -1,0 +1,51 @@
+<div class="aed-card card-tech loc-nota mb-4" role="note">
+    <span class="material-symbols-outlined" aria-hidden="true" translate="no">handshake</span>
+    <div>
+        <strong>Handshake TCP (3-way) e encerramento.</strong>
+        Veja passo a passo os segmentos trocados entre <strong>cliente</strong> e <strong>servidor</strong>
+        para abrir a conexão (SYN → SYN-ACK → ACK), opcionalmente trocar dados e encerrar (FIN/ACK),
+        com os números de sequência/ack e os estados da máquina de conexão.
+    </div>
+</div>
+
+<form id="form-hs" class="hs-form" autocomplete="off" onsubmit="return false;">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="hs-dados" checked>
+            <label class="form-check-label small text-secondary" for="hs-dados">Incluir troca de dados</label>
+        </div>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="hs-encerramento" checked>
+            <label class="form-check-label small text-secondary" for="hs-encerramento">Incluir encerramento (4-way)</label>
+        </div>
+    </div>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+        <button type="button" id="hs-play" class="aed-btn aed-btn-teal"
+                title="Executar a animação contínua da troca de segmentos do handshake TCP">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">play_arrow</span> Animar
+        </button>
+        <button type="button" id="hs-passo" class="aed-btn aed-btn-neutral"
+                title="Avançar um segmento por vez na sequência de handshake e troca de dados">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_next</span> Passo a passo
+        </button>
+        <button type="button" id="hs-reiniciar" class="aed-btn aed-btn-danger"
+                title="Reiniciar a simulação para o estado inicial (CLOSED / LISTEN)">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">restart_alt</span> Reiniciar
+        </button>
+    </div>
+</form>
+
+<div class="hs-estados">
+    <div class="hs-endpoint">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">computer</span>
+        <span class="hs-endpoint-nome">Cliente</span>
+        <span class="hs-estado-chip" id="hs-estado-cliente">CLOSED</span>
+    </div>
+    <div class="hs-endpoint">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span>
+        <span class="hs-endpoint-nome">Servidor</span>
+        <span class="hs-estado-chip" id="hs-estado-servidor">LISTEN</span>
+    </div>
+</div>
+
+<div id="hs-diagrama" class="hs-diagrama" aria-live="polite"></div>

@@ -1,0 +1,35 @@
+/* Planejador de canais Wi-Fi. */
+.wifi-canais {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.wifi-canal {
+    width: 2.6rem;
+    height: 2.6rem;
+    border: 1px solid var(--aed-border);
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--aed-text-secondary);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.wifi-canal-limpo {
+    border-color: rgba(45, 212, 191, 0.5);
+    color: var(--aed-teal);
+}
+
+.wifi-canal:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.wifi-canal.is-on {
+    background: var(--aed-teal-dim, rgba(45, 212, 191, 0.18));
+    border-color: var(--aed-teal);
+    color: var(--aed-teal);
+    box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.3);
+}

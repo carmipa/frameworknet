@@ -1,0 +1,88 @@
+<div class="diag-resultado">
+    <div class="diag-head">
+        <h2 class="h5 diag-titulo">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">{r.icone}</span>
+            {r.titulo}
+        </h2>
+        <div class="diag-cmd" title="O comando real que esta simulação representa">
+            <span class="diag-cmd-rotulo">comando real</span>
+            <code translate="no">{r.comandoReal}</code>
+        </div>
+    </div>
+
+    <p class="diag-resumo">{r.resumo}</p>
+
+    <div class="diag-kpis">
+        {#for k in r.kpis}
+        <div class="diag-kpi diag-kpi-{k.cor}">
+            <strong class="diag-kpi-valor">{k.valor}</strong>
+            <span class="diag-kpi-label">{k.label}</span>
+            <span class="diag-kpi-nota">{k.nota}</span>
+        </div>
+        {/for}
+    </div>
+
+    {#if r.tabela}
+    <h3 class="h6 diag-secao">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span> {r.tabela.titulo}
+    </h3>
+    <div class="table-responsive">
+        <table class="table table-dark table-sm table-bordered mb-0 diag-tabela">
+            <thead>
+                <tr>{#for col in r.tabela.colunas}<th>{col}</th>{/for}</tr>
+            </thead>
+            <tbody>
+                {#for lin in r.tabela.linhas}
+                <tr class="diag-linha-{lin.cor}">
+                    {#for c in lin.celulas}<td class="font-monospace">{c}</td>{/for}
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+    </div>
+    {/if}
+
+    <div class="diag-cols">
+        <div class="diag-bloco">
+            <h3 class="h6 diag-bloco-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Como funciona
+            </h3>
+            <ol class="diag-passos">
+                {#for passo in r.comoFunciona}<li>{passo}</li>{/for}
+            </ol>
+        </div>
+        <div class="diag-bloco">
+            <h3 class="h6 diag-bloco-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span> O que observar
+            </h3>
+            <ul class="diag-observar">
+                {#for o in r.observar}<li>{o}</li>{/for}
+            </ul>
+        </div>
+    </div>
+
+    {#if r.legenda}
+    <h3 class="h6 diag-secao">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span> Legenda dos termos
+    </h3>
+    <dl class="diag-legenda">
+        {#for t in r.legenda}
+        <div class="diag-legenda-item">
+            <dt>{t.termo}</dt>
+            <dd>{t.significado}</dd>
+        </div>
+        {/for}
+    </dl>
+    {/if}
+
+    <details class="diag-bruta" open>
+        <summary>Saída bruta — como a ferramenta real imprime</summary>
+        <div class="terminal mt-2">
+            <pre translate="no"><code translate="no">{r.saidaBruta}</code></pre>
+        </div>
+    </details>
+
+    <p class="diag-nota" role="note">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span> {r.nota}
+    </p>
+</div>

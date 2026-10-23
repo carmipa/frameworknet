@@ -1,0 +1,412 @@
+{
+  "resumo": "O ARP (Address Resolution Protocol) resolve o problema mais básico de uma LAN: um host conhece o endereço IP do destino, mas para entregar o quadro Ethernet precisa do endereço físico (MAC) correspondente. O ARP faz essa tradução IP -> MAC dentro do mesmo segmento de rede, perguntando em broadcast \"quem tem este IP?\" e recebendo a resposta em unicast. É um protocolo simples, sem estado e sem qualquer autenticação, o que o torna a base de confiança da LAN e, ao mesmo tempo, seu ponto mais frágil. No IPv6 essa função deixou de existir: quem descobre o endereço de enlace lá é o NDP (Neighbor Discovery Protocol).",
+  "conceitos": [
+    {
+      "titulo": "Broadcast na LAN",
+      "icone": "lan",
+      "texto": "O ARP request é enviado ao endereço MAC de broadcast (ff:ff:ff:ff:ff:ff), então TODOS os hosts do segmento recebem e processam a pergunta. Apenas o dono do IP procurado responde; os demais descartam. Por depender de broadcast, o ARP só funciona dentro de um mesmo domínio de broadcast (a mesma LAN/VLAN) e nunca atravessa roteadores.",
+      "destaque": "A pergunta é para todos; a resposta é só para um."
+    },
+    {
+      "titulo": "Cache ARP e seu TTL",
+      "icone": "memory",
+      "texto": "Para não perguntar a cada pacote, cada host guarda os pares IP -> MAC aprendidos numa tabela chamada cache ARP. Cada entrada tem tempo de vida (TTL) tipicamente de alguns segundos a alguns minutos; ao expirar, ela é removida ou revalidada. O cache é o que faz o ARP ser rápido, mas também é exatamente o que um atacante quer corromper.",
+      "destaque": "Cache acelera a rede e concentra o risco."
+    },
+    {
+      "titulo": "Gratuitous ARP",
+      "icone": "campaign",
+      "texto": "É um ARP (request ou reply) que um host envia sobre o próprio IP, sem ninguém ter perguntado. Serve para três coisas legítimas: detectar conflito de IP na subida, atualizar o cache dos vizinhos após troca de placa/failover, e anunciar a nova localização de um IP virtual (VRRP/HSRP). O mesmo mecanismo, porém, é o veículo clássico do envenenamento de cache.",
+      "destaque": "Anúncio não solicitado: útil e perigoso."
+    },
+    {
+      "titulo": "Proxy ARP",
+      "icone": "router",
+      "texto": "Um roteador responde a ARP requests em nome de hosts que estão em outro segmento, entregando o próprio MAC. Assim máquinas que 'acham' estar na mesma LAN conseguem se comunicar através dele. É uma técnica de compatibilidade útil em cenários específicos, mas mascara a topologia real e amplia a superfície de ataque; hoje costuma ser desativada quando não há necessidade explícita.",
+      "destaque": "O roteador responde 'por outro' host."
+    },
+    {
+      "titulo": "Fronteira enlace/rede",
+      "icone": "layers",
+      "texto": "O ARP vive na costura entre a camada de enlace (MAC/Ethernet) e a camada de rede (IP). Neste framework ele aparece em Rede por ser resolução de um endereço de rede (IP), mas o dado que ele entrega é um endereço de enlace (MAC). Entender essa dupla natureza explica por que ele não é roteável e por que aparece em ferramentas dos dois mundos.",
+      "destaque": "Traduz o endereço de rede no endereço de enlace."
+    },
+    {
+      "titulo": "Por que o ARP não tem autenticação",
+      "icone": "gpp_bad",
+      "texto": "O ARP foi projetado em 1982 para uma LAN confiável, onde todos os participantes eram tratados como honestos. Não há assinatura, número de sequência, nem verificação de quem respondeu. Qualquer host aceita a última reply que chegar e sobrescreve o cache, mesmo sem ter perguntado. Essa ausência de identidade é a raiz de TODOS os ataques de ARP.",
+      "destaque": "Confia em qualquer resposta: essa é a falha de origem."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Resolução ARP: request em broadcast, reply em unicast",
+    "definicao": "sequenceDiagram\n    participant H5 as Host 192.168.0.5\n    participant BC as Broadcast (toda a LAN)\n    participant GW as Gateway 192.168.0.1\n    participant H6 as Host 192.168.0.6\n    Note over H5: Quero enviar a 192.168.0.1 mas não sei o MAC\n    H5->>BC: ARP Request (OPER=1) quem tem 192.168.0.1 diga a 192.168.0.5\n    BC->>GW: Recebe e vê que o IP é o seu\n    BC->>H6: Recebe, vê que não é o seu e descarta\n    GW-->>H5: ARP Reply (OPER=2) 192.168.0.1 está em aa:bb:cc:dd:ee:ff\n    Note over H5: Grava no cache 192.168.0.1 aponta para aa:bb:cc:dd:ee:ff (TTL)\n    H5->>GW: Agora envia o quadro Ethernet ao MAC correto",
+    "legenda": "O request sai para todos os hosts (broadcast); somente o dono do IP responde, e a resposta unicast popula a tabela ARP do solicitante. Os demais hosts apenas descartam a pergunta."
+  },
+  "cabecalho": {
+    "titulo": "Pacote ARP campo a campo (IPv4 sobre Ethernet)",
+    "campos": [
+      {
+        "nome": "HTYPE (Tipo de hardware)",
+        "bits": 16,
+        "descricao": "Identifica a tecnologia de enlace. Para Ethernet o valor é 1. Diz ao receptor como interpretar os campos de endereço de hardware.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "PTYPE (Tipo de protocolo)",
+        "bits": 16,
+        "descricao": "Identifica o protocolo de rede sendo resolvido. Para IPv4 o valor é 0x0800 (o mesmo EtherType do IP), indicando que os endereços de protocolo são IPv4.",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "HLEN (Tamanho do end. de hardware)",
+        "bits": 8,
+        "descricao": "Comprimento em bytes do endereço de hardware. Para MAC Ethernet é 6 (48 bits).",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "PLEN (Tamanho do end. de protocolo)",
+        "bits": 8,
+        "descricao": "Comprimento em bytes do endereço de protocolo. Para IPv4 é 4 (32 bits).",
+        "cor": "#059669"
+      },
+      {
+        "nome": "OPER (Operação)",
+        "bits": 16,
+        "descricao": "Diz se o pacote é pergunta ou resposta: 1 = request, 2 = reply. Determina como o receptor deve reagir ao pacote.",
+        "cor": "#d97706"
+      },
+      {
+        "nome": "SHA (MAC de origem)",
+        "bits": 48,
+        "descricao": "Sender Hardware Address: o endereço MAC de quem envia o pacote ARP. Em um request, é o MAC de quem está perguntando.",
+        "cor": "#dc2626"
+      },
+      {
+        "nome": "SPA (IP de origem)",
+        "bits": 32,
+        "descricao": "Sender Protocol Address: o endereço IPv4 de quem envia. Em um request, é o IP de quem pergunta; é o dado que popula o cache do destino.",
+        "cor": "#4f46e5"
+      },
+      {
+        "nome": "THA (MAC de destino)",
+        "bits": 48,
+        "descricao": "Target Hardware Address: no request vai zerado (00:00:00:00:00:00), pois é justamente o que se quer descobrir; no reply carrega o MAC procurado.",
+        "cor": "#0d9488"
+      },
+      {
+        "nome": "TPA (IP de destino)",
+        "bits": 32,
+        "descricao": "Target Protocol Address: o endereço IPv4 cujo MAC se procura. É o 'quem tem este IP?' da pergunta.",
+        "cor": "#be185d"
+      }
+    ],
+    "nota": "Somando os campos: 16 + 16 + 8 + 8 + 16 + 48 + 32 + 48 + 32 = 224 bits = 28 bytes. Esse é o tamanho fixo do pacote ARP para IPv4 sobre Ethernet. O pacote ARP viaja encapsulado diretamente em um quadro Ethernet (EtherType 0x0806), sem cabeçalho IP e sem cabeçalho de transporte (não usa TCP nem UDP)."
+  },
+  "tabelas": [
+    {
+      "titulo": "Request vs Reply (campo OPER)",
+      "colunas": [
+        "Aspecto",
+        "ARP Request (OPER=1)",
+        "ARP Reply (OPER=2)"
+      ],
+      "linhas": [
+        [
+          "Objetivo",
+          "Perguntar qual MAC pertence a um IP",
+          "Responder informando o MAC"
+        ],
+        [
+          "Destino do quadro (MAC)",
+          "Broadcast (ff:ff:ff:ff:ff:ff)",
+          "Unicast (direto a quem perguntou)"
+        ],
+        [
+          "Campo THA",
+          "Zerado (00:00:00:00:00:00)",
+          "Preenchido com o MAC procurado"
+        ],
+        [
+          "Quem recebe",
+          "Todos os hosts da LAN",
+          "Apenas o solicitante original"
+        ],
+        [
+          "Efeito no cache",
+          "O destino aprende o par do solicitante",
+          "O solicitante grava o par IP -> MAC"
+        ]
+      ]
+    },
+    {
+      "titulo": "Estados e tipos de entrada no cache ARP",
+      "colunas": [
+        "Tipo/Estado",
+        "Origem",
+        "Expira?",
+        "Significado"
+      ],
+      "linhas": [
+        [
+          "Dinâmica (REACHABLE)",
+          "Aprendida por reply válida",
+          "Sim (TTL)",
+          "Par IP -> MAC confirmado e em uso"
+        ],
+        [
+          "Estática (PERMANENT)",
+          "Configurada pelo administrador",
+          "Não",
+          "Fixa manualmente; imune a reply da rede"
+        ],
+        [
+          "Incompleta (INCOMPLETE)",
+          "Request enviado, sem resposta ainda",
+          "Sim (curto)",
+          "Aguardando reply; entrega em espera"
+        ],
+        [
+          "FAILED",
+          "Nenhuma resposta após as tentativas",
+          "Sim",
+          "Destino não respondeu; provavelmente offline"
+        ],
+        [
+          "STALE",
+          "TTL de atividade venceu",
+          "Revalida no próximo uso",
+          "Suspeita de estar velha; será reconfirmada"
+        ]
+      ]
+    },
+    {
+      "titulo": "Ciclo de vida de uma entrada dinâmica",
+      "colunas": [
+        "Fase",
+        "O que acontece",
+        "Estado típico (Linux)"
+      ],
+      "linhas": [
+        [
+          "1. Necessidade",
+          "Host precisa enviar a um IP sem MAC conhecido",
+          "INCOMPLETE"
+        ],
+        [
+          "2. Descoberta",
+          "Envia ARP request em broadcast e aguarda",
+          "INCOMPLETE"
+        ],
+        [
+          "3. Aprendizado",
+          "Recebe reply e grava o par IP -> MAC",
+          "REACHABLE"
+        ],
+        [
+          "4. Uso",
+          "Usa a entrada para enviar quadros diretamente",
+          "REACHABLE"
+        ],
+        [
+          "5. Envelhecimento",
+          "Sem uso/confirmação, o TTL de atividade vence",
+          "STALE"
+        ],
+        [
+          "6. Revalidação ou remoção",
+          "Novo uso dispara verificação; sem resposta, remove",
+          "PROBE -> FAILED/removida"
+        ]
+      ]
+    },
+    {
+      "titulo": "ARP no IPv4 vs equivalente no IPv6",
+      "colunas": [
+        "Característica",
+        "ARP (IPv4)",
+        "NDP (IPv6)"
+      ],
+      "linhas": [
+        [
+          "Protocolo",
+          "ARP próprio (EtherType 0x0806)",
+          "NDP sobre ICMPv6"
+        ],
+        [
+          "Descoberta",
+          "ARP request em broadcast",
+          "Neighbor Solicitation em multicast"
+        ],
+        [
+          "Resposta",
+          "ARP reply",
+          "Neighbor Advertisement"
+        ],
+        [
+          "Proteção possível",
+          "DAI + DHCP snooping",
+          "SEND (RFC 3971), RA Guard"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "ARP spoofing / poisoning (MITM)",
+      "como_funciona": "O atacante envia replies ARP falsas (não solicitadas) associando o IP do gateway ao próprio MAC, e ao mesmo tempo se passa pela vítima diante do gateway. Como o ARP aceita qualquer reply, os dois caches são envenenados e todo o tráfego passa a fluir pelo atacante, que retransmite (man-in-the-middle) enquanto lê e altera os pacotes.",
+      "sinal": "O MAC do gateway no cache muda para o MAC de outra máquina; o mesmo MAC aparece associado a vários IPs.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Sequestro de gateway (default gateway hijack)",
+      "como_funciona": "Caso específico e mais lucrativo do poisoning: o atacante envenena somente o par do gateway padrão. Como praticamente todo tráfego que sai da LAN passa pelo gateway, capturar esse par entrega ao atacante quase toda a comunicação externa dos hosts, incluindo DNS e sessões web.",
+      "sinal": "Latência extra para a internet, rotas estranhas em traceroute e o MAC do gateway divergente do MAC real do roteador.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Negação de serviço por envenenamento",
+      "como_funciona": "Em vez de interceptar, o atacante associa IPs a um MAC inexistente ou errado (blackhole). Os quadros são enviados para lugar nenhum e a comunicação para. Envenenando o gateway com um MAC inválido, derruba o acesso externo de toda a LAN sem precisar interceptar nada.",
+      "sinal": "Perda total de conectividade com certos hosts ou com o gateway, enquanto o cache aponta para um MAC que nunca responde (entradas FAILED).",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Flood de ARP / esgotamento de cache",
+      "como_funciona": "O atacante gera uma enxurrada de requests e replies com pares IP -> MAC forjados e variados, enchendo o cache ARP dos hosts e a tabela CAM dos switches. O switch pode passar a inundar quadros (fail-open), transformando a rede comutada em algo parecido com um hub e expondo o tráfego.",
+      "sinal": "Uso alto de CPU nos hosts/switch, cache ARP gigante e volátil, e captura passiva revelando tráfego que não deveria ser visível.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Gratuitous ARP malicioso",
+      "como_funciona": "Abusa do gratuitous ARP legítimo: o atacante anuncia proativamente 'este IP agora está no meu MAC' sem ninguém ter perguntado. Como os hosts atualizam o cache com anúncios não solicitados, um único pacote bem colocado pode redirecionar o tráfego de uma vítima.",
+      "sinal": "Replies ARP não solicitadas frequentes na captura e mudança repentina de MAC para um IP estável.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Dynamic ARP Inspection (DAI) + DHCP Snooping",
+      "como_funciona": "No switch, o DHCP snooping monta uma tabela confiável de pares IP -> MAC -> porta a partir das concessões DHCP legítimas. O DAI então inspeciona cada pacote ARP e descarta os que não batem com essa tabela, bloqueando replies forjadas antes que cheguem às vítimas.",
+      "cobre": "Spoofing, poisoning, sequestro de gateway e gratuitous ARP malicioso em portas não confiáveis.",
+      "limite": "Exige switches gerenciados que suportem o recurso e depende de DHCP snooping bem configurado; hosts com IP estático precisam de ARP ACLs manuais."
+    },
+    {
+      "nome": "Entradas ARP estáticas para hosts críticos",
+      "como_funciona": "Fixar manualmente o par IP -> MAC do gateway e de servidores sensíveis no cache, tornando-os PERMANENT. Uma reply forjada não consegue sobrescrever uma entrada estática, protegendo os alvos mais visados.",
+      "cobre": "Envenenamento do gateway e de servidores específicos.",
+      "limite": "Não escala (manutenção manual em cada host), quebra em failover/troca de placa e não protege o resto da LAN; é complemento, não solução completa."
+    },
+    {
+      "nome": "Segmentação em VLANs e portas isoladas",
+      "como_funciona": "Dividir a rede em VLANs menores e usar isolamento de portas (private VLAN) reduz o domínio de broadcast: um atacante só envenena os hosts do próprio segmento. Menos hosts por segmento significa menor alcance de qualquer ataque baseado em broadcast.",
+      "cobre": "Limita o raio de ação de spoofing, flood e poisoning.",
+      "limite": "Não impede o ataque dentro do mesmo segmento; é uma medida de contenção, não de prevenção do ARP em si."
+    },
+    {
+      "nome": "Detecção ativa com arpwatch",
+      "como_funciona": "Uma ferramenta como o arpwatch monitora continuamente a rede e mantém um histórico de pares IP -> MAC. Quando um IP muda de MAC ou um MAC aparece em múltiplos IPs, ela alerta (por log ou e-mail), permitindo reação rápida a um envenenamento em curso.",
+      "cobre": "Detecção de spoofing, MAC duplicado e mudanças suspeitas de gateway.",
+      "limite": "Detecta, não previne: o ataque já ocorreu quando o alerta chega; gera falsos positivos em ambientes com DHCP dinâmico e failover legítimo."
+    },
+    {
+      "nome": "802.1X / port security no acesso",
+      "como_funciona": "Autenticar o dispositivo na porta (802.1X) e limitar o número de MACs por porta (port security) impede que uma máquina não autorizada entre na LAN ou finja múltiplos endereços, cortando o atacante antes que ele fale ARP.",
+      "cobre": "Barra o dispositivo malicioso e o flood de MACs na origem.",
+      "limite": "Exige infraestrutura de autenticação (RADIUS) e não protege contra um host legítimo já comprometido dentro da rede."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ler e inspecionar o cache ARP",
+      "cenario": "Você quer ver quais pares IP -> MAC seu host já aprendeu, em que estado estão e identificar o MAC do gateway. É o primeiro passo de qualquer diagnóstico de LAN.",
+      "comandos": "# Linux (moderno) - mostra estado (REACHABLE, STALE, FAILED...)\nip neigh show\n\n# Linux/Windows/macOS (clássico)\narp -a\n\n# Linux - limpar uma entrada suspeita para forçar nova resolução\nip neigh del 192.168.0.1 dev eth0\n\n# Ver o MAC real da sua própria interface para comparar\nip link show eth0",
+      "explicacao": "O 'ip neigh' é superior ao 'arp -a' por mostrar o estado da entrada. Anote o MAC do gateway aqui: se ele mudar depois, é sinal de alerta. Uma entrada FAILED indica que o IP não respondeu; uma INCOMPLETE indica resolução em andamento."
+    },
+    {
+      "titulo": "Sondar um IP com arping e capturar ARP com tcpdump",
+      "cenario": "Você quer confirmar quem responde por um IP e observar o diálogo request/reply na rede, inclusive para flagrar duas respostas diferentes (indício de spoofing).",
+      "comandos": "# Envia ARP requests diretos e mostra quem responde (e com qual MAC)\nsudo arping -I eth0 192.168.0.1\n\n# Se DOIS MACs diferentes responderem pelo mesmo IP -> forte indício de spoofing\n\n# Capturar apenas tráfego ARP na interface\nsudo tcpdump -i eth0 -n arp\n\n# Capturar e ver detalhes (quem pergunta o que)\nsudo tcpdump -i eth0 -e -n arp",
+      "explicacao": "O arping pergunta diretamente pelo IP e revela o(s) MAC(s) que respondem; mais de um MAC pela mesma pergunta é o achado clássico de envenenamento. O tcpdump mostra a linguagem literal do ARP: 'Request who-has 192.168.0.1 tell 192.168.0.5' e 'Reply 192.168.0.1 is-at aa:bb:cc:dd:ee:ff'."
+    },
+    {
+      "titulo": "Detectar MAC duplicado (spoofing) na prática",
+      "cenario": "Exercício didático: verificar se um mesmo MAC aparece associado a vários IPs no seu cache, padrão típico de um atacante que se coloca no meio.",
+      "comandos": "# Lista pares IP MAC e conta MACs repetidos\nip neigh show | awk '/lladdr/ {print $5}' | sort | uniq -d\n\n# Se a saída trouxer algum MAC, ele está em mais de um IP -> investigar\n\n# Ver quais IPs compartilham aquele MAC suspeito\nip neigh show | grep -i '<mac_suspeito>'\n\n# Monitoramento contínuo (instala e roda)\nsudo apt install arpwatch\nsudo arpwatch -i eth0   # alertas em /var/log/syslog quando IP muda de MAC",
+      "explicacao": "O 'uniq -d' só imprime valores repetidos: se ele devolver um MAC, aquele endereço físico está respondendo por múltiplos IPs, o que raramente é legítimo (exceto roteadores com proxy ARP). Combinado com arpwatch, você sai da inspeção pontual para a detecção contínua."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "O mesmo MAC aparece em dois ou mais IPs",
+      "causa_provavel": "ARP spoofing/poisoning em andamento: uma máquina está se passando por vários hosts (tipicamente o gateway) para interceptar tráfego.",
+      "comando": "ip neigh show | awk '/lladdr/ {print $5}' | sort | uniq -d",
+      "leitura": "Qualquer MAC listado na saída está ligado a mais de um IP. Exceto roteadores com proxy ARP conhecido, isso indica MITM: isole a máquina e acione DAI."
+    },
+    {
+      "sintoma": "Entrada em estado FAILED ou INCOMPLETE",
+      "causa_provavel": "O IP alvo não respondeu ao ARP: host desligado, na VLAN errada, firewall bloqueando, ou cache envenenado apontando para um MAC inexistente (DoS).",
+      "comando": "ip neigh show 192.168.0.1",
+      "leitura": "INCOMPLETE = ainda tentando resolver; FAILED = desistiu após as tentativas. Se o gateway aparece FAILED mas o roteador está online, suspeite de envenenamento por blackhole."
+    },
+    {
+      "sintoma": "Aviso de conflito de IP na rede",
+      "causa_provavel": "Dois hosts configurados com o mesmo endereço IP (IP estático duplicado ou colisão com faixa do DHCP), detectado por gratuitous ARP na subida.",
+      "comando": "sudo arping -D -I eth0 192.168.0.50",
+      "leitura": "O '-D' testa duplicidade: se houver resposta, o IP já está em uso por outro MAC. Compare os MACs para achar a máquina invasora e corrigir o endereço."
+    },
+    {
+      "sintoma": "O MAC do gateway mudou de repente",
+      "causa_provavel": "Sequestro de gateway por ARP reply forjada, ou (legítimo) failover VRRP/HSRP, ou troca de hardware do roteador.",
+      "comando": "sudo arping -I eth0 <ip_do_gateway>",
+      "leitura": "Compare o MAC retornado com o MAC oficial do roteador. Divergência sem manutenção planejada = provável sequestro; fixe uma entrada estática de emergência e investigue."
+    },
+    {
+      "sintoma": "Tráfego lento e captura mostra excesso de replies ARP não solicitadas",
+      "causa_provavel": "Flood de ARP ou gratuitous ARP malicioso saturando cache e switch, degradando o desempenho da LAN.",
+      "comando": "sudo tcpdump -l -i eth0 -n arp | grep -i reply",
+      "leitura": "Muitas replies sem requests correspondentes indicam anúncios forçados. Identifique o MAC de origem recorrente e bloqueie-o na porta do switch (port security)."
+    }
+  ],
+  "ficha": [
+    {
+      "rotulo": "RFC",
+      "valor": "RFC 826 (1982); RFC 5227 (detecção de conflito/ACD); gratuitous ARP em RFC 5944",
+      "dica": "O ARP é um dos protocolos mais antigos ainda em uso diário."
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Fronteira enlace/rede (aqui em Rede: resolve endereço de rede IP)",
+      "dica": "Traduz IP em MAC; não é roteável, só vale dentro da LAN."
+    },
+    {
+      "rotulo": "Encapsulamento",
+      "valor": "Direto em quadro Ethernet, EtherType 0x0806 (sem IP, sem TCP/UDP)",
+      "dica": "Não usa transporte: o pacote ARP viaja cru sobre o enlace."
+    },
+    {
+      "rotulo": "Tamanho do cabeçalho",
+      "valor": "28 bytes (224 bits) para IPv4 sobre Ethernet",
+      "dica": "Tamanho fixo: HTYPE+PTYPE+HLEN+PLEN+OPER+SHA+SPA+THA+TPA."
+    },
+    {
+      "rotulo": "Segurança",
+      "valor": "Nenhuma: sem autenticação, sem estado, aceita qualquer reply",
+      "dica": "A ausência de identidade é a raiz de todos os ataques de ARP."
+    },
+    {
+      "rotulo": "Alcance",
+      "valor": "Somente o domínio de broadcast local (mesma LAN/VLAN)",
+      "dica": "Não atravessa roteadores; depende de broadcast."
+    },
+    {
+      "rotulo": "Equivalente IPv6",
+      "valor": "NDP (Neighbor Discovery Protocol) sobre ICMPv6",
+      "dica": "No IPv6 não existe ARP; a resolução usa NS (em multicast solicited-node) e NA (em unicast)."
+    }
+  ]
+}

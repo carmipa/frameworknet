@@ -1,0 +1,61 @@
+{
+  "id": "/",
+  "name": "Framework de Redes — Análise Didática Avançada",
+  "short_name": "Framework Net",
+  "description": "Análise de redes IPv4/IPv6: CIDR, máscaras, wildcard, sub-redes, VLANs, VLSM, portas, protocolos e diagnóstico.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#080b14",
+  "theme_color": "#080b14",
+  "categories": ["education", "utilities", "productivity"],
+  "icons": [
+    {
+      "src": "/pwa/icone-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa/icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa/icone-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/pwa/icone-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Análise Didática",
+      "short_name": "Análise",
+      "description": "CIDR, máscara, wildcard, IPv6 e comparador",
+      "url": "/analise"
+    },
+    {
+      "name": "Calculadora de Sub-redes e VLANs",
+      "short_name": "Calculadora",
+      "description": "Dividir blocos, plano de VLANs, sumarização e faixa para CIDR",
+      "url": "/calculadora"
+    },
+    {
+      "name": "Resolução VLSM + WAN",
+      "short_name": "Resolução",
+      "description": "Cenários VLSM, topologia WAN e exportação Packet Tracer",
+      "url": "/resolucao-problemas"
+    }
+  ]
+}

@@ -1,0 +1,294 @@
+{
+  "resumo": "A família de acesso remoto reúne as portas que permitem controlar uma máquina à distância: SSH (22), Telnet (23), RDP (3389) e VNC (5900). A regra de ouro é simples: use SSH cifrado e nunca use Telnet, que trafega tudo em texto claro. Já RDP e VNC jamais devem ser expostos direto na internet, pois viram alvo imediato de força bruta e de falhas graves como o BlueKeep (CVE-2019-0708). O caminho seguro é sempre entrar por uma VPN com MFA antes de alcançar essas portas na rede interna.",
+  "ficha": [
+    {
+      "rotulo": "Portas da família",
+      "valor": "22 (SSH), 23 (Telnet), 3389 (RDP), 5900 (VNC)",
+      "dica": "Todas usam TCP; são os principais canais de administração remota. Quanto à faixa: 22 e 23 são portas conhecidas (0-1023); 3389 e 5900 são portas registradas (1024-49151)."
+    },
+    {
+      "rotulo": "Transporte",
+      "valor": "TCP",
+      "dica": "Conexões orientadas à sessão, com handshake antes de trafegar dados. O RDP também aceita UDP como canal auxiliar, mas o principal é TCP."
+    },
+    {
+      "rotulo": "Cifrado por padrão",
+      "valor": "SSH sim; Telnet não; RDP sim (mas vulnerável se exposto); VNC depende da implementação",
+      "dica": "A cifra protege a senha em trânsito, mas não substitui VPN nem MFA."
+    },
+    {
+      "rotulo": "Risco típico",
+      "valor": "Força bruta de credenciais e exploração de CVEs quando a porta fica aberta na internet",
+      "dica": "As portas 22 e 3389 estão entre as mais escaneadas do mundo."
+    },
+    {
+      "rotulo": "RFCs de referência",
+      "valor": "SSH: RFC 4251-4254; Telnet: RFC 854",
+      "dica": "RDP é especificação da Microsoft (MS-RDPBCGR); VNC usa o protocolo RFB, descrito na RFC 6143."
+    },
+    {
+      "rotulo": "Recomendação de exposição",
+      "valor": "SSH só com chave pública e fail2ban; RDP e VNC nunca diretos, sempre atrás de VPN",
+      "dica": "O que reduz a superfície de ataque é não ter a porta visível."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "SSH: o padrão seguro",
+      "icone": "terminal",
+      "texto": "O SSH cifra toda a sessão de administração remota, protegendo senhas, comandos e arquivos em trânsito. É o substituto correto do Telnet e a forma recomendada de acesso a servidores Linux/Unix. Há um aprofundamento dedicado ao SSH no site.",
+      "destaque": "Cifrado de ponta a ponta"
+    },
+    {
+      "titulo": "Telnet: nunca mais",
+      "icone": "warning",
+      "texto": "O Telnet envia login e senha em texto claro pela rede: qualquer um capturando o tráfego lê a credencial inteira. Não deve ser usado em nenhuma situação moderna; troque por SSH. Há um aprofundamento dedicado ao Telnet no site.",
+      "destaque": "Texto claro = credencial exposta"
+    },
+    {
+      "titulo": "RDP e VNC: potentes e perigosos",
+      "icone": "desktop_windows",
+      "texto": "O RDP (Windows) e o VNC dão controle gráfico completo da máquina. Justamente por isso são alvos preferidos: exposto direto na internet, um RDP recebe milhares de tentativas de login por dia e pode cair para exploits como o BlueKeep.",
+      "destaque": "Nunca exponha direto"
+    },
+    {
+      "titulo": "VPN antes de tudo",
+      "icone": "vpn_lock",
+      "texto": "A defesa central é não deixar a porta administrativa visível. O usuário legítimo conecta primeiro na VPN (idealmente com MFA), entra na rede interna e só então alcança a porta 22, 3389 ou 5900.",
+      "destaque": "A porta certa fica invisível para a internet"
+    },
+    {
+      "titulo": "Chave pública x senha",
+      "icone": "key",
+      "texto": "No SSH, a autenticação por chave pública derruba quase toda a força bruta: sem a chave privada, adivinhar a senha não adianta. Desabilite o login por senha e o login direto de root sempre que possível.",
+      "destaque": "Chave privada não se adivinha"
+    },
+    {
+      "titulo": "Superfície de ataque",
+      "icone": "security",
+      "texto": "Cada porta aberta na internet é uma porta em que alguém vai bater. Fechar as portas administrativas ao público é a medida de maior impacto: o ataque que não alcança a porta não acontece.",
+      "destaque": "Porta fechada não é atacada"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Caminho seguro por VPN x RDP exposto sofrendo força bruta",
+    "definicao": "flowchart TD\n    A[Usuário legítimo] -->|1. autentica com MFA| B[Servidor VPN]\n    B -->|2. túnel cifrado| C[Rede interna privada]\n    C -->|3. acesso liberado| D[SSH 22]\n    C -->|3. acesso liberado| E[RDP 3389 / VNC 5900]\n    F[Atacante na internet] -.->|força bruta contínua| G[RDP 3389 exposto direto]\n    G -.->|milhares de tentativas por dia| H[Servidor comprometido]\n    F -.->|exploit BlueKeep| G",
+    "legenda": "Linha contínua: o caminho seguro, em que a VPN com MFA é a única porta visível e as portas 22/3389/5900 vivem escondidas na rede interna. Linha tracejada: o RDP exposto direto na internet recebendo força bruta e exploits sem nenhuma barreira antes."
+  },
+  "tabelas": [
+    {
+      "titulo": "Porta x serviço x segurança",
+      "colunas": [
+        "Porta",
+        "Serviço",
+        "Cifrado?",
+        "Situação"
+      ],
+      "linhas": [
+        [
+          "22",
+          "SSH",
+          "Sim, sempre",
+          "Recomendado; use chave pública e fail2ban"
+        ],
+        [
+          "23",
+          "Telnet",
+          "Não, texto claro",
+          "Proibido; substitua por SSH"
+        ],
+        [
+          "3389",
+          "RDP",
+          "Sim, mas vulnerável",
+          "Nunca expor direto; só atrás de VPN"
+        ],
+        [
+          "5900",
+          "VNC",
+          "Depende da implementação",
+          "Nunca expor direto; muitas versões fracas"
+        ]
+      ]
+    },
+    {
+      "titulo": "Expor direto na internet x atrás de VPN",
+      "colunas": [
+        "Cenário",
+        "Superfície de ataque",
+        "Força bruta possível?",
+        "Recomendação"
+      ],
+      "linhas": [
+        [
+          "SSH 22 exposto com senha",
+          "Alta",
+          "Sim, constante",
+          "Trocar para chave pública + fail2ban"
+        ],
+        [
+          "SSH 22 exposto com chave",
+          "Média",
+          "Muito reduzida",
+          "Aceitável; ainda melhor atrás de VPN"
+        ],
+        [
+          "RDP 3389 exposto direto",
+          "Muito alta",
+          "Sim, milhares/dia",
+          "Fechar já; mover para VPN"
+        ],
+        [
+          "VNC 5900 exposto direto",
+          "Muito alta",
+          "Sim; às vezes sem senha",
+          "Fechar já; mover para VPN"
+        ],
+        [
+          "Qualquer porta atrás de VPN+MFA",
+          "Baixa",
+          "Não alcança a porta",
+          "Padrão recomendado"
+        ]
+      ]
+    },
+    {
+      "titulo": "Telnet x SSH lado a lado",
+      "colunas": [
+        "Aspecto",
+        "Telnet (23)",
+        "SSH (22)"
+      ],
+      "linhas": [
+        [
+          "Senha em trânsito",
+          "Texto claro, legível",
+          "Cifrada"
+        ],
+        [
+          "Comandos e saída",
+          "Texto claro",
+          "Cifrados"
+        ],
+        [
+          "Autenticação por chave",
+          "Não",
+          "Sim"
+        ],
+        [
+          "Uso recomendado hoje",
+          "Nenhum",
+          "Padrão de administração"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Força bruta em SSH (22) e RDP (3389)",
+      "como_funciona": "O atacante escaneia a internet procurando as portas 22 e 3389 abertas e dispara listas de usuários e senhas comuns (admin/admin, administrator/123456) em milhares de tentativas automatizadas por dia até acertar uma credencial fraca.",
+      "sinal": "Enxurrada de logins falhos no log de autenticação, sempre dos mesmos IPs ou de faixas variadas.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "BlueKeep no RDP (CVE-2019-0708)",
+      "como_funciona": "Falha crítica de execução remota de código no RDP de versões antigas do Windows. Sem precisar de senha, o atacante envia pacotes maliciosos ao serviço RDP exposto e assume o controle da máquina; é wormável, podendo se espalhar sozinho.",
+      "sinal": "RDP 3389 exposto em Windows sem patch; travamentos, reinícios inesperados ou movimento lateral estranho na rede.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Telnet em texto claro (23)",
+      "como_funciona": "Como o Telnet não cifra nada, um atacante posicionado na rede (sniffer, Wi-Fi aberto, switch comprometido) simplesmente lê o pacote e obtém usuário e senha completos sem quebrar nada.",
+      "sinal": "Tráfego na porta 23; captura de pacotes mostrando login e senha legíveis.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "VNC sem senha ou com senha fraca (5900)",
+      "como_funciona": "Muitas instalações de VNC ficam sem senha ou com senha curta limitada a 8 caracteres. Buscadores como o Shodan listam esses servidores; o atacante conecta e vê/controla a tela como se estivesse sentado na máquina.",
+      "sinal": "Porta 5900 aberta ao público; sessões VNC de origem desconhecida; ausência de senha configurada.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "VPN com MFA antes do acesso",
+      "como_funciona": "Coloque um servidor VPN (WireGuard, OpenVPN) com segundo fator na frente da rede. O administrador só alcança as portas 22, 3389 ou 5900 depois de autenticar; para a internet, essas portas simplesmente não existem.",
+      "cobre": "Força bruta, BlueKeep, VNC exposto",
+      "limite": "Depende de configurar e manter a VPN e distribuir credenciais aos usuários."
+    },
+    {
+      "nome": "Nunca expor 3389 e 5900 diretamente",
+      "como_funciona": "Bloqueie no firewall qualquer acesso público às portas RDP e VNC. O acesso remoto gráfico só acontece por dentro da VPN ou de um bastion host controlado.",
+      "cobre": "Força bruta em RDP/VNC, BlueKeep",
+      "limite": "Não protege contra ameaças já dentro da rede interna; combine com patches."
+    },
+    {
+      "nome": "Chave pública no SSH e sem login de root",
+      "como_funciona": "Desative a autenticação por senha (PasswordAuthentication no) e o login direto de root (PermitRootLogin no). Só quem tem a chave privada entra, o que anula praticamente toda a força bruta.",
+      "cobre": "Força bruta em SSH",
+      "limite": "Exige gerenciar e proteger as chaves privadas dos usuários."
+    },
+    {
+      "nome": "fail2ban para banir IPs abusivos",
+      "como_funciona": "O fail2ban lê os logs e bane automaticamente, no firewall, os IPs que erram a senha muitas vezes em pouco tempo, cortando os scanners de força bruta.",
+      "cobre": "Força bruta em SSH e outros serviços",
+      "limite": "Ataques distribuídos de muitos IPs contornam o limite; é camada complementar, não única."
+    },
+    {
+      "nome": "Trocar Telnet por SSH e aplicar patches",
+      "como_funciona": "Desligue o serviço Telnet e substitua por SSH em todos os equipamentos. Mantenha o Windows atualizado para fechar CVEs como o BlueKeep. Há aprofundamentos dedicados de SSH e de Telnet no site com o passo a passo.",
+      "cobre": "Captura de senha em texto claro, BlueKeep",
+      "limite": "Equipamentos legados podem só falar Telnet; nesses casos, isole em rede segregada."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Comparar Telnet em claro x SSH cifrado",
+      "cenario": "Ver na prática que o Telnet expõe a senha e o SSH não, capturando o tráfego local.",
+      "comandos": "# Capturar tráfego da porta 23 (Telnet) enquanto alguém faz login\nsudo tcpdump -i any -A 'tcp port 23'\n# No dump aparecem o usuário e a senha em texto legível\n\n# Agora a porta 22 (SSH)\nsudo tcpdump -i any -A 'tcp port 22'\n# Aqui só aparece tráfego cifrado, ilegível",
+      "explicacao": "O tcpdump mostra o conteúdo dos pacotes. Na porta 23 você lê as credenciais; na 22 vê apenas bytes cifrados. É a demonstração direta de por que o Telnet é proibido e o SSH é o padrão."
+    },
+    {
+      "titulo": "Endurecer o SSH com chave pública e fail2ban",
+      "cenario": "Configurar o SSH só por chave, sem root, e banir quem tenta força bruta.",
+      "comandos": "# 1. Gerar par de chaves no cliente\nssh-keygen -t ed25519 -C \"paulo@estacao\"\n# 2. Copiar a chave pública para o servidor\nssh-copy-id usuario@servidor\n# 3. No servidor, editar /etc/ssh/sshd_config\n#    PasswordAuthentication no\n#    PermitRootLogin no\nsudo systemctl restart sshd\n# 4. Instalar e ativar o fail2ban\nsudo apt install fail2ban\nsudo systemctl enable --now fail2ban\nsudo fail2ban-client status sshd",
+      "explicacao": "Com a senha desativada, a força bruta não tem alvo. O fail2ban ainda bane os IPs que insistem. Detalhes completos estão no aprofundamento dedicado de SSH no site."
+    },
+    {
+      "titulo": "Descobrir portas de acesso remoto expostas",
+      "cenario": "Verificar se 22, 23, 3389 ou 5900 estão abertas onde não deveriam.",
+      "comandos": "# Varrer as portas de acesso remoto de um host\nnmap -p 22,23,3389,5900 -sV scanme.nmap.org\n\n# Ver quais portas o próprio servidor está escutando\nsudo ss -tlnp | grep -E ':(22|23|3389|5900)'",
+      "explicacao": "O nmap revela quais serviços estão acessíveis e suas versões (útil para detectar RDP sem patch). O ss mostra o que a máquina expõe localmente. Qualquer 23 aberta, ou 3389/5900 acessível pela internet, é um item para corrigir imediatamente."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Milhares de tentativas de login falhas por dia no servidor",
+      "causa_provavel": "Porta 22 ou 3389 exposta direto na internet sofrendo força bruta automatizada.",
+      "comando": "sudo grep 'Failed password' /var/log/auth.log | wc -l",
+      "leitura": "Número alto e crescente confirma força bruta. Mova o acesso para trás da VPN, ative chave pública e fail2ban."
+    },
+    {
+      "sintoma": "Login e senha aparecem legíveis numa captura de rede",
+      "causa_provavel": "Serviço usando Telnet (porta 23) ou protocolo sem cifra.",
+      "comando": "sudo tcpdump -i any -A 'tcp port 23'",
+      "leitura": "Se você lê a credencial no dump, o serviço está em texto claro. Desligue o Telnet e migre para SSH."
+    },
+    {
+      "sintoma": "Servidor Windows com reinícios ou travamentos inesperados e RDP aberto",
+      "causa_provavel": "RDP 3389 exposto e sem patch: o MS12-020 (CVE-2012-0152) derruba o serviço com pacotes montados, e o BlueKeep (CVE-2019-0708) dá execução remota e costuma travar o Windows quando falha.",
+      "comando": "nmap -p 3389 --script rdp-vuln-ms12-020 alvo\nnmap -p 3389 --script rdp-enum-encryption alvo",
+      "leitura": "O primeiro script testa o MS12-020 (CVE-2012-0002/0152), não o BlueKeep: o nmap não tem script oficial para ele — confira o patch do Windows e se o NLA (CredSSP) é exigido, que o segundo script mostra. RDP acessível pela internet em Windows antigo é risco crítico. Feche a porta, aplique patches e só libere por VPN."
+    },
+    {
+      "sintoma": "Conexão VNC abre a tela sem pedir senha",
+      "causa_provavel": "VNC 5900 sem autenticação configurada e exposto ao público.",
+      "comando": "nmap -p 5900 --script vnc-info alvo",
+      "leitura": "VNC sem senha é controle total entregue a qualquer um. Configure senha forte, ative cifra e coloque atrás da VPN."
+    }
+  ]
+}

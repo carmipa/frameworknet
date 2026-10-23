@@ -1,0 +1,240 @@
+{
+  "resumo": "O modelo TCP/IP é o mapa real da Internet: quatro camadas práticas (Aplicação, Transporte, Internet e Acesso à rede) que nasceram do software que já funcionava, não de um comitê. O modelo OSI, com suas sete camadas, permanece como referência didática e vocabulário comum (\"problema de camada 2\", \"erro de camada 7\"), mas quem move os pacotes de verdade é a pilha TCP/IP. Este aprofundamento mostra como cada camada do TCP/IP absorve uma ou mais camadas do OSI, por que essa consolidação venceu na prática e como usar os dois modelos juntos: OSI para nomear, TCP/IP para operar.",
+  "ficha": [
+    {
+      "rotulo": "Camadas do TCP/IP",
+      "valor": "4 (Aplicação, Transporte, Internet, Acesso à rede)",
+      "dica": "O modelo IETF do RFC 1122 usa 4 camadas; alguns livros dividem a de baixo em 5."
+    },
+    {
+      "rotulo": "Camadas do OSI",
+      "valor": "7 (Física, Enlace, Rede, Transporte, Sessão, Apresentação, Aplicação)",
+      "dica": "Da 1 (Física), junto ao cabo, até a 7 (Aplicação), mais perto do usuário."
+    },
+    {
+      "rotulo": "Documento fundador",
+      "valor": "RFC 1122 (1989)",
+      "dica": "Formaliza as camadas TCP/IP e o comportamento exigido dos hosts."
+    },
+    {
+      "rotulo": "Protocolos-núcleo",
+      "valor": "IP, TCP, UDP",
+      "dica": "IP na Internet; TCP e UDP no Transporte; sobre eles vive todo o resto."
+    },
+    {
+      "rotulo": "Relação entre os modelos",
+      "valor": "Referência (OSI) vs. implementação (TCP/IP)",
+      "dica": "OSI descreve o ideal; TCP/IP é o que roda no seu computador agora."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Por que o TCP/IP venceu na prática",
+      "icone": "emoji_events",
+      "texto": "O TCP/IP venceu porque o código veio antes do padrão. Enquanto o OSI era desenhado em comitês internacionais (ISO), a pilha TCP/IP já rodava na ARPANET, era gratuita, vinha embutida no Unix de Berkeley (BSD) e resolvia o problema real de interligar redes diferentes. Rodar e interoperar valeu mais do que ter a arquitetura teoricamente mais completa.",
+      "destaque": "Rough consensus and running code: o que funciona no fio ganha do que é perfeito no papel."
+    },
+    {
+      "titulo": "O modelo real da Internet",
+      "icone": "public",
+      "texto": "A Internet não roda OSI: roda TCP/IP. O modelo real é uma ampulheta (hourglass) com o IP no estrangulamento no meio. Embaixo, qualquer tecnologia de enlace (Ethernet, Wi-Fi, fibra, 5G); em cima, qualquer aplicação (HTTP, DNS, e-mail). Tudo passa obrigatoriamente pelo IP no centro. Um único protocolo de rede une um universo de tecnologias físicas a um universo de aplicações.",
+      "destaque": "IP é a cintura fina da ampulheta: everything over IP, IP over everything."
+    },
+    {
+      "titulo": "OSI para nomear, TCP/IP para operar",
+      "icone": "sync_alt",
+      "texto": "Os dois modelos convivem por funções diferentes. O OSI dá o vocabulário: quando alguém diz 'switch de camada 2' ou 'firewall de camada 7', está falando OSI. O TCP/IP dá a operação: é a pilha que seu sistema operacional realmente implementa. Saber traduzir entre eles evita confusão em prova, em entrevista e no troubleshooting.",
+      "destaque": "Fale OSI com os colegas; depure com TCP/IP na máquina."
+    },
+    {
+      "titulo": "Encapsulamento atravessa os dois modelos",
+      "icone": "layers",
+      "texto": "Ao descer a pilha, cada camada envolve os dados da camada de cima com seu próprio cabeçalho. A Aplicação gera a mensagem; o Transporte adiciona porta (segmento TCP / datagrama UDP); a Internet adiciona endereços IP (pacote); o Acesso à rede adiciona MAC e checagem (quadro/frame). No destino o processo se inverte (desencapsulamento). Os nomes das PDUs (segmento, pacote, quadro) são os mesmos nos dois modelos.",
+      "destaque": "Mensagem -> Segmento -> Pacote -> Quadro -> bits no fio."
+    },
+    {
+      "titulo": "A camada de Aplicação do TCP/IP funde três do OSI",
+      "icone": "apps",
+      "texto": "A maior simplificação do TCP/IP está no topo: sua única camada de Aplicação cobre as camadas 5 (Sessão), 6 (Apresentação) e 7 (Aplicação) do OSI. Na prática, controle de sessão, criptografia (TLS) e formatação de dados (JSON, MIME, charset) são tratados dentro da própria aplicação ou de bibliotecas, não por camadas separadas do sistema operacional.",
+      "destaque": "3 camadas OSI colapsam em 1: menos fronteiras rígidas, mais liberdade para a aplicação."
+    },
+    {
+      "titulo": "A camada de Acesso à rede funde as duas de baixo",
+      "icone": "settings_ethernet",
+      "texto": "Na base, o TCP/IP junta a camada 1 (Física) e a camada 2 (Enlace) do OSI em uma só: Acesso à rede (também chamada de Enlace ou Host-a-rede). O raciocínio é que sinais elétricos/ópticos e endereçamento MAC vêm sempre casados na mesma tecnologia (Ethernet, Wi-Fi), então não há ganho prático em separá-los na arquitetura do protocolo.",
+      "destaque": "Física + Enlace = Acesso à rede: a tecnologia de link já entrega os dois juntos."
+    }
+  ],
+  "diagrama": {
+    "titulo": "OSI (7 camadas) x TCP/IP (4 camadas), lado a lado",
+    "definicao": "flowchart LR\n  subgraph OSI[\"Modelo OSI - referência\"]\n    direction TB\n    O7[\"7 Aplicação\"]\n    O6[\"6 Apresentação\"]\n    O5[\"5 Sessão\"]\n    O4[\"4 Transporte\"]\n    O3[\"3 Rede\"]\n    O2[\"2 Enlace\"]\n    O1[\"1 Física\"]\n    O7 --> O6 --> O5 --> O4 --> O3 --> O2 --> O1\n  end\n  subgraph TCP[\"Modelo TCP/IP - Internet real\"]\n    direction TB\n    T4[\"Aplicação (HTTP, DNS, TLS)\"]\n    T3[\"Transporte (TCP, UDP)\"]\n    T2[\"Internet (IP, ICMP)\"]\n    T1[\"Acesso à rede (Ethernet, Wi-Fi)\"]\n    T4 --> T3 --> T2 --> T1\n  end\n  O7 -.-> T4\n  O6 -.-> T4\n  O5 -.-> T4\n  O4 -.-> T3\n  O3 -.-> T2\n  O2 -.-> T1\n  O1 -.-> T1",
+    "legenda": "As setas contínuas mostram a pilha descendo (dados do topo até o fio) em cada modelo. As setas tracejadas mostram o mapeamento: as camadas 5, 6 e 7 do OSI colapsam na única Aplicação do TCP/IP; Transporte e Rede têm correspondência direta; e as camadas 1 e 2 do OSI se fundem em Acesso à rede."
+  },
+  "tabelas": [
+    {
+      "titulo": "Mapeamento OSI <-> TCP/IP",
+      "colunas": [
+        "Camada OSI",
+        "Nº OSI",
+        "Camada TCP/IP",
+        "PDU (unidade de dados)",
+        "Função principal"
+      ],
+      "linhas": [
+        [
+          "Aplicação",
+          "7",
+          "Aplicação",
+          "Dados / Mensagem",
+          "Interface com o usuário e os serviços de rede"
+        ],
+        [
+          "Apresentação",
+          "6",
+          "Aplicação",
+          "Dados / Mensagem",
+          "Criptografia (TLS), compressão, charset, formato"
+        ],
+        [
+          "Sessão",
+          "5",
+          "Aplicação",
+          "Dados / Mensagem",
+          "Abertura, controle e encerramento de diálogos"
+        ],
+        [
+          "Transporte",
+          "4",
+          "Transporte",
+          "Segmento (TCP) / Datagrama (UDP)",
+          "Portas, confiabilidade, ordenação, controle de fluxo"
+        ],
+        [
+          "Rede",
+          "3",
+          "Internet",
+          "Pacote",
+          "Endereçamento IP lógico e roteamento entre redes"
+        ],
+        [
+          "Enlace",
+          "2",
+          "Acesso à rede",
+          "Quadro (frame)",
+          "Endereço MAC, detecção de erro no link local"
+        ],
+        [
+          "Física",
+          "1",
+          "Acesso à rede",
+          "Bits / Símbolos",
+          "Sinais elétricos, ópticos ou de rádio no meio"
+        ]
+      ]
+    },
+    {
+      "titulo": "Camadas TCP/IP x protocolos e dispositivos",
+      "colunas": [
+        "Camada TCP/IP",
+        "Protocolos típicos",
+        "Endereçamento",
+        "Dispositivo típico"
+      ],
+      "linhas": [
+        [
+          "Aplicação",
+          "HTTP/HTTPS, DNS, SMTP, FTP, SSH, TLS, DHCP",
+          "URL / nome / porta de serviço",
+          "Servidor, cliente, proxy, firewall L7"
+        ],
+        [
+          "Transporte",
+          "TCP, UDP, QUIC",
+          "Número de porta (0-65535)",
+          "Sistema operacional (pilha do host)"
+        ],
+        [
+          "Internet",
+          "IP (IPv4/IPv6), ICMP, IGMP, IPsec",
+          "Endereço IP",
+          "Roteador, firewall L3"
+        ],
+        [
+          "Acesso à rede",
+          "Ethernet, Wi-Fi (802.11), ARP, PPP",
+          "Endereço MAC",
+          "Switch, ponto de acesso, placa de rede (NIC)"
+        ]
+      ]
+    },
+    {
+      "titulo": "OSI vs. TCP/IP: por que TCP/IP venceu",
+      "colunas": [
+        "Critério",
+        "OSI",
+        "TCP/IP"
+      ],
+      "linhas": [
+        [
+          "Origem",
+          "Comitê ISO (padrão de cima para baixo)",
+          "Código em produção na ARPANET (de baixo para cima)"
+        ],
+        [
+          "Ordem dos fatos",
+          "Padrão primeiro, implementação depois",
+          "Implementação primeiro, padrão (RFC) formalizou"
+        ],
+        [
+          "Número de camadas",
+          "7 (mais granular)",
+          "4 (mais enxuto e prático)"
+        ],
+        [
+          "Custo e disponibilidade",
+          "Implementações tardias e caras",
+          "Gratuito e embutido no Unix BSD"
+        ],
+        [
+          "Papel hoje",
+          "Referência didática e vocabulário",
+          "Pilha real que roda na Internet"
+        ]
+      ]
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ver as camadas em um único pacote HTTP",
+      "cenario": "Você quer enxergar, num acesso a um site, os cabeçalhos de cada camada TCP/IP empilhados: quadro Ethernet (Acesso à rede), pacote IP (Internet), segmento TCP (Transporte) e a requisição HTTP (Aplicação).",
+      "comandos": "# Windows (com Wireshark instalado) ou Linux\ntshark -i 1 -f \"tcp port 80\" -c 5\n\n# No Wireshark gráfico: capture, clique em um pacote HTTP\n# e expanda: Ethernet II -> Internet Protocol -> Transmission Control Protocol -> Hypertext Transfer Protocol",
+      "explicacao": "Cada bloco que o Wireshark expande é uma camada do modelo. Ethernet II = Acesso à rede (MAC de origem/destino); Internet Protocol = camada Internet (IP de origem/destino); TCP = Transporte (portas e números de sequência); HTTP = Aplicação. Você está vendo o encapsulamento real: dados dentro de segmento, dentro de pacote, dentro de quadro."
+    },
+    {
+      "titulo": "Isolar o problema por camada com o traceroute",
+      "cenario": "Um site não abre. Você quer descobrir se a falha está no endereçamento/roteamento (camada Internet) ou mais acima (Transporte/Aplicação), separando os sintomas por camada.",
+      "comandos": "# 1) Camada Internet: o IP é alcançável e roteia?\ntracert 8.8.8.8        # Windows\ntraceroute 8.8.8.8     # Linux/macOS\n\n# 2) Camada Aplicação: o nome resolve? (DNS)\nnslookup example.com\n\n# 3) Camada Transporte: a porta responde?\nTest-NetConnection example.com -Port 443   # PowerShell",
+      "explicacao": "O tracert opera na camada Internet (usa IP/ICMP e o campo TTL) e mostra o caminho de roteadores até o destino. O nslookup testa a Aplicação (DNS). O Test-NetConnection abre um handshake TCP na porta, testando o Transporte. Rodando os três, você sobe camada por camada e descobre exatamente onde a comunicação quebra."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Ping no IP funciona, mas o site não abre pelo nome",
+      "causa_provavel": "Camada Internet OK (IP roteia), mas a camada de Aplicação falha: DNS não resolve o nome.",
+      "comando": "nslookup example.com",
+      "leitura": "Se o ping no IP direto responde e o nslookup falha ou retorna servidor sem resposta, o problema está acima da camada Internet. Configure/troque o servidor DNS."
+    },
+    {
+      "sintoma": "O nome resolve e o IP pinga, mas a conexão ao serviço dá timeout",
+      "causa_provavel": "Camadas Internet e Aplicação (DNS) OK, mas a camada de Transporte está bloqueada: porta fechada ou firewall barrando o TCP.",
+      "comando": "Test-NetConnection example.com -Port 443",
+      "leitura": "TcpTestSucceeded : False com ping funcionando indica bloqueio na camada de Transporte (porta), não na de Internet. Verifique firewall e se o serviço escuta na porta."
+    },
+    {
+      "sintoma": "Nenhum host da rede local se comunica, nem o gateway responde",
+      "causa_provavel": "Falha na camada de Acesso à rede (Física/Enlace do OSI): cabo, placa, Wi-Fi desconectado ou switch.",
+      "comando": "ipconfig /all",
+      "leitura": "Mídia desconectada ou ausência de IP/gateway aponta para a camada mais baixa (link). Antes de investigar IP ou DNS, confirme link físico e endereçamento L2."
+    }
+  ]
+}

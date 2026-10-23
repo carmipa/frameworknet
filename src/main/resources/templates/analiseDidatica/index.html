@@ -1,0 +1,221 @@
+{#include shared/base.html}
+{#title}Análise Didática | Framework de Redes A&D{/title}
+{#description}Análise didática de endereços IPv4 e IPv6: CIDR, máscara, wildcard, classe, RFC1918, rede e broadcast, com o cálculo mostrado bit a bit e comparador de endereços.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/calculadora/css/calculadora.css?v=20261023" />
+{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='analise' /}
+    {#include shared/project_header.html /}
+
+    {#if erro}
+    <div class="alert alert-danger" role="alert">
+        <strong>Erro:</strong> {erro}
+        {#if erroDidatico}
+        <div class="mt-2 small">
+            <div><strong>Causa:</strong> {erroDidatico.causa}</div>
+            <div><strong>Como corrigir:</strong> {erroDidatico.como_corrigir}</div>
+        </div>
+        {/if}
+    </div>
+    {/if}
+
+    <div class="card-tech p-4 shadow analise-didatica-wrap aed-card" data-active-tab="{activeTabPre}">
+        <span class="aed-eyebrow">Modo de análise</span>
+        <div class="aed-mode-grid tab-nav mb-3" role="tablist">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="cidr" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="CIDR: calcule rede, broadcast, faixa de hosts e máscara a partir de um IPv4 + prefixo">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span><span>CIDR</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="mask" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Máscara: converta máscara decimal ↔ CIDR e visualize os bits de rede/host">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span><span>Máscara</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="wildcard" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Wildcard: calcule/valide a máscara curinga usada em ACL, OSPF e EIGRP">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_view</span><span>Wildcard</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="autoip" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Auto CIDR: descubra automaticamente o melhor prefixo para um endereço IPv4">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">auto_fix_high</span><span>Auto CIDR</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dominio" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Domínio: resolva um domínio/hostname para IP e analise a rede resultante">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">language</span><span>Domínio</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="ipv6" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="IPv6: expanda, comprima e analise endereços IPv6">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">filter_6</span><span>IPv6</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="comparador" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Comparador: compare o mesmo IP sob dois prefixos CIDR lado a lado">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">compare_arrows</span><span>Comparador</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="calculadora" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Calculadora: divida um bloco em sub-redes e veja quantas redes cabem (ex.: /21 em /24 = 8)">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span><span>Calculadora</span>
+            </button>
+        </div>
+
+        <div class="tab-panel" data-tab-panel="cidr">{#include analiseDidatica/partials/tab_cidr.html /}</div>
+        <div class="tab-panel" data-tab-panel="mask">{#include analiseDidatica/partials/tab_mask.html /}</div>
+        <div class="tab-panel" data-tab-panel="wildcard">{#include analiseDidatica/partials/tab_wildcard.html /}</div>
+        <div class="tab-panel" data-tab-panel="autoip">{#include analiseDidatica/partials/tab_autoip.html /}</div>
+        <div class="tab-panel" data-tab-panel="dominio">{#include analiseDidatica/partials/tab_dominio.html /}</div>
+        <div class="tab-panel" data-tab-panel="ipv6">{#include analiseDidatica/partials/tab_ipv6.html /}</div>
+        <div class="tab-panel" data-tab-panel="comparador">{#include analiseDidatica/partials/tab_comparador.html /}</div>
+        <div class="tab-panel" data-tab-panel="calculadora">{#include analiseDidatica/partials/tab_calculadora.html /}</div>
+
+        <p class="small text-secondary mt-3 mb-0 d-flex align-items-center gap-1">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true" style="font-size:1rem;">lock</span>
+            Exportar em JSON ou PDF exige login de administrador; copiar o resultado não exige.
+        </p>
+        <div class="aed-action-row action-buttons mt-2">
+            <a href="/export/json" class="aed-btn aed-btn-json" target="_blank" rel="noopener nofollow"
+               data-bs-toggle="tooltip" data-bs-placement="top"
+               title="Baixe o resultado da análise em formato JSON (requer login admin)">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> Exportar JSON
+            </a>
+            <a href="/export/pdf" rel="nofollow" class="aed-btn aed-btn-pdf"
+               data-bs-toggle="tooltip" data-bs-placement="top"
+               title="Gere um PDF com o resultado da análise (requer login admin)">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">picture_as_pdf</span> Exportar PDF
+            </a>
+            <button type="button" class="aed-btn aed-btn-neutral" id="btn-copiar-resultado"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Copie o resultado em texto para a área de transferência">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar resultado
+            </button>
+            <a id="btn-limpar-tela" href="/analise?tab={activeTabPre}" class="aed-btn aed-btn-danger"
+               data-bs-toggle="tooltip" data-bs-placement="top"
+               title="Limpe os resultados e recomece a análise nesta aba">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar Tela
+            </a>
+        </div>
+        {#if textoCopia}
+        <textarea id="texto-copia-oculto" class="d-none" readonly>{textoCopia}</textarea>
+        {/if}
+    </div>
+
+    {#if comparadorOnly && comparadorCards}
+    <div class="aed-card card-tech p-4 shadow mt-4">
+        <span class="aed-eyebrow">Comparador</span>
+        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);">
+            <span class="material-symbols-outlined text-warning" translate="no" aria-hidden="true">compare_arrows</span>
+            Comparador — IP {comparadorIp}
+        </h2>
+        <div class="table-responsive">
+            <table class="table table-dark table-bordered table-sm mb-0">
+                <thead>
+                <tr>
+                    <th>Métrica</th>
+                    {#for card in comparadorCards}
+                    <th>/{card.cidr}</th>
+                    {/for}
+                </tr>
+                </thead>
+                <tbody>
+                <tr><td>Máscara</td>{#for card in comparadorCards}<td>{card.mask}</td>{/for}</tr>
+                <tr><td>Pulo</td>{#for card in comparadorCards}<td>{card.pulo}</td>{/for}</tr>
+                <tr><td>Hosts úteis</td>{#for card in comparadorCards}<td>{card.uteis}</td>{/for}</tr>
+                <tr><td>Rede</td>{#for card in comparadorCards}<td>{card.rede}</td>{/for}</tr>
+                <tr><td>Broadcast</td>{#for card in comparadorCards}<td>{card.broadcast}</td>{/for}</tr>
+                <tr><td>Risco/tema</td>{#for card in comparadorCards}<td>{card.nivel_tema}</td>{/for}</tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {/if}
+
+    {#include analiseDidatica/partials/resultado_ipv4.html /}
+
+    {#if ipv6Res}
+    <div class="aed-card card-tech p-4 shadow mt-4">
+        <span class="aed-eyebrow aed-eyebrow-indigo">IPv6</span>
+        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);">
+            <span class="material-symbols-outlined text-info" translate="no" aria-hidden="true">public</span>
+            Resultado IPv6
+        </h2>
+        <div class="table-responsive">
+            <table class="table table-dark table-sm table-bordered mb-0">
+                <tbody>
+                {#for item in ipv6Res.itens_exibicao}
+                <tr>
+                    <td>{item.icone} {item.campo}</td>
+                    <td>{item.valor}</td>
+                </tr>
+                {/for}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {/if}
+
+    <div class="card-tech p-3 shadow mt-4 history-box">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+            <h2 class="h6 text-info mb-0 d-flex align-items-center gap-2" title="Suas consultas ficam só neste navegador e somem ao fechá-lo; outras pessoas não as veem"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico deste navegador</h2>
+            <form method="GET" action="/analise" class="d-flex flex-wrap align-items-center gap-2 small">
+                <input type="hidden" name="tab" value="{activeTabPre}">
+                <label class="text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> Por página</label>
+                <select aria-label="Por página" name="history_limit" class="form-select form-select-sm bg-dark text-light border-secondary" style="width:auto;">
+                    <option value="5" {#if historyLimitPre == '5'}selected{/if}>5</option>
+                    <option value="10" {#if historyLimitPre == '10'}selected{/if}>10</option>
+                    <option value="20" {#if historyLimitPre == '20'}selected{/if}>20</option>
+                </select>
+                <input type="hidden" name="history_page" value="{historyPage}">
+                <button type="submit" class="btn btn-sm btn-outline-info"><span class="material-symbols-outlined" translate="no" aria-hidden="true">check</span> Aplicar</button>
+            </form>
+        </div>
+        <p class="small text-secondary mb-2">Página {historyPage} de {totalHistoryPages} · {historyPageItems.size} registro(s) nesta página</p>
+        <div class="table-responsive">
+            <table class="table table-dark table-sm table-bordered mb-0">
+                <thead>
+                <tr class="small text-secondary">
+                    <th><span class="visually-hidden">Ação</span></th><th>Data</th><th>Modo</th><th>Entrada</th><th>Rede</th><th>Tema</th>
+                </tr>
+                </thead>
+                <tbody>
+                {#if historyPageItems.isEmpty}
+                <tr><td colspan="6" class="text-secondary">Sem histórico.</td></tr>
+                {#else}
+                {#for item in historyPageItems}
+                <tr class="small">
+                    <td class="text-nowrap"><a href="/analise?replay={item.id}&tab={item.modo}" class="btn btn-sm btn-outline-info" title="Abrir de novo esta análise, com os mesmos dados"><span class="material-symbols-outlined align-middle" style="font-size:1rem;" translate="no" aria-hidden="true">replay</span> Replay</a></td>
+                    <td>{item.timestamp_utc}</td>
+                    <td>{item.modo}</td>
+                    <td>{item.ip_entrada}{item.ipv6_entrada}</td>
+                    <td>{item.rede}</td>
+                    <td>{item.tema}</td>
+                </tr>
+                {/for}
+                {/if}
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mt-2">
+            {#if hasPrevHistory}
+            <a class="aed-btn aed-btn-neutral btn-sm" href="/analise?tab={activeTabPre}&history_limit={historyLimitPre}&history_page={historyPage - 1}"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_left</span> Anterior</a>
+            {/if}
+            <span class="small text-secondary fw-bold">Página {historyPage}/{totalHistoryPages}</span>
+            {#if hasNextHistory}
+            <a class="aed-btn aed-btn-neutral btn-sm" href="/analise?tab={activeTabPre}&history_limit={historyLimitPre}&history_page={historyPage + 1}">Próxima <span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_right</span></a>
+            {/if}
+        </div>
+    </div>
+</div>
+{/content}
+{#extraScripts}
+<script src="/analiseDidatica/js/geo_report.js?v=20261023"></script>
+<script src="/analiseDidatica/js/analise_widgets.js?v=20261002"></script>
+<script src="/analiseDidatica/js/analise.js?v=20261022"></script>
+{/extraScripts}
+{/include}

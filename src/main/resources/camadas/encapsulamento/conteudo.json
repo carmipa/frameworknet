@@ -1,0 +1,213 @@
+{
+  "resumo": "Encapsulamento é o processo pelo qual os dados de uma aplicação descem a pilha de protocolos (OSI ou TCP/IP) e, a cada camada, recebem um cabeçalho (e, no Enlace, também um trailer) com as informações de controle daquela camada. No caminho inverso, ao chegar no destino, cada camada lê e remove o seu próprio cabeçalho: é o desencapsulamento. A unidade de dados que trafega em cada camada tem um nome próprio (a PDU): na Aplicação/Transporte falamos de Dados e Segmento; na Rede, Pacote (ou datagrama); no Enlace, Quadro; e na camada Física os dados viram Bits no meio. A ideia-chave é que cada camada só entende e manipula o cabeçalho que ela mesma adicionou, tratando tudo o que vem de cima como carga útil opaca. Esse acréscimo de cabeçalhos gera overhead, e o tamanho máximo que um quadro pode carregar (MTU) limita quanto de dado útil cabe em cada transmissão. Para visualizar esse fluxo em movimento, o módulo Tráfego traz um simulador interativo de encapsulamento onde você acompanha, passo a passo, os cabeçalhos sendo adicionados na descida e removidos na subida.",
+  "ficha": [
+    {
+      "rotulo": "Ordem das PDUs (descida)",
+      "valor": "Dados -> Segmento -> Pacote -> Quadro -> Bits",
+      "dica": "Um mnemônico útil: cada nome novo significa que mais um cabeçalho foi colado."
+    },
+    {
+      "rotulo": "Sentido de descida (origem)",
+      "valor": "Encapsulamento: cada camada adiciona seu cabeçalho",
+      "dica": "O dado de cima vira a carga útil (payload) da camada de baixo."
+    },
+    {
+      "rotulo": "Sentido de subida (destino)",
+      "valor": "Desencapsulamento: cada camada lê e remove seu cabeçalho",
+      "dica": "A camada usa o cabeçalho para decidir para quem entregar acima."
+    },
+    {
+      "rotulo": "Overhead mínimo IPv4 + TCP",
+      "valor": "20 bytes (IP) + 20 bytes (TCP) = 40 bytes",
+      "dica": "Sem opções. Com IPv6 o cabeçalho base já é 40 bytes só de rede."
+    },
+    {
+      "rotulo": "MTU padrão da Ethernet",
+      "valor": "1500 bytes de carga útil no quadro",
+      "dica": "Acima disso ocorre fragmentação ou o pacote é descartado."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Encapsulamento: cada camada adiciona sua etiqueta",
+      "icone": "layers",
+      "texto": "Ao descer a pilha, os dados são empacotados: a camada de Transporte prende um cabeçalho com portas de origem e destino, a de Rede prende endereços IP, e a de Enlace prende endereços MAC (mais um trailer de verificação). Cada camada trata o que recebe de cima como um bloco fechado de carga útil e não mexe no conteúdo dele.",
+      "destaque": "Descer = colar cabeçalho. Subir = descolar cabeçalho."
+    },
+    {
+      "titulo": "PDU: o nome muda conforme a camada",
+      "icone": "inventory_2",
+      "texto": "PDU (Protocol Data Unit) é o nome técnico da unidade de dados de cada camada. Aplicação trabalha com Dados/Mensagem; Transporte com Segmento (TCP) ou Datagrama (UDP); Rede com Pacote; Enlace com Quadro; Física com Bits. Trocar de nome sinaliza que a estrutura de controle daquela camada foi anexada."
+    },
+    {
+      "titulo": "Overhead: o custo de cada cabeçalho",
+      "icone": "data_object",
+      "texto": "Todo cabeçalho ocupa bytes que não são dado do usuário, apenas controle. Um pacote HTTP simples já carrega dezenas de bytes de cabeçalhos TCP, IP e Ethernet somados. Quanto menor a mensagem útil, maior o peso proporcional desse overhead, o que importa muito em VoIP, jogos e IoT.",
+      "destaque": "IPv4 + TCP + Ethernet somam cerca de 54 bytes de controle por quadro."
+    },
+    {
+      "titulo": "MTU: o teto do pacote dentro do quadro",
+      "icone": "straighten",
+      "texto": "MTU (Maximum Transmission Unit) é o maior payload que uma tecnologia de Enlace aceita transportar, tipicamente 1500 bytes na Ethernet. Se um pacote IP ultrapassa a MTU do caminho, ele precisa ser fragmentado (IPv4) ou é descartado com um aviso ICMP para que a origem reduza o tamanho (Path MTU Discovery)."
+    },
+    {
+      "titulo": "Cada camada só entende o próprio cabeçalho",
+      "icone": "lock",
+      "texto": "Isolamento entre camadas: o roteador (camada de Rede) lê o cabeçalho IP e ignora o conteúdo TCP; o switch (camada de Enlace) lê o cabeçalho do quadro e não interpreta o IP. Esse princípio permite trocar uma tecnologia de uma camada sem reescrever as outras.",
+      "destaque": "Separação de responsabilidades é o que torna a pilha modular."
+    },
+    {
+      "titulo": "Desencapsulamento e demultiplexação",
+      "icone": "swap_vert",
+      "texto": "No destino, a subida usa campos do cabeçalho para decidir a quem entregar: o campo Protocolo do IP aponta se acima está TCP ou UDP; a porta de destino do TCP/UDP aponta qual aplicação recebe. Assim cada camada remove seu cabeçalho e escolhe corretamente a camada superior."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Descida (encapsulamento) e subida (desencapsulamento) na pilha",
+    "definicao": "sequenceDiagram\n    participant App as Aplicação\n    participant Trans as Transporte\n    participant Rede as Rede\n    participant Enlace as Enlace\n    participant Fis as Física\n    Note over App: PDU: Dados\n    App->>Trans: entrega os Dados\n    Note over Trans: + cabeçalho TCP/UDP (portas) = Segmento\n    Trans->>Rede: entrega o Segmento\n    Note over Rede: + cabeçalho IP (endereços) = Pacote\n    Rede->>Enlace: entrega o Pacote\n    Note over Enlace: + cabeçalho MAC + trailer FCS = Quadro\n    Enlace->>Fis: entrega o Quadro\n    Note over Fis: converte em Bits e transmite no meio\n    Fis-->>Enlace: recebe os Bits e remonta o Quadro\n    Note over Enlace: lê e remove cabeçalho/trailer -> Pacote\n    Enlace-->>Rede: entrega o Pacote\n    Note over Rede: lê e remove cabeçalho IP -> Segmento\n    Rede-->>Trans: entrega o Segmento\n    Note over Trans: lê e remove cabeçalho, escolhe a porta -> Dados\n    Trans-->>App: entrega os Dados à aplicação",
+    "legenda": "As setas sólidas (->>) mostram a descida na origem, onde cada camada acrescenta seu cabeçalho e a PDU muda de nome. As setas tracejadas (-->>) mostram a subida no destino, onde cada camada lê e remove o cabeçalho correspondente até entregar os Dados originais à aplicação. O módulo Tráfego oferece um simulador interativo que anima exatamente esse vai e volta de cabeçalhos."
+  },
+  "tabelas": [
+    {
+      "titulo": "PDU por camada e o que o cabeçalho adiciona",
+      "colunas": [
+        "Camada",
+        "Nome da PDU",
+        "O que o cabeçalho adiciona",
+        "Dispositivo que a lê"
+      ],
+      "linhas": [
+        [
+          "Aplicação",
+          "Dados / Mensagem",
+          "Formato e protocolo do conteúdo (HTTP, DNS, SMTP)",
+          "Servidor / cliente (app)"
+        ],
+        [
+          "Transporte",
+          "Segmento (TCP) / Datagrama (UDP)",
+          "Porta de origem e destino, números de sequência, controle de fluxo",
+          "Sistema operacional (pilha)"
+        ],
+        [
+          "Rede",
+          "Pacote / Datagrama",
+          "IP de origem e destino, TTL, campo Protocolo",
+          "Roteador"
+        ],
+        [
+          "Enlace",
+          "Quadro (Frame)",
+          "MAC de origem e destino, EtherType e trailer FCS (verificação)",
+          "Switch / placa de rede"
+        ],
+        [
+          "Física",
+          "Bits",
+          "Nenhum cabeçalho: sinais elétricos, ópticos ou de rádio",
+          "Meio (cabo, fibra, ar)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Overhead típico por cabeçalho (bytes de controle)",
+      "colunas": [
+        "Cabeçalho",
+        "Tamanho típico",
+        "Observação"
+      ],
+      "linhas": [
+        [
+          "Ethernet (cabeçalho + FCS)",
+          "18 bytes",
+          "14 de cabeçalho + 4 de trailer FCS; 22 com VLAN 802.1Q"
+        ],
+        [
+          "IPv4",
+          "20 bytes",
+          "Sem opções; pode chegar a 60 bytes"
+        ],
+        [
+          "IPv6",
+          "40 bytes",
+          "Cabeçalho base fixo, sem fragmentação pelo roteador"
+        ],
+        [
+          "TCP",
+          "20 bytes",
+          "Sem opções; com opções (SACK, timestamp) sobe"
+        ],
+        [
+          "UDP",
+          "8 bytes",
+          "Mais enxuto, sem controle de conexão"
+        ]
+      ]
+    },
+    {
+      "titulo": "MTU comum por tecnologia de Enlace",
+      "colunas": [
+        "Tecnologia",
+        "MTU (payload)",
+        "Impacto prático"
+      ],
+      "linhas": [
+        [
+          "Ethernet padrão",
+          "1500 bytes",
+          "Referência mais comum na Internet"
+        ],
+        [
+          "Ethernet Jumbo Frames",
+          "9000 bytes",
+          "Menos overhead em redes de datacenter"
+        ],
+        [
+          "PPPoE (ADSL/fibra)",
+          "1492 bytes",
+          "8 bytes a menos por causa do encapsulamento PPPoE"
+        ],
+        [
+          "Túnel VPN (IPsec)",
+          "cerca de 1400 bytes",
+          "O túnel adiciona cabeçalhos e reduz a MTU efetiva"
+        ],
+        [
+          "Wi-Fi (802.11)",
+          "2304 bytes (quadro) / 1500 usual",
+          "Na prática alinha com a Ethernet do resto da rede"
+        ]
+      ]
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Descobrir a MTU do caminho com ping",
+      "cenario": "Você suspeita que transferências grandes travam por causa de MTU. Envie pacotes que não podem ser fragmentados e vá reduzindo o tamanho até parar de receber o erro.",
+      "comandos": "# Linux (payload ICMP; some 28 bytes de cabeçalho IP+ICMP para chegar à MTU)\nping -M do -s 1472 8.8.8.8\nping -M do -s 1473 8.8.8.8   # deve falhar em MTU 1500\n\n# Windows\nping -f -l 1472 8.8.8.8\nping -f -l 1473 8.8.8.8",
+      "explicacao": "Com 1472 bytes de payload + 28 de cabeçalho = 1500 (a MTU da Ethernet). Se 1472 passa e 1473 retorna 'Precisa fragmentar' (ou 'Packet needs to be fragmented'), a MTU do caminho é 1500. Reduza os números para achar MTUs menores, como 1492 em PPPoE ou ~1400 em VPN."
+    },
+    {
+      "titulo": "Ver os cabeçalhos empilhados em cada camada",
+      "cenario": "Você quer enxergar o encapsulamento real: Ethernet dentro do qual está o IP, dentro do qual está o TCP, dentro do qual está o HTTP.",
+      "comandos": "# tcpdump mostrando a hierarquia (verbose; o -e imprime o cabeçalho Ethernet com os MACs)\nsudo tcpdump -i eth0 -e -n -vvv -c 5 tcp port 80\n\n# Ver a MTU configurada nas interfaces\nip link show          # Linux\nnetsh interface ipv4 show subinterfaces   # Windows",
+      "explicacao": "O tcpdump imprime, em uma única captura, o cabeçalho Ethernet (MAC), depois o IP (endereços e TTL), depois o TCP (portas e flags) e por fim a carga útil. É a prova visível de que cada camada acrescentou seu cabeçalho. Para uma visão gráfica de cada campo, o Wireshark separa as camadas em árvore, e o simulador do módulo Tráfego reproduz o mesmo empilhamento de forma didática."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Pequenas requisições funcionam, mas downloads grandes, VPN ou HTTPS travam ou ficam lentíssimos",
+      "causa_provavel": "Problema de MTU / Path MTU Discovery bloqueado: pacotes grandes com o bit 'não fragmentar' são descartados e o ICMP de aviso é filtrado por um firewall no caminho (o famoso 'buraco negro de MTU').",
+      "comando": "ping -M do -s 1472 <destino>  (Linux) / ping -f -l 1472 <destino> (Windows)",
+      "leitura": "Se pacotes pequenos passam e os grandes falham silenciosamente, reduza a MTU da interface (ex.: 1400) ou habilite MSS clamping no roteador. Confirmar a MTU efetiva é o primeiro passo antes de culpar o servidor."
+    },
+    {
+      "sintoma": "Conexão cai ou aplicação não recebe dados apesar de o ping responder",
+      "causa_provavel": "Demultiplexação errada na subida: porta ou protocolo bloqueado, serviço ouvindo em porta diferente, ou firewall barrando a porta de destino usada no cabeçalho de Transporte.",
+      "comando": "sudo tcpdump -i any -n port <porta>  |  ss -tuln",
+      "leitura": "O ping usa ICMP (camada de Rede) e pode passar mesmo quando o Transporte está bloqueado. Se o tcpdump mostra o segmento chegando mas nenhuma aplicação responde, o problema está na porta/serviço (camada de Transporte para cima), não na rede."
+    }
+  ],
+  "mitigacoes": [],
+  "ataques": []
+}

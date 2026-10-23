@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <!-- GERADO AUTOMATICAMENTE por PaginaErroProxyGeneratorTest a partir de
+     templates/paginaErros/erro.html + CatalogoErros.semConexao().
+     NAO EDITE ESTE ARQUIVO A MAO. Servido pelo service worker quando o aparelho
+     esta sem rede; cada recurso daqui precisa estar na casca PRE_CACHE do sw.js. -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sem conexão | Framework de Redes A&amp;D</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa/icone-192.png?v=20260804">
+    <meta name="theme-color" content="#05070d">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="/web/css/material-symbols.css?v=20261022">
+    <link rel="stylesheet" href="/paginaErros/css/erro.css?v=20261023">
+    
+</head>
+
+<body class="err-0">
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+<div class="page">
+
+    <header class="topbar">
+        <div class="topbar-in">
+            <a class="brand" href="/" title="Ir para a página inicial do Framework de Redes">
+                <div class="brand-mark">A&amp;D</div>
+                <div class="brand-txt">
+                    <span class="brand-kicker">MENU PRINCIPAL</span>
+                    <span class="brand-name">Framework de Redes</span>
+                </div>
+            </a>
+            <div class="topbar-right">
+                <div class="langs">
+                    <button type="button" class="lang is-on" onclick="aedTranslate('pt')"
+                            title="Traduzir para Português (Brasil)" aria-label="Traduzir para Português">
+                        <img class="flag" src="/web/img/bandeiras/br.png?v=20261001" alt="" width="26" height="20" loading="lazy">
+                        <span class="lang-code">PT</span>
+                    </button>
+                    <button type="button" class="lang" onclick="aedTranslate('en')"
+                            title="Traduzir para English (US)" lang="en" aria-label="Translate to English">
+                        <img class="flag" src="/web/img/bandeiras/us.png?v=20261001" alt="" width="26" height="20" loading="lazy">
+                        <span class="lang-code">EN</span>
+                    </button>
+                    <button type="button" class="lang" onclick="aedTranslate('es')"
+                            title="Traduzir para Español" lang="es" aria-label="Traducir al Español">
+                        <img class="flag" src="/web/img/bandeiras/es.png?v=20261001" alt="" width="26" height="20" loading="lazy">
+                        <span class="lang-code">ES</span>
+                    </button>
+                </div>
+                <div class="status-pill" role="status" title="Nenhuma resposta chegou: o aparelho está sem rede">
+                    <span class="dot" aria-hidden="true"></span>
+                    <span class="status-txt">SEM REDE</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main" id="conteudo" tabindex="-1">
+        <div class="wrap">
+
+            <section class="hero">
+                <div class="hero-aura" aria-hidden="true"></div>
+                <div class="hero-topline" aria-hidden="true"></div>
+                <div class="hero-scan" aria-hidden="true"></div>
+
+                <div class="hero-grid">
+                    <div class="hero-left">
+                        <div class="badge">
+                            <span class="material-symbols-outlined badge-ic" aria-hidden="true" translate="no">wifi_off</span>
+                            <span>SEM CONEXÃO</span>
+                        </div>
+
+                        <div class="code-stack">
+                            <div class="code-ghost" aria-hidden="true">OFF</div>
+                            <div class="code-main">OFF</div>
+                        </div>
+
+                        <h1 class="err-title">Sem conexão com a internet.</h1>
+                        <p class="err-desc">O Framework de Redes precisa de internet para calcular, resolver DNS e consultar geolocalização — nada disso roda no seu aparelho. Assim que a conexão voltar, recarregue a página.</p>
+
+                        <div class="cta-row">
+                            <button type="button" class="btn btn-primary" onclick="location.reload()" title="Recarrega esta página; funciona assim que a internet do aparelho voltar">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">refresh</span>
+                                Tentar de novo
+                            </button>
+                            <a class="btn btn-ghost" href="/" title="Retornar à página inicial da aplicação">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">home</span>
+                                Voltar ao Início
+                            </a>
+                            <a class="btn btn-ghost" href="/documentacao" title="Acessar o catálogo completo de documentação da aplicação">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
+                                Ver Documentação
+                            </a>
+                        </div>
+
+                        <div class="term">
+                            <div class="term-bar">
+                                <span class="tl tl-r" aria-hidden="true"></span>
+                                <span class="tl tl-y" aria-hidden="true"></span>
+                                <span class="tl tl-g" aria-hidden="true"></span>
+                                <span class="term-name">diagnóstico.log</span>
+                            </div>
+                            <div class="term-body">
+                                <div class="term-row">
+                                    <span class="tk">status</span>
+                                    <span class="tv tv-accent">Sem resposta HTTP — rede indisponível</span>
+                                </div>
+                                <div class="term-row">
+                                    <span class="tk">path</span>
+                                    <span class="tv"> o pedido não saiu do aparelho</span>
+                                </div>
+                                <div class="term-row">
+                                    <span class="tk">trace_id</span>
+                                    <span class="tv tv-id">sem trace — nenhuma requisição chegou ao servidor</span>
+                                </div>
+                                <div class="term-row">
+                                    <span class="tk">hint</span>
+                                    <span class="tv tv-dim">Confira o Wi-Fi ou os dados móveis e toque em Tentar de novo.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hero-right">
+                        <div class="art-frame">
+                            <div class="art-canvas-wrap">
+                                <canvas id="matrix" class="art-canvas" aria-hidden="true"></canvas>
+                                <div class="art-vignette" aria-hidden="true"></div>
+                                <div class="art-core">
+                                    <div class="core-rings" aria-hidden="true">
+                                        <span class="ring ring-1"></span>
+                                        <span class="ring ring-2"></span>
+                                        <span class="material-symbols-outlined core-ic" translate="no" aria-hidden="true">wifi_off</span>
+                                    </div>
+                                    <div class="core-tag">LINK LOCAL CAÍDO</div>
+                                    <div class="core-sub">
+                                        SEM ENLACE · NADA SAIU DO APARELHO
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="art-chip">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">wifi_off</span>
+                                <span>LINK LOCAL CAÍDO</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="links-sec">
+                <div class="sec-head">
+                    <span class="material-symbols-outlined sec-ic" aria-hidden="true" translate="no">explore</span>
+                    <h2 class="sec-title">Talvez você queira ir para</h2>
+                </div>
+                <div class="links-grid">
+                    <a class="lk" style="--ac:#2dd4bf" href="/analise" title="Ir para Análise Didática: CIDR, máscara, wildcard e IPv6">
+                        <span class="lk-ic" style="--ic:#2dd4bf">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">insights</span>
+                        </span>
+                        <span class="lk-txt">
+                            <span class="lk-t">Análise Didática</span>
+                            <span class="lk-d">CIDR, máscara, wildcard e IPv6.</span>
+                        </span>
+                        <span class="material-symbols-outlined lk-arrow" aria-hidden="true" translate="no">arrow_forward</span>
+                    </a>
+                    <a class="lk" style="--ac:#818cf8" href="/resolucao-problemas" title="Ir para Resolução de Problemas: projetar cenários e engenharia reversa">
+                        <span class="lk-ic" style="--ic:#818cf8">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">extension</span>
+                        </span>
+                        <span class="lk-txt">
+                            <span class="lk-t">Resolução VLSM+WAN</span>
+                            <span class="lk-d">Projetar cenários e ler configuração pronta.</span>
+                        </span>
+                        <span class="material-symbols-outlined lk-arrow" aria-hidden="true" translate="no">arrow_forward</span>
+                    </a>
+                    <a class="lk" style="--ac:#f59e0b" href="/protocolos" title="Ir para Catálogo de Portas TCP/UDP e Protocolos">
+                        <span class="lk-ic" style="--ic:#f59e0b">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span>
+                        </span>
+                        <span class="lk-txt">
+                            <span class="lk-t">Portas &amp; Protocolos</span>
+                            <span class="lk-d">Catálogos e aprofundamento de BGP e SSH.</span>
+                        </span>
+                        <span class="material-symbols-outlined lk-arrow" aria-hidden="true" translate="no">arrow_forward</span>
+                    </a>
+                    <a class="lk" style="--ac:#60a5fa" href="/documentacao" title="Ir para Central de Documentação técnica">
+                        <span class="lk-ic" style="--ic:#60a5fa">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
+                        </span>
+                        <span class="lk-txt">
+                            <span class="lk-t">Documentação</span>
+                            <span class="lk-d">Arquitetura, endpoints e deploy.</span>
+                        </span>
+                        <span class="material-symbols-outlined lk-arrow" aria-hidden="true" translate="no">arrow_forward</span>
+                    </a>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="foot-1">
+            Desenvolvido por: <a class="foot-autor" href="https://carminati.dev.br/" target="_blank" rel="noopener noreferrer" title="Abre o site pessoal do autor, com os outros projetos dele, numa aba nova"><strong>Paulo André Carminati</strong></a>
+        </div>
+        <div class="foot-2">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">code</span>
+            <a href="https://github.com/carmipa" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;" title="Ver perfil e repositórios do autor no GitHub">github.com/carmipa</a> · <span class="mono">Java + Quarkus</span>
+        </div>
+    </footer>
+</div>
+
+<div id="google_translate_element" style="display:none;"></div>
+
+
+
+<script src="/paginaErros/js/erro-matrix.js?v=20260810"></script>
+<script src="/web/js/i18n-translate.js?v=20261002"></script>
+<script async src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+</html>

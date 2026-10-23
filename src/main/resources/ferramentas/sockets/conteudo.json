@@ -1,0 +1,247 @@
+{
+  "resumo": "Toda comunicação de rede em um sistema Linux passa por sockets: um serviço que aceita conexões coloca um socket em estado LISTEN, amarrado a um par IP:porta, e cada cliente que chega cria uma conexão ESTABLISHED distinta. Entender essa distinção entre \"quem está escutando\" e \"quais conexões estão ativas\" é a base para diagnosticar serviços que não sobem, portas ocupadas e firewalls que derrubam pacotes. O trio de ferramentas ss, netstat e nc cobre esse trabalho: ss e netstat inventariam os sockets locais (o que escuta, o que está conectado, qual PID é dono da porta), enquanto nc testa conectividade de ponta a ponta e até improvisa servidores e clientes para provar o caminho. O ss substituiu o netstat na maioria das distribuições por ler direto o subsistema netlink do kernel, sendo mais rápido em máquinas com milhares de conexões. Este aprofundamento mostra os flags essenciais, laboratórios reais e como ler a diferença entre connection refused e timeout, que apontam causas raiz opostas.",
+  "ficha": [
+    {
+      "rotulo": "Ferramentas",
+      "valor": "ss, netstat, nc (netcat)",
+      "dica": "ss é o sucessor moderno do netstat; nc é o canivete suíço de conexões TCP/UDP."
+    },
+    {
+      "rotulo": "Estados-chave",
+      "valor": "LISTEN e ESTABLISHED",
+      "dica": "LISTEN = servidor aguardando; ESTABLISHED = conexão ativa em uso."
+    },
+    {
+      "rotulo": "Flag universal",
+      "valor": "-tulpn",
+      "dica": "TCP, UDP, listening, mostra processo (PID) e usa números (sem resolver DNS)."
+    },
+    {
+      "rotulo": "Faixa de portas",
+      "valor": "0-65535",
+      "dica": "0-1023 são privilegiadas (root); 1024+ são usuárias/efêmeras."
+    },
+    {
+      "rotulo": "Pacotes",
+      "valor": "iproute2 (ss) e net-tools (netstat)",
+      "dica": "netstat costuma exigir instalação manual em servidores mínimos."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Anatomia das portas",
+      "icone": "lan",
+      "texto": "Uma porta é um número de 16 bits (0 a 65535) que multiplexa o tráfego de um mesmo IP entre vários serviços. As portas 0-1023 são 'well-known' e exigem privilégio de root para escutar (80, 443, 22, 53); 1024-49151 são registradas para aplicações; e 49152-65535 são efêmeras, atribuídas dinamicamente ao lado cliente de cada conexão.",
+      "destaque": "O IP identifica a máquina; a porta identifica o serviço dentro dela."
+    },
+    {
+      "titulo": "Socket = IP + porta + protocolo",
+      "icone": "cable",
+      "texto": "Um socket é o ponto final de comunicação. Um socket de escuta é definido pela tripla (IP local, porta, protocolo). Uma conexão estabelecida é definida por uma quádrupla: IP e porta de origem mais IP e porta de destino. Por isso um único servidor na porta 443 sustenta milhares de conexões simultâneas: cada cliente traz uma porta de origem diferente.",
+      "destaque": "A quádrupla única (src:port para dst:port) é o que separa uma conexão da outra."
+    },
+    {
+      "titulo": "LISTEN x ESTABLISHED",
+      "icone": "hearing",
+      "texto": "LISTEN é o servidor de braços abertos: reservou a porta e espera o primeiro pacote SYN. ESTABLISHED é o handshake já concluído, com dados podendo trafegar nos dois sentidos. Existem estados intermediários e de encerramento (SYN-SENT, TIME-WAIT, CLOSE-WAIT) que ajudam a diagnosticar conexões travadas ou vazamento de sockets.",
+      "destaque": "Se não há LISTEN na porta, nenhum cliente conseguirá se conectar."
+    },
+    {
+      "titulo": "O ss superou o netstat",
+      "icone": "bolt",
+      "texto": "O netstat (do pacote net-tools) lê arquivos textuais em /proc/net, o que fica lento com muitas conexões. O ss (do iproute2) conversa direto com o kernel via socket netlink, retornando o mesmo inventário com desempenho muito superior. Em distribuições modernas o netstat nem vem instalado, e o ss é o padrão de fato.",
+      "destaque": "Aprenda ss; use netstat só em máquinas legadas onde ele ainda existe."
+    },
+    {
+      "titulo": "nc: cliente e servidor em um comando",
+      "icone": "swap_horiz",
+      "texto": "O netcat abre conexões TCP ou UDP cruas. Como cliente, testa se uma porta remota responde (nc -zv). Como servidor, coloca um socket em LISTEN para provar que o firewall e o roteamento chegam até a máquina, sem depender de o serviço real estar rodando. É a forma mais direta de isolar se o problema é rede ou aplicação.",
+      "destaque": "nc separa 'a rede chega?' de 'o serviço responde?' em segundos."
+    },
+    {
+      "titulo": "0.0.0.0 x 127.0.0.1 no bind",
+      "icone": "public",
+      "texto": "A coluna de endereço local do socket em LISTEN revela um erro clássico: um serviço amarrado em 127.0.0.1 só aceita conexões da própria máquina, enquanto 0.0.0.0 (ou ::) aceita de qualquer interface. Um serviço que 'não responde de fora' mas responde em localhost quase sempre está preso no loopback.",
+      "destaque": "127.0.0.1 = só local; 0.0.0.0 = todas as interfaces."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Quem escuta (LISTEN) x conexões ativas (ESTABLISHED)",
+    "definicao": "flowchart TD\n    A[Cliente remoto] -->|SYN para IP porta 443| B{Há socket em LISTEN nessa porta?}\n    B -->|Não| C[connection refused: kernel responde RST]\n    B -->|Sim| D[Servidor em LISTEN 0.0.0.0 porta 443]\n    D -->|handshake TCP completo| E[Conexão ESTABLISHED]\n    E -->|cada cliente vira uma quádrupla única| F[Muitas conexões ESTABLISHED no mesmo LISTEN]\n    G{Firewall bloqueia sem RST?} -->|drop silencioso| H[timeout: cliente espera e desiste]\n    A -.pacote passa pelo.-> G\n    G -.libera.-> B\n    C -->|ss -tulpn revela ausência| I[Diagnóstico: serviço não subiu]\n    H -->|nc -zv trava até estourar| J[Diagnóstico: firewall ou host inalcançável]",
+    "legenda": "O caminho de cima mostra o fluxo normal: um socket em LISTEN aceita o handshake e gera uma conexão ESTABLISHED por cliente. Os dois desfechos de falha divergem cedo: sem LISTEN o kernel devolve RST na hora (connection refused), enquanto um firewall que descarta pacotes em silêncio produz timeout. O ss -tulpn diagnostica o primeiro caso; o nc -zv, o segundo."
+  },
+  "tabelas": [
+    {
+      "titulo": "Flags essenciais do ss e do netstat",
+      "colunas": [
+        "Flag",
+        "Significado",
+        "Efeito prático"
+      ],
+      "linhas": [
+        [
+          "-t",
+          "TCP",
+          "Mostra apenas sockets TCP"
+        ],
+        [
+          "-u",
+          "UDP",
+          "Mostra apenas sockets UDP"
+        ],
+        [
+          "-l",
+          "listening",
+          "Filtra só os sockets em estado LISTEN"
+        ],
+        [
+          "-p",
+          "process",
+          "Exibe PID e nome do processo dono do socket (precisa de root para ver todos)"
+        ],
+        [
+          "-n",
+          "numeric",
+          "Não resolve portas nem hosts em nomes; muito mais rápido"
+        ],
+        [
+          "-a",
+          "all",
+          "Mostra sockets em qualquer estado (LISTEN e não-LISTEN)"
+        ],
+        [
+          "-tulpn",
+          "combinação",
+          "Receita padrão: TCP+UDP em LISTEN, com processo, em números"
+        ],
+        [
+          "ss -s",
+          "summary",
+          "Resumo estatístico: total de sockets por protocolo e estado"
+        ]
+      ]
+    },
+    {
+      "titulo": "nc (netcat): cliente e servidor",
+      "colunas": [
+        "Papel",
+        "Comando",
+        "Para que serve"
+      ],
+      "linhas": [
+        [
+          "Cliente (teste de porta)",
+          "nc -zv host 443",
+          "-z só escaneia (zero-I/O), -v mostra o resultado; não envia dados"
+        ],
+        [
+          "Cliente (faixa de portas)",
+          "nc -zv host 20-25",
+          "Varre um intervalo e diz quais portas aceitam conexão"
+        ],
+        [
+          "Cliente com timeout",
+          "nc -zv -w 3 host 443",
+          "-w 3 desiste após 3s; evita travar em host que dá timeout"
+        ],
+        [
+          "Servidor didático",
+          "nc -l -p 9000",
+          "Coloca um socket em LISTEN na porta 9000 para receber conexões"
+        ],
+        [
+          "Cliente UDP",
+          "nc -zvu host 53",
+          "-u testa UDP em vez de TCP (ex.: DNS na porta 53)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Estados de socket mais comuns",
+      "colunas": [
+        "Estado",
+        "Significado",
+        "O que costuma indicar"
+      ],
+      "linhas": [
+        [
+          "LISTEN",
+          "Aguardando conexões",
+          "Serviço no ar e amarrado à porta"
+        ],
+        [
+          "ESTABLISHED",
+          "Conexão ativa",
+          "Cliente e servidor trocando dados normalmente"
+        ],
+        [
+          "TIME-WAIT",
+          "Encerrando",
+          "Fim normal; o socket segura o par de portas por 2×MSL (60 s no Linux)"
+        ],
+        [
+          "CLOSE-WAIT",
+          "Aguardando fechar",
+          "Em excesso indica aplicação que não fecha sockets (vazamento)"
+        ],
+        [
+          "SYN-SENT",
+          "Handshake iniciado",
+          "Preso aqui sugere firewall ou destino inalcançável"
+        ]
+      ]
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Inventariar tudo que escuta na máquina",
+      "cenario": "Você chegou em um servidor e precisa saber quais serviços estão expostos e em quais portas, com o processo dono de cada uma.",
+      "comandos": "sudo ss -tulpn\n\n# Saída típica (colunas: Netid State Local:Port Process):\n# tcp   LISTEN 0.0.0.0:22    users:((\"sshd\",pid=812,fd=3))\n# tcp   LISTEN 127.0.0.1:5432 users:((\"postgres\",pid=1103,fd=5))\n# tcp   LISTEN 0.0.0.0:443   users:((\"nginx\",pid=1450,fd=6))",
+      "explicacao": "O -tulpn é a receita padrão. Repare no Postgres em 127.0.0.1:5432: ele só aceita conexões locais. O SSH e o Nginx em 0.0.0.0 aceitam de qualquer interface. O sudo é necessário para ver o PID de processos de outros usuários."
+    },
+    {
+      "titulo": "Resumo estatístico dos sockets",
+      "cenario": "Você suspeita de vazamento de sockets ou excesso de conexões e quer um panorama rápido antes de investigar em detalhe.",
+      "comandos": "ss -s\n\n# Saída típica:\n# Total: 231\n# TCP:   48 (estab 12, closed 20, orphaned 0, timewait 18)\n#\n# Transport Total  IP  IPv6\n# TCP       28     22  6\n# UDP       9      7   2",
+      "explicacao": "O ss -s conta sockets por protocolo e estado sem listar cada um. Um número alto de timewait é normal após muitas conexões curtas; muitos closed ou orphaned podem indicar aplicação fechando conexões de forma anormal."
+    },
+    {
+      "titulo": "Testar se uma porta remota responde",
+      "cenario": "A aplicação não conecta ao banco em outro host. Você quer isolar se é problema de rede/firewall ou da aplicação.",
+      "comandos": "nc -zv -w 3 db.interno.local 5432\n\n# Sucesso:\n# Connection to db.interno.local 5432 port [tcp/postgresql] succeeded!\n\n# Recusada (serviço não está escutando):\n# nc: connect to db.interno.local port 5432 (tcp) failed: Connection refused\n\n# Sem resposta (firewall ou host caído) após ~3s:\n# nc: connect to db.interno.local port 5432 (tcp) timed out",
+      "explicacao": "O -z faz o nc só verificar a conexão sem enviar dados, -v mostra o resultado e -w 3 impede travar. As três saídas apontam causas diferentes: succeeded (rede OK, olhe a aplicação), refused (chegou na máquina mas nada escuta) e timed out (firewall descarta ou host inalcançável)."
+    },
+    {
+      "titulo": "Montar um servidor didático com nc",
+      "cenario": "Você quer provar que o firewall e o roteamento permitem chegar a uma porta, sem depender de o serviço real estar instalado.",
+      "comandos": "# No servidor (terminal 1): abre LISTEN na porta 9000\nnc -l -p 9000\n\n# Em outro terminal do próprio servidor, confirme o LISTEN:\nss -tulpn | grep 9000\n# tcp LISTEN 0.0.0.0:9000 users:((\"nc\",pid=2210,fd=3))\n\n# Na máquina cliente (terminal 2): conecta e digita texto\nnc -v 203.0.113.10 9000\n# o que você digitar aqui aparece no terminal 1",
+      "explicacao": "O nc -l -p 9000 vira um servidor temporário. Se o cliente conecta e o texto atravessa, o caminho de rede até a porta 9000 está liberado, isolando o problema para a aplicação real. Encerre com Ctrl+C. Em algumas versões do OpenBSD netcat o -p é opcional: basta nc -l 9000."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Address already in use ao iniciar o serviço",
+      "causa_provavel": "Outro processo (ou uma instância antiga do próprio serviço) já está com a porta em LISTEN, ou um socket ficou em TIME-WAIT segurando a porta.",
+      "comando": "sudo ss -tulpn | grep :8080\nss -tan state time-wait '( sport = :8080 )'",
+      "leitura": "A 1ª linha mostra o PID e o nome do processo que ocupa a porta em LISTEN; se for uma instância órfã, encerre-a (kill <PID>) e reinicie. O -l não lista TIME-WAIT: é a 2ª linha que mostra os sockets de um restart recente — aguarde até cerca de 1 minuto (60 s no Linux) ou habilite SO_REUSEADDR na aplicação."
+    },
+    {
+      "sintoma": "Connection refused ao conectar",
+      "causa_provavel": "O pacote chegou na máquina de destino, mas nenhum socket está em LISTEN naquela porta: o kernel responde imediatamente com um RST. Serviço caído, escutando em outra porta, ou amarrado em 127.0.0.1.",
+      "comando": "nc -zv host 5432 ; sudo ss -tulpn | grep 5432",
+      "leitura": "Resposta imediata (não demora) é o carimbo do refused. No servidor, confirme se há LISTEN e em qual endereço: se aparecer 127.0.0.1:5432, o serviço só aceita local e precisa amarrar em 0.0.0.0."
+    },
+    {
+      "sintoma": "Timeout ao conectar (trava e desiste)",
+      "causa_provavel": "Ao contrário do refused, aqui nada responde: um firewall descarta o pacote em silêncio (DROP), o host está fora do ar ou não há rota. O cliente espera até estourar o tempo.",
+      "comando": "nc -zv -w 5 host 443",
+      "leitura": "A demora até a mensagem timed out (vs. a resposta instantânea do refused) é o sinal que distingue as duas falhas. Timeout aponta para firewall/roteamento/host, não para o serviço. Investigue regras de iptables/nftables e o security group da nuvem."
+    },
+    {
+      "sintoma": "Serviço responde em localhost mas não de fora",
+      "causa_provavel": "O socket está amarrado em 127.0.0.1 em vez de 0.0.0.0, então só aceita conexões da própria máquina; conexões externas nem chegam ao serviço.",
+      "comando": "sudo ss -tlpn | grep :80",
+      "leitura": "Se o endereço local for 127.0.0.1:80, esse é o problema. Ajuste a configuração (ex.: listen 0.0.0.0 ou bind-address adequado) para escutar em todas as interfaces e reinicie o serviço."
+    }
+  ]
+}

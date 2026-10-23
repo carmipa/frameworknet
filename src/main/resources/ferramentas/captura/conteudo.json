@@ -1,0 +1,311 @@
+{
+  "resumo": "Capturar pacotes é ler o que realmente trafega no fio, em vez de confiar no que a aplicação diz que enviou. O tcpdump é o capturador de linha de comando presente em quase todo host Unix: aplica filtros BPF direto no kernel, grava em .pcap e mostra o cabeçalho e o payload em hexadecimal. O tshark é o irmão de terminal do Wireshark, com os mesmos dissecadores de protocolo; o Wireshark é a interface gráfica para abrir o .pcap, seguir fluxos TCP e inspecionar campo a campo. O fluxo de trabalho é sempre o mesmo: capturar na interface certa, restringir por filtro e analisar o resultado. Este aprofundamento se conecta ao decodificador de pacotes do módulo Tráfego, que faz a leitura campo a campo dos cabeçalhos que você captura aqui.",
+  "ficha": [
+    {
+      "rotulo": "Ferramenta base",
+      "valor": "tcpdump (libpcap)",
+      "dica": "Presente por padrão na maioria dos Linux e do BSD/macOS"
+    },
+    {
+      "rotulo": "Formato de arquivo",
+      "valor": ".pcap / .pcapng",
+      "dica": "Padrão aberto lido por tcpdump, tshark e Wireshark"
+    },
+    {
+      "rotulo": "Filtro no kernel",
+      "valor": "BPF (Berkeley Packet Filter)",
+      "dica": "Descarta o que não interessa antes de copiar para o processo"
+    },
+    {
+      "rotulo": "Privilégio",
+      "valor": "root ou CAP_NET_RAW",
+      "dica": "Capturar exige socket raw (CAP_NET_RAW; no Windows, o driver Npcap); o modo promíscuo é opcional"
+    },
+    {
+      "rotulo": "Interface de análise",
+      "valor": "CLI (tshark) e GUI (Wireshark)",
+      "dica": "Mesmos dissecadores; a GUI facilita seguir fluxos"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Filtro de captura x filtro de exibição",
+      "icone": "filter_alt",
+      "texto": "O filtro de captura (BPF, sintaxe tcpdump como 'tcp port 443') decide o que entra no arquivo e roda no kernel. O filtro de exibição do Wireshark (sintaxe própria como 'tcp.port == 443') apenas esconde o que já foi capturado. Errar essa distinção faz você perder pacotes que nunca foram gravados.",
+      "destaque": "Capturar demais e filtrar depois; ou filtrar já na captura para economizar disco"
+    },
+    {
+      "titulo": "Interface e modo promíscuo",
+      "icone": "settings_ethernet",
+      "texto": "Você só captura o que passa pela interface escolhida. Sem modo promíscuo a placa entrega apenas quadros destinados a ela; com ele, entrega todos os que enxerga. Em redes com switch, sem espelhamento de porta você vê pouco além do próprio tráfego.",
+      "destaque": "-i eth0 escolhe a interface; -i any captura em todas"
+    },
+    {
+      "titulo": "Resolução de nomes atrapalha",
+      "icone": "dns",
+      "texto": "Por padrão o tcpdump tenta resolver IPs e portas para nomes, o que gera consultas DNS que poluem a captura e travam a saída. As flags -n (não resolve IP) e -nn (também não resolve porta) deixam a leitura fiel e mais rápida.",
+      "destaque": "-nn é quase obrigatório em captura de diagnóstico"
+    },
+    {
+      "titulo": "Payload em cifra é opaco",
+      "icone": "lock",
+      "texto": "Com TLS você captura os pacotes, mas o conteúdo da camada de aplicação está cifrado: vê-se IP, portas, tamanho e temporização, não o dado. Sem cifra (HTTP, FTP, Telnet) o payload aparece em texto claro no -X, incluindo credenciais.",
+      "destaque": "Capturar não quebra a cifra; expõe apenas metadados"
+    },
+    {
+      "titulo": "Gravar para analisar depois",
+      "icone": "save",
+      "texto": "Capturar direto na tela mistura coleta e análise. Gravar em .pcap com -w separa as duas fases: coleta-se rápido no host, e a análise pesada (seguir fluxo, estatísticas) acontece offline no Wireshark, sem risco de perder pacote por lentidão de terminal.",
+      "destaque": "Colete com -w, analise com -r ou no Wireshark"
+    },
+    {
+      "titulo": "Filtro por flags TCP",
+      "icone": "flag",
+      "texto": "O construtor tcp[tcpflags] permite isolar fases do handshake: só SYN, só RST, só FIN. É assim que se acha varredura de portas, conexões recusadas e resets no meio de milhares de pacotes.",
+      "destaque": "tcp[tcpflags] & tcp-syn != 0 isola aberturas de conexão"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Do fio à conclusão: captura, filtro e análise",
+    "definicao": "flowchart TD\n    A[Tráfego na rede] --> B[Interface em modo promíscuo]\n    B --> C{Filtro BPF no kernel}\n    C -->|descarta| X[Pacote ignorado]\n    C -->|casa o filtro| D[tcpdump copia o pacote]\n    D --> E[Tela: -X mostra hex e ASCII]\n    D --> F[Arquivo .pcap com -w]\n    F --> G[tshark -r lê offline]\n    F --> H[Wireshark: seguir fluxo TCP]\n    G --> I[Análise e conclusão]\n    H --> I\n    E --> I",
+    "legenda": "O filtro BPF roda no kernel e descarta o que não interessa antes de copiar. A captura pode ir para a tela (-X) ou para arquivo (-w), e a análise offline usa tshark ou Wireshark sobre o mesmo .pcap."
+  },
+  "tabelas": [
+    {
+      "titulo": "Filtros BPF comuns (sintaxe de captura tcpdump)",
+      "colunas": [
+        "Filtro",
+        "O que casa",
+        "Uso típico"
+      ],
+      "linhas": [
+        [
+          "host 10.0.0.5",
+          "Tráfego de/para esse IP",
+          "Isolar uma máquina específica"
+        ],
+        [
+          "src 10.0.0.5",
+          "Só o que sai desse IP",
+          "Ver o que o host envia"
+        ],
+        [
+          "dst port 443",
+          "Destino na porta 443",
+          "Requisições HTTPS saindo"
+        ],
+        [
+          "port 53",
+          "Origem ou destino porta 53",
+          "Depurar DNS"
+        ],
+        [
+          "tcp port 443",
+          "TCP na 443 (qualquer direção)",
+          "Isolar HTTPS"
+        ],
+        [
+          "net 192.168.1.0/24",
+          "Toda a sub-rede",
+          "Ver uma faixa inteira"
+        ],
+        [
+          "tcp[tcpflags] & tcp-syn != 0",
+          "Pacotes com flag SYN",
+          "Achar aberturas / varredura"
+        ],
+        [
+          "tcp[tcpflags] & tcp-rst != 0",
+          "Pacotes com flag RST",
+          "Achar conexões recusadas"
+        ],
+        [
+          "icmp",
+          "Todo tráfego ICMP",
+          "Ver ping / erros de rede"
+        ],
+        [
+          "host 10.0.0.5 and port 80",
+          "Combina com AND",
+          "HTTP daquele host só"
+        ]
+      ]
+    },
+    {
+      "titulo": "tcpdump x tshark x Wireshark",
+      "colunas": [
+        "Aspecto",
+        "tcpdump",
+        "tshark",
+        "Wireshark"
+      ],
+      "linhas": [
+        [
+          "Interface",
+          "Linha de comando",
+          "Linha de comando",
+          "Gráfica (GUI)"
+        ],
+        [
+          "Sintaxe de filtro",
+          "BPF (captura)",
+          "BPF na captura, display filter na leitura",
+          "BPF na captura, display filter na análise"
+        ],
+        [
+          "Dissecadores de protocolo",
+          "Básicos",
+          "Completos (mesmos da GUI)",
+          "Completos"
+        ],
+        [
+          "Ideal para",
+          "Capturar em servidor sem GUI",
+          "Automatizar / scriptar análise",
+          "Análise visual profunda"
+        ],
+        [
+          "Seguir fluxo TCP",
+          "Não",
+          "Limitado (-z follow)",
+          "Sim, ponto forte"
+        ],
+        [
+          "Peso / dependências",
+          "Mínimo",
+          "Médio",
+          "Pesado (X / desktop)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Flags essenciais do tcpdump",
+      "colunas": [
+        "Flag",
+        "Efeito"
+      ],
+      "linhas": [
+        [
+          "-i <iface>",
+          "Escolhe a interface (ex.: -i eth0, -i any)"
+        ],
+        [
+          "-n / -nn",
+          "Não resolve IP / não resolve IP nem porta"
+        ],
+        [
+          "-X",
+          "Mostra o payload em hex e ASCII"
+        ],
+        [
+          "-w arquivo.pcap",
+          "Grava a captura crua em arquivo"
+        ],
+        [
+          "-r arquivo.pcap",
+          "Lê uma captura gravada"
+        ],
+        [
+          "-c N",
+          "Para depois de N pacotes"
+        ],
+        [
+          "-s 0",
+          "Captura o pacote inteiro (snaplen completo)"
+        ],
+        [
+          "-v / -vv",
+          "Aumenta o detalhe da saída"
+        ]
+      ]
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ler HTTPS ao vivo com payload em hex",
+      "cenario": "Ver o handshake e os pacotes de uma conexão na porta 443, sem resolução de nomes, com o conteúdo em hexadecimal e ASCII.",
+      "comandos": "sudo tcpdump -i eth0 -nn -X 'tcp port 443'",
+      "explicacao": "-i eth0 escolhe a interface, -nn evita consultas DNS que poluem a saída, -X imprime hex+ASCII. Como é TLS, o payload aparece cifrado (ilegível) — você confirma IP, portas e temporização, não o conteúdo. Troque eth0 pela sua interface (veja com 'ip link' ou 'tcpdump -D')."
+    },
+    {
+      "titulo": "Gravar em arquivo para análise offline",
+      "cenario": "Coletar rápido no servidor e analisar depois no Wireshark, sem perder pacotes por lentidão de terminal.",
+      "comandos": "sudo tcpdump -i any -nn -s 0 -w /tmp/captura.pcap 'host 10.0.0.5 and port 80'\n# Ctrl+C para encerrar a coleta",
+      "explicacao": "-w grava o pcap cru (sem imprimir na tela), -s 0 garante o pacote inteiro, -i any captura em todas as interfaces. O filtro restringe ao host e à porta 80 (HTTP, texto claro). Depois abra /tmp/captura.pcap no Wireshark ou leia com tshark."
+    },
+    {
+      "titulo": "Ler o .pcap com tshark",
+      "cenario": "Analisar no terminal um arquivo já capturado, aplicando um filtro de exibição.",
+      "comandos": "tshark -r /tmp/captura.pcap -n -Y 'http.request' -T fields -e ip.src -e http.host -e http.request.uri",
+      "explicacao": "-r lê o arquivo, -n não resolve nomes, -Y é o filtro de exibição (só requisições HTTP), e -T fields com -e extrai colunas específicas: IP de origem, host e URI. Note que -Y usa a sintaxe do Wireshark (http.request), diferente do BPF da captura."
+    },
+    {
+      "titulo": "Isolar aberturas de conexão (SYN)",
+      "cenario": "Detectar varredura de portas ou novas conexões olhando só os pacotes SYN.",
+      "comandos": "sudo tcpdump -i eth0 -nn 'tcp[tcpflags] & tcp-syn != 0 and tcp[tcpflags] & tcp-ack == 0'",
+      "explicacao": "O filtro casa pacotes com SYN ligado e ACK desligado — ou seja, o primeiro pacote de cada handshake. Uma enxurrada desses vindo de um IP para muitas portas é assinatura clássica de port scan."
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Sniffing em rede sem cifra",
+      "como_funciona": "Em um segmento onde o atacante enxerga o tráfego (hub, Wi-Fi aberto, porta espelhada, ARP spoofing), ele roda tcpdump/Wireshark e lê pacotes de protocolos sem cifra — HTTP, FTP, Telnet, SMTP, POP3. Credenciais, cookies de sessão e dados trafegam em texto claro e aparecem direto no -X.",
+      "sinal": "Interface em modo promíscuo em host que não deveria; picos de tráfego espelhado; ARP com MACs duplicados apontando para o gateway.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Captura passiva de metadados sob TLS",
+      "como_funciona": "Mesmo com o payload cifrado, o atacante coleta IPs, portas, SNI do handshake TLS, tamanhos e temporização dos pacotes. Isso revela quais serviços a vítima acessa e padrões de comportamento, sem quebrar a cifra.",
+      "sinal": "Coleta prolongada e silenciosa numa porta espelhada; tráfego saindo para destino de análise inesperado.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Cifrar tudo com TLS",
+      "como_funciona": "Substituir HTTP/FTP/Telnet por HTTPS/FTPS/SSH. O sniffer continua capturando pacotes, mas o payload da aplicação fica ilegível — restam apenas metadados.",
+      "cobre": "Sniffing de credenciais e dados em texto claro",
+      "limite": "Não esconde IP, porta, SNI, tamanho nem temporização; TLS mal configurado (versão velha, sem validação de certificado) ainda é atacável."
+    },
+    {
+      "nome": "Switch com port security",
+      "como_funciona": "O switch entrega quadros só para a porta de destino e limita/fixa os MACs por porta, o que bloqueia o MAC flooding (encher a tabela para o switch virar hub). ARP spoofing é outra coisa: contra ele vão o DHCP snooping e a Dynamic ARP Inspection (DAI), que descarta ARP que não bate com a tabela do snooping.",
+      "cobre": "Interceptação em rede comutada (MAC flooding; com DHCP snooping + DAI, também ARP spoofing)",
+      "limite": "Não protege a porta de espelhamento (SPAN) legítima nem o Wi-Fi; exige configuração ativa em cada switch."
+    },
+    {
+      "nome": "Evitar hub; segmentar a rede",
+      "como_funciona": "O hub repete todo quadro para todas as portas, entregando tudo ao sniffer. Trocar por switch e segmentar em VLANs reduz o domínio de colisão e o que cada host consegue enxergar.",
+      "cobre": "Exposição por difusão em mídia compartilhada",
+      "limite": "Não é defesa por si só contra ARP spoofing; precisa de DHCP snooping + Dynamic ARP Inspection e cifra por cima."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Nada é capturado (0 pacotes)",
+      "causa_provavel": "Interface errada ou sem tráfego naquela interface",
+      "leitura": "Liste as interfaces e confirme qual tem tráfego antes de capturar.",
+      "comando": "tcpdump -D    # lista interfaces; depois use o número/nome certo em -i"
+    },
+    {
+      "sintoma": "Captura, mas o pacote esperado não aparece",
+      "causa_provavel": "Filtro BPF restritivo demais ou com erro de sintaxe",
+      "leitura": "Capture sem filtro para confirmar que há tráfego, depois vá restringindo.",
+      "comando": "sudo tcpdump -i eth0 -nn -c 20    # sem filtro, primeiros 20 pacotes"
+    },
+    {
+      "sintoma": "Payload cortado / pacotes truncados",
+      "causa_provavel": "snaplen baixo corta o pacote; versões antigas do tcpdump usavam 68 bytes por padrão",
+      "leitura": "Force a captura do pacote inteiro com -s 0.",
+      "comando": "sudo tcpdump -i eth0 -nn -s 0 -w captura.pcap"
+    },
+    {
+      "sintoma": "Permissão negada ao iniciar",
+      "causa_provavel": "Sem privilégio para raw socket (falta root ou CAP_NET_RAW)",
+      "leitura": "Rode com sudo ou conceda a capacidade ao binário.",
+      "comando": "sudo tcpdump -i any -nn    # ou: sudo setcap cap_net_raw+ep $(which tcpdump)"
+    }
+  ]
+}

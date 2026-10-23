@@ -1,0 +1,143 @@
+{
+  "resumo": "A criptografia sustenta TLS, certificados e senhas. Abaixo, os algoritmos por tipo (simétrica, assimétrica, hash, troca de chaves, assinatura) com tamanho de chave típico e o status de segurança — do seguro ao quebrado.",
+  "tabelas": [
+    {
+      "titulo": "Algoritmos de criptografia",
+      "colunas": [
+        "Algoritmo",
+        "Tipo",
+        "Uso",
+        "Chave",
+        "Status"
+      ],
+      "linhas": [
+        [
+          "AES (128/256)",
+          "Simétrica",
+          "Cifra de bloco para confidencialidade de dados em repouso e em trânsito (modos GCM, CBC, CTR)",
+          "128 ou 256 bits (bloco de 128 bits)",
+          "Seguro"
+        ],
+        [
+          "ChaCha20",
+          "Simétrica",
+          "Cifra de fluxo moderna, tipicamente com Poly1305 (AEAD); ideal para dispositivos sem aceleração AES",
+          "256 bits (nonce de 96 bits)",
+          "Seguro"
+        ],
+        [
+          "3DES (Triple DES)",
+          "Simétrica",
+          "Cifra de bloco legada; ainda vista em sistemas bancários antigos, mas descontinuada pelo NIST",
+          "168 bits nominais (112 bits efetivos)",
+          "Fraco"
+        ],
+        [
+          "DES",
+          "Simétrica",
+          "Cifra de bloco histórica; quebrável por força bruta em horas",
+          "56 bits",
+          "Quebrado"
+        ],
+        [
+          "RC4",
+          "Simétrica",
+          "Cifra de fluxo obsoleta; vieses estatísticos no keystream permitem recuperação de texto claro",
+          "40 a 2048 bits",
+          "Quebrado"
+        ],
+        [
+          "RSA (2048/3072/4096)",
+          "Assimétrica",
+          "Cifra assimétrica e assinatura digital; encapsulamento de chave (RSA-OAEP) e assinatura (RSA-PSS)",
+          "2048/3072/4096 bits (tamanho do módulo)",
+          "Seguro"
+        ],
+        [
+          "ECDSA (P-256)",
+          "Assinatura",
+          "Assinatura digital sobre curva elíptica; usada em TLS, JWT (ES256) e certificados",
+          "256 bits (curva NIST P-256)",
+          "Seguro"
+        ],
+        [
+          "Ed25519",
+          "Assinatura",
+          "Assinatura digital EdDSA sobre Curve25519; determinística, rápida e resistente a falhas de nonce",
+          "256 bits (chave privada de 32 bytes)",
+          "Seguro"
+        ],
+        [
+          "ECDH/ECDHE",
+          "Troca de chaves",
+          "Acordo de chave sobre curva elíptica; a variante efêmera (ECDHE) fornece sigilo futuro (forward secrecy)",
+          "256 bits (P-256) ou 255 bits (X25519)",
+          "Seguro"
+        ],
+        [
+          "DH (Diffie-Hellman)",
+          "Troca de chaves",
+          "Acordo de chave em corpo finito (MODP); aceitável apenas com grupos grandes e bem escolhidos",
+          "2048 a 4096 bits",
+          "Aceitável"
+        ],
+        [
+          "SHA-256/384/512",
+          "Hash",
+          "Função de hash criptográfica (família SHA-2) para integridade, assinaturas e HMAC",
+          "Não usa chave; saída de 256/384/512 bits",
+          "Seguro"
+        ],
+        [
+          "SHA-3 (Keccak)",
+          "Hash",
+          "Função de hash com construção esponja, alternativa estrutural ao SHA-2",
+          "Não usa chave; saída de 224/256/384/512 bits",
+          "Seguro"
+        ],
+        [
+          "SHA-1",
+          "Hash",
+          "Hash legado; colisões práticas demonstradas (SHAttered), impróprio para assinaturas e certificados",
+          "Não usa chave; saída de 160 bits",
+          "Quebrado"
+        ],
+        [
+          "MD5",
+          "Hash",
+          "Hash obsoleto; colisões trivialmente geráveis; jamais usar para segurança",
+          "Não usa chave; saída de 128 bits",
+          "Quebrado"
+        ],
+        [
+          "HMAC",
+          "MAC",
+          "Código de autenticação de mensagem baseado em hash; garante integridade e autenticidade com chave secreta",
+          "Chave secreta >= ao tamanho do hash subjacente",
+          "Seguro"
+        ],
+        [
+          "bcrypt",
+          "Hash",
+          "Hash de senha com fator de custo ajustável (deriva do Blowfish); resistente a força bruta em GPU",
+          "Não usa chave; fator de custo configurável (ex.: 12)",
+          "Seguro"
+        ],
+        [
+          "Argon2",
+          "Hash",
+          "Hash de senha vencedor do PHC; custo em memória, tempo e paralelismo (Argon2id recomendado)",
+          "Não usa chave; parâmetros de memória/tempo/paralelismo",
+          "Seguro"
+        ],
+        [
+          "PBKDF2",
+          "Hash",
+          "Derivação de chave a partir de senha via HMAC iterado; aceitável com alto número de iterações e salt",
+          "Não usa chave; salt + iterações (ex.: 600000)",
+          "Aceitável"
+        ]
+      ]
+    }
+  ]
+}

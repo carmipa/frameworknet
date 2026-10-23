@@ -1,0 +1,29 @@
+{! Controles da parte "Ver" de uma lição (INV-ACAD-007): tocar/pausar, passo, recomeçar e
+   velocidade, mais a legenda que fala em aria-live. Ligados pelo motor.js por data-acad-*. !}
+<div class="acad-controles" role="group" aria-label="Controles da animação">
+    <button type="button" class="aed-btn aed-btn-teal btn-sm" data-acad-acao="tocar"
+            title="Toca a animação; toque de novo para pausar">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">play_arrow</span>
+        <span data-acad-rotulo>Tocar</span>
+    </button>
+    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-acad-acao="passo"
+            title="Avança um passo e pausa, para ler com calma">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_next</span>
+        <span>Passo</span>
+    </button>
+    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-acad-acao="reiniciar"
+            title="Volta a animação para o começo">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">restart_alt</span>
+        <span>Recomeçar</span>
+    </button>
+    <label title="Muda o ritmo da animação">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">speed</span>
+        <span>Velocidade</span>
+        <select class="form-select form-select-sm" data-acad-velocidade aria-label="Velocidade da animação">
+            <option value="0.5">devagar</option>
+            <option value="1" selected>normal</option>
+            <option value="2">rápida</option>
+        </select>
+    </label>
+</div>
+<p class="acad-legenda-passo" data-acad-legenda aria-live="polite"></p>

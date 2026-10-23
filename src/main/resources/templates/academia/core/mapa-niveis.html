@@ -1,0 +1,3 @@
+{! Mapa dos níveis para o desbloqueio (niveis.js): só ids, títulos, rotas e a lista de lições —
+   catálogo público, nada do aluno (R5). Variável: niveis (lista de Nivel), na ordem de estudo. !}
+<div hidden data-acad-mapa>{#for n in niveis}<span data-nivel="{n.id}" data-titulo="{n.titulo}" data-rota="{n.rota}" data-aberto="{n.aberto}" data-licoes="{#for l in n.licoes}{l.id} {/for}"></span>{/for}</div>

@@ -1,0 +1,354 @@
+{
+  "resumo": "O certificado X.509 v3 é a peça de identidade da PKI: um documento binário que amarra uma identidade (o subject) a uma chave pública, carimbado pela assinatura de uma Autoridade Certificadora (CA). Por dentro, ele não é texto livre nem JSON: é uma estrutura ASN.1 codificada em DER, onde tudo é uma sequência de blocos TLV (Tag-Length-Value). No topo existe uma única SEQUENCE chamada Certificate, que contém exatamente três coisas: o tbsCertificate (o corpo, \"to be signed\", que reúne versão, serial, algoritmo, issuer, validade, subject, chave pública e extensões), o signatureAlgorithm (qual algoritmo a CA usou) e o signatureValue (a assinatura da CA sobre o tbsCertificate). Entender essa árvore é o que separa \"confiar cegamente no texto\" de \"verificar a assinatura e a cadeia\". O que você lê em openssl x509 -text é a tradução humana; o que o TLS transporta e valida no handshake é o DER cru. No site, o protocolo TLS mostra esse certificado sendo apresentado no handshake, e o Inspetor TLS simula a validação dos campos que você informa.",
+  "ficha": [
+    {
+      "rotulo": "Padrão",
+      "valor": "ITU-T X.509 v3 (RFC 5280)",
+      "dica": "A v3 introduziu as extensões; é o que praticamente todo certificado TLS usa hoje."
+    },
+    {
+      "rotulo": "Codificação",
+      "valor": "ASN.1 em DER (binário TLV)",
+      "dica": "DER é determinístico: uma única forma canônica, essencial para que a assinatura seja reproduzível byte a byte."
+    },
+    {
+      "rotulo": "Envelope de texto",
+      "valor": "PEM (Base64 + cabeçalhos BEGIN/END)",
+      "dica": "PEM é só o DER em Base64 entre -----BEGIN CERTIFICATE----- e -----END CERTIFICATE-----. Para agrupar cert + chave privada existe o PKCS#12 (.p12/.pfx); para empacotar só certificados/cadeia, o PKCS#7 (.p7b)."
+    },
+    {
+      "rotulo": "Parte assinada",
+      "valor": "tbsCertificate",
+      "dica": "A CA assina exatamente esse bloco; alterar um único bit dele invalida a assinatura."
+    },
+    {
+      "rotulo": "Componentes do topo",
+      "valor": "tbsCertificate + signatureAlgorithm + signatureValue",
+      "dica": "Sempre esses três, nessa ordem, dentro da SEQUENCE Certificate."
+    },
+    {
+      "rotulo": "Onde é usado",
+      "valor": "Handshake TLS, S/MIME, assinatura de código",
+      "dica": "No TLS o servidor envia sua cadeia de certificados logo no início da conexão."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "O que é assinado vs. a assinatura",
+      "icone": "verified_user",
+      "texto": "O tbsCertificate é o CORPO do certificado: tudo que descreve a identidade e a chave. A CA calcula um hash desse corpo e assina o hash com sua chave privada, gerando o signatureValue. Verificar o certificado significa recalcular o hash do tbsCertificate e conferir a assinatura usando a chave pública da CA. Se um único byte do corpo mudar, o hash muda e a verificação falha.",
+      "destaque": "A assinatura protege o corpo inteiro; o corpo não contém a própria assinatura."
+    },
+    {
+      "titulo": "TLV / DER vs. PEM",
+      "icone": "category",
+      "texto": "DER é a codificação binária real: cada valor é um bloco TLV (a Tag diz o tipo, o Length diz o tamanho, o Value carrega o conteúdo). PEM não é outro formato de dados: é o mesmo DER convertido para Base64 e embrulhado com linhas BEGIN/END, para caber em e-mail e arquivos de texto. Ao decodificar o Base64 do PEM, você tem o DER de volta byte a byte.",
+      "destaque": "PEM é roupa de texto; DER é o corpo binário que realmente é assinado e transmitido."
+    },
+    {
+      "titulo": "Certificado é uma árvore de SEQUENCEs",
+      "icone": "account_tree",
+      "texto": "Em DER, agrupamentos são a tag SEQUENCE (0x30). O Certificate é uma SEQUENCE que contém outra SEQUENCE (o tbsCertificate), que por sua vez contém várias outras. Ler um certificado é percorrer essa árvore: cada nó é um TLV, e nós SEQUENCE têm filhos TLV dentro do seu Value.",
+      "destaque": "Se você sabe andar por TLVs aninhados, sabe ler qualquer certificado sem ferramenta."
+    },
+    {
+      "titulo": "Extensões críticas vs. não-críticas",
+      "icone": "gpp_bad",
+      "texto": "Cada extensão v3 tem uma flag de criticidade. Se uma extensão é marcada como crítica e quem valida NÃO entende ou NÃO consegue processar aquela extensão, o certificado deve ser REJEITADO. Se é não-crítica e desconhecida, pode ser ignorada. Por isso BasicConstraints e KeyUsage costumam ser críticas: restringem o poder do certificado e não podem ser silenciosamente ignoradas.",
+      "destaque": "Crítica = obedeça ou recuse; não-crítica = pode ignorar se não entender."
+    },
+    {
+      "titulo": "Par chave pública / privada",
+      "icone": "key",
+      "texto": "O certificado carrega SOMENTE a chave pública (dentro de subjectPublicKeyInfo). A chave privada correspondente nunca entra no certificado: ela fica no servidor e prova a posse durante o handshake. Certificado público + chave privada guardada = a identidade completa. Se a chave privada vazar, o certificado precisa ser revogado.",
+      "destaque": "Certificado = chave pública + identidade + assinatura da CA. A privada mora separada e em segredo."
+    },
+    {
+      "titulo": "Cadeia de confiança",
+      "icone": "schema",
+      "texto": "Um certificado de servidor é assinado por uma CA intermediária, que é assinada por uma CA raiz. Confiar em um certificado não é olhar só para ele: é verificar cada assinatura até uma raiz que já está no seu truststore. Validar campos (CN/SAN, validade) sem verificar essa cadeia é aceitar qualquer coisa que alguém tenha escrito ali.",
+      "destaque": "Ler o texto do certificado não valida nada; validar a cadeia até uma raiz confiável, sim."
+    }
+  ],
+  "cabecalho": {
+    "titulo": "Anatomia binária: um bloco TLV em ASN.1 DER",
+    "nota": "Todo valor em DER é um bloco TLV. A Tag (1 byte no caso comum) identifica o tipo, por exemplo 0x02 = INTEGER, 0x30 = SEQUENCE, 0x06 = OBJECT IDENTIFIER. A seguir vem o Length. Na FORMA CURTA, quando o conteúdo tem até 127 bytes, o Length é um único byte cujo valor é o tamanho (0x00 a 0x7F). Na FORMA LONGA, quando o conteúdo passa de 127 bytes, o primeiro byte do Length tem o bit mais alto ligado (0x80) e os 7 bits restantes dizem QUANTOS bytes seguintes formam o tamanho real; por exemplo, 0x82 0x05 0xDC significa: os próximos 2 bytes (0x05DC = 1500) são o comprimento. Depois vem o Value, com exatamente esse número de bytes. Um certificado é essa estrutura aninhada e forma uma árvore de SEQUENCEs: o tbsCertificate (o que é assinado) contém versão, serial, algoritmo, issuer, validade, subject, chave pública e extensões; depois dele vêm o algoritmo de assinatura e a assinatura da CA. O Value de uma SEQUENCE contém outros TLVs.",
+    "campos": [
+      {
+        "nome": "Tag",
+        "bits": 8,
+        "descricao": "Identifica o tipo do dado (INTEGER 0x02, BIT STRING 0x03, OID 0x06, SEQUENCE 0x30, etc.). Carrega também a classe e o bit de construído/primitivo.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Length (forma curta)",
+        "bits": 8,
+        "descricao": "Um único byte 0x00-0x7F informa diretamente o tamanho do Value em bytes. Usado quando o conteúdo tem até 127 bytes; acima disso, entra a forma longa descrita na nota.",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "Value",
+        "bits": 0,
+        "descricao": "Conteúdo real, com o comprimento indicado pelo Length. Em uma SEQUENCE, este campo contém outros blocos TLV aninhados. Tamanho variável.",
+        "cor": "#059669"
+      }
+    ]
+  },
+  "diagrama": {
+    "titulo": "A árvore de um certificado X.509 v3",
+    "definicao": "flowchart TD\n    Cert[\"Certificate (SEQUENCE)\"] --> TBS[\"tbsCertificate (o que é assinado)\"]\n    Cert --> SigAlg[\"signatureAlgorithm (algoritmo usado pela CA)\"]\n    Cert --> SigVal[\"signatureValue (assinatura da CA)\"]\n    TBS --> Ver[\"version (v3)\"]\n    TBS --> Ser[\"serialNumber\"]\n    TBS --> Alg[\"signature (algoritmo)\"]\n    TBS --> Iss[\"issuer (quem emitiu)\"]\n    TBS --> Val[\"validity (notBefore / notAfter)\"]\n    TBS --> Sub[\"subject (dono da chave)\"]\n    TBS --> SPKI[\"subjectPublicKeyInfo (chave pública)\"]\n    TBS --> Ext[\"extensions (v3)\"]\n    Ext --> SAN[\"SubjectAltName\"]\n    Ext --> KU[\"KeyUsage\"]\n    Ext --> EKU[\"ExtendedKeyUsage\"]\n    Ext --> BC[\"BasicConstraints\"]\n    SigVal -.->|assina o hash de| TBS",
+    "legenda": "O Certificate tem sempre três filhos: o corpo tbsCertificate, o algoritmo de assinatura e a assinatura da CA. A seta pontilhada mostra que o signatureValue é calculado sobre o hash do tbsCertificate inteiro, extensões incluídas. No handshake TLS o servidor envia essa estrutura (e a cadeia acima dela) para o cliente verificar; é o que o protocolo TLS do site exibe passo a passo."
+  },
+  "tabelas": [
+    {
+      "titulo": "Campos do tbsCertificate",
+      "colunas": [
+        "Campo",
+        "O que guarda",
+        "Por que importa"
+      ],
+      "linhas": [
+        [
+          "version",
+          "Versão do certificado (v3 = valor 2)",
+          "A v3 é o que habilita as extensões; versões antigas não têm SAN nem BasicConstraints"
+        ],
+        [
+          "serialNumber",
+          "Número de série único atribuído pela CA",
+          "Identifica o certificado em listas de revogação (CRL/OCSP); deve ser imprevisível e com entropia suficiente"
+        ],
+        [
+          "signature",
+          "OID do algoritmo de assinatura",
+          "Deve bater com o signatureAlgorithm externo; declara como o corpo foi assinado"
+        ],
+        [
+          "issuer",
+          "Distinguished Name da CA emissora",
+          "Aponta para o próximo elo da cadeia; o issuer de um é o subject do certificado acima"
+        ],
+        [
+          "validity",
+          "notBefore e notAfter",
+          "Fora dessa janela o certificado não vale; é a base da expiração"
+        ],
+        [
+          "subject",
+          "Distinguished Name do dono",
+          "Identidade nominal; para servidores modernos, quem vale mesmo é o SAN"
+        ],
+        [
+          "subjectPublicKeyInfo",
+          "Chave pública + algoritmo dela (RSA, EC...)",
+          "A chave que o certificado está atestando; a privada correspondente fica em segredo"
+        ],
+        [
+          "extensions",
+          "Lista de extensões v3, cada uma com flag crítica",
+          "Definem uso, nomes válidos e se é CA; são o coração do X.509 v3"
+        ]
+      ]
+    },
+    {
+      "titulo": "Extensões v3 mais comuns",
+      "colunas": [
+        "Extensão",
+        "Função",
+        "Criticidade típica"
+      ],
+      "linhas": [
+        [
+          "SubjectAltName (SAN)",
+          "Lista os nomes DNS/IPs realmente cobertos pelo certificado",
+          "Não-crítica, mas é o que o TLS moderno checa (o CN é ignorado)"
+        ],
+        [
+          "KeyUsage (KU)",
+          "Restringe o uso da chave (assinatura digital, cifra de chave, assinar certificado)",
+          "Crítica"
+        ],
+        [
+          "ExtendedKeyUsage (EKU)",
+          "Refina o propósito (serverAuth, clientAuth, codeSigning)",
+          "Nos certificados TLS públicos vai não crítica (regras do CA/Browser Forum); serverAuth é obrigatório para TLS de servidor"
+        ],
+        [
+          "BasicConstraints",
+          "Diz se o certificado é uma CA (cA=TRUE) e o pathLen máximo",
+          "Crítica; cA=FALSE em folha impede que ela emita outros certificados"
+        ],
+        [
+          "AuthorityKeyIdentifier",
+          "Aponta qual chave da CA assinou (ajuda a montar a cadeia)",
+          "Não-crítica"
+        ],
+        [
+          "CRLDistributionPoints / AIA",
+          "Onde consultar revogação (CRL) e o certificado do emissor e o responder OCSP (AIA)",
+          "Não-crítica"
+        ]
+      ]
+    },
+    {
+      "titulo": "Tags DER mais usadas em um certificado",
+      "colunas": [
+        "Tag (hex)",
+        "Tipo ASN.1",
+        "Onde aparece"
+      ],
+      "linhas": [
+        [
+          "0x02",
+          "INTEGER",
+          "version, serialNumber"
+        ],
+        [
+          "0x03",
+          "BIT STRING",
+          "signatureValue, chave pública dentro do SPKI"
+        ],
+        [
+          "0x04",
+          "OCTET STRING",
+          "conteúdo bruto do valor de cada extensão"
+        ],
+        [
+          "0x06",
+          "OBJECT IDENTIFIER",
+          "algoritmos e tipos de extensão (OIDs)"
+        ],
+        [
+          "0x30",
+          "SEQUENCE",
+          "Certificate, tbsCertificate, cada extensão, o SPKI"
+        ],
+        [
+          "0x31",
+          "SET",
+          "conjuntos de atributos dentro do DN (RDN)"
+        ],
+        [
+          "0x17 / 0x18",
+          "UTCTime / GeneralizedTime",
+          "notBefore e notAfter em validity"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Assinatura com hash fraco (MD5 / SHA-1)",
+      "como_funciona": "Se a CA assinou o certificado usando MD5 ou SHA-1, um atacante com poder de colisão pode construir dois tbsCertificate diferentes com o mesmo hash. A assinatura válida para um vale para o outro, permitindo forjar um certificado (até um intermediário CA) que passa na verificação. Foi assim que se demonstrou a criação de uma CA falsa contra CAs que ainda assinavam com MD5, e o malware Flame explorou uma colisão de MD5 para se passar por atualização legítima.",
+      "sinal": "O signatureAlgorithm mostra md5WithRSAEncryption ou sha1WithRSAEncryption em openssl x509 -text.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Confiar nos campos sem validar a cadeia",
+      "como_funciona": "O cliente lê subject/CN, validade e SAN, gosta do que vê e aceita, mas nunca verifica se o signatureValue confere com a chave pública do issuer até uma raiz confiável. Como qualquer um pode gerar um certificado autoassinado escrevendo qualquer nome no subject, isso aceita identidades totalmente forjadas. É o erro clássico de cliente TLS com verificação desligada.",
+      "sinal": "Código que usa TrustManager vazio, InsecureSkipVerify=true ou curl -k; certificado autoassinado aceito sem alerta.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "BasicConstraints ignorada (folha vira CA)",
+      "como_funciona": "Se o validador não processa BasicConstraints, um certificado folha legítimo (emitido para um domínio qualquer) pode ser usado como se fosse uma CA e assinar certificados para OUTROS domínios. Foi a falha do bug de 'basicConstraints' em navegadores e bibliotecas antigas, que permitia a qualquer dono de um certificado se passar por qualquer site.",
+      "sinal": "Validador que não checa cA=TRUE / pathLen; certificado com cA=FALSE mesmo assim aceito assinando outros.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Descasamento de nome (CN em vez de SAN)",
+      "como_funciona": "Cliente antigo confia no CN do subject em vez do SubjectAltName. Um atacante coloca o domínio alvo no CN e o domínio dele no SAN (ou usa truques de NUL byte no CN) para enganar validadores desatualizados, apresentando um certificado que não cobre de fato o domínio acessado.",
+      "sinal": "CN preenchido com o alvo, mas SAN ausente ou divergente; avisos de hostname mismatch suprimidos.",
+      "gravidade": "Alta",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Certificado expirado ou revogado aceito",
+      "como_funciona": "O validador ignora notAfter ou não consulta CRL/OCSP. Uma chave privada já comprometida e revogada continua sendo aceita porque ninguém checa o status, mantendo um canal de falsificação de identidade ativo mesmo depois de a CA ter revogado o certificado.",
+      "sinal": "Sem consulta OCSP/CRL nos logs; conexão aceita com notAfter no passado.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Exigir SHA-256 ou superior na assinatura",
+      "como_funciona": "Rejeitar certificados assinados com MD5 ou SHA-1. As CAs públicas já migraram para SHA-256 ou mais; em PKI interna, reemitir tudo que ainda usa hash fraco e configurar as CAs para só assinar com algoritmos fortes.",
+      "cobre": "Assinatura com hash fraco (colisão)",
+      "limite": "Não ajuda se o próprio validador não checar a cadeia; hash forte com verificação desligada continua vulnerável."
+    },
+    {
+      "nome": "Sempre verificar a cadeia até uma raiz confiável",
+      "como_funciona": "Usar a validação padrão da biblioteca TLS (nunca desligar), com um truststore explícito de raízes. Cada assinatura é conferida contra a chave pública do emissor, subindo até uma raiz. Nunca usar TrustManager vazio nem InsecureSkipVerify em produção.",
+      "cobre": "Campos forjados, certificado autoassinado, descasamento de nome",
+      "limite": "Depende de um truststore bem mantido; uma raiz maliciosa instalada no cliente derruba a garantia."
+    },
+    {
+      "nome": "Validar BasicConstraints e KeyUsage/EKU",
+      "como_funciona": "Garantir que folhas tenham cA=FALSE e que só certificados com cA=TRUE possam assinar outros, respeitando o pathLen. Conferir que serverAuth está no EKU para TLS de servidor. Bibliotecas modernas fazem isso por padrão; a PKI própria deve testar que faz.",
+      "cobre": "Folha usada como CA, uso indevido de chave",
+      "limite": "Só funciona se as extensões forem tratadas como críticas; validador que as ignora anula a proteção."
+    },
+    {
+      "nome": "Validar hostname pelo SAN e checar validade",
+      "como_funciona": "Comparar o host acessado com os nomes do SubjectAltName (não com o CN) e recusar certificados fora da janela notBefore/notAfter. É o comportamento padrão de clientes TLS atuais; nunca suprimir o erro de hostname mismatch.",
+      "cobre": "Descasamento de nome, certificado expirado",
+      "limite": "Não detecta chave comprometida ainda dentro da validade; para isso é preciso revogação."
+    },
+    {
+      "nome": "Consultar revogação (OCSP stapling / CRL)",
+      "como_funciona": "Onde a CA ainda mantém OCSP, habilitar stapling; em qualquer caso, garantir checagem por CRL (ou CRLite/CRLSets no navegador), para descobrir certificados revogados antes do vencimento. Complementar com ciclos de vida curtos, que reduzem a janela de risco quando a revogação falha.",
+      "cobre": "Certificado revogado por chave comprometida",
+      "limite": "O OCSP pode ficar indisponível; muitos clientes fazem soft-fail, aceitando quando não conseguem checar."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ler o certificado em formato humano",
+      "cenario": "Você tem um cert.pem e quer ver todos os campos do tbsCertificate, as extensões v3 e o algoritmo de assinatura sem decodificar binário à mão.",
+      "comandos": "openssl x509 -in cert.pem -text -noout\n\n# só o algoritmo de assinatura (procure por SHA256 vs SHA1/MD5)\nopenssl x509 -in cert.pem -text -noout | grep -i \"Signature Algorithm\"\n\n# só os nomes cobertos (SAN)\nopenssl x509 -in cert.pem -ext subjectAltName -noout\n\n# validade\nopenssl x509 -in cert.pem -noout -dates",
+      "explicacao": "O -text traduz a árvore ASN.1 para texto: version, serialNumber, issuer, validity, subject, chave pública e cada extensão com sua flag crítica. Confira que o Signature Algorithm é sha256 ou superior e que o SAN cobre o domínio esperado. Esse mesmo certificado é o que o servidor apresenta no handshake TLS."
+    },
+    {
+      "titulo": "Descer ao nível TLV com asn1parse",
+      "cenario": "Você quer VER a árvore de SEQUENCEs, os TLVs e os offsets reais, para entender que o tbsCertificate é um bloco contínuo e que a assinatura vem depois dele.",
+      "comandos": "openssl asn1parse -in cert.pem\n\n# a partir do DER cru\nopenssl x509 -in cert.pem -outform DER -out cert.der\nopenssl asn1parse -inform DER -in cert.der\n\n# inspecionar os primeiros bytes TLV na mão (30 82 .. .. = SEQUENCE forma longa)\nxxd cert.der | head",
+      "explicacao": "O asn1parse imprime cada bloco com offset, header length (hl), length (l) e tipo (SEQUENCE, INTEGER, OID, BIT STRING). A primeira linha é a SEQUENCE Certificate; a segunda, o tbsCertificate; perto do fim aparecem o OID do signatureAlgorithm e o BIT STRING do signatureValue. No xxd, 30 82 05 dc mostra a tag 0x30 (SEQUENCE) com Length em forma longa: 0x82 diz 'os próximos 2 bytes são o tamanho', e 0x05dc = 1500 bytes."
+    },
+    {
+      "titulo": "Verificar a cadeia e inspecionar o certificado ao vivo",
+      "cenario": "Você quer confirmar que um certificado valida até uma raiz confiável e ver o certificado que um servidor real apresenta no TLS.",
+      "comandos": "# valida cert.pem contra intermediárias e raiz\nopenssl verify -CAfile raiz.pem -untrusted intermediaria.pem cert.pem\n\n# pega o certificado ao vivo do servidor no handshake TLS\nopenssl s_client -connect example.com:443 -servername example.com < /dev/null | openssl x509 -text -noout\n\n# equivalente no mundo Java: listar o conteúdo de um keystore\nkeytool -list -v -keystore keystore.jks",
+      "explicacao": "O openssl verify recalcula cada assinatura subindo a cadeia; 'OK' significa que a cadeia fecha numa raiz confiável, não apenas que os campos parecem bons. O s_client mostra exatamente o que o servidor manda no handshake TLS, o mesmo fluxo que o protocolo TLS do site exibe passo a passo. O keytool -list -v faz o papel do -text no ecossistema Java."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "openssl verify retorna 'self signed certificate' ou 'unable to get local issuer certificate'",
+      "causa_provavel": "Faltam as intermediárias ou a raiz no truststore; a cadeia não fecha numa raiz confiável.",
+      "comando": "openssl verify -CAfile raiz.pem -untrusted intermediaria.pem cert.pem",
+      "leitura": "Se só falta a intermediária, junte-a com -untrusted. Se é realmente autoassinado, issuer == subject: não confie sem instalar a raiz correta deliberadamente."
+    },
+    {
+      "sintoma": "Cliente reclama de 'hostname mismatch' mesmo com o domínio certo no CN",
+      "causa_provavel": "O certificado não tem o domínio no SubjectAltName; clientes modernos ignoram o CN.",
+      "comando": "openssl x509 -in cert.pem -ext subjectAltName -noout",
+      "leitura": "Se o SAN não lista o host acessado, reemita o certificado com o domínio no SAN. Preencher só o CN não resolve mais."
+    },
+    {
+      "sintoma": "Aviso de 'weak signature algorithm' no navegador ou na biblioteca",
+      "causa_provavel": "Certificado assinado com SHA-1 ou MD5.",
+      "comando": "openssl x509 -in cert.pem -text -noout | grep -i \"Signature Algorithm\"",
+      "leitura": "Se aparecer sha1WithRSAEncryption ou md5WithRSAEncryption, reemita com SHA-256 ou superior; hash fraco é vulnerável a colisão."
+    },
+    {
+      "sintoma": "TLS falha com 'certificate has expired' ou 'not yet valid'",
+      "causa_provavel": "Data fora da janela notBefore/notAfter, ou relógio do servidor/cliente dessincronizado.",
+      "comando": "openssl x509 -in cert.pem -noout -dates",
+      "leitura": "Compare notBefore/notAfter com a hora atual (em UTC). Se as datas estão corretas mas ainda falha, verifique o relógio da máquina antes de reemitir."
+    }
+  ]
+}

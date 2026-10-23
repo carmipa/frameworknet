@@ -1,0 +1,311 @@
+{
+  "resumo": "A família de portas de arquivos e compartilhamento reúne serviços que movem e servem arquivos pela rede: FTP (20/21), TFTP (69), SMB/NetBIOS (139/445) e NFS (2049). Vários deles nasceram sem criptografia e ainda circulam credenciais e dados em texto claro, o que os torna alvos fáceis de sniffing e de exploração. A porta 445 (SMB) merece atenção especial: foi o vetor do EternalBlue (MS17-010), motor do WannaCry e de campanhas de ransomware, e por isso jamais deve ser exposta à internet. A regra de ouro aqui é simples: troque protocolos em texto claro por versões cifradas, mantenha o SMB atualizado e assinado, e nunca publique compartilhamento de arquivos direto na borda.",
+  "ficha": [
+    {
+      "rotulo": "Portas principais",
+      "valor": "20/21 (FTP), 69 (TFTP), 139/445 (SMB/NetBIOS), 2049 (NFS)",
+      "dica": "445 é o SMB moderno; 139 é o NetBIOS legado que ainda aparece em redes antigas."
+    },
+    {
+      "rotulo": "Transporte",
+      "valor": "TCP para FTP, SMB e NFS; UDP para TFTP (69)",
+      "dica": "TFTP usar UDP e não ter autenticação é parte do motivo de ser inseguro."
+    },
+    {
+      "rotulo": "Criptografia nativa",
+      "valor": "FTP e TFTP: nenhuma. SMBv3: suporta assinatura e criptografia. NFS: depende de Kerberos (sec=krb5)",
+      "dica": "FTP/TFTP mandam usuário e senha legíveis no fio."
+    },
+    {
+      "rotulo": "Risco típico",
+      "valor": "Credenciais em texto claro, execução remota (EternalBlue no 445), shares e exports mal configurados",
+      "dica": "445 exposto na internet é um dos erros mais explorados por ransomware."
+    },
+    {
+      "rotulo": "Faixa das portas",
+      "valor": "FTP (20/21), TFTP (69) e SMB/NetBIOS (139/445) são portas conhecidas (0-1023); o NFS (2049) fica na faixa registrada (1024-49151)",
+      "dica": "Portas conhecidas vão de 0 a 1023; registradas de 1024 a 49151; dinâmicas de 49152 a 65535."
+    },
+    {
+      "rotulo": "RFCs de referência",
+      "valor": "FTP: RFC 959; TFTP: RFC 1350; NFSv4: RFC 7530/8881",
+      "dica": "SMB é especificação da Microsoft (MS-SMB2), não um RFC clássico."
+    },
+    {
+      "rotulo": "Onde deve viver",
+      "valor": "Rede interna, VLAN segmentada ou atrás de VPN; nunca publicado direto na borda",
+      "dica": "Compartilhamento de arquivos é serviço interno por natureza."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Texto claro versus cifrado",
+      "icone": "lock",
+      "texto": "FTP e TFTP transmitem login, senha e conteúdo sem qualquer criptografia. Quem estiver na mesma rede consegue capturar tudo com um sniffer. A substituição correta é SFTP (sobre SSH) ou FTPS (FTP sobre TLS). Há um aprofundamento dedicado de FTP/TFTP no site com o passo a passo.",
+      "destaque": "Se a senha viaja legível, ela já pode ser considerada comprometida."
+    },
+    {
+      "titulo": "SMB e a porta 445",
+      "icone": "folder_shared",
+      "texto": "O SMB é o protocolo de compartilhamento de arquivos e impressoras do Windows. A porta 445 substituiu o velho NetBIOS (139). É extremamente útil na rede interna e extremamente perigosa quando alcançável pela internet.",
+      "destaque": "445 na borda é convite para o desastre."
+    },
+    {
+      "titulo": "EternalBlue e MS17-010",
+      "icone": "bolt",
+      "texto": "EternalBlue foi um exploit vazado que abusava de uma falha no SMBv1 (corrigida pela Microsoft no boletim MS17-010). Permitia execução remota de código sem autenticação. Foi o motor do WannaCry e do NotPetya em 2017.",
+      "destaque": "O patch existe desde março de 2017; máquinas sem ele ainda caem hoje."
+    },
+    {
+      "titulo": "Movimento lateral",
+      "icone": "lan",
+      "texto": "Depois de comprometer uma máquina via SMB, o atacante usa as mesmas credenciais e shares para pular para outras estações. Assim um único ponto exposto vira uma infecção de rede inteira, típico de ransomware.",
+      "destaque": "Segmentar a rede limita até onde o invasor consegue caminhar."
+    },
+    {
+      "titulo": "NFS e confiança por IP",
+      "icone": "database",
+      "texto": "O NFS (2049) compartilha diretórios entre sistemas Unix/Linux. A configuração clássica confia apenas no IP do cliente e no par usuário/grupo (UID/GID). Sem Kerberos, quem falsifica o IP ou o UID lê e escreve nos arquivos.",
+      "destaque": "Export com no_root_squash entrega acesso root ao invasor."
+    },
+    {
+      "titulo": "Compartilhamento anônimo",
+      "icone": "warning",
+      "texto": "Shares SMB com acesso de convidado, servidores FTP anônimos e exports NFS abertos a qualquer host expõem dados sem exigir login. São encontrados por varredura automática em minutos.",
+      "destaque": "Acesso anônimo deve ser desativado por padrão, não por exceção."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Cadeia de ataque: SMB (445) exposto até ransomware",
+    "definicao": "flowchart TD\n    A[Atacante na internet] -->|varredura da porta 445| B{445 exposta na borda?}\n    B -->|Não, bloqueada no firewall| C[Conexão recusada<br/>ataque para aqui]\n    B -->|Sim, SMBv1 sem patch| D[Explora EternalBlue<br/>MS17-010]\n    D --> E[Execução remota de código<br/>sem autenticação]\n    E --> F[Coleta credenciais<br/>e mapeia shares]\n    F --> G[Movimento lateral<br/>para outras estações]\n    G --> H[Ransomware criptografa<br/>arquivos da rede]\n    C -.->|caminho seguro| I[SMBv3 assinado<br/>somente na rede interna]",
+    "legenda": "O ponto de decisão é a exposição da porta 445. Bloqueada na borda, o ataque morre no início. Exposta e sem o patch MS17-010, o EternalBlue abre caminho para execução remota, roubo de credenciais, movimento lateral e, por fim, ransomware em toda a rede."
+  },
+  "tabelas": [
+    {
+      "titulo": "Portas da família: serviço e risco",
+      "colunas": [
+        "Porta",
+        "Serviço",
+        "Transporte",
+        "Risco principal"
+      ],
+      "linhas": [
+        [
+          "21 (20 dados)",
+          "FTP",
+          "TCP",
+          "Login e arquivos em texto claro; modo anônimo"
+        ],
+        [
+          "69",
+          "TFTP",
+          "UDP",
+          "Sem autenticação nenhuma; leitura/escrita aberta"
+        ],
+        [
+          "139",
+          "NetBIOS/SMB legado",
+          "TCP",
+          "SMBv1 antigo, alvo de EternalBlue"
+        ],
+        [
+          "445",
+          "SMB",
+          "TCP",
+          "Execução remota (MS17-010), ransomware, movimento lateral"
+        ],
+        [
+          "2049",
+          "NFS",
+          "TCP/UDP",
+          "Confiança por IP/UID; exports mal configurados"
+        ]
+      ]
+    },
+    {
+      "titulo": "Em texto claro versus versão segura",
+      "colunas": [
+        "Inseguro (evitar)",
+        "Seguro (usar)",
+        "O que muda"
+      ],
+      "linhas": [
+        [
+          "FTP (21)",
+          "SFTP (22, sobre SSH) ou FTPS (TLS)",
+          "Credenciais e dados passam cifrados"
+        ],
+        [
+          "TFTP (69)",
+          "SCP/SFTP ou HTTPS com autenticação",
+          "Adiciona login e criptografia"
+        ],
+        [
+          "SMBv1 sem assinatura",
+          "SMBv3 com signing e criptografia",
+          "Bloqueia adulteração e escuta; fecha o EternalBlue"
+        ],
+        [
+          "NFS sem Kerberos (sec=sys)",
+          "NFSv4 com sec=krb5p",
+          "Autenticação forte e tráfego cifrado"
+        ],
+        [
+          "Share/FTP anônimo",
+          "Acesso autenticado por usuário",
+          "Remove porta de entrada sem login"
+        ]
+      ]
+    },
+    {
+      "titulo": "O que fazer com cada porta na borda",
+      "colunas": [
+        "Porta",
+        "Expor na internet?",
+        "Recomendação"
+      ],
+      "linhas": [
+        [
+          "445 SMB",
+          "Nunca",
+          "Somente rede interna ou VPN; bloquear na borda sempre"
+        ],
+        [
+          "139 NetBIOS",
+          "Nunca",
+          "Desativar SMBv1/NetBIOS; legado sem uso"
+        ],
+        [
+          "21 FTP",
+          "Evitar",
+          "Migrar para SFTP; ver aprofundamento dedicado de FTP/TFTP no site"
+        ],
+        [
+          "69 TFTP",
+          "Nunca na WAN",
+          "Uso apenas em rede de gerência isolada (ex.: boot PXE)"
+        ],
+        [
+          "2049 NFS",
+          "Nunca",
+          "Restringir por IP/VLAN; ativar Kerberos"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "EternalBlue na porta 445 (MS17-010)",
+      "como_funciona": "O atacante varre a internet procurando a porta 445 aberta e testa a falha do SMBv1. Sem o patch MS17-010, consegue execução remota de código sem precisar de senha, instalando o payload direto na máquina. Foi o vetor de WannaCry e NotPetya.",
+      "sinal": "Tráfego SMB inesperado vindo de IPs externos; processos estranhos após conexão na 445; alertas de IDS para MS17-010.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "FTP e TFTP capturados em texto claro",
+      "como_funciona": "Como FTP e TFTP não cifram nada, um atacante na mesma rede (ou num equipamento intermediário) usa um sniffer para ler usuário, senha e o próprio arquivo transferido. Com a senha, ele reusa o acesso e sobe arquivos maliciosos.",
+      "sinal": "Credenciais reaparecendo em acessos suspeitos; transferências FTP/TFTP para destinos desconhecidos; ARP spoofing na rede.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "NFS mal configurado (export aberto)",
+      "como_funciona": "Um export NFS que confia em qualquer host ou usa no_root_squash permite ao atacante montar o diretório remotamente, forjar um UID e ler ou sobrescrever arquivos, inclusive como root. Sem Kerberos, a única barreira é o IP, que pode ser falsificado.",
+      "sinal": "Montagens NFS de IPs não autorizados; alteração de arquivos por usuários inesperados; showmount revelando exports amplos.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Share SMB/FTP aberto ou anônimo",
+      "como_funciona": "Compartilhamentos com acesso de convidado ou servidores FTP anônimos entregam dados a quem se conectar, sem login. Varreduras automáticas encontram esses recursos em minutos e baixam tudo, ou plantam malware para os próprios usuários executarem.",
+      "sinal": "Recursos com permissão Todos/Everyone ou anonymous; downloads em massa nos logs; arquivos novos que ninguém reconhece.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Movimento lateral via SMB",
+      "como_funciona": "Após entrar em uma máquina, o atacante usa credenciais coletadas e o próprio SMB para acessar shares e executar comandos em outras estações (pass-the-hash, PsExec). Uma única máquina exposta contamina toda a rede plana.",
+      "sinal": "Autenticações SMB em cadeia entre estações; uso de contas administrativas em horários atípicos; picos de conexões 445 internas.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Nunca expor a porta 445 (nem 139) na borda",
+      "como_funciona": "Bloqueie 139 e 445 no firewall de perímetro em ambos os sentidos. Compartilhamento de arquivos é serviço interno: acesso remoto legítimo deve passar por VPN. Isso sozinho elimina a maior parte dos ataques automatizados de ransomware.",
+      "cobre": "EternalBlue, movimento lateral externo, varreduras de share",
+      "limite": "Não protege contra ameaça já dentro da rede interna; precisa de segmentação complementar."
+    },
+    {
+      "nome": "Aplicar o patch MS17-010 e desativar o SMBv1",
+      "como_funciona": "Instale a atualização de segurança de março de 2017 em todo Windows e remova o SMBv1 (recurso legado). O SMBv1 não tem correção arquitetural; a Microsoft recomenda desligar em vez de manter.",
+      "cobre": "EternalBlue e outras falhas do SMBv1",
+      "limite": "Máquinas fora de suporte ou não gerenciadas podem ficar sem patch; exige inventário."
+    },
+    {
+      "nome": "Ativar SMB signing e usar SMBv3",
+      "como_funciona": "A assinatura SMB garante que as mensagens não foram adulteradas em trânsito e impede ataques de retransmissão (relay). O SMBv3 adiciona criptografia ponta a ponta do tráfego de arquivos. Torne a assinatura obrigatória por política.",
+      "cobre": "Adulteração, escuta e relay de SMB",
+      "limite": "Pequeno custo de CPU; dispositivos antigos podem não suportar SMBv3."
+    },
+    {
+      "nome": "Trocar FTP/TFTP por SFTP",
+      "como_funciona": "Substitua FTP e TFTP por SFTP (sobre SSH) ou, quando necessário, FTPS com TLS. Assim login e conteúdo trafegam cifrados. Há um aprofundamento dedicado de FTP/TFTP no site com o passo a passo dessa migração.",
+      "cobre": "Sniffing de credenciais e de arquivos em texto claro",
+      "limite": "Requer ajustar clientes e scripts que dependiam do FTP legado."
+    },
+    {
+      "nome": "Endurecer NFS e restringir exports",
+      "como_funciona": "Limite os exports a IPs/sub-redes específicas, use root_squash e ative NFSv4 com Kerberos (sec=krb5p) para autenticação e criptografia reais em vez de confiança por IP. Exponha o 2049 apenas na VLAN de servidores.",
+      "cobre": "Exports abertos, spoofing de IP/UID, acesso root indevido",
+      "limite": "Kerberos exige infraestrutura de domínio; configuração mais trabalhosa."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Verificar se a porta 445 está exposta",
+      "cenario": "Você quer confirmar, do lado de fora, se o SMB está acessível e se há risco de MS17-010. Faça isso apenas em redes e hosts que você tem autorização para testar.",
+      "comandos": "# Ver se a porta 445 responde\nnmap -p 139,445 -Pn 203.0.113.10\n\n# Checar a vulnerabilidade EternalBlue (MS17-010)\nnmap -p 445 --script smb-vuln-ms17-010 203.0.113.10\n\n# Listar shares visiveis (Linux)\nsmbclient -L //203.0.113.10 -N",
+      "explicacao": "Se a 445 aparece open a partir da internet, já é um problema grave por si só. O script smb-vuln-ms17-010 diz se o host está vulnerável ao EternalBlue. A opção -N tenta listar shares sem senha: se algo aparecer, há acesso anônimo para corrigir."
+    },
+    {
+      "titulo": "Ver credenciais FTP em texto claro",
+      "cenario": "Demonstrar por que FTP é inseguro capturando um login em laboratório isolado, com um servidor e um cliente FTP de teste que você controla.",
+      "comandos": "# Terminal 1: capturar o tráfego FTP na interface\nsudo tcpdump -i eth0 -A 'tcp port 21'\n\n# Terminal 2: fazer um login FTP comum\nftp 192.168.56.20\n# usuário: teste  senha: senha123\n\n# No tcpdump aparecerão linhas como:\n# USER teste\n# PASS senha123",
+      "explicacao": "O tcpdump mostra USER e PASS legíveis no fio, provando que qualquer um na rede lê a senha. Repita a mesma transferência por SFTP (porta 22) e o conteúdo aparece cifrado, ilegível. O aprofundamento dedicado de FTP/TFTP no site detalha a migração."
+    },
+    {
+      "titulo": "Auditar exports NFS de um servidor",
+      "cenario": "Descobrir quais diretórios um servidor NFS compartilha e para quem, verificando configurações perigosas como exports abertos a qualquer host.",
+      "comandos": "# Listar exports que o servidor oferece\nshowmount -e 192.168.56.30\n\n# Exemplo de saída perigosa:\n# /dados   *          (aberto a todos)\n# /home    *(rw,no_root_squash)\n\n# Conferir a configuração no servidor\ncat /etc/exports",
+      "explicacao": "Um * na coluna de clientes significa que qualquer host pode montar o diretório. no_root_squash permite que o root do cliente seja root nos arquivos: combinação crítica. O correto é restringir por IP (ex.: 192.168.56.0/24) e usar root_squash, além de Kerberos onde possível."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Porta 445 aparece aberta em varredura externa",
+      "causa_provavel": "SMB publicado direto na borda, sem firewall bloqueando 139/445",
+      "comando": "nmap -p 139,445 -Pn SEU_IP_PUBLICO",
+      "leitura": "Qualquer resultado open a partir da internet é falha grave: bloqueie imediatamente no firewall de perímetro e mova o acesso para VPN."
+    },
+    {
+      "sintoma": "Host acusado de vulnerável ao EternalBlue",
+      "causa_provavel": "SMBv1 ativo e patch MS17-010 ausente",
+      "comando": "nmap -p 445 --script smb-vuln-ms17-010 HOST",
+      "leitura": "Estado VULNERABLE confirma o risco. Aplique a atualização MS17-010 e desative o SMBv1 no host; considere-o candidato a ransomware até corrigir."
+    },
+    {
+      "sintoma": "Login FTP capturado em texto claro",
+      "causa_provavel": "Uso de FTP puro (porta 21) em vez de SFTP/FTPS",
+      "comando": "sudo tcpdump -i eth0 -A 'tcp port 21'",
+      "leitura": "Se USER e PASS aparecem legíveis, migre para SFTP. Veja o aprofundamento dedicado de FTP/TFTP no site."
+    },
+    {
+      "sintoma": "Exports NFS visíveis para qualquer host",
+      "causa_provavel": "/etc/exports com curinga * ou no_root_squash",
+      "comando": "showmount -e HOST",
+      "leitura": "Exports com * ou no_root_squash devem ser restringidos por IP/sub-rede e usar root_squash; ative Kerberos (sec=krb5p) para autenticação real."
+    }
+  ]
+}

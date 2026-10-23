@@ -1,0 +1,85 @@
+{! Aba Geral do módulo Criptografia: tabela de algoritmos + playground de hash
+    (WebCrypto, client-side) + comparador de força. Variáveis: conteudo (resumo +
+    tabelas), aprofundamentos, aprofundamentoAtivo. !}
+{#include shared/base.html}
+{#title}Criptografia | Framework de Redes A&D{/title}
+{#description}Criptografia aplicada a redes: algoritmos simétricos e assimétricos, força de chave, funções de hash, assinatura digital e um playground para experimentar cada um.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
+<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261022">
+<link rel="stylesheet" href="/criptografia/css/criptografia.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='criptografia' /}
+    {#include criptografia/partials/subnav.html /}
+
+    <header class="text-center mb-4">
+        <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">enhanced_encryption</span></div>
+        <span class="aed-eyebrow aed-eyebrow-teal">Criptografia</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Criptografia — algoritmos e forças</h1>
+        <p class="text-secondary small mx-auto aed-medida-leitura">{conteudo.resumo}</p>
+        <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+            <a href="/certificados" class="aed-btn aed-btn-neutral btn-sm" title="Onde a criptografia é aplicada: certificados X.509"><span class="material-symbols-outlined" aria-hidden="true" translate="no">workspace_premium</span> Certificados</a>
+            <a href="/protocolos/tls" class="aed-btn aed-btn-neutral btn-sm" title="O protocolo que usa tudo isso"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> TLS</a>
+        </div>
+    </header>
+
+    <section class="aprof-secao">
+        <h2 class="h3 aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Playground de hash e codificação</h2>
+        <p class="small text-secondary">Digite um texto e veja o hash e a codificação ao vivo — tudo no seu navegador (WebCrypto), nada é enviado ao servidor. Note o <strong>efeito avalanche</strong>: mude um caractere e o hash muda por completo.</p>
+        <div class="card-tech p-3" id="cripto-hash">
+            <label for="cripto-in" class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">text_fields</span> Texto de entrada</label>
+            <textarea id="cripto-in" class="form-control bg-dark text-light border-secondary mb-2" rows="2" spellcheck="false">O rato roeu a roupa do rei de Roma</textarea>
+            <div class="mb-3">
+                <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-limpar="#cripto-hash" data-limpar-resultado="#cripto-out"
+                        title="Esvaziar o texto e apagar as saídas de hash/codificação">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
+                    <thead><tr><th>Algoritmo / codificação</th><th>Saída</th></tr></thead>
+                    <tbody id="cripto-out">
+                        <tr data-alg="SHA-256"><td class="fw-bold text-info text-nowrap">SHA-256</td><td class="cripto-val small"></td></tr>
+                        <tr data-alg="SHA-384"><td class="fw-bold text-info text-nowrap">SHA-384</td><td class="cripto-val small"></td></tr>
+                        <tr data-alg="SHA-512"><td class="fw-bold text-info text-nowrap">SHA-512</td><td class="cripto-val small"></td></tr>
+                        <tr data-alg="SHA-1"><td class="fw-bold text-warning text-nowrap">SHA-1 <span class="badge bg-dark border border-danger text-danger">quebrado</span></td><td class="cripto-val small"></td></tr>
+                        <tr data-alg="base64"><td class="fw-bold text-info text-nowrap">Base64 <span class="text-secondary">(codificação, não cifra)</span></td><td class="cripto-val small"></td></tr>
+                        <tr data-alg="hex"><td class="fw-bold text-info text-nowrap">Hex (UTF-8)</td><td class="cripto-val small"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="aprof-secao">
+        <h2 class="h3 aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">verified_user</span> Comparador de força</h2>
+        <p class="small text-secondary">Escolha um algoritmo e veja o veredito — seguro, aceitável, fraco ou quebrado — e por quê.</p>
+        <div class="card-tech p-3">
+            <select aria-label="Algoritmo para comparar a força" id="forca-alg" class="form-select bg-dark text-light border-secondary mb-3" style="max-width:24rem;">
+                <option value="aes">AES-256-GCM</option>
+                <option value="chacha">ChaCha20-Poly1305</option>
+                <option value="3des">3DES (Triple DES)</option>
+                <option value="des">DES</option>
+                <option value="rc4">RC4</option>
+                <option value="rsa2048">RSA 2048</option>
+                <option value="rsa1024">RSA 1024</option>
+                <option value="ecdsa">ECDSA P-256</option>
+                <option value="ed25519">Ed25519</option>
+                <option value="sha256">SHA-256</option>
+                <option value="sha1">SHA-1</option>
+                <option value="md5">MD5</option>
+                <option value="bcrypt">bcrypt / Argon2 (senha)</option>
+            </select>
+            <div id="forca-out" class="p-3 rounded border"></div>
+        </div>
+    </section>
+
+    {#include protocolos/partials/tabelas.html tabelas=conteudo.tabelas /}
+</div>
+{/content}
+{#extraScripts}
+<script src="/criptografia/js/criptografia.js?v=20260925"></script>
+{/extraScripts}
+{/include}

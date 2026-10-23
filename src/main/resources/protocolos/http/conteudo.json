@@ -1,0 +1,374 @@
+{
+  "resumo": "HTTP é o protocolo de requisição-resposta que move a web (textual no HTTP/1.1, binário no HTTP/2 e no HTTP/3): o cliente pede um recurso com um método e uma URL, e o servidor responde com um código de status e um corpo. Ele é stateless (sem estado), então cookies e sessões carregam o contexto entre chamadas. HTTPS é o mesmo HTTP encapsulado em TLS, o que garante confidencialidade, integridade e autenticação do servidor. Sem HTTPS tudo trafega em texto claro e pode ser lido ou adulterado por quem estiver no caminho.",
+  "ficha": [
+    {
+      "rotulo": "RFC",
+      "valor": "RFC 9110 (semântica), 9111 (cache), 9112 (HTTP/1.1), 9113 (HTTP/2), 9114 (HTTP/3)",
+      "dica": "As antigas RFC 7230-7235 do HTTP/1.1 foram obsoletadas em 2022 por essa família."
+    },
+    {
+      "rotulo": "Porta(s)",
+      "valor": "80 (HTTP) e 443 (HTTPS)",
+      "dica": "Portas well-known da IANA; o navegador assume 80 para http:// e 443 para https://."
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Aplicação (camada 7 do OSI / camada de aplicação do TCP/IP)",
+      "dica": "Fica no topo da pilha; delega o transporte ao TCP ou ao QUIC."
+    },
+    {
+      "rotulo": "Transporte",
+      "valor": "TCP no HTTP/1.1 e HTTP/2; UDP via QUIC no HTTP/3",
+      "dica": "O QUIC embute o TLS 1.3 e elimina o head-of-line blocking do TCP."
+    },
+    {
+      "rotulo": "Substitui / relacionados",
+      "valor": "Depende de TCP/QUIC e DNS; usa TLS para virar HTTPS; sucessor prático do Gopher/FTP na web",
+      "dica": "HTTPS não é um protocolo novo: é HTTP dentro de um túnel TLS."
+    },
+    {
+      "rotulo": "Segurança",
+      "valor": "Texto claro e sem proteção no HTTP; confidencialidade, integridade e autenticação do servidor só com HTTPS (TLS)",
+      "dica": "HTTPS protege o canal, não a aplicação: SQLi, XSS e CSRF continuam possíveis."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Requisição e resposta",
+      "icone": "swap_vert",
+      "texto": "Cada troca tem uma requisição (método + caminho + cabeçalhos + corpo opcional) e uma resposta (código de status + cabeçalhos + corpo). É sempre o cliente que inicia.",
+      "destaque": "Método + URL vão, status + corpo voltam."
+    },
+    {
+      "titulo": "Sem estado (stateless)",
+      "icone": "public",
+      "texto": "O servidor não lembra de requisições anteriores; cada chamada é independente. Para manter login e carrinho, o estado viaja em cookies (Set-Cookie / Cookie) e num identificador de sessão.",
+      "destaque": "Cookies costuram o estado sobre um protocolo sem memória."
+    },
+    {
+      "titulo": "Métodos e status",
+      "icone": "http",
+      "texto": "Métodos dizem a intenção (GET lê, POST cria, PUT substitui, DELETE remove). Códigos de status dizem o resultado em famílias: 2xx sucesso, 3xx redirecionamento, 4xx erro do cliente, 5xx erro do servidor.",
+      "destaque": "GET/HEAD são seguros; PUT/DELETE são idempotentes."
+    },
+    {
+      "titulo": "HTTP/1.1 -> 2 -> 3",
+      "icone": "layers",
+      "texto": "1.1 é texto e serializa respostas na conexão. HTTP/2 é binário e multiplexa várias trocas numa conexão TCP (HPACK). HTTP/3 roda sobre QUIC (UDP), com TLS 1.3 embutido e sem o bloqueio de cabeça de fila do TCP.",
+      "destaque": "Mesma semântica; muda o transporte e o enquadramento."
+    },
+    {
+      "titulo": "HTTPS sobre TLS",
+      "icone": "enhanced_encryption",
+      "texto": "Antes de qualquer requisição, o TLS faz o handshake, valida o certificado do servidor e cria um canal cifrado. Só depois o HTTP flui, agora ilegível para intermediários.",
+      "destaque": "TLS primeiro, HTTP depois, tudo pela porta 443."
+    },
+    {
+      "titulo": "Cache",
+      "icone": "cached",
+      "texto": "Cache-Control, ETag e 304 Not Modified evitam baixar de novo dados que não mudaram, economizando banda e latência. Cache mal configurado, porém, pode servir conteúdo velho ou privado.",
+      "destaque": "max-age e no-store controlam o que pode ser guardado."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Ciclo HTTPS: handshake, requisição e sessão",
+    "definicao": "sequenceDiagram\n    participant C as Cliente\n    participant S as Servidor\n    C->>S: Handshake TCP mais TLS (porta 443)\n    S-->>C: Certificado validado, canal cifrado\n    C->>S: GET /pagina HTTP/1.1 (Host)\n    S-->>C: 200 OK mais HTML\n    C->>S: POST /login (usuário e senha)\n    S-->>C: 200 OK mais Set-Cookie sessão\n    C->>S: GET /perfil (Cookie sessão)\n    S-->>C: 200 OK conteúdo autenticado",
+    "legenda": "Setas cheias são requisições do cliente; setas tracejadas são respostas do servidor. O canal só vira cifrado depois do handshake TLS; o cookie de sessão carrega o estado entre requisições num protocolo stateless."
+  },
+  "cabecalho": null,
+  "tabelas": [
+    {
+      "titulo": "Métodos HTTP",
+      "colunas": [
+        "Método",
+        "O que faz",
+        "Seguro",
+        "Idempotente",
+        "Tem corpo"
+      ],
+      "linhas": [
+        [
+          "GET",
+          "Recupera um recurso",
+          "Sim",
+          "Sim",
+          "Não (em geral)"
+        ],
+        [
+          "HEAD",
+          "Como GET, mas só os cabeçalhos",
+          "Sim",
+          "Sim",
+          "Não"
+        ],
+        [
+          "POST",
+          "Envia dados / cria recurso",
+          "Não",
+          "Não",
+          "Sim"
+        ],
+        [
+          "PUT",
+          "Substitui o recurso inteiro",
+          "Não",
+          "Sim",
+          "Sim"
+        ],
+        [
+          "PATCH",
+          "Modificação parcial do recurso",
+          "Não",
+          "Não",
+          "Sim"
+        ],
+        [
+          "DELETE",
+          "Remove o recurso",
+          "Não",
+          "Sim",
+          "Opcional"
+        ],
+        [
+          "OPTIONS",
+          "Consulta opções/CORS do servidor",
+          "Sim",
+          "Sim",
+          "Não"
+        ]
+      ]
+    },
+    {
+      "titulo": "Famílias de códigos de status",
+      "colunas": [
+        "Família",
+        "Significado",
+        "Exemplos"
+      ],
+      "linhas": [
+        [
+          "1xx",
+          "Informacional",
+          "100 Continue, 101 Switching Protocols, 103 Early Hints"
+        ],
+        [
+          "2xx",
+          "Sucesso",
+          "200 OK, 201 Created, 204 No Content"
+        ],
+        [
+          "3xx",
+          "Redirecionamento",
+          "301 Moved Permanently, 302 Found, 304 Not Modified, 308 Permanent Redirect"
+        ],
+        [
+          "4xx",
+          "Erro do cliente",
+          "400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 429 Too Many Requests"
+        ],
+        [
+          "5xx",
+          "Erro do servidor",
+          "500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout"
+        ]
+      ]
+    },
+    {
+      "titulo": "Cabeçalhos importantes",
+      "colunas": [
+        "Cabeçalho",
+        "Direção",
+        "Função"
+      ],
+      "linhas": [
+        [
+          "Host",
+          "Requisição",
+          "Nome do host virtual pedido; obrigatório no HTTP/1.1"
+        ],
+        [
+          "Content-Type",
+          "Ambos",
+          "Tipo de mídia do corpo, ex.: application/json, text/html"
+        ],
+        [
+          "Cookie / Set-Cookie",
+          "Requisição / Resposta",
+          "Envia e define o estado do cliente (sessão)"
+        ],
+        [
+          "Authorization",
+          "Requisição",
+          "Credenciais, ex.: Basic base64 ou Bearer token"
+        ],
+        [
+          "Cache-Control",
+          "Ambos",
+          "Diretivas de cache, ex.: no-store, max-age=3600"
+        ]
+      ]
+    },
+    {
+      "titulo": "Versões, portas e transporte",
+      "colunas": [
+        "Protocolo",
+        "Porta",
+        "Transporte",
+        "Observação"
+      ],
+      "linhas": [
+        [
+          "HTTP/1.1",
+          "80",
+          "TCP",
+          "Texto; uma resposta por vez na conexão (keep-alive)"
+        ],
+        [
+          "HTTP/2",
+          "443",
+          "TCP + TLS",
+          "Binário; multiplexação e compressão HPACK"
+        ],
+        [
+          "HTTP/3",
+          "443/UDP",
+          "QUIC (UDP)",
+          "TLS 1.3 embutido; sem head-of-line blocking do TCP"
+        ],
+        [
+          "HTTPS",
+          "443",
+          "TCP ou QUIC + TLS",
+          "HTTP encapsulado num túnel TLS"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "SQL Injection (SQLi)",
+      "como_funciona": "Entrada não tratada é concatenada numa query SQL; o atacante injeta comandos (ex.: ' OR '1'='1 ou UNION SELECT) para ler, alterar ou apagar o banco.",
+      "sinal": "Erros de banco vazando na resposta; aspas/UNION nos parâmetros; a resposta muda conforme payloads booleanos (true vs false).",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Cross-Site Scripting (XSS)",
+      "como_funciona": "Script malicioso é refletido ou armazenado e executa no navegador da vítima, no contexto do site, roubando cookies ou agindo em nome dela.",
+      "sinal": "Campos que devolvem <script> ou atributos sem escape; conteúdo do usuário aparecendo cru no HTML.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Cross-Site Request Forgery (CSRF)",
+      "como_funciona": "Um site malicioso força o navegador da vítima já autenticada a enviar uma requisição; o cookie de sessão vai junto automaticamente e a ação é executada sem consentimento.",
+      "sinal": "Ações sensíveis aceitas sem token anti-CSRF; cookies de sessão sem atributo SameSite.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Header / CRLF Injection (response splitting)",
+      "como_funciona": "Dados com CR e LF (%0d%0a) injetados em cabeçalhos permitem forjar Set-Cookie, dividir a resposta ou envenenar cache.",
+      "sinal": "Parâmetros refletidos em Location ou Set-Cookie; sequências %0d%0a na entrada alterando cabeçalhos da resposta.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "MITM sem HTTPS",
+      "como_funciona": "No HTTP puro tudo trafega em texto claro; quem está no caminho (Wi-Fi aberto, proxy, provedor) lê e altera senhas, cookies e conteúdo, inclusive rebaixando HTTPS para HTTP.",
+      "sinal": "Site em http://; sem cadeado; conteúdo ou anúncios injetados; ausência de redirecionamento e de HSTS.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "HTTPS + HSTS",
+      "como_funciona": "O TLS cifra e autentica o canal; o cabeçalho Strict-Transport-Security (HSTS) obriga o navegador a só usar HTTPS naquele domínio, bloqueando o downgrade para HTTP.",
+      "cobre": "MITM, sniffing, adulteração em trânsito e ataques de downgrade.",
+      "limite": "Não protege contra falhas na aplicação (SQLi, XSS, CSRF); depende de certificado válido e cadeia confiável."
+    },
+    {
+      "nome": "Cookies HttpOnly / Secure / SameSite",
+      "como_funciona": "HttpOnly esconde o cookie do JavaScript; Secure só o envia por HTTPS; SameSite limita o envio em requisições cross-site.",
+      "cobre": "Roubo de sessão via XSS (HttpOnly) e boa parte do CSRF (SameSite).",
+      "limite": "SameSite Lax/Strict não substitui token anti-CSRF em todos os fluxos e não valida a entrada."
+    },
+    {
+      "nome": "Validação de entrada, escape de saída e CSP",
+      "como_funciona": "Validar a entrada, escapar a saída conforme o contexto (HTML, atributo, JS) e aplicar Content-Security-Policy para restringir de onde scripts podem carregar e executar.",
+      "cobre": "XSS refletido e armazenado, injeção em templates.",
+      "limite": "CSP com unsafe-inline enfraquece a proteção; não resolve SQLi, que exige queries parametrizadas."
+    },
+    {
+      "nome": "Tokens anti-CSRF",
+      "como_funciona": "Token imprevisível por sessão ou por requisição que o servidor valida em toda ação que muda estado; o site atacante não consegue lê-lo por causa da same-origin policy.",
+      "cobre": "CSRF em formulários e endpoints que alteram estado.",
+      "limite": "Precisa acompanhar toda ação sensível; não protege se houver XSS, que consegue ler e reenviar o token."
+    },
+    {
+      "nome": "Queries parametrizadas (prepared statements)",
+      "como_funciona": "Separam o código SQL dos dados; os valores enviados nunca são interpretados como comando, mesmo com aspas ou palavras-chave.",
+      "cobre": "SQL Injection.",
+      "limite": "Não cobre XSS nem CSRF; um ORM usado com concatenação de strings ainda fica vulnerável."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ver a troca completa com curl -v e curl -I",
+      "cenario": "Inspecionar os cabeçalhos enviados e recebidos, o status e o handshake TLS.",
+      "comandos": "curl -v https://example.com\n# apenas os cabeçalhos da resposta (faz um HEAD):\ncurl -I https://example.com",
+      "explicacao": "O -v mostra linhas > (enviado) e < (recebido) com método, Host, status e cabeçalhos; em HTTPS aparecem o handshake TLS e o certificado. O -I dispara um HEAD e imprime só os cabeçalhos de resposta, sem baixar o corpo."
+    },
+    {
+      "titulo": "Exercitar métodos e enviar um corpo",
+      "cenario": "Testar POST/PUT/DELETE e mandar um JSON, vendo como o servidor recebe a requisição.",
+      "comandos": "curl -X POST https://httpbin.org/post -H \"Content-Type: application/json\" -d '{\"user\":\"paulo\"}'\ncurl -X DELETE -v https://httpbin.org/delete",
+      "explicacao": "O -X define o método, o -H adiciona um cabeçalho e o -d envia o corpo (e já implica POST). O httpbin devolve exatamente o que recebeu, útil para ver o método, o Content-Type e o corpo como o servidor os enxerga."
+    },
+    {
+      "titulo": "Cookies, sessão e redirecionamentos",
+      "cenario": "Observar Set-Cookie, seguir redirects e reenviar cookies como faz um navegador.",
+      "comandos": "curl -c cookies.txt -b cookies.txt -L -v https://example.com\n# ver 301/308 de http para https:\ncurl -I -L http://www.wikipedia.org",
+      "explicacao": "O -c grava os cookies em arquivo, o -b os reenvia e o -L segue os redirecionamentos 3xx. Serve para enxergar o ciclo de sessão (Set-Cookie na resposta, Cookie na próxima requisição) e o redirect de http para https com HSTS."
+    },
+    {
+      "titulo": "Descobrir a versão HTTP negociada",
+      "cenario": "Verificar se o servidor responde em HTTP/1.1, HTTP/2 ou HTTP/3.",
+      "comandos": "curl -I --http2 https://example.com\ncurl -sI --http3 https://cloudflare.com | head -1",
+      "explicacao": "A primeira linha da resposta revela a versão (ex.: HTTP/2 200 ou HTTP/1.1 200). O --http3 exige um curl compilado com suporte a QUIC; sem ele o comando falha, sinalizando que o cliente não fala HTTP/3."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Site abre só em http://, sem cadeado",
+      "causa_provavel": "Falta HTTPS, redirecionamento para https ou HSTS",
+      "comando": "curl -I http://example.com",
+      "leitura": "Sem um 301/308 apontando para https:// nem o cabeçalho Strict-Transport-Security, o tráfego segue em texto claro e fica exposto a MITM."
+    },
+    {
+      "sintoma": "Respostas 401 Unauthorized",
+      "causa_provavel": "Credenciais ausentes ou inválidas no cabeçalho Authorization",
+      "comando": "curl -v -H \"Authorization: Bearer TOKEN\" https://api.example.com",
+      "leitura": "401 pede autenticação (veja o WWW-Authenticate na resposta); já 403 Forbidden seria estar autenticado, porém sem permissão para o recurso."
+    },
+    {
+      "sintoma": "O login não persiste entre requisições",
+      "causa_provavel": "Cookie de sessão não gravado/reenviado, ou marcado Secure sobre HTTP",
+      "comando": "curl -c c.txt -b c.txt -v https://example.com/login",
+      "leitura": "Procure Set-Cookie na resposta do login e Cookie na requisição seguinte; sem eles o servidor stateless trata cada chamada como um cliente novo."
+    },
+    {
+      "sintoma": "Erros 502 ou 504 no navegador",
+      "causa_provavel": "Proxy ou gateway sem resposta válida do backend",
+      "comando": "curl -v https://example.com",
+      "leitura": "502 Bad Gateway = o upstream devolveu resposta inválida; 504 Gateway Timeout = o upstream demorou demais. O problema está entre o proxy e a aplicação, não no cliente."
+    },
+    {
+      "sintoma": "Navegador bloqueia a chamada por CORS",
+      "causa_provavel": "Resposta sem Access-Control-Allow-Origin correspondente",
+      "comando": "curl -I -H \"Origin: https://app.example.com\" https://api.example.com",
+      "leitura": "Sem um Access-Control-Allow-Origin que case com a Origin, o navegador bloqueia; note que o curl não impõe CORS, quem aplica a regra é o navegador."
+    }
+  ]
+}

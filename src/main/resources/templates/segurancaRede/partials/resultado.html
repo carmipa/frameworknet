@@ -1,0 +1,24 @@
+<div class="w-100">
+    {#if veredito == 'PERMITIDO'}
+    <div class="mb-4">
+        <span class="material-symbols-outlined icon-animated resultado-permit" translate="no" aria-hidden="true">check_circle</span>
+    </div>
+    <h3 class="mb-3 resultado-permit">MATCH - PERMITIDO</h3>
+    {#else if veredito == 'BLOQUEADO'}
+    <div class="mb-4">
+        <span class="material-symbols-outlined icon-animated resultado-deny" translate="no" aria-hidden="true">cancel</span>
+    </div>
+    <h3 class="mb-3 resultado-deny">MATCH - BLOQUEADO</h3>
+    {#else}
+    <div class="mb-4">
+        <span class="material-symbols-outlined icon-animated resultado-nomatch" translate="no" aria-hidden="true">help_center</span>
+    </div>
+    <h3 class="mb-3 resultado-nomatch">NO MATCH</h3>
+    {/if}
+
+    <p class="text-secondary">{explicacao}</p>
+
+    <div class="mt-4 p-3 rounded" style="background-color: rgba(0,0,0,0.2);">
+        <small class="text-monospace text-muted d-block">Origem: {origem} -&gt; Destino: {destino}:{porta}</small>
+    </div>
+</div>

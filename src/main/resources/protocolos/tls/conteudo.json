@@ -1,0 +1,294 @@
+{
+  "resumo": "TLS (Transport Layer Security) é a camada que cifra quase tudo hoje: HTTPS, e-mail (SMTPS/IMAPS), DNS sobre TLS e o QUIC do HTTP/3. Ele resolve três coisas ao mesmo tempo — confidencialidade (ninguém no caminho lê), integridade (ninguém altera sem ser notado) e autenticação do servidor (o certificado prova com quem você fala). A versão viva é a TLS 1.3 (RFC 8446), que enxugou o handshake para 1-RTT e removeu toda a criptografia legada. O ponto que confunde: o cadeado prova o CANAL, não a INTENÇÃO — um site de phishing também tem cadeado válido, e é por isso que a maioria do tráfego malicioso hoje se esconde dentro de TLS legítimo.",
+  "conceitos": [
+    {
+      "titulo": "O cadeado prova o canal, não a intenção",
+      "icone": "lock",
+      "texto": "Um certificado válido garante que a conexão é cifrada e que o domínio é aquele mesmo — não que o dono é honesto. Emitir certificado grátis é trivial (Let's Encrypt), então phishing moderno quase sempre tem HTTPS. O cadeado responde 'estou falando mesmo com paypaI.com?' (com i maiúsculo), não 'este site é confiável?'.",
+      "destaque": "Ensinar 'procure o cadeado' como sinal de segurança envelheceu: o cadeado hoje é o piso, não o teto. O que importa é O NOME no certificado, não a existência dele."
+    },
+    {
+      "titulo": "Autenticação do servidor por PKI",
+      "icone": "workspace_premium",
+      "texto": "O servidor apresenta um certificado que amarra a chave pública dele ao nome do domínio, assinado por uma Autoridade Certificadora (CA) em que o navegador já confia. O cliente verifica a assinatura subindo a cadeia até uma CA raiz do seu truststore. Sem uma CA confiável na ponta, não há confiança.",
+      "destaque": "A confiança não está no site — está na CA. Instalar uma CA raiz maliciosa no dispositivo é o que transforma um MITM em invisível (é o que um proxy corporativo faz, com consentimento)."
+    },
+    {
+      "titulo": "Forward secrecy: gravar hoje não decifra depois",
+      "icone": "enhanced_encryption",
+      "texto": "As chaves de sessão nascem de uma troca Diffie-Hellman efêmera (ECDHE) e são descartadas ao fim. A chave privada do certificado só ASSINA a negociação; ela não cifra os dados. Por isso, capturar o tráfego hoje e roubar a chave do servidor amanhã não decifra o que foi gravado. No TLS 1.3 isso é obrigatório — o RSA estático saiu.",
+      "destaque": "É a diferença entre 'a chave do servidor vazou' e 'todas as sessões passadas vazaram': com forward secrecy, a segunda não decorre da primeira."
+    },
+    {
+      "titulo": "TLS 1.3: menos volta, menos escolha ruim",
+      "icone": "bolt",
+      "texto": "O TLS 1.3 reduziu o handshake para 1-RTT (e 0-RTT em retomada, com ressalva de replay), removeu RSA estático, CBC, RC4, compressão e renegociação — as fontes da maioria dos ataques da era 1.2. Sobraram só cinco cipher suites AEAD. Menos opções significa menos maneira de configurar errado.",
+      "destaque": "Boa parte dos ataques clássicos (BEAST, CRIME, POODLE, Lucky13) morreu por REMOÇÃO de recurso no 1.3, não por remendo. Simplicidade virou defesa."
+    },
+    {
+      "titulo": "SNI: o nome ainda vaza no começo",
+      "icone": "visibility",
+      "texto": "No ClientHello, o cliente diz em texto claro qual host quer (SNI), para o servidor escolher o certificado certo quando vários domínios dividem o mesmo IP. Ou seja: o conteúdo é cifrado, mas QUAL site você visita ainda é observável. ECH (Encrypted Client Hello) fecha essa fresta, mas ainda não é universal.",
+      "destaque": "'Está tudo cifrado' é meia-verdade: o observador de rede não lê a página, mas vê o domínio (SNI) e o IP. Metadado também é informação."
+    },
+    {
+      "titulo": "Validação de domínio × identidade real",
+      "icone": "badge",
+      "texto": "Certificado DV (Domain Validated) prova só o controle do domínio — é o padrão e o do Let's Encrypt. OV e EV incluíam verificação da organização, mas os navegadores pararam de destacar o EV na barra porque o usuário não distinguia. Hoje, para o navegador, DV e EV valem quase o mesmo.",
+      "destaque": "Não existe mais 'barra verde do EV' para o usuário confiar. A identidade da organização virou um detalhe dentro do certificado, não um selo visível."
+    }
+  ],
+  "handshake": [
+    {
+      "ordem": 1,
+      "ator": "Cliente → Servidor",
+      "mensagem": "ClientHello",
+      "detalhe": "Anuncia a versão máxima (TLS 1.3), as cipher suites que aceita, o SNI (nome do host, em claro) e já manda uma chave pública efêmera (key_share) — é isso que economiza uma volta em relação ao 1.2."
+    },
+    {
+      "ordem": 2,
+      "ator": "Servidor → Cliente",
+      "mensagem": "ServerHello + {Certificate, CertVerify, Finished}",
+      "detalhe": "Escolhe a cipher suite, manda seu key_share e, já cifrado, envia a cadeia de certificados, uma assinatura provando que detém a chave privada (CertificateVerify) e o Finished. Ao fim desta mensagem, ambos já derivaram as chaves de sessão."
+    },
+    {
+      "ordem": 3,
+      "ator": "Cliente",
+      "mensagem": "verifica o certificado e a cadeia",
+      "detalhe": "Confere: o nome bate com o SNI (SAN), a validade não expirou, a assinatura sobe até uma CA raiz confiável, e o certificado não foi revogado (OCSP/CRL). Qualquer falha aqui é o alerta vermelho do navegador — antes de qualquer dado trafegar."
+    },
+    {
+      "ordem": 4,
+      "ator": "Cliente → Servidor",
+      "mensagem": "Finished + dados de aplicação",
+      "detalhe": "O cliente manda seu Finished e já pode enviar o primeiro request HTTP, tudo cifrado com AEAD. Handshake completo em 1-RTT; na retomada, 0-RTT antecipa dados (com o cuidado de que 0-RTT é replayável)."
+    }
+  ],
+  "cadeia": [
+    {
+      "nivel": "CA raiz",
+      "papel": "Âncora de confiança, no truststore do sistema/navegador.",
+      "exemplo": "ISRG Root X1 (Let's Encrypt), DigiCert Global Root",
+      "nota": "Autoassinada e offline. Não assina sites diretamente — só as intermediárias. Se ela cair do truststore, tudo abaixo deixa de ser confiável."
+    },
+    {
+      "nivel": "CA intermediária",
+      "papel": "Assina os certificados de folha em nome da raiz.",
+      "exemplo": "R11 / E5 (Let's Encrypt)",
+      "nota": "É a que o servidor DEVE enviar junto com a folha. Esquecê-la é o erro de configuração mais comum: funciona no Chrome (que completa a cadeia) e falha no curl/Java/celular."
+    },
+    {
+      "nivel": "Certificado de folha (leaf)",
+      "papel": "O do seu domínio — amarra a chave pública ao nome.",
+      "exemplo": "CN/SAN = frameworknet.carminati.dev.br",
+      "nota": "O nome válido está no SAN (Subject Alternative Name), não mais no CN. Validade curta (90 dias no Let's Encrypt) reduz a janela de uma chave comprometida."
+    }
+  ],
+  "ciphers": [
+    {
+      "suite": "TLS_AES_128_GCM_SHA256 (TLS 1.3)",
+      "avaliacao": "Recomendada",
+      "avaliacao_cor": "success",
+      "nota": "AEAD. É uma das cinco suites do 1.3 — todas seguras por construção. No 1.3 a suite não define a troca de chaves: o handshake completo usa (EC)DHE, com forward secrecy; só a retomada psk_ke e o 0-RTT ficam sem ela."
+    },
+    {
+      "suite": "TLS_CHACHA20_POLY1305_SHA256 (TLS 1.3)",
+      "avaliacao": "Recomendada",
+      "avaliacao_cor": "success",
+      "nota": "Preferida em CPU sem aceleração AES (celular). AEAD, sem os problemas de timing do CBC."
+    },
+    {
+      "suite": "ECDHE-RSA-AES256-GCM-SHA384 (TLS 1.2)",
+      "avaliacao": "Aceitável",
+      "avaliacao_cor": "info",
+      "nota": "ECDHE dá forward secrecy e GCM é AEAD. É o piso aceitável enquanto houver clientes 1.2 — desligue quando puder exigir 1.3."
+    },
+    {
+      "suite": "AES-CBC (qualquer, com HMAC)",
+      "avaliacao": "Evitar",
+      "avaliacao_cor": "warning",
+      "nota": "No CBC do TLS, o MAC-then-encrypt abriu o Lucky13 (timing da checagem do padding), e no TLS 1.0 o IV previsível abriu o BEAST. Removido no 1.3. Só mantenha por compatibilidade extrema, ciente do risco."
+    },
+    {
+      "suite": "RC4 / 3DES / DES",
+      "avaliacao": "Quebrada",
+      "avaliacao_cor": "danger",
+      "nota": "RC4 tem viés estatístico explorável; 3DES caiu no SWEET32 (bloco de 64 bits). Presença em auditoria é achado, não configuração."
+    },
+    {
+      "suite": "EXPORT / NULL / anon (aNULL)",
+      "avaliacao": "Proibida",
+      "avaliacao_cor": "danger",
+      "nota": "Export era cifra deliberadamente fraca (FREAK/Logjam); NULL não cifra; anon não autentica. Nunca em produção — nem 'só para teste' num servidor exposto."
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "MITM com CA falsa / certificado mal emitido",
+      "como_funciona": "Se o atacante consegue um certificado válido para o seu domínio (CA comprometida, emissão indevida, ou uma CA raiz maliciosa instalada no dispositivo da vítima), ele intercepta e decifra tudo sem alerta — o navegador confia na cadeia. É o modelo de um proxy corporativo, sem o consentimento.",
+      "sinal": "Certificado emitido por uma CA inesperada; um log de Certificate Transparency mostrando emissão que você não pediu.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "SSL stripping",
+      "como_funciona": "O atacante on-path mantém HTTP em claro com a vítima e HTTPS com o servidor, removendo o redirecionamento para HTTPS. A vítima nunca chega a ver o cadeado — e não estranha, porque muita gente digita o site sem 'https://'.",
+      "sinal": "A conexão fica em http:// quando deveria ser https://; ausência do redirecionamento esperado.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Downgrade de protocolo/cipher",
+      "como_funciona": "O atacante força a negociação a cair para uma versão ou cipher fraca que ainda esteja habilitada (POODLE forçava SSL 3.0; Logjam forçava DH de export). Só funciona se o servidor AINDA aceitar o legado.",
+      "sinal": "Handshake fechando em TLS 1.0/1.1 ou cipher CBC/export num par que deveria falar 1.3.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Certificado inválido normalizado pelo usuário",
+      "como_funciona": "Expirado, autoassinado ou com nome divergente geram alerta — mas o usuário treinado a 'clicar em avançar' aceita. O alerta que protege vira clique de rotina, e um MITM real passa igual a um certificado só vencido.",
+      "sinal": "NET::ERR_CERT_* no navegador; nome no certificado diferente do host acessado.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Falha de implementação (Heartbleed, ROBOT)",
+      "como_funciona": "O protocolo pode estar certo e a biblioteca, errada. Heartbleed (OpenSSL, 2014) vazava memória do servidor — inclusive a chave privada — respondendo a um heartbeat malformado. Não é falha do TLS, é da implementação.",
+      "sinal": "Versão vulnerável da biblioteca em uso; vazamento de memória em resposta a pacote malformado.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Tráfego malicioso dentro de TLS legítimo",
+      "como_funciona": "Malware e C2 modernos usam HTTPS com certificado válido para se esconder da inspeção. O cadeado é do atacante, e é real. A defesa deixa de ser 'olhar o cadeado' e passa a ser inspeção com quebra de TLS na borda, análise de SNI/JA3 e reputação.",
+      "sinal": "Conexões TLS para domínios recém-registrados, SNI incomum, batimento periódico (beacon) para o mesmo host.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "HSTS (+ preload)",
+      "como_funciona": "Cabeçalho Strict-Transport-Security que ordena ao navegador só acessar o domínio por HTTPS, por um prazo. Com preload, a regra já vem embutida no navegador — vale até no primeiríssimo acesso.",
+      "cobre": "SSL stripping e o primeiro request em http:// que o atacante explora.",
+      "limite": "Sem preload, o primeiríssimo acesso a um domínio novo ainda é vulnerável (janela do 'trust on first use')."
+    },
+    {
+      "nome": "Certificate Transparency (CT)",
+      "como_funciona": "Toda emissão precisa ir para logs públicos e auditáveis; navegadores recusam certificado sem prova de CT (SCT). Você monitora os logs e descobre emissão indevida para o seu domínio.",
+      "cobre": "CA comprometida e emissão indevida — que antes passavam despercebidas.",
+      "limite": "Detecta depois de emitido, não impede a emissão. É vigilância, não bloqueio — precisa de alguém olhando o log (crt.sh)."
+    },
+    {
+      "nome": "CAA (no DNS)",
+      "como_funciona": "Registro CAA declara quais CAs podem emitir para o domínio; uma CA obediente recusa emitir se não estiver na lista.",
+      "cobre": "Emissão por uma CA que você nunca autorizou.",
+      "limite": "Depende da CA respeitar o CAA na hora de emitir; é uma barreira na origem, não uma verificação no cliente."
+    },
+    {
+      "nome": "OCSP stapling",
+      "como_funciona": "O servidor anexa ao handshake uma prova recente e assinada de que o certificado não foi revogado, em vez de o cliente consultar a CA (o que era lento e vazava o que a pessoa acessa).",
+      "cobre": "Revogação verificada sem penalidade de latência nem privacidade.",
+      "limite": "A revogação em si continua sendo o ponto fraco do PKI: sem stapling, muitos clientes ignoram a checagem (soft-fail)."
+    },
+    {
+      "nome": "TLS 1.3 apenas + AEAD apenas",
+      "como_funciona": "Desabilitar TLS 1.0/1.1/1.2 e todas as suites não-AEAD elimina de uma vez a superfície de downgrade e os ataques de padding.",
+      "cobre": "Downgrade, POODLE, BEAST, Lucky13 e cifras quebradas — por remoção, não por remendo.",
+      "limite": "Corta clientes muito antigos. Meça o público real antes de exigir 1.3 puro num serviço aberto."
+    },
+    {
+      "nome": "Certificate pinning (com parcimônia)",
+      "como_funciona": "O app fixa qual certificado/chave (ou qual CA) aceita, recusando qualquer outro mesmo que válido na cadeia. Fecha o MITM por CA falsa.",
+      "cobre": "MITM com certificado emitido por outra CA, inclusive CA instalada no dispositivo.",
+      "limite": "Perigoso: pin errado ou rotação mal planejada tranca o app (bricking). Use pin de CA/backup, não da folha, e tenha plano de rotação. No navegador, HPKP foi abandonado por isso."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "1. Ver o handshake e a cadeia de um site",
+      "cenario": "Inspecionar versão, cipher e a cadeia de certificados servida.",
+      "comandos": "openssl s_client -connect frameworknet.carminati.dev.br:443 -servername frameworknet.carminati.dev.br </dev/null\n\n# só a versão e a cipher negociadas:\nopenssl s_client -connect example.com:443 </dev/null 2>/dev/null | grep -E 'Protocol|Cipher'",
+      "explicacao": "A seção 'Certificate chain' mostra a ordem enviada (0 = folha, 1 = intermediária). 'Verify return code: 0 (ok)' confirma a validação. Se aparecer 'unable to get local issuer certificate', o servidor esqueceu de enviar a intermediária."
+    },
+    {
+      "titulo": "2. Ler os campos do certificado de folha",
+      "cenario": "Conferir nome (SAN), validade e emissor.",
+      "comandos": "openssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null \\\n  | openssl x509 -noout -subject -issuer -dates -ext subjectAltName",
+      "explicacao": "O que vale é o subjectAltName (SAN) — o CN é legado. 'notAfter' é a expiração. O 'issuer' é a CA intermediária; se for você mesmo, é autoassinado. Nome no SAN diferente do host acessado é o clássico 'name mismatch'."
+    },
+    {
+      "titulo": "3. Testar quais versões/ciphers o servidor aceita",
+      "cenario": "Auditar se ainda há protocolo ou cipher legado habilitado.",
+      "comandos": "# TLS 1.0 ainda responde? (esperado: falhar)\n# no OpenSSL 3 o cliente recusa TLS 1.0 sozinho; o SECLEVEL=0 tira essa trava do LADO DO TESTE\nopenssl s_client -connect example.com:443 -tls1 -cipher 'DEFAULT:@SECLEVEL=0' </dev/null\n\n# varredura completa do SEU servidor (troque o nome), se disponível:\ntestssl.sh --quiet servidor.example.com",
+      "explicacao": "Se o -tls1 conecta, o servidor ainda aceita TLS 1.0 — desligue. Sem o @SECLEVEL=0, um OpenSSL 3 falha por conta própria e o teste diria 'não aceita' mesmo com o servidor aceitando. O testssl.sh classifica protocolo, cipher, forward secrecy, vulnerabilidades conhecidas e a cadeia, tudo de uma vez, sem tocar em nada no servidor."
+    },
+    {
+      "titulo": "4. Conferir emissões do seu domínio no Certificate Transparency",
+      "cenario": "Descobrir se alguma CA emitiu certificado para o seu domínio sem você saber.",
+      "comandos": "# no navegador: https://crt.sh/?q=carminati.dev.br\ncurl -s 'https://crt.sh/?q=carminati.dev.br&output=json' | jq '.[].issuer_name' | sort -u",
+      "explicacao": "Toda emissão vai para os logs de CT. Um certificado para o seu domínio emitido por uma CA que você não usa, ou para um subdomínio que você não pediu, é sinal de emissão indevida — investigue antes que vire MITM."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "NET::ERR_CERT_COMMON_NAME_INVALID / name mismatch",
+      "causa_provavel": "O nome acessado não está no SAN do certificado (ex.: acessou www e o cert só cobre o ápice).",
+      "comando": "openssl s_client -connect host:443 -servername host </dev/null 2>/dev/null | openssl x509 -noout -ext subjectAltName",
+      "leitura": "Compare o host da barra com a lista de SAN. Falta o nome? Reemita cobrindo-o (ou adicione um SAN wildcard). O CN não conta mais para os navegadores."
+    },
+    {
+      "sintoma": "unable to get local issuer certificate (curl/Java falham, Chrome funciona)",
+      "causa_provavel": "O servidor não está enviando a CA intermediária; o Chrome completa a cadeia por AIA, clientes estritos não.",
+      "comando": "openssl s_client -connect host:443 -servername host </dev/null 2>/dev/null | grep -A2 'Certificate chain'",
+      "leitura": "Se a 'Certificate chain' mostra só o nível 0 (a folha), falta a intermediária. Configure o servidor com fullchain.pem, não só cert.pem. 'Funciona no Chrome' esconde o bug."
+    },
+    {
+      "sintoma": "Certificado expirado",
+      "causa_provavel": "Renovação automática (certbot/ACME) parou — hook de reload falhou ou o cron não rodou.",
+      "comando": "openssl s_client -connect host:443 </dev/null 2>/dev/null | openssl x509 -noout -dates\nsudo certbot certificates",
+      "leitura": "'notAfter' no passado confirma. Certbot renova aos 60 dias (de 90), então expirar significa que a renovação falhou há semanas — cheque o timer e o hook de reload do servidor web."
+    },
+    {
+      "sintoma": "handshake_failure / no cipher overlap",
+      "causa_provavel": "Cliente e servidor não compartilham nenhuma versão/cipher — típico após endurecer para TLS 1.3 puro com cliente antigo.",
+      "comando": "openssl s_client -connect host:443 -tls1_2 </dev/null\nopenssl s_client -connect host:443 -tls1_3 </dev/null",
+      "leitura": "Descubra qual versão o par aceita testando uma a uma. Se só o 1.3 fecha e o cliente real é antigo, ou o cliente atualiza, ou você reabilita o 1.2 conscientemente enquanto durar a transição."
+    },
+    {
+      "sintoma": "App móvel para de conectar após trocar o certificado",
+      "causa_provavel": "Certificate pinning: o app fixou o certificado/chave antigo e recusa o novo, mesmo válido.",
+      "comando": "openssl s_client -connect host:443 </dev/null 2>/dev/null | openssl x509 -noout -pubkey | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64",
+      "leitura": "Esse hash é o pin da chave pública. Compare com o que o app fixou. É por isso que se fixa a CA ou um backup, não a folha — trocar a folha sem prever a rotação trava todo mundo de uma vez."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Handshake TLS 1.3 (1-RTT) - RFC 8446",
+    "definicao": "sequenceDiagram\n    participant C as Cliente\n    participant S as Servidor\n    Note over C,S: Objetivo: estabelecer sessão cifrada em uma única ida e volta (1-RTT)\n    C->>S: ClientHello (versões suportadas, key_share, cifras)\n    Note right of C: O cliente já envia sua chave pública efêmera (key_share)\n    S-->>C: ServerHello (key_share escolhido)\n    Note over C,S: Segredo de sessão derivado (ECDHE) - ambos os lados já podem cifrar\n    S-->>C: {EncryptedExtensions}\n    S-->>C: {Certificate} (certificado do servidor, cifrado)\n    S-->>C: {CertificateVerify} (assinatura que prova posse da chave privada)\n    S-->>C: {Finished} (verifica a integridade do handshake)\n    C->>S: {Finished} (o cliente confirma o handshake)\n    Note over C,S: Handshake concluído e autenticado\n    C->>S: [Application Data] cifrado\n    S-->>C: [Application Data] cifrado",
+    "legenda": "Fluxo do handshake TLS 1.3 em 1-RTT. As chaves { } indicam mensagens já cifradas com o segredo de handshake; os colchetes [ ] indicam dados de aplicação cifrados com o segredo de aplicação. Diferente do TLS 1.2, o cliente envia sua parcela de chave (key_share) logo no ClientHello, permitindo derivar o segredo de sessão após apenas uma ida e volta. As setas ->> representam mensagens do cliente para o servidor e -->> do servidor para o cliente."
+  },
+  "cabecalho": {
+    "titulo": "Cabeçalho do TLS Record (5 bytes / 40 bits)",
+    "nota": "O cabeçalho do TLS Record possui 8 + 16 + 16 = 40 bits, ou seja, 5 bytes. Ele antecede cada fragmento transmitido. O campo Content type identifica o tipo de conteúdo: 20 = ChangeCipherSpec, 21 = Alert, 22 = Handshake e 23 = Application Data. O campo Legacy version, no TLS 1.3, permanece fixo como legado no valor 0x0303 (que correspondia ao TLS 1.2) por compatibilidade com equipamentos de rede antigos (só o primeiro ClientHello pode usar 0x0301 nesse campo); a versão real é negociada dentro da extensão supported_versions. O campo Length indica o tamanho, em bytes, do fragmento que vem logo após o cabeçalho (no máximo 16384 bytes de texto claro).",
+    "campos": [
+      {
+        "nome": "Content type",
+        "bits": 8,
+        "descricao": "Tipo do conteúdo do registro: 20 = ChangeCipherSpec, 21 = Alert, 22 = Handshake, 23 = Application Data.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Legacy version",
+        "bits": 16,
+        "descricao": "Versão legada, fixada em 0x0303 no TLS 1.3 por compatibilidade (o ClientHello inicial pode usar 0x0301); a versão verdadeira é negociada pela extensão supported_versions.",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "Length",
+        "bits": 16,
+        "descricao": "Comprimento em bytes do fragmento que segue o cabeçalho (máximo de 16384 bytes de texto claro).",
+        "cor": "#0891b2"
+      }
+    ]
+  }
+}

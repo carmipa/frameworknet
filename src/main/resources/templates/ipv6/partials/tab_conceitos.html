@@ -1,0 +1,69 @@
+{! Aba "Conceitos": o que do IPv4 NÃO se aplica ao IPv6 e qual é o equivalente correto. Estático. !}
+<div class="row g-4">
+    <div class="col-12">
+        <div class="calc-form-card">
+            <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> IPv4 → IPv6: o que muda</h2>
+            <p class="calc-hint">Conceitos do IPv4 que <strong>não existem</strong> em IPv6 — e o equivalente correto, para não copiar ideia inválida.</p>
+
+            <div class="table-responsive calc-tabela-scroll">
+                <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
+                    <thead>
+                        <tr>
+                            <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">block</span> Conceito IPv4</th>
+                            <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">rule</span> Em IPv6</th>
+                            <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_horiz</span> Equivalente correto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold">Máscara decimal (255.255.255.0)</td>
+                            <td class="text-danger">Não existe</td>
+                            <td>Só o <strong>prefixo</strong> <code translate="no">/n</code>. A fronteira rede/interface é o bit <code translate="no">n</code> — veja a grade de 128 bits na aba Análise.</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Wildcard mask (0.0.0.255)</td>
+                            <td class="text-danger">Não existe</td>
+                            <td>OSPFv3/EIGRP IPv6 habilitam roteamento <strong>por interface</strong>, não por <code translate="no">network</code> com curinga.</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Broadcast</td>
+                            <td class="text-danger">Não existe</td>
+                            <td><strong>Multicast</strong> (ff00::/8) e o <strong>solicited-node</strong> (ff02::1:ffXX:XXXX) do NDP substituem o ARP/broadcast.</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Hosts úteis = total − 2</td>
+                            <td class="text-danger">Não se aplica</td>
+                            <td>Sem rede nem broadcast: ficam de fora só o anycast Subnet-Router (identificador de interface todo zero, RFC 4291) e os anycast reservados do topo do <code translate="no">/64</code> (RFC 2526). A LAN é <code translate="no">/64</code> (SLAAC).</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Classe A/B/C (classful)</td>
+                            <td class="text-danger">Não existe</td>
+                            <td>Classificação por <strong>tipo/escopo IANA</strong>: global unicast, ULA, link-local, multicast, loopback, unspecified, documentation.</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Dimensionar LAN por nº de hosts</td>
+                            <td class="text-danger">Não se aplica</td>
+                            <td>A LAN comum é sempre <code translate="no">/64</code> (2^64 endereços). Planeja-se por <strong>quantidade de sub-redes</strong> — veja a Resolução IPv6.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="calc-explicacao mt-3">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span>
+                Em IPv6 você conta <strong>endereços</strong> e <strong>sub-redes</strong> por potência de 2, e lê a
+                fronteira rede/interface direto do <strong>prefixo</strong>. Não há máscara decimal, wildcard, broadcast
+                nem "hosts úteis".
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <a href="/ipv6" class="aed-btn aed-btn-teal" title="Abrir a Calculadora IPv6 (sub-redes, EUI-64, ULA, sumarização, faixa)">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Ir para a Calculadora IPv6
+                </a>
+                <a href="/ipv6/resolucao" class="aed-btn aed-btn-neutral" title="Abrir a Resolução IPv6 (delegação de prefixo / planejamento)">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">extension</span> Ir para a Resolução IPv6
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

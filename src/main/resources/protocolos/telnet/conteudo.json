@@ -1,0 +1,380 @@
+{
+  "resumo": "Telnet (RFC 854, de 1983) é o protocolo mais antigo de terminal remoto virtual: abre uma sessão interativa em outra máquina como se você estivesse sentado nela, usando TCP na porta 23. O problema fatal é que TUDO trafega em texto plano - login, senha e cada comando digitado - sem criptografia, sem verificação de identidade do servidor e sem controle de integridade. Por isso é o exemplo clássico de protocolo inseguro e foi substituído pelo SSH em praticamente todo lugar. Estudar Telnet importa exatamente por contraste: ele mostra, de forma visível, tudo o que o SSH resolveu.",
+  "ficha": [
+    {
+      "rotulo": "RFC",
+      "valor": "RFC 854 (protocolo) e RFC 855 (opções), maio de 1983",
+      "dica": "RFCs de opções específicas: 856 (binário), 857 (echo), 858 (suppress go-ahead)."
+    },
+    {
+      "rotulo": "Porta(s)",
+      "valor": "23/TCP (e 992/TCP para telnets sobre TLS, raro)",
+      "dica": "A porta 23 aberta hoje quase sempre é um alerta de auditoria."
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Aplicação (OSI 7 / TCP/IP Aplicação)",
+      "dica": "Define o NVT, um terminal virtual comum aos dois lados."
+    },
+    {
+      "rotulo": "Transporte",
+      "valor": "TCP (orientado a conexão, fluxo de bytes)",
+      "dica": "Usa o fluxo TCP puro, sem qualquer camada de segurança acima dele."
+    },
+    {
+      "rotulo": "Substitui/relacionados",
+      "valor": "Substituído por SSH (22/TCP); parente de rlogin e do conceito de NVT",
+      "dica": "O cliente telnet ainda é usado como ferramenta de teste de portas TCP, não como acesso."
+    },
+    {
+      "rotulo": "Segurança",
+      "valor": "Nenhuma - texto plano, sem cifra, sem autenticação de host, sem integridade",
+      "dica": "Qualquer sniffer na rede lê a senha diretamente. Nunca use em rede não confiável."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Terminal remoto virtual (NVT)",
+      "icone": "terminal",
+      "texto": "Telnet define o Network Virtual Terminal, um teclado e tela imaginários que os dois lados fingem ter. Cliente e servidor traduzem seus terminais reais para esse formato comum de 7 bits mais controle, permitindo que máquinas diferentes conversem.",
+      "destaque": "Um terminal padrão no meio esconde as diferenças de hardware."
+    },
+    {
+      "titulo": "Negociação de opções (IAC)",
+      "icone": "swap_vert",
+      "texto": "Além dos dados, Telnet carrega comandos iniciados pelo byte IAC (255). Com WILL/WONT/DONT/DO os lados combinam recursos: echo, tipo de terminal, tamanho de janela, modo binário. Cada opção é negociada de forma simétrica e independente.",
+      "destaque": "IAC = 255 marca que o próximo byte é comando, não texto."
+    },
+    {
+      "titulo": "Tudo em claro",
+      "icone": "visibility",
+      "texto": "Não existe criptografia em nenhum ponto. O nome de usuário, a senha e cada tecla apertada viajam como bytes legíveis dentro do fluxo TCP. Um tcpdump ou Wireshark na mesma rede reconstrói a sessão inteira, incluindo a senha.",
+      "destaque": "Sniffing de credencial é trivial, não teórico."
+    },
+    {
+      "titulo": "Porta 23 e serviço legado",
+      "icone": "public",
+      "texto": "O serviço escuta na porta 23/TCP. Hoje encontrá-lo aberto normalmente indica equipamento antigo (switches, roteadores, IoT) ou configuração insegura esquecida. É um alvo preferido de varreduras automatizadas na internet.",
+      "destaque": "Porta 23 exposta = candidata imediata a fechamento."
+    },
+    {
+      "titulo": "Por que o SSH venceu",
+      "icone": "enhanced_encryption",
+      "texto": "SSH oferece exatamente o que falta ao Telnet: canal cifrado ponta a ponta, autenticação do servidor por chave de host, autenticação do usuário por senha protegida ou chave pública, e integridade por MAC. Mesma função interativa, sem expor nada na rede.",
+      "destaque": "SSH não adiciona só cifra: adiciona identidade e integridade."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Negociação de opções e login em claro",
+    "definicao": "sequenceDiagram\n    participant C as Cliente Telnet\n    participant S as Servidor porta 23\n    C->>S: TCP SYN (porta 23)\n    S-->>C: Conexão TCP estabelecida\n    S->>C: IAC DO TERMINAL-TYPE\n    C->>S: IAC WILL TERMINAL-TYPE\n    S->>C: IAC WILL ECHO\n    C->>S: IAC DO ECHO\n    S->>C: Prompt de login\n    C->>S: usuário paulo (texto plano)\n    S->>C: Prompt de senha\n    C->>S: senha123 (texto plano)\n    S-->>C: Shell remoto aberto\n    Note over C,S: Credenciais e comandos trafegam legíveis na rede",
+    "legenda": "Primeiro os lados negociam opções com IAC/WILL/DO. Em seguida, login e senha são enviados como texto simples - qualquer sniffer entre C e S lê tudo."
+  },
+  "cabecalho": null,
+  "tabelas": [
+    {
+      "titulo": "Comandos de controle IAC principais",
+      "colunas": [
+        "Comando",
+        "Decimal",
+        "Hex",
+        "Significado"
+      ],
+      "linhas": [
+        [
+          "IAC",
+          "255",
+          "0xFF",
+          "Interpret As Command - marca o início de um comando (o próximo byte não é dado)"
+        ],
+        [
+          "WILL",
+          "251",
+          "0xFB",
+          "Emissor quer ativar (ou confirma que ativou) uma opção do próprio lado"
+        ],
+        [
+          "WONT",
+          "252",
+          "0xFC",
+          "Emissor recusa ou desativa uma opção do próprio lado"
+        ],
+        [
+          "DO",
+          "253",
+          "0xFD",
+          "Emissor pede que o outro lado ative uma opção"
+        ],
+        [
+          "DONT",
+          "254",
+          "0xFE",
+          "Emissor pede que o outro lado desative uma opção"
+        ],
+        [
+          "SB",
+          "250",
+          "0xFA",
+          "Início de subnegociação (parâmetros extras de uma opção)"
+        ],
+        [
+          "SE",
+          "240",
+          "0xF0",
+          "Fim da subnegociação"
+        ]
+      ]
+    },
+    {
+      "titulo": "Telnet vs SSH lado a lado",
+      "colunas": [
+        "Aspecto",
+        "Telnet",
+        "SSH"
+      ],
+      "linhas": [
+        [
+          "Porta padrão",
+          "23/TCP",
+          "22/TCP"
+        ],
+        [
+          "Criptografia",
+          "Nenhuma (texto plano)",
+          "Forte (AES, ChaCha20)"
+        ],
+        [
+          "Autenticação do usuário",
+          "Senha em claro",
+          "Senha em canal cifrado ou chave pública"
+        ],
+        [
+          "Integridade dos dados",
+          "Nenhuma",
+          "MAC/HMAC por pacote"
+        ],
+        [
+          "Autenticação do servidor",
+          "Nenhuma",
+          "Chave de host (fingerprint verificável)"
+        ],
+        [
+          "Sniffing revela a senha",
+          "Sim, trivial",
+          "Não"
+        ],
+        [
+          "Túnel / port forwarding",
+          "Não",
+          "Sim"
+        ],
+        [
+          "Transferência de arquivo",
+          "Não",
+          "scp / sftp"
+        ],
+        [
+          "Situação atual",
+          "Obsoleto / legado",
+          "Padrão de mercado"
+        ]
+      ]
+    },
+    {
+      "titulo": "Opções Telnet mais comuns",
+      "colunas": [
+        "Código",
+        "Opção",
+        "RFC",
+        "Para que serve"
+      ],
+      "linhas": [
+        [
+          "0",
+          "Binary Transmission",
+          "RFC 856",
+          "Transmissão de bytes de 8 bits (fora do NVT ASCII de 7 bits)"
+        ],
+        [
+          "1",
+          "Echo",
+          "RFC 857",
+          "Define quem ecoa na tela os caracteres digitados"
+        ],
+        [
+          "3",
+          "Suppress Go Ahead",
+          "RFC 858",
+          "Suprime o sinal GA, habilitando operação full-duplex"
+        ],
+        [
+          "24",
+          "Terminal Type",
+          "RFC 1091",
+          "Informa o tipo de terminal, ex.: vt100, xterm (transferido via subnegociação SB/SE)"
+        ],
+        [
+          "31",
+          "NAWS",
+          "RFC 1073",
+          "Negotiate About Window Size - largura e altura da janela"
+        ],
+        [
+          "34",
+          "Linemode",
+          "RFC 1184",
+          "Edição local por linha em vez de caractere a caractere"
+        ]
+      ]
+    },
+    {
+      "titulo": "Portas relacionadas",
+      "colunas": [
+        "Porta",
+        "Protocolo",
+        "Uso"
+      ],
+      "linhas": [
+        [
+          "23/TCP",
+          "Telnet",
+          "Terminal remoto em texto plano"
+        ],
+        [
+          "992/TCP",
+          "Telnets",
+          "Telnet sobre TLS/SSL (suporte raro)"
+        ],
+        [
+          "22/TCP",
+          "SSH",
+          "Substituto seguro do Telnet"
+        ],
+        [
+          "25/TCP",
+          "SMTP",
+          "Alvo clássico de banner grabbing usando o cliente telnet"
+        ],
+        [
+          "80/TCP",
+          "HTTP",
+          "Requisição HTTP manual digitada via cliente telnet"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Sniffing de credenciais",
+      "como_funciona": "Como nada é cifrado, um atacante na mesma rede captura o tráfego com tcpdump ou Wireshark e lê diretamente o usuário, a senha e cada comando digitado. Não exige quebra de nada - basta observar a porta 23.",
+      "sinal": "Senha aparece legível em uma captura de pacotes; segmentos TCP na porta 23 com texto ASCII claro.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Man-in-the-middle (MITM)",
+      "como_funciona": "Telnet não autentica o servidor. Com ARP spoofing (ou controle de um roteador), o atacante se coloca no meio, encaminha o tráfego e ao mesmo tempo lê e altera dados sem que cliente ou servidor percebam.",
+      "sinal": "Tabela ARP com MAC duplicado ou inesperado; latência anormal; rota alterada para o host.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Sequestro de sessão (TCP hijacking)",
+      "como_funciona": "Sem criptografia e sem integridade, um atacante que vê a sessão pode injetar seus próprios comandos no fluxo TCP já autenticado (ferramentas como Ettercap/Hunt), assumindo a sessão após o login legítimo.",
+      "sinal": "Comandos que ninguém digitou executando no host; sessão do usuário travando ou sendo derrubada.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Injeção e adulteração de dados",
+      "como_funciona": "Sem MAC de integridade, bytes em trânsito podem ser modificados. O atacante altera comandos ou respostas no caminho e nenhum dos lados detecta a manipulação.",
+      "sinal": "Saídas de comando inconsistentes com o que foi pedido; arquivos alterados sem comando correspondente no histórico.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Força bruta com credenciais de fábrica",
+      "como_funciona": "Muitos serviços Telnet legados (roteadores, câmeras, IoT) aceitam tentativas ilimitadas de login com credenciais padrão. Botnets como o Mirai varreram a internet nas portas 23 e 2323 testando senhas de fábrica para recrutar dispositivos.",
+      "sinal": "Muitas conexões rápidas na porta 23 vindas de IPs desconhecidos; logs de autenticação falha em série.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Não use Telnet - migre para SSH",
+      "como_funciona": "Substituir o serviço Telnet por SSH (porta 22) e desabilitar o daemon telnet. O SSH entrega a mesma sessão interativa com cifra, autenticação de host e integridade.",
+      "cobre": "Sniffing, MITM, sequestro e injeção de uma só vez.",
+      "limite": "Exige que o equipamento suporte SSH; alguns dispositivos muito antigos só falam Telnet."
+    },
+    {
+      "nome": "Rede isolada / out-of-band",
+      "como_funciona": "Se um equipamento legado exige Telnet, confine-o em uma VLAN de gerência dedicada, física ou logicamente separada, sem rota para a rede de usuários ou para a internet.",
+      "cobre": "Reduz drasticamente quem consegue chegar à porta 23 para farejar ou interceptar.",
+      "limite": "Não cifra nada; quem entrar na VLAN de gerência ainda vê login e senha em claro."
+    },
+    {
+      "nome": "Túnel VPN/IPsec ou SSH port forwarding",
+      "como_funciona": "Encapsular o Telnet dentro de um túnel cifrado (IPsec, WireGuard, ou ssh -L). O tráfego Telnet viaja protegido dentro do túnel entre os dois hosts.",
+      "cobre": "Sigilo e integridade do tráfego enquanto ele cruza a rede.",
+      "limite": "Complexo de manter; dentro de cada extremidade o Telnet continua em claro, e o túnel pode falhar."
+    },
+    {
+      "nome": "Firewall / ACL na porta 23",
+      "como_funciona": "Bloquear a porta 23 por padrão e liberar apenas para IPs de origem específicos e confiáveis, via firewall de borda e ACL no próprio dispositivo.",
+      "cobre": "Reduz a superfície de ataque remota e a exposição a varreduras automatizadas.",
+      "limite": "Não protege contra um atacante que já esteja dentro do perímetro permitido."
+    },
+    {
+      "nome": "Telnet sobre TLS (telnets, 992)",
+      "como_funciona": "Quando disponível, usar a variante que envolve a sessão Telnet em TLS na porta 992, adicionando cifra e autenticação de servidor por certificado.",
+      "cobre": "Sigilo e integridade do canal, aproximando-se do SSH.",
+      "limite": "Suporte raro em clientes e servidores; na prática, migrar direto para SSH é sempre a escolha melhor."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Banner grabbing didático",
+      "cenario": "Usar o cliente telnet apenas como ferramenta de teste TCP para ver o banner que serviços de texto anunciam ao conectar.",
+      "comandos": "telnet smtp.example.com 25\n# resposta típica: 220 mail.example.com ESMTP Postfix\n\ntelnet www.example.com 80\nGET / HTTP/1.0\n\n# (linha em branco encerra o cabeçalho e o servidor responde)",
+      "explicacao": "O cliente telnet abre um fluxo TCP cru; serviços de texto respondem com um banner que identifica software e versão. Aqui o telnet não é acesso remoto - é sondagem de serviço, e mostra quanta informação vaza em protocolos de texto."
+    },
+    {
+      "titulo": "Provar a credencial em claro",
+      "cenario": "Capturar o tráfego de uma sessão Telnet e observar login e senha aparecerem legíveis, demonstrando a ausência de cifra.",
+      "comandos": "sudo tcpdump -i eth0 -A 'tcp port 23'\n\n# em outra sessão, faça o login normal:\ntelnet 10.0.0.5\n# digite usuário e senha\n\n# de volta ao tcpdump, usuário e senha aparecem em ASCII",
+      "explicacao": "A flag -A do tcpdump imprime o payload como texto. Você vê, byte a byte, o usuário e a senha digitados. É a prova prática de que Telnet não protege credencial alguma e o argumento mais forte para migrar ao SSH."
+    },
+    {
+      "titulo": "Auditar se a porta 23 está exposta",
+      "cenario": "Verificar em um host ou faixa de rede se o serviço Telnet está escutando, para poder fechá-lo.",
+      "comandos": "nmap -p 23 -sV 10.0.0.0/24\n\n# porta aberta aparece como:\n# 23/tcp open  telnet  <banner/versão>",
+      "explicacao": "O nmap identifica hosts com a porta 23 aberta e tenta detectar a versão do serviço. Cada resultado open é um item de correção: desabilitar o Telnet e habilitar SSH naquele equipamento."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Connection refused ao conectar na porta 23",
+      "causa_provavel": "Serviço Telnet desabilitado ou removido (comportamento desejado e seguro).",
+      "comando": "nmap -p23 host   ou   telnet host 23",
+      "leitura": "Porta 23 fechada é bom sinal. Se o acesso for necessário, use SSH na porta 22, não reative o Telnet."
+    },
+    {
+      "sintoma": "Senha visível em uma captura de pacotes",
+      "causa_provavel": "Protocolo em texto plano - não há nenhuma cifra em Telnet.",
+      "comando": "sudo tcpdump -A 'tcp port 23'",
+      "leitura": "A senha legível confirma a exposição. É a evidência direta para justificar a migração imediata para SSH."
+    },
+    {
+      "sintoma": "Bytes 0xFF 0xFD / 0xFF 0xFB no início da conexão",
+      "causa_provavel": "Sequências IAC de negociação de opções (IAC DO / IAC WILL).",
+      "comando": "sudo tcpdump -X 'tcp port 23'",
+      "leitura": "FF é o IAC; FD é DO e FB é WILL. São os dois lados combinando opções como echo e tipo de terminal antes dos dados."
+    },
+    {
+      "sintoma": "Eco duplicado ou ausente ao digitar",
+      "causa_provavel": "Negociação da opção ECHO (código 1) mal resolvida entre cliente e servidor.",
+      "comando": "Observe no trace quem envia IAC WILL ECHO / IAC DO ECHO",
+      "leitura": "A opção Echo define quem repete os caracteres na tela. Se ambos ou nenhum ecoam, o resultado é caractere dobrado ou digitação invisível."
+    }
+  ]
+}

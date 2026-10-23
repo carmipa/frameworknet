@@ -1,0 +1,60 @@
+<div class="aed-card card-tech loc-nota mb-4" role="note">
+    <span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span>
+    <div>
+        <strong>Análise offline.</strong>
+        Cole um <strong>hex dump</strong> de um quadro/pacote e veja os cabeçalhos
+        Ethernet / IP / TCP / UDP / ICMP decompostos e explicados campo a campo.
+        (No Wireshark: botão direito → <em>Copy → as Hex Stream</em>.)
+    </div>
+</div>
+
+<form id="form-trafego" class="trafego-form" autocomplete="off"
+      hx-post="/trafego/api/decodificar"
+      hx-target="#trafego-resultado"
+      hx-swap="innerHTML"
+      hx-disabled-elt="find button[type='submit']">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+        <label class="form-label small text-secondary mb-0" for="trafego-hex"><span class="material-symbols-outlined" aria-hidden="true" translate="no">data_object</span> Hex dump do pacote</label>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <label class="small text-secondary mb-0" for="trafego-camada"><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Camada inicial</label>
+            <select id="trafego-camada" name="camada" class="form-select form-select-sm bg-dark text-light border-secondary" style="width:auto;">
+                <option value="auto" selected>Auto</option>
+                <option value="ethernet">Ethernet</option>
+                <option value="ipv4">IPv4</option>
+                <option value="ipv6">IPv6</option>
+                <option value="arp">ARP</option>
+                <option value="tcp">TCP</option>
+                <option value="udp">UDP</option>
+                <option value="icmp">ICMP</option>
+            </select>
+        </div>
+    </div>
+    <textarea id="trafego-hex" name="hex" class="form-control bg-dark text-light border-secondary trafego-hex"
+              rows="5" placeholder="ex.: 4500 003c 1c46 4000 4006 ...">aabb ccdd eeff 0211 2233 4455 0800
+4500 0028 1c46 4000 4006 9d36 c0a8 0001 c0a8 0002
+d431 0050 0000 0000 0000 0000 5002 7210 e7fc 0000</textarea>
+    <div class="form-text aed-ajuda">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
+        <span>Um <strong>hex dump</strong> é o pacote escrito em hexadecimal (só <code translate="no">0-9</code> e <code translate="no">a-f</code>).
+        O campo já vem com um <strong>exemplo pronto</strong> (um SYN TCP): é só clicar em <strong>Decodificar</strong>.
+        Cada linha é uma camada — Ethernet, depois IPv4, depois TCP. Deixe a camada inicial em <strong>Auto</strong>
+        que o decodificador descobre sozinho. Use <strong>Limpar</strong> para colar o seu próprio.</span>
+    </div>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+        <button type="submit" class="aed-btn aed-btn-teal"
+                title="Decodificar o hex dump do pacote em cabeçalhos campo a campo">
+            <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> Decodificar
+        </button>
+        <button type="button" id="trafego-exemplo" class="aed-btn aed-btn-neutral"
+                title="Carregar um pacote de exemplo (IPv4/TCP SYN) para teste didático">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Carregar exemplo (IPv4/TCP SYN)
+        </button>
+        <button type="button" id="trafego-limpar" class="aed-btn aed-btn-danger"
+                title="Limpar a área de texto do hex dump e os resultados">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">delete_sweep</span> Limpar
+        </button>
+    </div>
+</form>
+
+<div id="trafego-resultado" aria-live="polite"></div>

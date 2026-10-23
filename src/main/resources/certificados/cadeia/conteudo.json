@@ -1,0 +1,291 @@
+{
+  "resumo": "A cadeia de confiança é o mecanismo que permite ao seu navegador confiar num certificado de site que ele nunca viu antes. Em vez de conhecer todos os certificados do mundo, o navegador conhece apenas um punhado de certificados raiz (as âncoras de confiança), guardados numa trust store. Quando você abre um site em HTTPS (TLS na porta 443), o servidor apresenta o certificado da folha (o do domínio) mais os certificados intermediários. O cliente então monta e sobe a cadeia -- folha assinada por uma intermediária, intermediária assinada por uma raiz -- até encontrar uma raiz que ele já confia. Em cada elo ele confere a assinatura (o elo de cima realmente assinou o de baixo, e o emissor de um é o sujeito do outro), a validade (datas notBefore/notAfter) e a revogação; nos elos de CA confere também que o certificado pode assinar outros (basicConstraints cA=TRUE e keyUsage keyCertSign). O nome — o SAN cobrir o hostname acessado — é conferido só na folha. Se a corrente fechar numa âncora confiável e tudo passar, a conexão é confiável. A raiz assina poucas intermediárias e fica offline num cofre; as intermediárias é que trabalham no dia a dia emitindo folhas. Reforços como Certificate Transparency (CT) e CAA tornam emissões indevidas detectáveis e restringíveis. No site há o protocolo TLS explicado e o Inspetor TLS do site (simulação: você informa os dados e ele aplica as regras de validação); a cadeia real de um servidor sai do openssl s_client -showcerts.",
+  "ficha": [
+    {
+      "rotulo": "Grupo",
+      "valor": "Fundamentos -- Certificados / X.509 / PKI",
+      "dica": "Base conceitual antes de mergulhar em emissão, revogação e mTLS."
+    },
+    {
+      "rotulo": "Modelo",
+      "valor": "Hierárquico: Raiz -> Intermediária -> Folha",
+      "dica": "Confiança transitiva: quem confia na raiz confia, por assinatura, em tudo abaixo."
+    },
+    {
+      "rotulo": "Âncora de confiança",
+      "valor": "Certificado raiz na trust store",
+      "dica": "Autoassinado; confiado por decisão explícita, não por assinatura de terceiro."
+    },
+    {
+      "rotulo": "Onde é usado",
+      "valor": "TLS/HTTPS na porta 443, e-mail, code signing, mTLS",
+      "dica": "O mesmo X.509 sustenta vários protocolos; TLS é o caso mais visível."
+    },
+    {
+      "rotulo": "Verificações por elo",
+      "valor": "Assinatura + validade + revogação (o SAN só na folha)",
+      "dica": "Falhar qualquer uma quebra a cadeia inteira."
+    },
+    {
+      "rotulo": "Reforços",
+      "valor": "CT logs, CAA, pinning (com ressalvas)",
+      "dica": "Não substituem a cadeia; tornam abuso detectável ou restrito."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Âncora de confiança",
+      "icone": "verified_user",
+      "texto": "É o ponto de partida da confiança: um certificado raiz, autoassinado, que o cliente aceita não por causa de uma assinatura externa, mas porque alguém decidiu colocá-lo na trust store. Toda a segurança da cadeia depende dessa lista curta e curada. Se uma raiz maliciosa entrar ali, ela pode assinar certificados para qualquer domínio e o cliente confiará.",
+      "destaque": "A raiz é confiada por decisão, não por prova criptográfica."
+    },
+    {
+      "titulo": "Por que a raiz fica offline",
+      "icone": "lock",
+      "texto": "A chave privada da raiz é o segredo mais valioso da PKI: comprometida, permite forjar cadeias inteiras e não há como revogar a própria raiz facilmente (ela está embutida em milhões de trust stores). Por isso ela vive offline, num HSM dentro de um cofre, ligada apenas em cerimônias raras para assinar novas intermediárias. O trabalho diário de emitir folhas fica com as intermediárias, que são substituíveis.",
+      "destaque": "Raiz offline reduz a superfície de ataque do ativo irrevogável."
+    },
+    {
+      "titulo": "Cross-signing (assinatura cruzada)",
+      "icone": "account_tree",
+      "texto": "Uma mesma chave de intermediária pode receber várias assinaturas -- por exemplo, de uma raiz nova e de uma raiz antiga já amplamente distribuída. Assim, clientes antigos que só conhecem a raiz velha ainda conseguem fechar a cadeia, enquanto clientes novos usam a raiz moderna. Foi assim que a Let's Encrypt manteve compatibilidade ao trocar de raiz. O preço é que existe mais de um caminho de validação possível.",
+      "destaque": "Um certificado pode ter mais de um caminho válido até uma raiz."
+    },
+    {
+      "titulo": "Path building (construção do caminho)",
+      "icone": "schema",
+      "texto": "O cliente nem sempre recebe a cadeia perfeita e ordenada. Com cross-signing e intermediárias faltando, ele precisa montar o caminho: para cada certificado, procurar um emissor cujo Subject bata com o Issuer e cuja assinatura confira, até chegar a uma âncora. Um bom validador tenta múltiplos caminhos antes de desistir; um fraco reprova cadeias que na verdade são válidas por outra rota.",
+      "destaque": "Validar não é só subir uma lista -- é buscar um caminho até a âncora."
+    },
+    {
+      "titulo": "Certificate Transparency (CT)",
+      "icone": "fingerprint",
+      "texto": "Toda emissão pública confiável deve ser registrada em logs CT append-only e auditáveis. O servidor entrega provas (SCTs) junto do certificado, e navegadores modernos as exigem. O efeito: uma CA não consegue mais emitir um certificado para o seu domínio em segredo -- ele aparece no log e você pode monitorá-lo. CT não impede a emissão indevida, mas garante que ela seja descoberta.",
+      "destaque": "CT troca prevenção por detecção pública e irreversível."
+    },
+    {
+      "titulo": "CAA (Certification Authority Authorization)",
+      "icone": "policy",
+      "texto": "É um registro DNS onde o dono do domínio declara quais CAs estão autorizadas a emitir certificados para ele. Antes de emitir, a CA é obrigada a consultar o CAA; se ela não estiver na lista, deve recusar. Reduz o risco de uma CA legítima, porém errada, emitir para o seu domínio. Funciona no lado da emissão, complementando o CT que atua na detecção.",
+      "destaque": "CAA restringe quem pode emitir; CT revela quem emitiu."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Validação da cadeia no handshake TLS (porta 443)",
+    "definicao": "sequenceDiagram\n    participant N as Navegador (cliente)\n    participant S as Servidor (443)\n    participant T as Trust store\n    N->>S: ClientHello (inicia TLS na porta 443)\n    S-->>N: Certificado folha + intermediária(s)\n    Note over N: Monta o caminho (path building)\n    N->>N: Folha assinada pela intermediária?\n    N->>N: Intermediária assinada pela raiz?\n    N->>T: A raiz está na trust store?\n    T-->>N: Sim -- âncora de confiança encontrada\n    Note over N: Verifica cada elo: assinatura, validade e revogação (o nome, SAN, só na folha)\n    alt Todos os elos válidos e nome confere\n        N->>S: Cadeia confiável -- segue o handshake\n        S-->>N: Conexão segura estabelecida\n    else Elo inválido, expirado ou nome errado\n        N->>N: Cadeia rejeitada -- alerta de segurança\n    end",
+    "legenda": "O navegador recebe a folha e as intermediárias, sobe até uma raiz confiável na trust store e valida cada elo por assinatura, validade e encadeamento de nomes (emissor = sujeito); o hostname (SAN) é conferido só na folha. Basta um elo falhar para a cadeia inteira ser recusada. Para ver a cadeia real de um servidor, use o openssl s_client -showcerts; o Inspetor TLS do site simula a validação com os dados que você informa."
+  },
+  "tabelas": [
+    {
+      "titulo": "Papéis na cadeia e onde cada um vive",
+      "colunas": [
+        "Papel",
+        "Autoassinado?",
+        "Chave privada",
+        "Função",
+        "Onde vive"
+      ],
+      "linhas": [
+        [
+          "Raiz (Root CA)",
+          "Sim",
+          "Offline em HSM/cofre",
+          "Âncora de confiança; assina intermediárias",
+          "Embutida nas trust stores (SO, navegador, Java)"
+        ],
+        [
+          "Intermediária (Issuing/Sub CA)",
+          "Não (assinada pela raiz)",
+          "Online, protegida em HSM",
+          "Emite os certificados de folha no dia a dia",
+          "Entregue pelo servidor no handshake, junto da folha"
+        ],
+        [
+          "Folha (End-entity/Leaf)",
+          "Não (assinada pela intermediária)",
+          "No servidor do domínio",
+          "Identifica o domínio/serviço (SAN)",
+          "No servidor, apresentado ao cliente na porta 443"
+        ]
+      ]
+    },
+    {
+      "titulo": "Trust stores mais comuns",
+      "colunas": [
+        "Trust store",
+        "Quem usa",
+        "Como inspecionar/gerenciar"
+      ],
+      "linhas": [
+        [
+          "Windows (certmgr / CAPI)",
+          "Apps .NET e o próprio Windows; Chrome e Edge trazem raiz própria, mas aceitam as raízes que o administrador instala aqui",
+          "certmgr.msc; PowerShell Get-ChildItem Cert:\\LocalMachine\\Root"
+        ],
+        [
+          "macOS Keychain",
+          "Safari e apps do sistema",
+          "Aplicativo Acesso às Chaves; comando security"
+        ],
+        [
+          "Mozilla NSS",
+          "Firefox (store própria, NSS; desde o Firefox 120 também aceita por padrão raízes instaladas no SO no Windows, macOS e Android)",
+          "Config de certificados do Firefox; certutil (NSS)"
+        ],
+        [
+          "Java cacerts",
+          "JVM (aplicações Java, clientes TLS)",
+          "keytool -list -cacerts; arquivo $JAVA_HOME/lib/security/cacerts"
+        ],
+        [
+          "Linux ca-certificates",
+          "OpenSSL, curl, serviços do SO",
+          "/etc/ssl/certs; update-ca-certificates"
+        ]
+      ]
+    },
+    {
+      "titulo": "O que se confere na cadeia",
+      "colunas": [
+        "Verificação",
+        "O que confere",
+        "Falha típica"
+      ],
+      "linhas": [
+        [
+          "Assinatura",
+          "O emissor (elo de cima) realmente assinou este certificado",
+          "Cadeia incompleta ou emissor desconhecido -- unable to get local issuer"
+        ],
+        [
+          "Validade",
+          "Data atual entre notBefore e notAfter",
+          "Certificado expirado ou relógio do cliente errado"
+        ],
+        [
+          "Revogação",
+          "O certificado não consta como revogado (CRL; OCSP onde ainda houver)",
+          "Certificado revogado pela CA -- ERR_CERT_REVOKED"
+        ],
+        [
+          "Poder de assinar (só nos elos de CA)",
+          "basicConstraints cA=TRUE e keyUsage keyCertSign no emissor",
+          "Folha usada como se fosse CA -- a cadeia é recusada"
+        ],
+        [
+          "Nome (só na folha)",
+          "O SAN cobre o hostname acessado",
+          "SAN não inclui o domínio -- ERR_CERT_COMMON_NAME_INVALID"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "CA raiz maliciosa ou comprometida",
+      "como_funciona": "Se um atacante insere uma raiz sua na trust store (malware, MDM abusivo, dispositivo corporativo mal configurado) ou compromete a chave privada de uma raiz legítima, ele pode assinar certificados válidos para qualquer domínio. O cliente confia porque a âncora está na lista -- nenhuma verificação de assinatura salva, pois a raiz é o próprio ponto de partida da confiança.",
+      "sinal": "Raízes desconhecidas na trust store; certificado de um site público emitido por uma CA que você não reconhece.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Intermediária vazada",
+      "como_funciona": "A chave de uma intermediária online é roubada ou ela é usada indevidamente. Como a intermediária pode emitir folhas para qualquer domínio (salvo se tiver name constraints), o atacante emite certificados fraudulentos que fecham a cadeia numa raiz real e confiável. Diferente da raiz, a intermediária pode ser revogada e a raiz reemitir outra -- mas até a revogação propagar, o dano corre.",
+      "sinal": "Certificados legítimos na aparência aparecendo em logs CT sem que você os tenha pedido.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Cadeia incompleta",
+      "como_funciona": "O servidor entrega a folha mas esquece de enviar a intermediária. Alguns clientes até completam sozinhos (via AIA/cache), mas muitos falham -- e isso mascara problemas ou gera erros intermitentes que só aparecem em certos navegadores ou na JVM. Não é ataque por si, mas cria confusão operacional e pode induzir o operador a desabilitar verificações, abrindo brecha real.",
+      "sinal": "Site funciona no Chrome mas quebra no Java/curl; erro unable to get local issuer certificate.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "CA legítima emitindo indevidamente (mis-issuance)",
+      "como_funciona": "Sem comprometimento técnico: uma CA válida, por erro de validação de domínio ou falha de processo, emite um certificado para um domínio a quem não deveria. O certificado fecha a cadeia perfeitamente e o cliente confia. Foi esse tipo de incidente que motivou CAA (restringir a emissão) e CT (torná-la visível).",
+      "sinal": "Certificado do seu domínio, válido, emitido por CA que você nunca autorizou -- visível em logs CT.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Monitorar logs CT",
+      "como_funciona": "Como toda emissão pública confiável vai para logs CT append-only, você inscreve seus domínios em um monitor (crt.sh, serviços de CT monitoring) e recebe alerta quando qualquer certificado é emitido para eles. Assim, uma emissão indevida -- por CA comprometida, intermediária vazada ou mis-issuance -- é descoberta em horas, não por acaso.",
+      "cobre": "Detecção de mis-issuance, intermediária vazada e CA comprometida",
+      "limite": "Detecta, não previne: o certificado já existe quando o alerta chega. Não cobre CAs privadas fora dos logs."
+    },
+    {
+      "nome": "Publicar registros CAA",
+      "como_funciona": "Você declara no DNS quais CAs podem emitir para o seu domínio (issue/issuewild) e um contato (iodef) por onde a CA avisa você de pedidos que violam essa política. CAs são obrigadas a checar o CAA antes de emitir e recusar se não estiverem autorizadas, cortando o risco de uma CA legítima emitir para o seu domínio por engano.",
+      "cobre": "Prevenção de mis-issuance por CA não autorizada",
+      "limite": "Só vincula CAs que respeitam a regra; não para uma CA comprometida ou maliciosa que ignore o CAA."
+    },
+    {
+      "nome": "Pinning (com ressalvas)",
+      "como_funciona": "O cliente fixa qual chave/certificado (ou intermediária/raiz) espera ver, recusando cadeias válidas porém inesperadas. Bem feito, neutraliza CA maliciosa e intermediária vazada. Em apps móveis e comunicação máquina-a-máquina é defesa forte.",
+      "cobre": "CA maliciosa, intermediária vazada, personificação",
+      "limite": "Perigoso na web: HPKP foi descontinuado por causar autobloqueios (bricking). Exige rotação de chaves planejada e backup pin, senão você se tranca fora do próprio serviço."
+    },
+    {
+      "nome": "Remover CAs não confiáveis",
+      "como_funciona": "Auditar periodicamente a trust store (SO, navegador, cacerts da JVM) e remover raízes que você não usa, que perderam a confiança dos navegadores ou que entraram indevidamente. Menos âncoras = menos superfície para uma raiz ruim assinar em seu nome.",
+      "cobre": "CA raiz maliciosa/injetada e raízes já desconfiadas pelo ecossistema",
+      "limite": "Remover uma raiz ainda em uso quebra conexões legítimas; exige inventário do que depende de cada raiz antes de mexer."
+    },
+    {
+      "nome": "Enviar sempre a cadeia completa e usar name constraints",
+      "como_funciona": "Configure o servidor para entregar folha + todas as intermediárias (fullchain) na porta 443, eliminando falhas de path building. Em PKI privada, emita intermediárias com name constraints, limitando os domínios que elas podem assinar -- contendo o estrago de uma intermediária vazada.",
+      "cobre": "Cadeia incompleta e contém o raio de uma intermediária comprometida",
+      "limite": "Name constraints tem suporte irregular em clientes antigos; fullchain não protege contra chave vazada, só contra má configuração."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Verificar uma cadeia com openssl verify -CAfile",
+      "cenario": "Você tem a folha (folha.pem), a intermediária (intermediaria.pem) e a raiz (raiz.pem) e quer confirmar que a cadeia fecha numa âncora confiável, checando assinatura e validade de cada elo.",
+      "comandos": "# Monta o bundle de CAs (intermediária + raiz) e valida a folha\ncat intermediaria.pem raiz.pem > cadeia-ca.pem\nopenssl verify -CAfile cadeia-ca.pem folha.pem\n# Esperado: folha.pem: OK\n\n# Se faltar a intermediária, o erro revela cadeia incompleta:\nopenssl verify -CAfile raiz.pem folha.pem\n# error 20 at 0 depth lookup: unable to get local issuer certificate\n\n# Inspecionar validade e nomes (SAN) da folha:\nopenssl x509 -in folha.pem -noout -dates -ext subjectAltName -issuer -subject",
+      "explicacao": "O verify sobe da folha até a raiz do -CAfile, conferindo assinatura e datas em cada elo (mas não o hostname -- isso é papel da aplicação ou da biblioteca TLS). O erro 20 (unable to get local issuer certificate) é a assinatura clássica de cadeia incompleta: a folha existe mas o emissor não está no bundle. O x509 mostra notBefore/notAfter (validade, conferida em cada elo) e o subjectAltName (nome, conferido só na folha)."
+    },
+    {
+      "titulo": "Capturar a cadeia real de um servidor com openssl s_client -showcerts",
+      "cenario": "Você quer ver exatamente quais certificados um servidor HTTPS entrega na porta 443 -- para diagnosticar cadeia incompleta ou ordem errada -- sem precisar de arquivos prévios.",
+      "comandos": "# Abre TLS na porta 443 e mostra toda a cadeia enviada pelo servidor\nopenssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br -showcerts </dev/null\n\n# Extrai os certificados da saída para arquivo e valida:\nopenssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br -showcerts </dev/null \\\n  | awk '/BEGIN CERT/,/END CERT/' > cadeia-do-servidor.pem\n\n# Ver o resumo da verificação que o próprio openssl fez:\nopenssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br </dev/null 2>/dev/null \\\n  | grep -E 'Verify return code|depth='",
+      "explicacao": "O -showcerts lista, em ordem, todos os certificados que o servidor apresenta -- normalmente folha depois intermediária(s). O -servername (SNI) garante que você recebe o certificado do host certo. Verify return code: 0 (ok) confirma cadeia válida; qualquer outro código indica a causa: 20 (unable to get local issuer certificate) ou 21 (unable to verify the first certificate) costumam indicar intermediária faltando; 10 é certificado expirado; 18 e 19, autoassinado. É a versão real, contra um servidor de verdade, do que o Inspetor TLS do site simula."
+    },
+    {
+      "titulo": "Listar as âncoras da trust store da JVM com keytool",
+      "cenario": "Uma aplicação Java falha o handshake enquanto o navegador funciona. Você suspeita que a raiz não está no cacerts da JVM ou quer auditar quais raízes a JVM confia.",
+      "comandos": "# Lista todas as raízes confiáveis do cacerts da JVM\nkeytool -list -cacerts -storepass changeit | head -n 40\n\n# Procura uma CA específica pelo nome:\nkeytool -list -cacerts -storepass changeit | grep -i \"lets encrypt\\|isrg\\|digicert\"\n\n# Importar uma raiz que falta (PKI interna, por exemplo):\nkeytool -importcert -trustcacerts -alias minha-raiz-interna \\\n  -file raiz.pem -cacerts -storepass changeit\n\n# Detalhar um certificado antes de confiar:\nkeytool -printcert -file raiz.pem",
+      "explicacao": "O cacerts é a trust store da JVM, independente do SO e do navegador -- por isso um site pode funcionar no Chrome e falhar em Java. O keytool -list mostra as âncoras; se a raiz da cadeia não aparecer, o handshake TLS falha com PKIX path building failed. Importar deve ser feito só com raízes verificadas (keytool -printcert antes), pois cada import adiciona uma âncora de confiança à JVM."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Site funciona no navegador mas falha em Java/curl/serviço",
+      "causa_provavel": "Cadeia incompleta (servidor não envia a intermediária) ou raiz ausente na trust store daquele cliente (ex.: cacerts da JVM).",
+      "comando": "openssl s_client -connect host:443 -servername host -showcerts </dev/null | grep -c 'BEGIN CERT'",
+      "leitura": "Se só aparece 1 certificado, o servidor envia apenas a folha -- configure o fullchain. Se aparecem vários mas a JVM ainda falha, a raiz não está no cacerts: cheque com keytool -list -cacerts."
+    },
+    {
+      "sintoma": "Erro unable to get local issuer certificate (openssl) ou PKIX path building failed (Java)",
+      "causa_provavel": "O cliente não consegue montar o caminho até uma âncora: intermediária faltando na cadeia enviada ou raiz não confiada.",
+      "comando": "openssl verify -CAfile cadeia-ca.pem folha.pem",
+      "leitura": "error 20 confirma emissor local ausente -- inclua a intermediária no bundle/servidor. Se o verify passa localmente mas o serviço falha, o problema é a trust store do cliente, não a cadeia."
+    },
+    {
+      "sintoma": "Certificado do meu domínio aparecendo em log CT que eu não emiti",
+      "causa_provavel": "Mis-issuance por CA não autorizada, intermediária vazada ou CA comprometida.",
+      "comando": "openssl s_client -connect meudominio:443 -servername meudominio </dev/null 2>/dev/null | openssl x509 -noout -issuer -dates",
+      "leitura": "O comando mostra o certificado que o SEU servidor apresenta; compare com o que o log CT registrou (busca do domínio num monitor de CT, como o crt.sh). Emissor fora das CAs que você autorizou no CAA = incidente: peça a revogação à CA emissora pelo canal de Certificate Problem Report que ela publica na CPS (seção 1.5.2) e reforce o CAA. O iodef do CAA é o contrário: é por onde a CA avisa VOCÊ de um pedido recusado."
+    },
+    {
+      "sintoma": "Aviso de certificado inválido após trocar de CA/raiz",
+      "causa_provavel": "Clientes antigos só conhecem a raiz velha; cross-signing ausente ou cadeia servindo o caminho errado.",
+      "comando": "openssl s_client -connect host:443 -servername host -showcerts </dev/null | openssl crl2pkcs7 -nocrl -certfile /dev/stdin | openssl pkcs7 -print_certs -noout",
+      "leitura": "Verifique se a cadeia enviada inclui a intermediária com cross-sign para a raiz antiga; se só há o caminho para a raiz nova, clientes legados não fecham a cadeia."
+    }
+  ]
+}

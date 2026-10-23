@@ -1,0 +1,377 @@
+{
+  "resumo": "O UDP (User Datagram Protocol) é um protocolo de transporte sem conexão e minimalista, definido na RFC 768. Ele apenas empacota os dados em datagramas e os envia, sem handshake, sem confirmação de recebimento e sem garantia de ordem. Em troca dessa simplicidade, oferece latência muito baixa e cabeçalho enxuto de apenas 8 bytes, transferindo para a aplicação a responsabilidade de tratar perdas e ordenação quando necessário. É a base de serviços como DNS, DHCP, NTP, VoIP e do moderno QUIC.",
+  "ficha": [
+    {
+      "rotulo": "RFC",
+      "valor": "RFC 768 (1980)",
+      "dica": "Uma das RFCs mais curtas da internet: 3 páginas descrevem todo o protocolo."
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Transporte (camada 4 OSI)",
+      "dica": "Mesma camada do TCP, mas com filosofia oposta: velocidade em vez de garantia."
+    },
+    {
+      "rotulo": "Encapsulamento",
+      "valor": "Sobre IP (protocolo IP número 17)",
+      "dica": "O campo Protocol do cabeçalho IP recebe o valor 17 para indicar UDP."
+    },
+    {
+      "rotulo": "Tamanho do cabeçalho",
+      "valor": "8 bytes (64 bits), fixo",
+      "dica": "Sem opções, sem variação. O TCP usa no mínimo 20 bytes."
+    },
+    {
+      "rotulo": "Modelo",
+      "valor": "Sem conexão (connectionless)",
+      "dica": "Não existe estabelecimento nem encerramento de sessão."
+    },
+    {
+      "rotulo": "Confiabilidade",
+      "valor": "Nenhuma (best effort)",
+      "dica": "Sem retransmissão, sem ordenação, sem controle de fluxo ou congestionamento."
+    },
+    {
+      "rotulo": "Segurança",
+      "valor": "Nenhuma nativa; usar DTLS/QUIC",
+      "dica": "Sem criptografia e origem facilmente falsificável (spoofing trivial)."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Sem conexão",
+      "icone": "bolt",
+      "texto": "Não há handshake nem estado de sessão. O remetente simplesmente envia o datagrama ao destino. Isso elimina o atraso de estabelecimento e reduz o consumo de memória no servidor, que não precisa manter tabelas de conexões ativas.",
+      "destaque": "Zero round-trips antes de enviar dados"
+    },
+    {
+      "titulo": "Sem garantia de entrega ou ordem",
+      "icone": "low_priority",
+      "texto": "Um datagrama pode se perder, chegar duplicado ou fora de ordem, e o UDP não percebe nem corrige nada disso. Se a aplicação precisa de confiabilidade, ela mesma tem de implementar numeração, confirmação e retransmissão.",
+      "destaque": "Best effort: entrega é mera tentativa"
+    },
+    {
+      "titulo": "Sem controle de fluxo ou congestionamento",
+      "icone": "speed",
+      "texto": "O UDP não freia o emissor quando a rede ou o receptor estão sobrecarregados. Isso pode inundar links e descartar pacotes, mas também permite taxa constante para mídia em tempo real, onde atrasar é pior do que perder um quadro.",
+      "destaque": "Envia na velocidade que a aplicação quiser"
+    },
+    {
+      "titulo": "Baixa latência",
+      "icone": "network_ping",
+      "texto": "Sem handshake, sem retransmissões obrigatórias e com cabeçalho de 8 bytes, o UDP entrega dados no menor tempo possível. É a escolha para jogos online, chamadas de voz e vídeo e consultas rápidas como DNS.",
+      "destaque": "Ideal quando cada milissegundo conta"
+    },
+    {
+      "titulo": "A aplicação assume a confiabilidade",
+      "icone": "layers",
+      "texto": "Protocolos modernos constroem garantias sobre o UDP em vez do TCP. O QUIC, base do HTTP/3, roda sobre UDP e implementa por conta própria conexão, criptografia (TLS 1.3), controle de congestionamento e retransmissão seletiva.",
+      "destaque": "QUIC = confiabilidade sob medida sobre UDP"
+    },
+    {
+      "titulo": "Broadcast e multicast",
+      "icone": "lan",
+      "texto": "Por não exigir conexão ponto a ponto, o UDP é o único transporte de uso comum que suporta envio para vários destinos ao mesmo tempo: broadcast (toda a rede local, usado pelo DHCP) e multicast (grupos, usado por streaming e descoberta de serviços).",
+      "destaque": "Um envio, muitos receptores"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Consulta DNS via UDP: um único datagrama, sem handshake",
+    "definicao": "sequenceDiagram\n    participant C as Cliente (porta 51000)\n    participant S as Servidor DNS (porta 53)\n    Note over C,S: Não há handshake (nada de SYN/SYN-ACK/ACK)\n    C->>S: Datagrama UDP - consulta A para example.com\n    Note right of S: Servidor processa a consulta\n    S-->>C: Datagrama UDP - resposta A (ex.: 192.0.2.10)\n    Note over C,S: Sem confirmação, sem encerramento de conexão",
+    "legenda": "Toda a troca DNS cabe em dois datagramas independentes. Se a resposta se perder, o cliente simplesmente reenvia a consulta após um timeout, sem nenhuma negociação prévia."
+  },
+  "cabecalho": {
+    "titulo": "Cabeçalho UDP completo: apenas 8 bytes (64 bits)",
+    "nota": "Some os campos: 16 + 16 + 16 + 16 = 64 bits = 8 bytes. É tudo. Não há números de sequência, flags, janela nem opções. Compare com o TCP, cujo cabeçalho ocupa no mínimo 20 bytes (e até 60 com opções) para sustentar conexão, ordenação e controle de fluxo. Essa economia de 12 bytes por pacote é a razão de o UDP ser tão leve e rápido.",
+    "campos": [
+      {
+        "nome": "Porta de origem",
+        "bits": 16,
+        "descricao": "Identifica a porta do processo remetente (0 a 65535). É opcional no UDP: pode ser zero quando não se espera resposta. Serve para o receptor saber para onde devolver uma eventual resposta.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Porta de destino",
+        "bits": 16,
+        "descricao": "Identifica o serviço de destino na máquina receptora (ex.: 53 para DNS, 123 para NTP). É o campo que o sistema operacional usa para entregar o datagrama ao processo correto.",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "Comprimento (Length)",
+        "bits": 16,
+        "descricao": "Tamanho total do datagrama em bytes, incluindo os 8 bytes do cabeçalho mais os dados. O valor mínimo é 8 (cabeçalho sem dados). Como é 16 bits, o máximo teórico é 65535 bytes.",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "Checksum",
+        "bits": 16,
+        "descricao": "Soma de verificação para detectar corrupção de bits no cabeçalho e nos dados, calculada também sobre um pseudo-cabeçalho IP. É opcional em IPv4 (valor zero desliga a verificação), mas obrigatório em IPv6.",
+        "cor": "#059669"
+      }
+    ]
+  },
+  "tabelas": [
+    {
+      "titulo": "UDP vs TCP lado a lado",
+      "colunas": [
+        "Característica",
+        "UDP",
+        "TCP"
+      ],
+      "linhas": [
+        [
+          "Conexão",
+          "Sem conexão",
+          "Orientado a conexão (handshake de 3 vias)"
+        ],
+        [
+          "Confiabilidade",
+          "Nenhuma (best effort)",
+          "Garante entrega (confirmação + retransmissão)"
+        ],
+        [
+          "Ordem dos dados",
+          "Não garantida",
+          "Garantida (números de sequência)"
+        ],
+        [
+          "Controle de fluxo",
+          "Não",
+          "Sim (janela deslizante)"
+        ],
+        [
+          "Controle de congestionamento",
+          "Não",
+          "Sim"
+        ],
+        [
+          "Tamanho do cabeçalho",
+          "8 bytes (fixo)",
+          "20 a 60 bytes"
+        ],
+        [
+          "Latência",
+          "Muito baixa",
+          "Maior (setup e ACKs)"
+        ],
+        [
+          "Broadcast/Multicast",
+          "Suportado",
+          "Não suportado"
+        ],
+        [
+          "Uso típico",
+          "DNS, VoIP, jogos, streaming",
+          "Web (HTTP/1-2), e-mail, SSH, transferência de arquivos"
+        ]
+      ]
+    },
+    {
+      "titulo": "Serviços e portas que usam UDP",
+      "colunas": [
+        "Serviço",
+        "Porta(s)",
+        "Para que serve"
+      ],
+      "linhas": [
+        [
+          "DNS",
+          "53",
+          "Resolução de nomes em endereços IP"
+        ],
+        [
+          "DHCP",
+          "67 (servidor) / 68 (cliente)",
+          "Atribuição automática de IP na rede local (usa broadcast)"
+        ],
+        [
+          "NTP",
+          "123",
+          "Sincronização de relógios entre máquinas"
+        ],
+        [
+          "SNMP",
+          "161",
+          "Monitoramento e gerência de dispositivos de rede"
+        ],
+        [
+          "TFTP",
+          "69",
+          "Transferência simples de arquivos (boot de equipamentos)"
+        ],
+        [
+          "VoIP / RTP",
+          "dinâmica (ex.: 16384-32767)",
+          "Transporte de voz e vídeo em tempo real"
+        ],
+        [
+          "QUIC / HTTP/3",
+          "443",
+          "Transporte confiável e cifrado construído sobre UDP"
+        ]
+      ]
+    },
+    {
+      "titulo": "Quando escolher UDP",
+      "colunas": [
+        "Situação",
+        "Por que UDP",
+        "Exemplo"
+      ],
+      "linhas": [
+        [
+          "Tempo real e sensível a atraso",
+          "Retransmitir chegaria tarde demais; melhor pular o dado perdido",
+          "VoIP, videoconferência, jogos online"
+        ],
+        [
+          "Troca curta pergunta-resposta",
+          "O custo do handshake TCP seria maior que a própria mensagem",
+          "DNS, NTP, SNMP"
+        ],
+        [
+          "Envio para vários destinos",
+          "Entre os transportes comuns, só o UDP faz broadcast e multicast",
+          "DHCP, descoberta de serviços, streaming IPTV"
+        ],
+        [
+          "Confiabilidade sob medida na aplicação",
+          "Evita as limitações do TCP e controla retransmissão/congestionamento por conta própria",
+          "QUIC, HTTP/3"
+        ],
+        [
+          "Alta escala com pouco estado no servidor",
+          "Sem tabela de conexões, o servidor gasta menos memória",
+          "Servidores DNS de grande porte"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "UDP Flood",
+      "como_funciona": "O atacante envia um volume massivo de datagramas UDP para portas aleatórias da vítima. Para cada porta fechada, o alvo gasta recursos gerando uma resposta ICMP Port Unreachable, até esgotar CPU e banda. É um ataque volumétrico de negação de serviço (DoS/DDoS).",
+      "sinal": "Tráfego UDP de entrada muito acima do normal e picos de respostas ICMP tipo 3 código 3 saindo do servidor.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Amplificação / Reflexão",
+      "como_funciona": "O atacante falsifica o IP de origem colocando o endereço da vítima e envia pequenas consultas a servidores UDP abertos (refletores). Estes respondem com pacotes muito maiores, direcionados à vítima. Fatores típicos: DNS ~28-54x, NTP monlist ~556x, SSDP ~30x, memcached até ~51000x.",
+      "sinal": "A vítima recebe enxurrada de respostas UDP grandes (portas 53, 123, 1900, 11211) que ela nunca solicitou.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Spoofing de origem trivial",
+      "como_funciona": "Como o UDP não tem handshake que prove a identidade do remetente, falsificar o campo IP de origem é trivial. Isso viabiliza tanto os ataques de reflexão quanto respostas forjadas (ex.: envenenamento de cache DNS).",
+      "sinal": "Pacotes cujo IP de origem não corresponde à rota/rede esperada; respostas chegando de fontes inesperadas.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Envenenamento de cache DNS",
+      "como_funciona": "Aproveitando a ausência de conexão, o atacante corre para responder uma consulta DNS antes do servidor legítimo, forjando o IP de origem e adivinhando/farejando o Transaction ID. Se acerta, injeta um registro falso no cache do resolver.",
+      "sinal": "Resoluções de nomes apontando para IPs errados; respostas DNS duplicadas ou com dados divergentes.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Abuso de serviços UDP expostos",
+      "como_funciona": "Serviços como SNMP (161), memcached (11211), NTP com monlist e SSDP (1900) deixados abertos na internet viram refletores ou fontes de vazamento de informação. O atacante os usa para amplificar ataques ou coletar dados internos.",
+      "sinal": "Portas UDP administrativas acessíveis publicamente; consultas de origem externa a serviços que deveriam ser internos.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "BCP38 / Anti-spoofing (ingress filtering)",
+      "como_funciona": "O provedor e as bordas de rede descartam pacotes cujo IP de origem não pertence à rede de onde saem. Isso corta a raiz dos ataques de reflexão, que dependem de origem falsificada.",
+      "cobre": "Spoofing de origem, amplificação, reflexão",
+      "limite": "Só funciona se amplamente adotado pelos provedores; uma rede sozinha não impede ser vítima, apenas evita ser fonte."
+    },
+    {
+      "nome": "Rate limiting",
+      "como_funciona": "Limita a taxa de pacotes/consultas UDP por origem ou por serviço, descartando o excedente. Contém floods volumétricos e reduz o impacto de refletores.",
+      "cobre": "UDP Flood, abuso de serviços",
+      "limite": "Precisa de ajuste fino para não bloquear picos legítimos; não resolve sozinho ataques distribuídos muito grandes."
+    },
+    {
+      "nome": "Response Rate Limiting (RRL)",
+      "como_funciona": "Específico de servidores DNS autoritativos: limita respostas idênticas repetidas ao mesmo destino, neutralizando o uso do servidor como amplificador de reflexão.",
+      "cobre": "Amplificação/reflexão DNS",
+      "limite": "Aplica-se a DNS; pode descartar respostas legítimas sob certos padrões se mal configurado."
+    },
+    {
+      "nome": "Fechar serviços abertos e desabilitar comandos perigosos",
+      "como_funciona": "Restringir SNMP, memcached, NTP e SSDP a redes internas e desativar recursos abusáveis (ex.: comando monlist do NTP, memcached na interface pública). Remove os refletores da internet.",
+      "cobre": "Amplificação (NTP monlist, memcached, SSDP, SNMP)",
+      "limite": "Exige inventário e disciplina operacional; serviço esquecido continua sendo risco."
+    },
+    {
+      "nome": "DNSSEC e Source Port Randomization",
+      "como_funciona": "O DNSSEC assina as respostas DNS, permitindo detectar falsificação; a aleatorização da porta de origem e do Transaction ID dificulta o atacante acertar a resposta forjada.",
+      "cobre": "Envenenamento de cache DNS",
+      "limite": "O DNSSEC exige adoção na cadeia de domínios; não criptografa, apenas autentica."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Enviar e receber datagramas com netcat (UDP)",
+      "cenario": "Testar comunicação UDP crua entre dois terminais para ver que não há conexão: os pacotes simplesmente fluem.",
+      "comandos": "# Terminal 1 - servidor escutando UDP na porta 9999\nnc -u -l -p 9999\n\n# Terminal 2 - cliente enviando para o servidor\nnc -u 127.0.0.1 9999\n# digite uma mensagem e pressione Enter; ela aparece no Terminal 1\n\n# Testar uma porta UDP (com timeout, modo zero-I/O)\nnc -u -z -w 2 127.0.0.1 9999",
+      "explicacao": "A flag -u ativa o modo UDP. Repare que nenhum handshake acontece: o texto digitado já chega do outro lado. Como não há conexão, se o servidor não estiver ouvindo, o cliente não recebe erro imediato (a menos que volte um ICMP Port Unreachable)."
+    },
+    {
+      "titulo": "Consultar DNS e observar o UDP com dig",
+      "cenario": "Fazer uma consulta DNS real (que trafega sobre UDP na porta 53) e inspecionar tempos e servidor usado.",
+      "comandos": "# Consulta A padrão (usa UDP/53)\ndig example.com A\n\n# Forçar um resolver específico e ver o tempo de resposta\ndig @8.8.8.8 example.com +stats\n\n# Comparar com a mesma consulta por TCP (o que o dig faz sozinho quando a resposta UDP volta truncada, flag tc)\ndig example.com A +tcp +stats",
+      "explicacao": "O dig usa UDP por padrão. No rodapé da saída (Query time) você vê a latência baixa típica do UDP. Quando a resposta excede o limite, o resolver reenvia via TCP (fallback), demonstrando o papel complementar dos dois transportes."
+    },
+    {
+      "titulo": "Capturar tráfego UDP com tcpdump",
+      "cenario": "Observar datagramas UDP passando pela interface, filtrando por protocolo e porta.",
+      "comandos": "# Todo tráfego UDP\nsudo tcpdump -n udp\n\n# Apenas DNS (porta 53)\nsudo tcpdump -n udp port 53\n\n# Detalhado, mostrando o conteúdo em hex/ascii\nsudo tcpdump -n -vv -X udp port 123\n\n# Salvar em arquivo para análise posterior (ex.: Wireshark)\nsudo tcpdump -w captura_udp.pcap udp",
+      "explicacao": "O filtro udp isola datagramas UDP. Note que cada consulta e resposta aparecem como pacotes independentes, sem os flags SYN/ACK do TCP. O -X ajuda a inspecionar o conteúdo e confirmar a ausência de negociação de conexão."
+    },
+    {
+      "titulo": "Provocar e ver o ICMP Port Unreachable",
+      "cenario": "Enviar um datagrama para uma porta UDP fechada e capturar a resposta ICMP que o sistema alvo gera.",
+      "comandos": "# Capturar ICMP em um terminal\nsudo tcpdump -n icmp\n\n# Em outro terminal, enviar UDP para porta provavelmente fechada\necho \"teste\" | nc -u -w1 127.0.0.1 54321",
+      "explicacao": "Se nenhum processo escuta a porta, o sistema operacional responde com ICMP tipo 3 código 3 (Port Unreachable). Se a porta estiver aberta OU o pacote for silenciosamente descartado por firewall, nenhum ICMP aparece: essa ambiguidade é a base de técnicas de varredura UDP."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Pacote perdido silenciosamente (sem erro no cliente)",
+      "causa_provavel": "O UDP não confirma entrega; um datagrama descartado pela rede ou pelo receptor não gera aviso algum ao remetente.",
+      "leitura": "O tcpdump mostra o datagrama saindo, mas nenhuma resposta chega. Cabe à aplicação detectar via timeout e reenviar.",
+      "comando": "sudo tcpdump -n udp port 53"
+    },
+    {
+      "sintoma": "Porta fechada responde ICMP Port Unreachable",
+      "causa_provavel": "Não há processo escutando a porta UDP de destino; o kernel do alvo gera ICMP tipo 3 código 3.",
+      "leitura": "No tcpdump aparece 'ICMP udp port X unreachable'. Confirma que o host está vivo, mas o serviço não está ativo naquela porta.",
+      "comando": "sudo tcpdump -n icmp"
+    },
+    {
+      "sintoma": "Sem resposta e sem ICMP (varredura UDP ambígua)",
+      "causa_provavel": "A porta pode estar aberta (serviço não respondeu) ou um firewall descartou o pacote sem gerar ICMP. O UDP não distingue os dois casos.",
+      "leitura": "O nmap marca a porta como 'open|filtered'. Só um pacote de aplicação válido (ex.: consulta DNS real) confirma se o serviço responde.",
+      "comando": "sudo nmap -sU -p 53,123,161 <alvo>"
+    },
+    {
+      "sintoma": "Falha silenciosa de checksum",
+      "causa_provavel": "Dados corrompidos em trânsito; se o checksum estava ligado, o receptor descarta o datagrama sem avisar o remetente.",
+      "leitura": "O descarte conta nos contadores do UDP (InCsumErrors e InErrors no netstat -su), não nos erros da interface (RX errors); a aplicação percebe apenas ausência de dados. Em IPv4, checksum zero desativa a verificação.",
+      "comando": "netstat -su"
+    },
+    {
+      "sintoma": "Buffer de recepção estourado (datagramas descartados)",
+      "causa_provavel": "A aplicação lê mais devagar do que chegam os pacotes; como o UDP não tem controle de fluxo, o buffer do socket enche e datagramas são jogados fora.",
+      "leitura": "A estatística 'receive buffer errors' cresce em netstat -su, indicando perda por sobrecarga local, não pela rede.",
+      "comando": "netstat -su | grep -i 'receive buffer'"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{#if resultado.ok}
+<div class="encap-resultado">
+    <p class="encap-resumo">
+        Mensagem de <strong>{bytesAplicacao} bytes</strong> &rarr; quadro Ethernet de
+        <strong class="text-teal">{resultado.totalBytes} bytes</strong>
+        ({resultado.transporte} sobre IPv4).
+    </p>
+
+    <h3 class="h4 encap-secao">Encapsulamento no emissor</h3>
+    <div class="encap-nest">
+        {! A pilha vem invertida (Enlace por fora, Aplicação por dentro): o primeiro laço
+           abre as camadas aninhadas, a mensagem fica no miolo e o segundo laço fecha as
+           tags na ordem inversa. !}
+        {#for camada in pilha}
+        <div class="encap-layer nivel-{camada.nivel}">
+            <div class="encap-layer-head">
+                <div class="encap-layer-id">
+                    <span class="encap-nivel-badge">L{camada.nivel}</span>
+                    <span class="encap-layer-name">{camada.protocolo}</span>
+                    <span class="encap-layer-pdu">{camada.pdu}</span>
+                </div>
+                <span class="encap-layer-bytes">{#if camada.headerBytes > 0}+{camada.headerBytes}B header · {/if}{camada.totalBytes}B</span>
+            </div>
+            <div class="encap-layer-body">
+        {/for}
+                <div class="encap-payload">&ldquo;{resultado.mensagem}&rdquo;</div>
+        {#for camada in pilha}
+            </div>
+        </div>
+        {/for}
+    </div>
+
+    <h3 class="h4 encap-secao">Cabeçalhos, campo a campo</h3>
+    <p class="small text-secondary">
+        Cada valor traz sua natureza:
+        <span class="badge bg-info text-dark">fornecido</span> (você informou),
+        <span class="badge bg-success">calculado</span> (derivado de tamanhos reais) e
+        <span class="badge bg-secondary">ilustrativo</span> (exemplo — para os bytes e checksums
+        efetivos, use o <strong>Construtor de pacotes</strong> na aba Tráfego).
+    </p>
+    {#for camada in resultado.camadas}
+    <div class="encap-detalhe nivel-{camada.nivel}">
+        <div class="encap-detalhe-head">
+            <span class="encap-nivel-badge">L{camada.nivel}</span>
+            <strong class="encap-detalhe-nome">{camada.nome} · {camada.protocolo}</strong>
+            <span class="encap-detalhe-pdu">{camada.pdu} ({camada.totalBytes} B)</span>
+        </div>
+        {#if camada.resumoHex}
+        <div class="encap-hex">{camada.resumoHex}</div>
+        {/if}
+        <table class="encap-campos">
+            {#for campo in camada.cabecalho}
+            <tr>
+                <td class="encap-campo-nome">{campo.nome}</td>
+                <td class="encap-campo-valor">{campo.valor}
+                    {#if campo.natureza == 'fornecido'}<span class="badge bg-info text-dark" title="valor que você informou no formulário">fornecido</span>
+                    {#else if campo.natureza == 'calculado'}<span class="badge bg-success" title="derivado de tamanhos/números reais">calculado</span>
+                    {#else}<span class="badge bg-secondary" title="valor de exemplo — não computado aqui; use o Construtor de pacotes">ilustrativo</span>{/if}
+                </td>
+                <td class="encap-campo-desc">{campo.descricao}</td>
+            </tr>
+            {/for}
+        </table>
+    </div>
+    {/for}
+
+    <p class="encap-nota">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_vert</span>
+        <span>
+            No destino, o processo se inverte: cada camada lê e remove o seu cabeçalho
+            (desencapsulamento) até entregar a mensagem à aplicação.
+        </span>
+    </p>
+</div>
+{#else}
+<div class="encap-erro" role="alert">&#9888; {resultado.erro ?: 'Não foi possível encapsular.'}</div>
+{/if}

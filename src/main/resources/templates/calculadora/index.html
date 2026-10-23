@@ -1,0 +1,63 @@
+{#include shared/base.html}
+{#title}Calculadora de Sub-redes e VLANs | Framework de Redes A&D{/title}
+{#description}Calculadora de sub-redes e VLANs: divide blocos, monta plano de VLAN, sumariza rotas e converte faixa de endereços para CIDR, sempre com a memória de cálculo à vista.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/calculadora/css/calculadora.css?v=20261023" />
+{/extraHead}
+{#content}
+
+<div class="container py-4">
+    {#include shared/main_menu.html activeMainMenu=activeMainMenu /}
+
+    <header class="mb-4">
+        <h1 class="aed-title">
+            <span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">calculate</span>
+            Calculadora de Sub-redes e VLANs
+        </h1>
+        <p class="aed-subtitle">
+            Divida um bloco em sub-redes, monte o plano de VLANs com gateway e DHCP, sumarize rotas
+            e converta faixas de IP em CIDR. Tudo calculado no servidor, com o script Cisco pronto para copiar.
+        </p>
+    </header>
+
+    <div class="aed-card calc-wrap p-4" data-aba-ativa="{abaAtiva}">
+        <span class="aed-eyebrow">Ferramenta</span>
+        <div class="aed-mode-grid calc-tab-nav mb-4" role="tablist">
+            <button type="button" class="aed-mode-btn calc-tab-trigger" data-calc-tab="dividir" role="tab"
+                    title="Dividir um bloco em sub-redes de tamanho fixo e ver quantas cabem">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_on</span><span>Dividir bloco</span>
+            </button>
+            <button type="button" class="aed-mode-btn calc-tab-trigger" data-calc-tab="vlan" role="tab"
+                    title="Plano de VLANs: sub-rede, gateway, DHCP, trunk e script Cisco">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span><span>VLANs</span>
+            </button>
+            <button type="button" class="aed-mode-btn calc-tab-trigger" data-calc-tab="agregar" role="tab"
+                    title="Sumarizar redes em uma rota resumo e comparar dois blocos">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">merge</span><span>Sumarizar e comparar</span>
+            </button>
+            <button type="button" class="aed-mode-btn calc-tab-trigger" data-calc-tab="faixa" role="tab"
+                    title="Converter uma faixa de IPs na menor lista de blocos CIDR">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">linear_scale</span><span>Faixa para CIDR</span>
+            </button>
+        </div>
+
+        <div class="calc-tab-panel" data-calc-panel="dividir">
+            {#include calculadora/partials/tab_dividir.html /}
+        </div>
+        <div class="calc-tab-panel" data-calc-panel="vlan">
+            {#include calculadora/partials/tab_vlan.html /}
+        </div>
+        <div class="calc-tab-panel" data-calc-panel="agregar">
+            {#include calculadora/partials/tab_agregar.html /}
+        </div>
+        <div class="calc-tab-panel" data-calc-panel="faixa">
+            {#include calculadora/partials/tab_faixa.html /}
+        </div>
+    </div>
+</div>
+
+{/content}
+{#extraScripts}
+<script src="/calculadora/js/calculadora.js?v=20261022"></script>
+{/extraScripts}
+{/include}

@@ -1,0 +1,78 @@
+<div class="calc-resultado">
+    <div class="calc-resumo-head">
+        <h3 class="h5 mb-1">
+            <span class="material-symbols-outlined text-warning" aria-hidden="true" translate="no">linear_scale</span>
+            {resultado.inicio} até {resultado.fim}
+        </h3>
+        <span class="calc-badge">{resultado.totalBlocos} bloco(s) CIDR</span>
+    </div>
+
+    <div class="calc-kpis">
+        <div class="calc-kpi calc-kpi-destaque">
+            <span class="calc-kpi-label">Blocos necessários</span>
+            <strong class="calc-kpi-valor">{resultado.totalBlocos}</strong>
+            <span class="calc-kpi-nota">menor lista possível</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Endereços na faixa</span>
+            <strong class="calc-kpi-valor">{resultado.totalEnderecos}</strong>
+            <span class="calc-kpi-nota">cobertura exata, sem sobra</span>
+        </div>
+    </div>
+
+    <p class="calc-explicacao">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span>
+        Um equipamento só entende <strong>prefixos</strong> (blocos CIDR), não "de X até Y". Esta é a MENOR
+        lista de blocos que cobre exatamente a faixa pedida — cada bloco alinhado a uma fronteira de potência
+        de 2. A <strong>ACL</strong> abaixo aplica a mesma cobertura, uma linha por bloco.
+    </p>
+
+    {#if resultado.truncado}
+    <div class="calc-aviso" role="status">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span>
+        <span>
+            A faixa exige mais blocos do que o limite de exibição. A lista abaixo está incompleta —
+            estreite a faixa ou alinhe os extremos a limites de bloco para reduzir a quantidade.
+        </span>
+    </div>
+    {/if}
+
+    <div class="table-responsive calc-tabela-scroll">
+        <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
+            <thead>
+            <tr>
+                <th title="Ordem do bloco na cobertura da faixa"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span>#</th>
+                <th title="Bloco em notação CIDR (rede/prefixo)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span>Bloco CIDR</th>
+                <th title="Máscara de sub-rede em decimal"><span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_view</span>Máscara</th>
+                <th title="Máscara curinga (inverso da máscara) — usada em ACL"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flip</span>Wildcard</th>
+                <th title="Primeiro endereço do bloco"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span>Primeiro</th>
+                <th title="Último endereço do bloco"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span>Último</th>
+                <th title="Quantidade de endereços no bloco"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span>Endereços</th>
+            </tr>
+            </thead>
+            <tbody>
+            {#for bloco in resultado.blocos}
+            <tr>
+                <td class="text-secondary">{bloco.indice}</td>
+                <td class="font-monospace fw-bold">{bloco.cidr}</td>
+                <td class="font-monospace text-secondary">{bloco.mascara}</td>
+                <td class="font-monospace text-secondary">{bloco.wildcard}</td>
+                <td class="font-monospace">{bloco.rede}</td>
+                <td class="font-monospace">{#if bloco.prefixo >= 31}{bloco.ultimoHost}{#else}{bloco.broadcast}{/if}</td>
+                <td>{bloco.totalIps}</td>
+            </tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="h6 calc-secao-titulo mt-4">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span>
+        ACL equivalente
+        <button type="button" class="aed-btn aed-btn-neutral btn-sm calc-copiar" data-alvo="cliFaixa">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar
+        </button>
+    </h4>
+    <pre class="calc-cli" id="cliFaixa" translate="no">{#for linha in resultado.comandosCisco}{linha}
+{/for}</pre>
+</div>

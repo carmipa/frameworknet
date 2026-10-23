@@ -1,0 +1,80 @@
+{#include shared/base.html}
+{#title}Tráfego | Framework de Redes A&D{/title}
+{#description}Tráfego e pacotes: painel ao vivo, decodificador de pacote em hexadecimal, encapsulamento camada a camada e o handshake TCP de três vias explicado passo a passo.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/trafego/css/trafego.css?v=20261022">
+<link rel="stylesheet" href="/simuladores/css/encapsulamento.css?v=20261022">
+<link rel="stylesheet" href="/simuladores/css/handshake.css?v=20261022">
+<link rel="stylesheet" href="/simuladores/css/anomalias.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='trafego' /}
+
+    <div class="text-center mb-4">
+        <span class="aed-eyebrow aed-eyebrow-teal">Tráfego &amp; pacotes</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Analisador de tráfego e pacotes</h1>
+        <p class="text-secondary small mx-auto aed-medida-leitura">
+            Painel ao vivo (simulação), decodificador de pacotes (hex → camadas) e o simulador de
+            <strong>encapsulamento</strong> — como os dados são embrulhados camada a camada.
+        </p>
+    </div>
+
+    <div class="aed-card card-tech p-4 shadow" data-aed-tabs data-active-tab="aovivo">
+        <span class="aed-eyebrow">Ferramenta</span>
+        <div class="aed-mode-grid tab-nav mb-3" role="tablist">
+            <button type="button" class="aed-mode-btn tab-trigger active" data-tab="aovivo" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Ao vivo: painel simulado de tráfego (protocolos, throughput, top hosts e redes abertas)">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">sensors</span><span>Ao vivo</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="decodificador" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Decodificador: cole um hex dump e veja os cabeçalhos Ethernet/IP/TCP/UDP/ICMP campo a campo">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">memory</span><span>Decodificador</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="encapsulamento" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Encapsulamento: veja uma mensagem ser embrulhada camada a camada (Aplicação → Enlace)">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span><span>Encapsulamento</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="handshake" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Handshake TCP: passo a passo do 3-way handshake, troca de dados e encerramento (4-way)">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">handshake</span><span>Handshake TCP</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="anomalias" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Anomalias TCP: SYN flood (esgotamento do backlog) e sequestro por previsão de número de sequência">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span><span>Anomalias TCP</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="construtor" role="tab"
+                    title="Construtor de pacotes: edite os campos, gere os bytes e decodifique de volta">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">construction</span><span>Construtor de pacotes</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="lab" role="tab"
+                    title="Laboratório DNS/ICMP: compare tráfego normal e suspeito (tunneling) em dados fictícios">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">biotech</span><span>Lab DNS/ICMP</span>
+            </button>
+        </div>
+
+        <div class="tab-panel active" data-tab-panel="aovivo">{#include trafego/partials/tab_aovivo.html /}</div>
+        <div class="tab-panel" data-tab-panel="decodificador">{#include trafego/partials/tab_decodificador.html /}</div>
+        <div class="tab-panel" data-tab-panel="encapsulamento">{#include trafego/partials/tab_encapsulamento.html /}</div>
+        <div class="tab-panel" data-tab-panel="handshake">{#include trafego/partials/tab_handshake.html /}</div>
+        <div class="tab-panel" data-tab-panel="anomalias">{#include trafego/partials/tab_anomalias.html /}</div>
+        <div class="tab-panel" data-tab-panel="construtor">{#include trafego/partials/tab_construtor.html /}</div>
+        <div class="tab-panel" data-tab-panel="lab">{#include trafego/partials/tab_lab.html /}</div>
+    </div>
+</div>
+{/content}
+{#extraScripts}
+<script src="/web/vendor/chartjs-4.4.0/chart.umd.min.js" integrity="sha384-e6nUZLBkQ86NJ6TVVKAeSaK8jWa3NhkYWZFomE39AvDbQWeie9PlQqM3pmYW5d1g" crossorigin="anonymous"></script>
+<script src="/web/js/aed-tabs.js?v=20260710"></script>
+<script src="/trafego/js/trafego-aovivo.js?v=20261002b"></script>
+<script src="/trafego/js/trafego.js?v=20261001"></script>
+<script src="/simuladores/js/encapsulamento.js?v=20260909"></script>
+<script src="/simuladores/js/handshake.js?v=20260925f"></script>
+<script src="/simuladores/js/anomalias.js?v=20260907"></script>
+{/extraScripts}
+{/include}

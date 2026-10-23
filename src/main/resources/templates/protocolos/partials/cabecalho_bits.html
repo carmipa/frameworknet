@@ -1,0 +1,34 @@
+{! Decomposição binária do cabeçalho — a régua proporcional aos bits + a tabela.
+    Compartilhado por TODAS as páginas de aprofundamento. Recebe o objeto
+    `cabecalho` (CabecalhoBinario). A página deve carregar o CSS aprofundamento.css.
+    Uso: {#include protocolos/partials/cabecalho_bits.html cabecalho=conteudo.cabecalho /} !}
+{#if cabecalho}
+<section id="cabecalho" class="aprof-secao">
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> {cabecalho.titulo}</h2>
+    {#if cabecalho.nota}<p class="small text-secondary">{cabecalho.nota}</p>{/if}
+    <div class="aprof-regua" role="list" aria-label="Campos do cabeçalho, largura proporcional aos bits">
+        {#for campo in cabecalho.campos}
+        <div class="aprof-regua-campo" role="listitem"
+             style="flex-grow: {campo.bits}; {#if campo.cor}--aprof-campo-cor: {campo.cor};{/if}"
+             title="{campo.descricao}">
+            <span class="aprof-regua-nome">{campo.nome}</span>
+            <span class="aprof-regua-bits">{campo.bits} bits</span>
+        </div>
+        {/for}
+    </div>
+    <div class="table-responsive border border-secondary border-opacity-25 rounded mt-3">
+        <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
+            <thead><tr><th>Campo</th><th class="text-nowrap">Bits</th><th>O que carrega</th></tr></thead>
+            <tbody>
+                {#for campo in cabecalho.campos}
+                <tr>
+                    <td class="fw-bold text-info text-nowrap">{campo.nome}</td>
+                    <td class="text-warning fw-bold">{campo.bits}</td>
+                    <td class="small text-light">{campo.descricao}</td>
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+    </div>
+</section>
+{/if}

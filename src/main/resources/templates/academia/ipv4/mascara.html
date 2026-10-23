@@ -1,0 +1,185 @@
+{! Lição IPv4 · Máscara e prefixo. Ver (a divisória andando de /24 a /27), Mexer (IP, prefixo e
+   máscara ao vivo, régua clicável) e Provar (máscara, hosts, rede e broadcast, com a correção
+   nomeando o engano). Contas no navegador (R10). Variáveis: nivel, licao, proxima, activeMainMenu. !}
+{#include shared/base.html}
+{#title}Máscara e prefixo — Academia | Framework de Redes A&D{/title}
+{#description}Lição de máscara e prefixo CIDR da Academia: mova a divisória dos 32 bits e veja máscara, rede, broadcast e hosts utilizáveis, inclusive nos casos /31 e /32.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/academia/core/css/academia.css?v=20261022">
+<link rel="stylesheet" href="/academia/ipv4/css/ipv4.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5 acad-pagina" data-acad-licao="{licao.id}">
+    {#include shared/main_menu.html activeMainMenu='academia' /}
+    {#include academia/core/cabecalho-licao.html /}
+
+    <div class="acad-etapas">
+        <section class="acad-etapa acad-etapa-larga acad-leitura" id="ler" aria-labelledby="ler-titulo">
+            <h2 class="acad-etapa-titulo" id="ler-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
+                Entenda
+            </h2>
+            <p class="acad-explica">Leia primeiro; depois veja a divisória andar na régua de 32 bits e teste com os seus endereços.</p>
+            <div class="acad-leitura-texto">
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
+                    <p>Um endereço IPv4 tem 32 bits divididos em duas partes: a <strong>rede</strong> (em que "rua" o computador
+                    está) e o <strong>host</strong> (qual "casa" é ele nessa rua). Dois computadores na mesma rede conversam
+                    direto; para falar com outra rede, o pacote vai para o roteador. A <strong>máscara</strong> é o que diz onde
+                    fica a divisória entre as duas partes.</p>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
+                    <p>A máscara tem bits <span class="acad-valor" translate="no">1</span> na parte de rede e <span class="acad-valor" translate="no">0</span> na parte de host, sempre nessa ordem. O
+                    <strong>prefixo</strong> é só a contagem dos uns: <span class="acad-valor" translate="no">/24</span> = 24 uns e 8 zeros = <span class="acad-valor" translate="no">255.255.255.0</span>.</p>
+                    <p>O <strong>endereço de rede</strong> é o IP com os bits de host zerados (IP AND máscara). O
+                    <strong>broadcast</strong> é o IP com os bits de host todos em 1. Entre os dois ficam os hosts:
+                    <span class="acad-valor" translate="no">2^(32 − prefixo) − 2</span> endereços utilizáveis.</p>
+                    <p>Exemplo: <span class="acad-valor" translate="no">192.168.10.77/27</span>. Sobram <span class="acad-valor" translate="no">5</span> bits de host, então o bloco tem <span class="acad-valor" translate="no">2^5 = 32</span>
+                    endereços. Os blocos andam de 32 em 32 (0, 32, 64, 96…) e o 77 cai no que vai de 64 a 95: rede
+                    <span class="acad-valor" translate="no">192.168.10.64</span>, broadcast <span class="acad-valor" translate="no">192.168.10.95</span>, hosts de <span class="acad-valor" translate="no">.65</span> a <span class="acad-valor" translate="no">.94</span> — <span class="acad-valor" translate="no">30</span> hosts.</p>
+                    <p>Atalho: no octeto da máscara que não é 255 nem 0, o tamanho do bloco é <span class="acad-valor" translate="no">256 − valor</span>. Em
+                    <span class="acad-valor" translate="no">255.255.255.224</span>: <span class="acad-valor" translate="no">256 − 224 = 32</span>.</p>
+                    <p>Dois casos especiais: <span class="acad-valor" translate="no">/31</span> é usado em enlace ponto a ponto entre roteadores e aproveita os dois
+                    endereços (RFC 3021); <span class="acad-valor" translate="no">/32</span> é um único host.</p>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
+                    <ul>
+                        <li>Contar a rede e o broadcast como hosts (32 em vez de 30 no /27).</li>
+                        <li>Responder o próprio IP digitado como endereço de rede.</li>
+                        <li>Escrever máscara com uns e zeros misturados, como <span class="acad-valor" translate="no">255.0.255.0</span>: os uns precisam vir todos juntos, à esquerda.</li>
+                    </ul>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
+                    <ul>
+                        <li>Prefixo = quantidade de bits de rede. Hosts = <span class="acad-valor" translate="no">2^(bits de host) − 2</span>.</li>
+                        <li>Rede: bits de host em 0. Broadcast: bits de host em 1.</li>
+                    </ul>
+                </section>
+            </div>
+        </section>
+
+        <section class="acad-etapa acad-etapa-larga" id="ver" aria-labelledby="ver-titulo">
+            <h2 class="acad-etapa-titulo" id="ver-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span>
+                Ver
+            </h2>
+            <p class="acad-explica">
+                O endereço tem <span class="acad-valor" translate="no">32</span> bits. O prefixo diz quantos,
+                da esquerda para a direita, são a parte de <strong>rede</strong>; o resto é a parte de
+                <strong>host</strong>. A rede é o endereço com todos os bits de host em
+                <span class="acad-valor" translate="no">0</span>; o broadcast, com todos em
+                <span class="acad-valor" translate="no">1</span>.
+            </p>
+            <div id="ver-animacao">
+                <div class="acad-regua" id="ver-regua" aria-label="Os 32 bits do exemplo"></div>
+                <div class="acad-regua-legenda" aria-hidden="true">
+                    <span><span class="amostra rede"></span>rede</span>
+                    <span><span class="amostra host"></span>host</span>
+                </div>
+                <dl class="acad-resultado">
+                    <div><dt>Prefixo e máscara</dt><dd id="ver-mascara" translate="no">—</dd></div>
+                    <div><dt>Rede</dt><dd id="ver-rede" translate="no">—</dd></div>
+                    <div><dt>Broadcast</dt><dd id="ver-broadcast" translate="no">—</dd></div>
+                    <div><dt>Hosts utilizáveis</dt><dd id="ver-hosts" translate="no">—</dd></div>
+                </dl>
+                {#include academia/core/controles-animacao.html /}
+            </div>
+        </section>
+
+        <section class="acad-etapa acad-etapa-larga" id="mexer" aria-labelledby="mexer-titulo">
+            <h2 class="acad-etapa-titulo" id="mexer-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">touch_app</span>
+                Mexer
+            </h2>
+            <p class="acad-explica">Digite um endereço e o prefixo (ou a máscara). Clicar num bit da régua põe a divisória depois dele.</p>
+            <div class="row g-3">
+                <div class="col-12 col-md-4 acad-campo">
+                    <label for="mexer-ip">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span>
+                        Endereço IPv4
+                    </label>
+                    <input id="mexer-ip" aria-describedby="mexer-ip-eco" class="form-control" autocomplete="off" data-history="off" maxlength="32"
+                           value="192.168.10.77" title="Digite o endereço; a vírgula do teclado numérico vale como ponto">
+                    <span class="acad-eco" id="mexer-ip-eco"></span>
+                </div>
+                <div class="col-12 col-md-4 acad-campo">
+                    <label for="mexer-prefixo">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span>
+                        Prefixo
+                    </label>
+                    <input id="mexer-prefixo" aria-describedby="mexer-prefixo-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="8" value="/27" title="De /0 a /32; com ou sem a barra">
+                    <span class="acad-eco" id="mexer-prefixo-eco"></span>
+                </div>
+                <div class="col-12 col-md-4 acad-campo">
+                    <label for="mexer-mascara">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span>
+                        Máscara
+                    </label>
+                    <input id="mexer-mascara" aria-describedby="mexer-mascara-eco" class="form-control" autocomplete="off" data-history="off" maxlength="32"
+                           value="255.255.255.224" title="Digite a máscara; ela precisa ter todos os bits 1 antes dos 0">
+                    <span class="acad-eco" id="mexer-mascara-eco"></span>
+                </div>
+            </div>
+            <div class="acad-regua" id="mexer-regua" role="group" aria-label="Régua de 32 bits: ative um bit para mover a divisória"></div>
+            <dl class="acad-resultado">
+                <div><dt>Rede</dt><dd id="mexer-rede" translate="no">—</dd></div>
+                <div><dt>Broadcast</dt><dd id="mexer-broadcast" translate="no">—</dd></div>
+                <div><dt>Primeiro host</dt><dd id="mexer-primeiro" translate="no">—</dd></div>
+                <div><dt>Último host</dt><dd id="mexer-ultimo" translate="no">—</dd></div>
+                <div><dt>Hosts utilizáveis</dt><dd id="mexer-hosts" translate="no">—</dd></div>
+                <div><dt>Endereços no bloco</dt><dd id="mexer-bloco" translate="no">—</dd></div>
+            </dl>
+            <p class="acad-explica mt-2" id="mexer-nota" aria-live="polite"></p>
+        </section>
+
+        <section class="acad-etapa acad-etapa-larga" id="provar" aria-labelledby="provar-titulo">
+            <h2 class="acad-etapa-titulo" id="provar-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span>
+                Provar
+            </h2>
+            <p class="acad-pergunta" id="provar-pergunta"></p>
+            <form id="provar-form" class="row g-3 align-items-end" novalidate>
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="provar-resposta">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">edit</span>
+                        <span id="provar-rotulo">Sua resposta</span>
+                    </label>
+                    <input id="provar-resposta" aria-describedby="provar-eco" class="form-control" autocomplete="off" data-history="off"
+                           maxlength="32" title="Escreva a resposta; o formato aceito aparece logo abaixo">
+                </div>
+                <div class="col-12 col-md-6 d-flex flex-wrap gap-2 align-items-center">
+                    <button type="submit" class="aed-btn aed-btn-teal" title="Confere a sua resposta">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">check_circle</span>
+                        <span>Conferir</span>
+                    </button>
+                    <button type="button" class="aed-btn aed-btn-neutral" id="provar-outra"
+                            title="Troca por outra pergunta, sem contar tentativa">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">casino</span>
+                        <span>Outra pergunta</span>
+                    </button>
+                </div>
+            </form>
+            <span class="acad-eco d-block mt-1" id="provar-eco"></span>
+            <div class="acad-feedback" id="provar-feedback" aria-live="polite"></div>
+            <div class="acad-placar" id="provar-placar"></div>
+        </section>
+    </div>
+
+    {#include academia/core/rodape-licao.html /}
+</div>
+{/content}
+{#extraScripts}
+<script src="/academia/core/js/normalizador.js?v=20261002b"></script>
+<script src="/academia/core/js/motor.js?v=20261002b"></script>
+<script src="/academia/core/js/progresso.js?v=20261002b"></script>
+<script src="/academia/core/js/niveis.js?v=20261002b"></script>
+<script src="/academia/core/js/sinais.js?v=20261002b"></script>
+<script src="/academia/ipv4/js/contas-ipv4.js?v=20261002b"></script>
+<script src="/academia/ipv4/js/regua.js?v=20261022"></script>
+<script src="/academia/ipv4/js/mascara.js?v=20261002b"></script>
+{/extraScripts}
+{/include}

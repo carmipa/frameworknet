@@ -1,0 +1,280 @@
+{
+  "resumo": "A criptografia simétrica usa uma única chave secreta, compartilhada entre as partes, tanto para cifrar quanto para decifrar. É o motor de desempenho da criptografia moderna: cifra gigabytes por segundo, protege o corpo das mensagens no TLS e o conteúdo de discos e bancos de dados. Seu ponto forte é a velocidade; seu ponto fraco histórico é a distribuição da chave (como entregar o segredo ao outro lado sem que um bisbilhoteiro o capture), problema resolvido na prática combinando-a com criptografia assimétrica e troca de chaves (por exemplo, o handshake do TLS). Cifras simétricas dividem-se em cifras de bloco (AES) e de fluxo (ChaCha20). Não confundir com hash: hash é resumo de mão única, sem chave e irreversível; cifra simétrica é reversível com a chave correta. O estado da arte é o modo AEAD (AES-GCM ou ChaCha20-Poly1305), que entrega confidencialidade e integridade juntas. As armadilhas práticas quase nunca estão na cifra em si, e sim no uso: reutilizar nonce/IV, escolher o modo ECB ou tratar mal erros de padding em CBC.",
+  "ficha": [
+    {
+      "rotulo": "Chave",
+      "valor": "Uma só, secreta e compartilhada",
+      "dica": "A mesma chave cifra e decifra; se vazar, tudo cai"
+    },
+    {
+      "rotulo": "Padrão recomendado",
+      "valor": "AES-256-GCM ou ChaCha20-Poly1305",
+      "dica": "Ambos são AEAD (cifram e autenticam de uma vez)"
+    },
+    {
+      "rotulo": "Tipos de cifra",
+      "valor": "Bloco (AES, 128 bits) e fluxo (ChaCha20)",
+      "dica": "AES opera em blocos; ChaCha20 gera um keystream"
+    },
+    {
+      "rotulo": "Elemento não secreto e crítico",
+      "valor": "IV / nonce (nunca repetir na mesma chave)",
+      "dica": "Pode ser público, mas jamais reutilizado; no CBC também tem de ser imprevisível"
+    },
+    {
+      "rotulo": "Uso no TLS",
+      "valor": "Cifra o tráfego após o handshake",
+      "dica": "A chave de sessão nasce da troca assimétrica"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Rápida e eficiente",
+      "icone": "bolt",
+      "texto": "Cifras simétricas são ordens de grandeza mais rápidas que as assimétricas e ainda contam com aceleração por hardware (instruções AES-NI na CPU). Por isso todo o volume de dados de uma conexão TLS viaja sob cifra simétrica, e não sob RSA/ECC.",
+      "destaque": "Gigabytes por segundo, ideal para o corpo dos dados"
+    },
+    {
+      "titulo": "O problema da distribuição da chave",
+      "icone": "key",
+      "texto": "Se as duas partes precisam da mesma chave secreta, como entregá-la ao outro lado sem que um interceptador a capture? Esse é o calcanhar da criptografia simétrica. A solução prática é híbrida: usar troca de chaves (Diffie-Hellman) ou cifrar a chave de sessão com a chave pública do destinatário, exatamente como faz o TLS.",
+      "destaque": "Resolvido na prática com criptografia assimétrica"
+    },
+    {
+      "titulo": "IV / nonce nunca deve repetir",
+      "icone": "restart_alt",
+      "texto": "O IV (vetor de inicialização) ou nonce garante que cifrar a mesma mensagem duas vezes produza saídas diferentes. Ele não é secreto, mas é um número de uso único: repeti-lo sob a mesma chave, sobretudo em modos como GCM e CTR, quebra a segurança de forma catastrófica. No CBC não basta ser único: o IV tem de ser imprevisível (NIST SP 800-38A, apêndice C) — o IV previsível do TLS 1.0 é o que o BEAST explorou.",
+      "destaque": "Não secreto, porém estritamente único por chave"
+    },
+    {
+      "titulo": "AEAD: confidencialidade e integridade juntas",
+      "icone": "verified_user",
+      "texto": "AEAD (Authenticated Encryption with Associated Data) cifra e, ao mesmo tempo, produz uma tag de autenticação. Se o texto cifrado for adulterado, a decifragem falha em vez de devolver lixo. Cifrar sem autenticar deixa a porta aberta para ataques ativos como o padding oracle.",
+      "destaque": "AES-GCM e ChaCha20-Poly1305 são os padrões AEAD"
+    },
+    {
+      "titulo": "Bloco versus fluxo",
+      "icone": "grid_view",
+      "texto": "Cifras de bloco (AES) processam pedaços de tamanho fixo (128 bits) e precisam de um modo de operação para tratar mensagens maiores. Cifras de fluxo (ChaCha20) geram um keystream combinado por XOR com os dados, dispensando padding e sendo excelentes em software sem aceleração AES.",
+      "destaque": "AES domina em hardware; ChaCha20 brilha em software"
+    }
+  ],
+  "diagrama": {
+    "titulo": "A mesma chave nos dois lados",
+    "definicao": "sequenceDiagram\n    participant A as Alice (emissora)\n    participant C as Canal inseguro\n    participant B as Bob (receptor)\n    Note over A,B: Ambos já compartilham a mesma chave secreta K\n    A->>A: texto claro + K + nonce\n    A->>A: cifrar com AES-256-GCM\n    A->>C: texto cifrado + nonce + tag\n    C->>B: texto cifrado + nonce + tag\n    B->>B: verificar tag com K\n    B->>B: decifrar com a MESMA chave K\n    Note over B: tag inválida, então rejeita (não decifra)",
+    "legenda": "A mesma chave secreta K cifra na origem e decifra no destino. O nonce e a tag viajam junto do texto cifrado; o nonce garante unicidade e a tag garante integridade. A chave nunca trafega pelo canal inseguro: ela é combinada antes, tipicamente via troca assimétrica no handshake do TLS."
+  },
+  "tabelas": [
+    {
+      "titulo": "Cifras simétricas: atuais versus obsoletas",
+      "colunas": [
+        "Cifra",
+        "Tipo",
+        "Chave",
+        "Situação",
+        "Observação"
+      ],
+      "linhas": [
+        [
+          "AES",
+          "Bloco (128 bits)",
+          "128/192/256 bits",
+          "Recomendada",
+          "Padrão global, acelerada por hardware (AES-NI)"
+        ],
+        [
+          "ChaCha20",
+          "Fluxo",
+          "256 bits",
+          "Recomendada",
+          "Rápida em software, usada com Poly1305 no TLS 1.3"
+        ],
+        [
+          "3DES",
+          "Bloco (64 bits)",
+          "112 bits efetivos",
+          "Obsoleta",
+          "Lenta e vulnerável ao ataque Sweet32; descontinuada"
+        ],
+        [
+          "DES",
+          "Bloco (64 bits)",
+          "56 bits",
+          "Quebrada",
+          "Chave curta demais, quebrável por força bruta"
+        ],
+        [
+          "RC4",
+          "Fluxo",
+          "40 a 2048 bits",
+          "Quebrada",
+          "Vieses estatísticos no keystream; proibida no TLS"
+        ]
+      ]
+    },
+    {
+      "titulo": "Modos de operação de cifra de bloco",
+      "colunas": [
+        "Modo",
+        "Integridade",
+        "Precisa de padding",
+        "Uso recomendado",
+        "Risco típico"
+      ],
+      "linhas": [
+        [
+          "GCM",
+          "Sim (AEAD)",
+          "Não",
+          "Preferido: cifra e autentica",
+          "Catástrofe se o nonce repetir"
+        ],
+        [
+          "CTR",
+          "Não",
+          "Não",
+          "Só com MAC separado",
+          "Reúso de nonce revela XOR dos textos"
+        ],
+        [
+          "CBC",
+          "Não",
+          "Sim",
+          "Legado; exige MAC (encrypt-then-MAC)",
+          "Padding oracle se erros vazarem"
+        ],
+        [
+          "ECB",
+          "Não",
+          "Sim",
+          "Nunca usar",
+          "Blocos iguais geram cifra igual (padrões visíveis)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Por que GCM (AEAD) é o padrão",
+      "colunas": [
+        "Propriedade",
+        "AES-GCM (AEAD)",
+        "AES-CBC sem MAC"
+      ],
+      "linhas": [
+        [
+          "Confidencialidade",
+          "Sim",
+          "Sim"
+        ],
+        [
+          "Integridade e autenticidade",
+          "Sim, via tag",
+          "Não"
+        ],
+        [
+          "Detecta adulteração",
+          "Sim, falha ao decifrar",
+          "Não, devolve dados alterados"
+        ],
+        [
+          "Resistente a padding oracle",
+          "Sim (sem padding)",
+          "Não"
+        ],
+        [
+          "Dados associados (AAD)",
+          "Sim (autentica cabeçalhos)",
+          "Não"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Reúso de nonce / IV",
+      "como_funciona": "Em GCM ou CTR, usar o mesmo nonce com a mesma chave para duas mensagens permite ao atacante calcular o XOR dos textos claros e, em GCM, até recuperar a subchave de autenticação H e, com ela, forjar tags válidas, quebrando a integridade. É o erro operacional mais destrutivo da criptografia simétrica.",
+      "sinal": "Nonces fixos, contadores reiniciados após reboot ou nonces derivados de valores que colidem",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Uso do modo ECB",
+      "como_funciona": "No ECB cada bloco é cifrado de forma independente, então blocos de texto claro idênticos geram blocos cifrados idênticos. Isso vaza a estrutura dos dados: o exemplo clássico é a imagem do pinguim Tux, cujo contorno permanece visível após a cifragem em ECB.",
+      "sinal": "Padrões ou repetições visíveis no texto cifrado; uso de -aes-128-ecb (ou -aes-256-ecb) no openssl enc, ou de EVP_aes_*_ecb na API",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Padding oracle (CBC)",
+      "como_funciona": "Quando o sistema revela, por mensagem de erro ou tempo de resposta diferente, se o padding PKCS#7 de um texto cifrado CBC é válido, o atacante decifra byte a byte sem conhecer a chave, manipulando o texto cifrado e observando as respostas.",
+      "sinal": "Erros distintos para padding inválido versus outros; ausência de autenticação antes de decifrar",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Força bruta por chave curta",
+      "como_funciona": "Cifras com chave pequena, como o DES (56 bits), têm espaço de chaves pequeno o suficiente para busca exaustiva com hardware moderno, expondo todo o tráfego cifrado no passado (retroativamente). O 3DES (112 bits efetivos) não cai por força bruta: cai pelo bloco de 64 bits — com dezenas de GB na mesma chave, colisões de bloco vazam texto claro (Sweet32) — e o NIST proibiu usá-lo para cifrar a partir de 2024 (SP 800-131A).",
+      "sinal": "Suítes de cifra legadas negociadas; algoritmos DES/3DES ainda habilitados",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Cifrar sem autenticar (maleabilidade)",
+      "como_funciona": "Modos só de confidencialidade (CTR, CBC puro) permitem que um atacante ativo altere bits do texto cifrado e provoque alterações previsíveis no texto claro decifrado, já que nada detecta a adulteração.",
+      "sinal": "Uso de CTR/CBC sem MAC; decifragem que sempre retorna dados mesmo após manipulação",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Preferir AEAD: AES-GCM ou ChaCha20-Poly1305",
+      "como_funciona": "Modos autenticados cifram e produzem uma tag de integridade em uma única operação. Se o texto cifrado (ou os dados associados) forem adulterados, a decifragem falha em vez de devolver dados. Elimina de raiz o padding oracle e a maleabilidade.",
+      "cobre": "Padding oracle, adulteração ativa, ausência de integridade",
+      "limite": "Continua exigindo nonce único por chave; não resolve reúso de nonce"
+    },
+    {
+      "nome": "Nonce aleatório ou por contador, jamais repetido",
+      "como_funciona": "Gerar o nonce de 96 bits com um CSPRNG (aleatório) ou por um contador monotônico persistido garante unicidade por chave. Ao atingir o limite de mensagens de uma chave, faz-se a rotação da chave antes de arriscar colisão.",
+      "cobre": "Reúso de nonce em GCM/CTR",
+      "limite": "Contador precisa sobreviver a reinícios; aleatório exige atenção a limites de volume (aniversário)"
+    },
+    {
+      "nome": "Abolir ECB e cifras obsoletas",
+      "como_funciona": "Política que proíbe ECB, DES, 3DES e RC4, mantendo apenas AES e ChaCha20 em modos aprovados. No TLS, restringir as suítes de cifra às versões 1.2/1.3 com AEAD.",
+      "cobre": "Padrões visíveis do ECB, força bruta por chave curta, vieses do RC4",
+      "limite": "Depende de configuração correta de servidor e clientes; suítes legadas podem reaparecer por compatibilidade"
+    },
+    {
+      "nome": "Encrypt-then-MAC quando não houver AEAD",
+      "como_funciona": "Se for obrigatório usar CBC ou CTR, aplica-se um MAC (HMAC) sobre o texto já cifrado e verifica-se o MAC antes de decifrar. Falha de MAC aborta o processo em tempo constante, sem vazar nada sobre o padding.",
+      "cobre": "Padding oracle, adulteração em modos não autenticados",
+      "limite": "A ordem importa (encrypt-then-MAC); a comparação de MAC deve ser em tempo constante"
+    },
+    {
+      "nome": "Derivação e rotação de chaves de sessão",
+      "como_funciona": "Em vez de reutilizar uma chave mestra, deriva-se uma chave de sessão por KDF (HKDF) e faz-se rotação periódica. Assim, o comprometimento de uma sessão não expõe as demais, e limita-se o volume cifrado por chave.",
+      "cobre": "Impacto do vazamento de chave, distribuição de chave via handshake",
+      "limite": "Não substitui AEAD nem a unicidade de nonce; exige gerenciamento seguro do segredo mestre"
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Cifrar e decifrar um arquivo com AES-256 (CBC + HMAC) — e por que não GCM aqui",
+      "cenario": "Proteger um arquivo derivando a chave de uma senha. O openssl enc NÃO aceita modos AEAD (GCM/CCM): recusa com 'AEAD ciphers not supported'. Então cifra-se em CBC e a integridade vem de um HMAC à parte.",
+      "comandos": "# Cifrar (pede a senha e deriva a chave com PBKDF2)\nopenssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt \\\n  -in segredo.txt -out segredo.enc\n\n# Integridade: HMAC do arquivo cifrado, com outra chave\nopenssl dgst -sha256 -hmac \"outra_chave\" -out segredo.enc.mac segredo.enc\n\n# Antes de decifrar: o HMAC tem de bater\nopenssl dgst -sha256 -hmac \"outra_chave\" segredo.enc | diff - segredo.enc.mac && echo integro\n\n# Decifrar (a mesma senha reconstroi a MESMA chave)\nopenssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 \\\n  -in segredo.enc -out segredo.dec\n\n# Conferir que voltou identico ao original\ndiff segredo.txt segredo.dec && echo OK",
+      "explicacao": "A mesma senha, via PBKDF2, gera a mesma chave simétrica nos dois lados. CBC sozinho não detecta adulteração — é o HMAC conferido ANTES de decifrar que faz isso (encrypt-then-MAC). Para cifra autenticada de verdade num comando só, use uma ferramenta com AEAD (age, gpg --symmetric) ou a API EVP do OpenSSL; o openssl enc recusa GCM."
+    },
+    {
+      "titulo": "Ver na prática por que ECB é inseguro",
+      "cenario": "Comparar a mesma entrada com blocos repetidos cifrada em ECB e em CBC, evidenciando que o ECB preserva padrões.",
+      "comandos": "# Gerar entrada com muitos blocos idênticos (16 KB de zeros)\nhead -c 16384 /dev/zero > repetido.bin\n\n# Cifrar em ECB (blocos iguais geram saída com repetições)\nopenssl enc -aes-256-ecb -nosalt -K 00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff \\\n  -in repetido.bin -out ecb.bin\n\n# Cifrar em CBC com IV (encadeia blocos, sem repetições visíveis)\nopenssl enc -aes-256-cbc -nosalt -iv 000102030405060708090a0b0c0d0e0f \\\n  -K 00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff \\\n  -in repetido.bin -out cbc.bin\n\n# Contar blocos de 16 bytes repetidos em cada saída\nxxd -c 16 ecb.bin | awk '{print $2$3$4$5$6$7$8$9}' | sort | uniq -c | sort -rn | head\nxxd -c 16 cbc.bin | awk '{print $2$3$4$5$6$7$8$9}' | sort | uniq -c | sort -rn | head",
+      "explicacao": "Na saída ECB um mesmo bloco cifrado aparece milhares de vezes, revelando a estrutura repetitiva do texto claro; na saída CBC não há repetição porque cada bloco depende do anterior e do IV. É a demonstração prática do porquê o ECB nunca deve ser usado. As chaves e o IV acima são apenas didáticos."
+    },
+    {
+      "titulo": "Gerar chave e nonce aleatórios de forma correta",
+      "cenario": "Produzir material de chave de 256 bits e um nonce de 96 bits com gerador seguro, reforçando que o nonce é único por chave.",
+      "comandos": "# Chave de 256 bits (32 bytes) em hexadecimal\nopenssl rand -hex 32\n\n# Nonce de 96 bits (12 bytes) para GCM\nopenssl rand -hex 12\n\n# Salt de 128 bits para derivacao por senha\nopenssl rand -hex 16",
+      "explicacao": "O openssl rand usa o CSPRNG do sistema. A regra de ouro: gere um novo nonce para cada mensagem cifrada com a mesma chave e nunca o reutilize. Para volumes altos, prefira nonce por contador persistido ou rotacione a chave antes de esgotar o espaço seguro de nonces."
+    }
+  ]
+}

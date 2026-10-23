@@ -1,0 +1,75 @@
+<div class="calc-resultado card-tech shadow">
+    <div class="calc-resumo-head">
+        <span class="aed-eyebrow">Plano de VLANs IPv6</span>
+        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">dns</span> {v.baseCidr} → LANs /{v.prefixoLan}</h3>
+    </div>
+
+    <div class="calc-kpis">
+        <div class="calc-kpi calc-kpi-destaque">
+            <span class="calc-kpi-label">VLANs planejadas</span>
+            <strong class="calc-kpi-valor">{v.total}</strong>
+            <span class="calc-kpi-nota">uma LAN /{v.prefixoLan} por VLAN</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">LANs /{v.prefixoLan} na base</span>
+            <strong class="calc-kpi-valor">{v.capacidade}</strong>
+            <span class="calc-kpi-nota">2^({v.prefixoLan}−{v.prefixoBase})</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Endereços por VLAN</span>
+            <strong class="calc-kpi-valor">2^(128−{v.prefixoLan})</strong>
+            <span class="calc-kpi-nota">sem broadcast</span>
+        </div>
+    </div>
+
+    <div class="aed-action-row action-buttons mt-2 mb-1">
+        <button type="button" class="aed-btn aed-btn-neutral" data-copiar-plano
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Copiar a configuração completa (VLANs, SVIs e trunk)">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar configuração
+        </button>
+    </div>
+    <textarea id="ipv6-plano-texto" class="d-none" readonly>{#for l in v.vlans}{l.cisco}
+!
+{/for}{v.trunkCli}</textarea>
+
+    <h4 class="h6 calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> VLANs (uma LAN /{v.prefixoLan} por VLAN)</h4>
+    <div class="table-responsive calc-tabela-scroll">
+        <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
+            <thead><tr>
+                <th>VLAN ID</th><th>Nome</th><th>Rede (LAN)</th><th>Gateway (SVI ::1)</th>
+            </tr></thead>
+            <tbody>
+            {#for l in v.vlans}
+                <tr>
+                    <td class="text-secondary fw-bold">{l.vlanId}</td>
+                    <td class="fw-bold">{l.nome}</td>
+                    <td class="font-monospace fw-bold">{l.rede}{l.prefixoStr}</td>
+                    <td class="font-monospace text-success">{l.gateway}</td>
+                </tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">router</span> Trunk 802.1Q (uplink)</h4>
+    <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{v.trunkCli}</pre>
+
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> SVI Cisco por VLAN (roteamento inter-VLAN)</h4>
+    <div class="row g-3">
+        {#for l in v.vlans}
+        <div class="col-12 col-lg-6">
+            <div class="card-tech p-3 h-100">
+                <div class="fw-bold text-warning mb-2"><span class="material-symbols-outlined align-middle" aria-hidden="true" translate="no">dns</span> VLAN {l.vlanId} · {l.nome}</div>
+                <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{l.cisco}</pre>
+            </div>
+        </div>
+        {/for}
+    </div>
+
+    <p class="calc-explicacao mt-3">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> {v.dhcpNota}
+    </p>
+    <p class="calc-explicacao mt-1">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> {v.enunciado}
+    </p>
+</div>

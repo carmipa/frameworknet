@@ -1,0 +1,202 @@
+{
+  "resumo": "Ping, traceroute e mtr respondem três perguntas diferentes sobre a mesma conexão: o host está alcançável, qual caminho os pacotes percorrem até ele, e onde no caminho a rede degrada. O ping envia pacotes ICMP Echo Request e mede se voltam (Echo Reply) e em quanto tempo. O traceroute descobre a rota manipulando o campo TTL (Time To Live): envia pacotes com TTL crescente e cada roteador que zera o TTL responde com um ICMP Time Exceeded, revelando o próprio endereço. O mtr une os dois: roda traceroute em laço contínuo e acumula estatísticas de perda e latência por salto, sendo a ferramenta certa para diagnosticar perda intermitente. Entender ICMP e TTL evita as duas armadilhas clássicas: concluir que um host caiu quando na verdade ele só bloqueia ICMP, e ler asteriscos no traceroute como falha quando muitas vezes são apenas roteadores configurados para não responder. No próprio site, a página /diagnostico simula ping e traceroute para fins didáticos.",
+  "ficha": [
+    {
+      "rotulo": "Protocolo base",
+      "valor": "ICMP (Echo Request/Reply, Time Exceeded)",
+      "dica": "Traceroute -T usa TCP e -I força ICMP; o padrão no Linux usa UDP em portas altas."
+    },
+    {
+      "rotulo": "Campo-chave da rota",
+      "valor": "TTL / Hop Limit",
+      "dica": "Cada roteador decrementa o TTL em 1; ao chegar a zero, descarta e devolve Time Exceeded."
+    },
+    {
+      "rotulo": "Ferramenta para perda intermitente",
+      "valor": "mtr",
+      "dica": "Acumula centenas de amostras por salto, revelando perda que um ping único não mostra."
+    },
+    {
+      "rotulo": "Sinal de ICMP bloqueado",
+      "valor": "100% de perda com o serviço HTTP/SSH no ar",
+      "dica": "Teste a porta real com curl ou nc antes de declarar o host fora."
+    },
+    {
+      "rotulo": "Página do site",
+      "valor": "/diagnostico",
+      "dica": "Simula ping e traceroute de forma didática, sem depender de ICMP real do visitante."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "TTL não mede tempo, conta saltos",
+      "icone": "filter_9_plus",
+      "texto": "Apesar do nome Time To Live, o TTL é um contador de saltos: começa com um valor (64 no Linux, 128 no Windows) e cada roteador subtrai 1. Zerou, o pacote morre e o roteador responde Time Exceeded. É exatamente esse mecanismo de descarte que o traceroute explora para mapear a rota.",
+      "destaque": "TTL é um contador de saltos, não um cronômetro."
+    },
+    {
+      "titulo": "Ping mede alcance e latência",
+      "icone": "network_ping",
+      "texto": "O ping prova conectividade fim a fim na camada de rede e mede o tempo de ida e volta (RTT). Latência alta, jitter (variação do RTT) e perda de pacotes aparecem no resumo estatístico. Não diz por onde o pacote passou, apenas se chegou e voltou.",
+      "destaque": "Chegou e voltou? Em quanto tempo? Só isso."
+    },
+    {
+      "titulo": "Traceroute revela o caminho",
+      "icone": "route",
+      "texto": "Enviando pacotes com TTL 1, 2, 3... o traceroute força cada roteador da rota a se identificar via Time Exceeded. O resultado é a lista ordenada de saltos até o destino, com três tempos por linha (três sondas). É o mapa do trajeto, salto a salto.",
+      "destaque": "Cada linha é um roteador que se denunciou ao zerar o TTL."
+    },
+    {
+      "titulo": "mtr = traceroute contínuo com estatística",
+      "icone": "monitoring",
+      "texto": "O mtr repete o traceroute continuamente e agrega perda e latência por salto em tempo real. Perda que só aparece em 3% dos pacotes seria invisível num traceroute único, mas salta aos olhos na coluna Loss% do mtr após algumas centenas de amostras.",
+      "destaque": "A ferramenta certa quando o problema é intermitente."
+    },
+    {
+      "titulo": "ICMP é frequentemente filtrado",
+      "icone": "block",
+      "texto": "Muitos firewalls e roteadores descartam ICMP por política de segurança ou o despriorizam sob carga. Por isso 100% de perda no ping ou asteriscos no traceroute não provam que o host caiu: podem significar apenas que aquele equipamento não responde a esse tipo de pacote.",
+      "destaque": "Sem resposta ICMP não é sinônimo de host fora do ar."
+    },
+    {
+      "titulo": "Perda no meio pode ser inofensiva",
+      "icone": "trending_flat",
+      "texto": "No mtr, perda que aparece num salto intermediário mas some no salto final geralmente é cosmética: aquele roteador limita ICMP a ele próprio, mas encaminha o tráfego normalmente. Perda real é a que persiste do salto problemático até o destino.",
+      "destaque": "O que importa é a perda que chega até o último salto."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Como o traceroute descobre cada salto usando TTL crescente",
+    "definicao": "sequenceDiagram\n    participant O as Origem\n    participant R1 as Roteador 1\n    participant R2 as Roteador 2\n    participant D as Destino\n    Note over O,D: Rodada 1 - TTL=1\n    O->>R1: Pacote (TTL=1)\n    Note right of R1: decrementa TTL para 0\n    R1-->>O: ICMP Time Exceeded (salto 1)\n    Note over O,D: Rodada 2 - TTL=2\n    O->>R1: Pacote (TTL=2)\n    R1->>R2: encaminha (TTL=1)\n    Note right of R2: decrementa TTL para 0\n    R2-->>O: ICMP Time Exceeded (salto 2)\n    Note over O,D: Rodada 3 - TTL=3\n    O->>R1: Pacote (TTL=3)\n    R1->>R2: encaminha (TTL=2)\n    R2->>D: encaminha (TTL=1)\n    Note right of D: TTL chega, porta alvo alcançada\n    D-->>O: ICMP Port Unreachable (destino)\n    Note over O,D: Fim - rota completa mapeada",
+    "legenda": "A cada rodada o TTL aumenta em 1, fazendo um roteador mais distante zerar o contador e se identificar com um Time Exceeded. O destino final responde de forma diferente (Port Unreachable no modo UDP padrão, ou Echo Reply no modo ICMP), sinalizando o fim da rota."
+  },
+  "tabelas": [
+    {
+      "titulo": "O que cada ferramenta mede",
+      "colunas": [
+        "Ferramenta",
+        "O que mede",
+        "Quando usar"
+      ],
+      "linhas": [
+        [
+          "ping",
+          "Alcance fim a fim, RTT (latência), perda e jitter num único ponto",
+          "Verificar rapidamente se o host responde e o quão rápido"
+        ],
+        [
+          "traceroute",
+          "Sequência de saltos (roteadores) até o destino, com tempo por salto",
+          "Descobrir por onde o tráfego passa e onde a rota quebra"
+        ],
+        [
+          "mtr",
+          "Traceroute contínuo com perda e latência agregadas por salto",
+          "Diagnosticar perda ou latência intermitente ao longo do caminho"
+        ]
+      ]
+    },
+    {
+      "titulo": "Flags-chave por ferramenta",
+      "colunas": [
+        "Comando",
+        "Flag",
+        "Efeito"
+      ],
+      "linhas": [
+        [
+          "ping",
+          "-c N",
+          "Envia exatamente N pacotes e encerra (Linux/macOS; no Windows use -n N)"
+        ],
+        [
+          "ping",
+          "-M do -s TAM",
+          "Proíbe fragmentação e fixa o tamanho do payload, para sondar a MTU do caminho (Linux; no Windows use -f -l TAM; no macOS, -D -s TAM)"
+        ],
+        [
+          "ping",
+          "-i S",
+          "Intervalo de S segundos entre pacotes"
+        ],
+        [
+          "traceroute",
+          "-I",
+          "Usa ICMP Echo em vez de UDP (mesmo modo do Windows tracert)"
+        ],
+        [
+          "traceroute",
+          "-T -p PORTA",
+          "Usa TCP SYN na porta indicada, atravessando firewalls que barram UDP/ICMP"
+        ],
+        [
+          "traceroute",
+          "-n",
+          "Não resolve nomes (DNS), acelerando e evitando ruído reverso"
+        ],
+        [
+          "mtr",
+          "--report -c N",
+          "Modo relatório: coleta N ciclos e imprime a tabela final (útil em scripts)"
+        ],
+        [
+          "mtr",
+          "-T -P PORTA",
+          "Sondagem por TCP na porta indicada, como o traceroute -T"
+        ]
+      ]
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ping controlado: alcance e latência",
+      "cenario": "Confirmar se um host responde e medir a qualidade do enlace com um número fixo de pacotes.",
+      "comandos": "# Linux/macOS: 5 pacotes, 1s de intervalo\nping -c 5 -i 1 8.8.8.8\n\n# Windows equivalente\nping -n 5 8.8.8.8",
+      "explicacao": "O resumo final traz pacotes transmitidos/recebidos, percentual de perda e RTT mínimo/médio/máximo. Perda 0% com RTT estável indica enlace saudável; RTT que oscila muito revela jitter."
+    },
+    {
+      "titulo": "Descobrir a MTU do caminho com ping",
+      "cenario": "Suspeita de que pacotes grandes estão sendo descartados por exceder a MTU de algum enlace no meio (típico em túneis VPN e PPPoE).",
+      "comandos": "# Linux: proíbe fragmentação (-M do) e testa payload de 1472 bytes\nping -M do -s 1472 -c 3 8.8.8.8\n\n# Se falhar com 'Frag needed', reduza o -s até passar\nping -M do -s 1400 -c 3 8.8.8.8",
+      "explicacao": "1472 bytes de payload + 28 bytes de cabeçalhos ICMP/IP = 1500, a MTU Ethernet padrão. Se o comando retorna 'Frag needed and DF set', algum enlace tem MTU menor: baixe o -s até obter respostas. O maior -s que passa, somado a 28, é a MTU efetiva do caminho."
+    },
+    {
+      "titulo": "Traceroute forçando ICMP e TCP",
+      "cenario": "O traceroute padrão (UDP) morre em asteriscos porque um firewall barra UDP. Trocar de protocolo costuma revelar o resto da rota.",
+      "comandos": "# Força ICMP Echo (como o tracert do Windows)\nsudo traceroute -I -n 1.1.1.1\n\n# Força TCP SYN na porta 443 (atravessa muitos firewalls)\nsudo traceroute -T -p 443 -n 1.1.1.1",
+      "explicacao": "Como firewalls tratam UDP, ICMP e TCP com regras diferentes, mudar o modo de sondagem frequentemente completa saltos que apareciam como asteriscos. O -T na porta 443 imita tráfego HTTPS legítimo e é o mais permitido."
+    },
+    {
+      "titulo": "mtr para perda intermitente",
+      "cenario": "A conexão 'cai' de vez em quando, mas um ping ou traceroute pontual não mostra nada de errado.",
+      "comandos": "# Interativo: acumula amostras ao vivo\nsudo mtr -n 1.1.1.1\n\n# Relatório: 100 ciclos por TCP/443 e imprime a tabela\nsudo mtr --report -c 100 -T -P 443 -n 1.1.1.1",
+      "explicacao": "Leia a coluna Loss% de cima para baixo. Perda que aparece num salto intermediário e some depois é cosmética (ICMP limitado naquele roteador). Perda que começa num salto e persiste até o último é o ponto real da falha, e o Snt/Avg mostram quantas amostras sustentam o diagnóstico."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Ping retorna 100% de perda, mas o site/serviço continua acessível no navegador ou por SSH",
+      "causa_provavel": "ICMP está bloqueado ou despriorizado por firewall no host ou no caminho; o serviço em si (TCP) está no ar",
+      "leitura": "Não conclua que o host caiu. Teste a porta real do serviço em vez do ICMP.",
+      "comando": "# Testa a porta TCP diretamente, ignorando ICMP\ncurl -I https://example.com\nnc -vz example.com 443"
+    },
+    {
+      "sintoma": "Traceroute mostra asteriscos (* * *) em um ou mais saltos do meio, mas o último salto responde normalmente",
+      "causa_provavel": "Roteadores intermediários configurados para não gerar Time Exceeded (ou com rate limit de ICMP); o tráfego passa por eles normalmente",
+      "leitura": "Asteriscos no meio com destino respondendo = rota saudável. Só preocupa se os asteriscos vão do salto X até o fim.",
+      "comando": "# Confirme trocando o protocolo de sondagem\nsudo traceroute -I -n example.com\nsudo traceroute -T -p 443 -n example.com"
+    },
+    {
+      "sintoma": "mtr acusa Loss% alto num salto intermediário, mas 0% no salto final (destino)",
+      "causa_provavel": "Aquele roteador limita respostas ICMP direcionadas a ele próprio, mas encaminha o tráfego de passagem sem perda",
+      "leitura": "Perda que não chega ao último salto é ruído cosmético. Só é perda real quando persiste até o destino.",
+      "comando": "# Rode mais ciclos e compare a perda do salto suspeito com a do último\nsudo mtr --report -c 200 -n example.com"
+    },
+    {
+      "sintoma": "Transferências grandes travam ou ficam lentíssimas, mas ping pequeno e navegação leve funcionam",
+      "causa_provavel": "MTU menor em algum enlace do caminho (VPN/PPPoE) descartando pacotes grandes com DF (Path MTU Discovery quebrado por ICMP bloqueado)",
+      "leitura": "Se pacotes pequenos passam e grandes não, o problema é MTU, não alcance.",
+      "comando": "# Ache o maior payload que passa sem fragmentar\nping -M do -s 1472 -c 3 example.com\nping -M do -s 1400 -c 3 example.com"
+    }
+  ]
+}

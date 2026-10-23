@@ -1,0 +1,261 @@
+{! Tela de acesso à Telemetria.
+    Duas visões, escolhidas pelo SERVIDOR (?modo=contingencia), não por JavaScript:
+    quem decide o que aparece é o backend, e o cartão âmbar não fica no HTML de
+    quem só vai entrar pelo GitHub. Template autônomo, sem shared/base.html. !}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso à Telemetria | Framework de Redes A&amp;D</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa/icone-192.png?v=20260804">
+    <meta name="theme-color" content="#05070d">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="/web/css/material-symbols.css?v=20261022">
+    <link rel="stylesheet" href="/login/css/login.css?v=20261022">
+    <link rel="stylesheet" href="/web/css/dica-camada.css?v=20261022">
+</head>
+
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+<div class="page">
+
+    <header class="topbar">
+        <div class="topbar-in">
+            <a class="brand" href="/" title="Ir para a página inicial do Framework de Redes">
+                <div class="brand-mark">A&amp;D</div>
+                <div class="brand-txt">
+                    <span class="brand-kicker">MENU PRINCIPAL</span>
+                    <span class="brand-name">Framework de Redes</span>
+                </div>
+            </a>
+            <div class="topbar-right">
+                <div class="langs">
+                    <button type="button" class="lang is-on" onclick="aedTranslate('pt')"
+                            title="Traduzir para Português (Brasil)" aria-label="Traduzir para Português">
+                        <img class="flag" src="/web/img/bandeiras/br.png?v=20261001" alt="" width="26" height="20" loading="lazy">
+                        <span class="lang-code">PT</span>
+                    </button>
+                    <button type="button" class="lang" onclick="aedTranslate('en')"
+                            title="Traduzir para English (US)" lang="en" aria-label="Translate to English">
+                        <img class="flag" src="/web/img/bandeiras/us.png?v=20261001" alt="" width="26" height="20" loading="lazy">
+                        <span class="lang-code">EN</span>
+                    </button>
+                    <button type="button" class="lang" onclick="aedTranslate('es')"
+                            title="Traduzir para Español" lang="es" aria-label="Traducir al Español">
+                        <img class="flag" src="/web/img/bandeiras/es.png?v=20261001" alt="" width="26" height="20" loading="lazy">
+                        <span class="lang-code">ES</span>
+                    </button>
+                </div>
+                <div class="status-pill" role="status" title="Área de acesso restrito a administradores">
+                    <span class="dot" aria-hidden="true"></span>
+                    <span class="status-txt">ÁREA RESTRITA</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main" id="conteudo" tabindex="-1">
+
+    {#if contingencia}
+        {! ---------- Contingência: chave administrativa ---------- !}
+        <div class="view">
+            <div class="key-wrap">
+                <section class="card card-key">
+                    <div class="card-topline topline-amber" aria-hidden="true"></div>
+                    <div class="card-aura aura-amber" aria-hidden="true"></div>
+                    <div class="card-in">
+                        <div class="key-head">
+                            <div class="key-rings" aria-hidden="true">
+                                <span class="ring ring-1 ring-amber"></span>
+                                <span class="ring ring-2 ring-amber-static"></span>
+                                <span class="material-symbols-outlined key-ic" translate="no" aria-hidden="true">vpn_key</span>
+                            </div>
+                            <h1 class="title title-sm">Acesso de Contingência</h1>
+                            <p class="lede lede-center">
+                                Use apenas quando o login pelo GitHub estiver indisponível.
+                                A chave é a mesma do header <span class="mono amber">X-Admin-Api-Key</span>.
+                            </p>
+                        </div>
+
+                        {#if erro}
+                        <div class="alerta" role="alert">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span>
+                            <span>{erro}</span>
+                        </div>
+                        {/if}
+
+                        <form method="post" action="/login/chave" autocomplete="off">
+                            <label class="field-lbl" for="adminKey"><span class="material-symbols-outlined" aria-hidden="true" translate="no">vpn_key</span> Chave de API administrativa</label>
+                            <div class="field">
+                                <span class="material-symbols-outlined field-ic" aria-hidden="true" translate="no">key</span>
+                                <input id="adminKey" name="adminKey" type="password"
+                                       placeholder="X-Admin-Api-Key" autocomplete="off" spellcheck="false">
+                                <button class="eye-btn" type="button" data-olho="adminKey"
+                                        title="Mostrar ou ocultar o texto da chave" aria-label="Mostrar ou ocultar a chave">
+                                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">visibility</span>
+                                </button>
+                            </div>
+                            <button class="btn btn-amber" type="submit"
+                                    title="Validar chave e acessar o painel de telemetria">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">login</span>
+                                Acessar Telemetria
+                            </button>
+                        </form>
+
+                        <div class="note-amber">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span>
+                            <span>A chave não é gravada em disco nem versionada — ela vive só na
+                                variável de ambiente do servidor, e a sessão que ela abre expira em 4 horas.</span>
+                        </div>
+
+                        <div class="foot-links foot-center">
+                            <a class="flink" href="/login"
+                               title="Alternar para o método de login padrão via GitHub OAuth">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_back</span>
+                                Voltar ao login com GitHub
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+    {#else}
+        {! ---------- Padrão: GitHub ---------- !}
+        <div class="view">
+            <div class="login-grid">
+
+                <section class="card">
+                    <div class="card-topline" aria-hidden="true"></div>
+                    <div class="card-aura" aria-hidden="true"></div>
+                    <div class="card-in">
+                        <div class="badge">
+                            <span class="material-symbols-outlined badge-ic" aria-hidden="true" translate="no">shield_lock</span>
+                            <span>ACESSO À TELEMETRIA</span>
+                        </div>
+
+                        <h1 class="title">Autenticação<br>Administrativa</h1>
+                        <p class="lede">
+                            O painel de Telemetria expõe eventos, rotas e endereços de quem usou o
+                            sistema. Entre com sua identidade <strong>GitHub</strong> — quem confirma
+                            quem você é é o próprio GitHub; este site nunca vê a sua senha.
+                        </p>
+
+                        {#if erro}
+                        <div class="alerta" role="alert">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span>
+                            <span>{erro}</span>
+                        </div>
+                        {/if}
+
+                        {#if oauthConfigurado}
+                        <a class="btn btn-github" href="/login/github"
+                           title="Iniciar autenticação segura via conta GitHub autorizada">
+                            <span class="material-symbols-outlined" translate="no" aria-hidden="true">login</span> <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path>
+                            </svg>
+                            Entrar com GitHub
+                        </a>
+
+                        <div class="owner-note">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">verified_user</span>
+                            <span>Autorizado apenas para <span class="mono owner">{dono}</span>
+                                · OAuth 2.0 sobre TLS</span>
+                        </div>
+                        {#else}
+                        <div class="alerta" role="alert">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">link_off</span>
+                            <span>Login pelo GitHub não está configurado neste ambiente. Use o acesso
+                                de contingência.</span>
+                        </div>
+                        {/if}
+
+                        <div class="foot-links">
+                            <a class="flink" href="/" title="Retornar à página inicial da aplicação">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_back</span>
+                                Voltar ao Framework
+                            </a>
+                            <span class="fsep" aria-hidden="true"></span>
+                            <a class="flink flink-dim" href="/login/?modo=contingencia"
+                               title="Alternar para acesso emergencial via chave de API administrativa">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">vpn_key</span>
+                                Acesso de contingência
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="art-col">
+                    <div class="art-frame">
+                        <div class="art-canvas-wrap">
+                            <canvas id="matrix" class="art-canvas" aria-hidden="true"></canvas>
+                            <div class="art-vignette" aria-hidden="true"></div>
+                            <div class="art-scan" aria-hidden="true"></div>
+                            <div class="art-core">
+                                <div class="core-rings" aria-hidden="true">
+                                    <span class="ring ring-1"></span>
+                                    <span class="ring ring-2"></span>
+                                    <span class="material-symbols-outlined core-ic" translate="no" aria-hidden="true">lock_person</span>
+                                </div>
+                                <div class="core-tag">CANAL CRIPTOGRAFADO</div>
+                                <div class="core-sub">OAUTH 2.0 · TLS · SHA-256</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="seals">
+                        <div class="seal">
+                            <span class="material-symbols-outlined" style="color:#2dd4bf" translate="no" aria-hidden="true">https</span>
+                            <div class="seal-t">TLS</div>
+                        </div>
+                        <div class="seal">
+                            <span class="material-symbols-outlined" style="color:#818cf8" translate="no" aria-hidden="true">fingerprint</span>
+                            <div class="seal-t">OAUTH 2.0</div>
+                        </div>
+                        <div class="seal">
+                            <span class="material-symbols-outlined" style="color:#f59e0b" translate="no" aria-hidden="true">policy</span>
+                            <div class="seal-t">OWNER ONLY</div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    {/if}
+
+    </main>
+
+    <footer class="footer">
+        <div class="foot-1">
+            Desenvolvido por: <a class="foot-autor" href="https://carminati.dev.br/" target="_blank" rel="noopener noreferrer" title="Abre o site pessoal do autor, com os outros projetos dele, numa aba nova"><strong>Paulo André Carminati</strong></a>
+        </div>
+        <div class="foot-2">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">code</span>
+            <a href="https://github.com/carmipa" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;" title="Ver perfil e repositórios do autor no GitHub">github.com/carmipa</a> · <span class="mono">Java + Quarkus</span>
+        </div>
+    </footer>
+</div>
+
+<div id="google_translate_element" style="display:none;"></div>
+<script src="/web/vendor/bootstrap-5.3.0/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<!-- Esta tela NAO estende shared/base.html (tem head e body proprios), entao o
+     csrf-client precisa ser carregado aqui explicitamente. Ele e o unico ponto
+     que copia o cookie do token CSRF (__Host-XSRF-TOKEN em produção) para dentro do <form> nativo; sem ele o POST
+     /login/chave volta 403 com JSON cru na cara do usuario, e a contingencia —
+     a UNICA porta quando o OAuth do GitHub esta indisponivel — fica inutilizavel.
+     Medido em 2026-08-11: 403 "Token CSRF invalido ou ausente". O /admin/login,
+     que inclui a base, sempre funcionou — e a diferenca entre os dois. -->
+<script src="/web/js/csrf-client.js?v=20260925e"></script>
+<script src="/web/js/dica.js?v=20261022" defer></script>
+<script src="/web/js/field-tooltips.js?v=20261022"></script>
+<script src="/login/js/login.js?v=20260811"></script>
+<script src="/web/js/i18n-translate.js?v=20261002"></script>
+<script async src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+</html>

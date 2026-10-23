@@ -1,0 +1,66 @@
+<div class="calc-resultado card-tech shadow">
+    <div class="calc-resumo-head">
+        <span class="aed-eyebrow">Comparador</span>
+        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">compare_arrows</span> Comparação de endereços</h3>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-dark table-sm table-bordered mb-3">
+            <thead>
+            <tr><th>Métrica</th><th>A</th><th>B</th></tr>
+            </thead>
+            <tbody>
+            <tr><td>Entrada</td><td class="font-monospace">{c.aEntrada}</td><td class="font-monospace">{c.bEntrada}</td></tr>
+            <tr><td>Comprimido (RFC 5952)</td><td class="font-monospace">{c.aComprimido}</td><td class="font-monospace">{c.bComprimido}</td></tr>
+            <tr><td>Prefixo</td><td>{#if c.aTemPrefixo}/{c.aPrefixo}{#else}— (/128){/if}</td><td>{#if c.bTemPrefixo}/{c.bPrefixo}{#else}— (/128){/if}</td></tr>
+            <tr><td>Tipo (IANA)</td><td>{c.aTipo}</td><td>{c.bTipo}</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="calc-kpis">
+        <div class="calc-kpi calc-kpi-destaque">
+            <span class="calc-kpi-label">Mesma /64 (LAN)</span>
+            <strong class="calc-kpi-valor">{#if c.mesmaLan}Sim{#else}Não{/if}</strong>
+            <span class="calc-kpi-nota">prefixo comum {c.prefixoComum}</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Mesmo endereço</span>
+            <strong class="calc-kpi-valor">{#if c.mesmoEndereco}Sim{#else}Não{/if}</strong>
+            <span class="calc-kpi-nota">{c.bitsComuns} bits em comum</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Distância</span>
+            <strong class="calc-kpi-valor calc-kpi-mono">{c.distancia}</strong>
+            <span class="calc-kpi-nota">endereços entre A e B</span>
+        </div>
+    </div>
+    <p class="calc-explicacao">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> {c.contencao}
+    </p>
+    <p class="calc-explicacao">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> {c.explicacao}
+    </p>
+
+    <h4 class="h6 calc-secao-titulo mt-3">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">bar_chart</span>
+        Prefixo comum bit a bit ({c.prefixoComum}) — endereço A
+    </h4>
+    <div class="ipv6-bit-container">
+        {#for hx in c.gradeComum}
+        <div class="ipv6-octeto-group">
+            <div class="ipv6-bit-row shadow-sm">
+                {#for bit in hx.bits}
+                <div class="ipv6-bit-col {bit.css}">
+                    <div class="ipv6-info-top">#{bit.num}</div>
+                    <div class="ipv6-val-bin">{bit.val}</div>
+                </div>
+                {/for}
+            </div>
+            <div class="ipv6-octeto-label">{hx.hex}</div>
+        </div>
+        {/for}
+    </div>
+    <div class="small mt-1">
+        <span class="ipv6-legenda ipv6-mark-comum">prefixo comum (iguais em A e B)</span>
+        <span class="ipv6-legenda ipv6-mark-diverge">a partir da divergência</span>
+    </div>
+</div>

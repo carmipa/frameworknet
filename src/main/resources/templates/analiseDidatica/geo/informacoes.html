@@ -1,0 +1,176 @@
+{#include shared/base.html}
+{#title}Região Geográfica | Framework de Redes A&D{/title}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='analise' /}
+    {#include shared/project_header.html /}
+
+    <h2 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Região geográfica</h2>
+    <p class="small text-secondary mb-4">
+        Nesta área você tem apenas o painel de <strong>região geográfica</strong> (o IP da sua conexão ou outro endereço que você informar).
+        A base local <span class="text-info">GeoLite2</span> é usada por padrão; há <strong>fallback</strong> HTTP apenas quando o país não é identificado localmente.
+    </p>
+
+    <div class="card-tech p-4 shadow border-start border-warning border-3">
+        <h3 class="h5 text-warning mb-3">Região geográfica (GeoIP)</h3>
+        <p class="small text-secondary mb-3">
+            Podes <strong>indicar qualquer IPv4/IPv6</strong> para localizar a região, ou usar o IP aparente
+            da sua conexão (<code translate="no">X-Forwarded-For</code> / <code translate="no">X-Real-IP</code> / remoto). Só se chama
+            o serviço externo para endereços <strong>públicos</strong>.
+        </p>
+
+        <form class="row g-2 align-items-end mb-3" id="form-geo-ip" onsubmit="return false;" autocomplete="off">
+            <div class="col-12 col-md-6 col-lg-5">
+                <label for="geo-ip-digitar" class="form-label text-secondary small mb-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> IP a localizar (opcional)</label>
+                <input type="text" class="form-control form-control-sm bg-dark text-light border-secondary"
+                       id="geo-ip-digitar" name="ip" value="{ipDigitadoPrefill}"
+                       placeholder="ex.: 8.8.8.8 ou 2001:4860:4860::8888"
+                       spellcheck="false" inputmode="text" maxlength="45" autocomplete="off">
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-sm btn-warning text-dark fw-semibold" id="btn-geo-localizar"
+                        data-bs-toggle="tooltip" title="Consulta a região deste endereço. Se vazio, usa o IP da conexão atual.">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Localizar
+                </button>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-sm btn-outline-warning" id="btn-geo-refresh"
+                        data-bs-toggle="tooltip" title="Limpa o campo e consulta pelo IP da sua conexão.">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">my_location</span> IP da conexão
+                </button>
+            </div>
+        </form>
+
+        <p id="geo-ref-ligacao" class="small text-secondary mb-2 {#if modoGeo != 'manual'}d-none{/if}">
+            IP da sua conexão (referência): <strong id="geo-ref-ip">{clienteIp}</strong>
+        </p>
+
+        <p class="text-light mb-2">
+            IP analisado: <strong id="geo-ip">{consultado}</strong>
+            <span id="geo-loading" class="spinner-border spinner-border-sm text-warning ms-2 d-none" role="status" aria-hidden="true"></span>
+        </p>
+
+        <div id="geo-sucesso">
+            <div id="geo-report-root" class="geo-report-root"></div>
+        </div>
+
+        <div id="geo-falha" class="alert alert-secondary mb-0 mt-2 d-none" role="alert">
+            <span id="geo-msg"></span>
+        </div>
+    </div>
+
+    {#include shared/project_about.html /}
+</div>
+{/content}
+{#extraScripts}
+<script src="/analiseDidatica/js/geo_report.js?v=20261023"></script>
+<script id="geo-initial-payload" type="application/json">{geoPayloadJson.raw}</script>
+<script>
+(function () {
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => new bootstrap.Tooltip(el));
+
+    const btnLigacao = document.getElementById("btn-geo-refresh");
+    const btnLocalizar = document.getElementById("btn-geo-localizar");
+    const inputIp = document.getElementById("geo-ip-digitar");
+    const loading = document.getElementById("geo-loading");
+    const okBox = document.getElementById("geo-sucesso");
+    const failBox = document.getElementById("geo-falha");
+    const elIp = document.getElementById("geo-ip");
+    const elMsg = document.getElementById("geo-msg");
+    const reportRoot = document.getElementById("geo-report-root");
+    const refBox = document.getElementById("geo-ref-ligacao");
+    const refIpEl = document.getElementById("geo-ref-ip");
+    const payloadEl = document.getElementById("geo-initial-payload");
+
+    function geoUrl(ipOpcional) {
+        const u = new URL("/api/informacoes/geo", window.location.origin);
+        let v;
+        if (ipOpcional !== undefined) {
+            v = String(ipOpcional).trim();
+        } else {
+            v = (inputIp && inputIp.value) ? inputIp.value.trim() : "";
+        }
+        if (v) {
+            u.searchParams.set("ip", v);
+        }
+        return u.toString();
+    }
+
+    function setLoading(on) {
+        if (loading) loading.classList.toggle("d-none", !on);
+        if (btnLigacao) btnLigacao.disabled = on;
+        if (btnLocalizar) btnLocalizar.disabled = on;
+        if (inputIp) inputIp.disabled = on;
+    }
+
+    function applyPayload(j) {
+        const analisado = j.consultado != null ? j.consultado : j.cliente_ip;
+        if (elIp) elIp.textContent = analisado || "—";
+        if (refIpEl && j.cliente_ip) refIpEl.textContent = j.cliente_ip;
+        if (refBox) {
+            refBox.classList.toggle("d-none", j.modo !== "manual");
+        }
+        if (typeof renderGeoRelatorio === "function" && reportRoot) {
+            renderGeoRelatorio(reportRoot, j);
+            if (okBox) okBox.classList.remove("d-none");
+            if (failBox) failBox.classList.add("d-none");
+        } else if (failBox && elMsg) {
+            if (okBox) okBox.classList.add("d-none");
+            failBox.classList.remove("d-none");
+            elMsg.textContent = j.mensagem || j.erro || "Indisponível.";
+        }
+    }
+
+    async function fetchGeo(ipForced) {
+        setLoading(true);
+        try {
+            const r = await fetch(geoUrl(ipForced !== undefined ? ipForced : undefined), {
+                credentials: "same-origin",
+                headers: { Accept: "application/json" },
+            });
+            const contentType = (r.headers.get("content-type") || "").toLowerCase();
+            const bodyText = await r.text();
+            if (!contentType.includes("json")) {
+                throw new Error("O servidor devolveu HTML em vez de JSON.");
+            }
+            const j = JSON.parse(bodyText);
+            applyPayload(j);
+        } catch (e) {
+            if (reportRoot) reportRoot.innerHTML = "";
+            if (okBox) okBox.classList.add("d-none");
+            if (failBox) failBox.classList.remove("d-none");
+            if (elMsg) elMsg.textContent = "Erro ao consultar: " + e;
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    if (payloadEl && payloadEl.textContent) {
+        try {
+            applyPayload(JSON.parse(payloadEl.textContent));
+        } catch (e) {
+            console.warn("geo-initial-payload ilegível; o relatório inicial não foi exibido:", e);
+        }
+    }
+
+    if (btnLocalizar) {
+        btnLocalizar.addEventListener("click", () => fetchGeo());
+    }
+    if (btnLigacao) {
+        btnLigacao.addEventListener("click", () => {
+            if (inputIp) inputIp.value = "";
+            fetchGeo("");
+        });
+    }
+    if (inputIp) {
+        inputIp.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                fetchGeo();
+            }
+        });
+    }
+})();
+</script>
+{/extraScripts}
+{/include}

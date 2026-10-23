@@ -1,0 +1,77 @@
+<div class="aed-card card-tech loc-nota mb-4" role="note">
+    <span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span>
+    <div>
+        <strong>Simulação didática.</strong>
+        Um navegador ou servidor não captura o tráfego real da sua máquina — isso exige libpcap/Npcap
+        com privilégios (Wireshark/tcpdump). Aqui o dashboard usa uma <strong>simulação</strong> fiel
+        (protocolos, throughput, top hosts e alerta de redes Wi-Fi abertas) para você entender como
+        um analisador de tráfego apresenta os dados.
+    </div>
+</div>
+
+<div class="trafego-live">
+    <div class="trafego-live-bar">
+        <button type="button" class="aed-btn aed-btn-teal btn-sm" id="live-start"
+                title="Iniciar a captura simulada de tráfego de rede">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">play_arrow</span> Iniciar
+        </button>
+        <button type="button" class="aed-btn aed-btn-danger btn-sm" id="live-stop"
+                title="Parar a captura simulada de tráfego de rede" disabled>
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">stop</span> Parar
+        </button>
+        <span id="live-status" class="small text-secondary">parado</span>
+    </div>
+
+    <div class="trafego-kpis">
+        <div class="trafego-kpi"><span class="k">Total de pacotes</span><span class="v" id="kpi-total">0</span></div>
+        <div class="trafego-kpi"><span class="k">Pacotes/seg</span><span class="v" id="kpi-pps">0</span></div>
+        <div class="trafego-kpi"><span class="k">Throughput</span><span class="v" id="kpi-kbps">0 kbps</span></div>
+        <div class="trafego-kpi trafego-kpi-alerta"><span class="k">Redes abertas</span><span class="v" id="kpi-abertas">0</span></div>
+    </div>
+
+    <div class="trafego-charts">
+        <div class="trafego-chart-card">
+            <span class="aed-eyebrow aed-eyebrow-indigo">Protocolos</span>
+            <canvas id="chart-proto" height="180"></canvas>
+        </div>
+        <div class="trafego-chart-card">
+            <span class="aed-eyebrow aed-eyebrow-teal">Pacotes/seg (I/O)</span>
+            <canvas id="chart-pps" height="180"></canvas>
+        </div>
+        <div class="trafego-chart-card">
+            <span class="aed-eyebrow aed-eyebrow-amber">Top hosts</span>
+            <canvas id="chart-hosts" height="180"></canvas>
+        </div>
+    </div>
+
+    <div class="trafego-redes">
+        <div class="trafego-rede-card">
+            <h2 class="h3 loc-form-title"><span class="material-symbols-outlined" aria-hidden="true" translate="no">wifi</span> Redes Wi-Fi</h2>
+            <div class="table-responsive">
+                <table class="table table-dark table-sm table-bordered align-middle mb-0">
+                    <thead><tr class="text-secondary small"><th>SSID</th><th>Segurança</th><th>Sinal</th><th>Status</th></tr></thead>
+                    <tbody id="wifi-body"><tr><td colspan="4" class="text-secondary">—</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="trafego-rede-card">
+            <h2 class="h3 loc-form-title"><span class="material-symbols-outlined" aria-hidden="true" translate="no">bluetooth</span> Bluetooth</h2>
+            <div class="table-responsive">
+                <table class="table table-dark table-sm table-bordered align-middle mb-0">
+                    <thead><tr class="text-secondary small"><th>Nome</th><th>Endereço</th><th>Tipo</th><th>Estado</th></tr></thead>
+                    <tbody id="bt-body"><tr><td colspan="4" class="text-secondary">—</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="h3 loc-form-title mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> Pacotes ao vivo</h2>
+    <div class="table-responsive">
+        <table class="table table-dark table-sm table-hover align-middle mb-0 trafego-pacotes">
+            <thead><tr class="text-secondary small">
+                <th>#</th><th>Hora</th><th>Proto</th><th>Origem</th><th>Destino</th><th>Portas</th><th>Tam</th><th>Info</th>
+            </tr></thead>
+            <tbody id="pacotes-body"><tr><td colspan="8" class="text-secondary">Clique em Iniciar.</td></tr></tbody>
+        </table>
+    </div>
+</div>

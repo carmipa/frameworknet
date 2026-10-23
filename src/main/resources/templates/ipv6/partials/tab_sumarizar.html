@@ -1,0 +1,24 @@
+{! Aba "Sumarizar": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
+<div class="calc-form-card mb-3">
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">merge</span> Sumarizar prefixos</h2>
+    <p class="calc-hint">Encontra o menor prefixo (supernet) que cobre todos e mescla no conjunto mínimo. Um prefixo por linha.</p>
+    <form id="formSum" hx-post="/ipv6/api/sumarizar" hx-target="#saidaSum" hx-swap="innerHTML"
+          hx-disabled-elt="find button[type='submit']">
+        <div class="mb-3">
+            <label for="ipv6SumPrefixos" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> Prefixos IPv6 (um por linha)</label>
+            <textarea class="aed-input form-control" id="ipv6SumPrefixos" name="prefixos" rows="5"
+                      placeholder="2001:db8:0:1::/64&#10;2001:db8:0:2::/64&#10;2001:db8:0:3::/64" spellcheck="false" required>2001:db8:0:0::/64
+2001:db8:0:1::/64
+2001:db8:0:2::/64
+2001:db8:0:3::/64</textarea>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="aed-btn aed-btn-execute" title="Calcular o supernet e mesclar os prefixos"><span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span><span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Sumarizar</button>
+            <button type="button" class="aed-btn aed-btn-neutral" data-limpar title="Esvaziar e recomeçar"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+        </div>
+    </form>
+</div>
+
+<div id="saidaSum" class="calc-saida ipv6-saida-full">
+    <div class="calc-placeholder"><span class="material-symbols-outlined" aria-hidden="true" translate="no">merge</span><p class="mb-0">Informe dois ou mais prefixos para ver o supernet (menor prefixo comum), a lista mínima de blocos mesclados e a relação de contenção entre eles.</p></div>
+</div>

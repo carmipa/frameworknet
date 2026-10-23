@@ -1,0 +1,311 @@
+{
+  "resumo": "Um certificado X.509 não é \"um só tipo\". Ele varia em duas dimensões independentes. A primeira é o NÍVEL DE VALIDAÇÃO que a Autoridade Certificadora (CA) fez antes de emitir: DV (só prova controle do domínio), OV (valida também a existência da organização) e EV (validação estendida, com verificação jurídica mais rigorosa). A segunda é o USO a que o certificado se destina, gravado nos campos de uso de chave (Key Usage) e uso estendido (Extended Key Usage): TLS de servidor (o mais comum), TLS de cliente para mTLS, assinatura de código (code signing) e assinatura/cifragem de e-mail (S/MIME). Cruzando com isso ainda há o ESCOPO dos nomes cobertos (single, SAN com vários nomes, ou wildcard cobrindo um nível de subdomínios) e a ORIGEM da confiança (emitido por CA pública confiável versus self-signed, que exige confiança manual). O ponto central é que, no browser moderno, DV, OV e EV mostram o MESMO cadeado: o EV perdeu o destaque visual (a barra verde com o nome da empresa foi removida do Chrome, Firefox e Safari). Portanto o cadeado prova cifragem e controle do domínio, jamais a idoneidade da empresa por trás dele. Este aprofundamento se conecta com o material sobre o protocolo TLS e com o Inspetor TLS do site (simulação: você informa os dados e ele aplica as regras de validação); o certificado que um servidor real apresenta sai do openssl s_client.",
+  "ficha": [
+    {
+      "rotulo": "Dimensões independentes",
+      "valor": "Validação (DV/OV/EV), Uso (servidor/cliente/code/S/MIME), Escopo (single/SAN/wildcard), Origem (CA/self-signed)",
+      "dica": "Um mesmo certificado tem um valor em CADA dimensão ao mesmo tempo."
+    },
+    {
+      "rotulo": "O que o cadeado prova",
+      "valor": "Cifragem + controle do domínio (DV) — nunca a empresa",
+      "dica": "DV, OV e EV têm o mesmo cadeado no browser atual."
+    },
+    {
+      "rotulo": "Wildcard",
+      "valor": "*.example.com cobre UM nível de subdomínios",
+      "dica": "Não cobre example.com puro nem a.b.example.com."
+    },
+    {
+      "rotulo": "SAN (Subject Alternative Name)",
+      "valor": "Lista explícita de nomes/DNS cobertos",
+      "dica": "O CN virou legado; o browser só olha a SAN."
+    },
+    {
+      "rotulo": "Self-signed",
+      "valor": "Emitido pela própria chave; confiança só manual",
+      "dica": "Ótimo para lab e raiz de CA interna; erro em produção pública."
+    },
+    {
+      "rotulo": "Campo que separa CA de folha",
+      "valor": "Basic Constraints: CA:TRUE x CA:FALSE",
+      "dica": "Só quem tem CA:TRUE pode assinar outros certificados."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "DV só prova controle do domínio",
+      "icone": "lock",
+      "texto": "No Domain Validation a CA verifica apenas que quem pediu controla o domínio (respondendo a um desafio DNS, HTTP ou e-mail). Não há nenhuma checagem de quem é a empresa, CNPJ ou endereço. Um DV emitido para banco-falso.example é tecnicamente válido e mostra cadeado — porque o atacante realmente controla aquele domínio.",
+      "destaque": "Cadeado = domínio controlado, NÃO empresa idônea."
+    },
+    {
+      "titulo": "EV perdeu o destaque visual",
+      "icone": "verified_user",
+      "texto": "O Extended Validation exige verificação jurídica da organização e antigamente pintava a barra de endereço com o nome da empresa em verde. Chrome, Firefox e Safari removeram esse indicador porque estudos mostraram que os usuários não o percebiam. Hoje EV e DV parecem iguais para o visitante; o valor do EV virou quase só jurídico/contratual.",
+      "destaque": "A barra verde acabou; não conte com ela."
+    },
+    {
+      "titulo": "Wildcard cobre exatamente um nível",
+      "icone": "category",
+      "texto": "*.example.com casa com www.example.com e api.example.com, mas NÃO com o domínio nu example.com nem com dois níveis como a.b.example.com. É cômodo, porém concentra risco: uma única chave privada protege todos os subdomínios de um nível.",
+      "destaque": "Comodidade alta, raio de dano alto."
+    },
+    {
+      "titulo": "SAN lista vários nomes explícitos",
+      "icone": "schema",
+      "texto": "A extensão Subject Alternative Name enumera cada nome DNS (e IPs) que o certificado cobre. O browser moderno IGNORA o Common Name (CN) e valida somente a SAN. Um certificado SAN pode cobrir example.com, www.example.com e outroservico.com.br num único arquivo.",
+      "destaque": "Sem o nome na SAN, o browser recusa."
+    },
+    {
+      "titulo": "Self-signed = confiança manual",
+      "icone": "fingerprint",
+      "texto": "Um certificado autoassinado é assinado pela própria chave e não encadeia até nenhuma raiz confiável do sistema. Serve para laboratório, ambientes internos e para ser a RAIZ de uma CA privada. Em qualquer uso público gera aviso — e ensinar o usuário a clicar em 'aceitar' cria o hábito perigoso descrito nos ataques.",
+      "destaque": "Confiança só existe se você a instalar."
+    },
+    {
+      "titulo": "Uso é travado por extensões, não por costume",
+      "icone": "badge",
+      "texto": "Key Usage e Extended Key Usage (EKU) gravam para que o certificado serve: serverAuth (TLS servidor), clientAuth (mTLS), codeSigning e emailProtection (S/MIME). Um certificado de servidor TLS não assina código, mesmo que a chave 'funcione' — o verificador rejeita pelo EKU errado. Veja o EKU que um servidor real apresenta com openssl s_client | openssl x509 -noout -ext extendedKeyUsage.",
+      "destaque": "O propósito está escrito no certificado."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Como escolher o tipo de certificado conforme o cenário",
+    "definicao": "flowchart TD\n    A[Preciso de um certificado] --> B{Uso público na internet?}\n    B -->|Não, só lab ou rede interna| C{É a raiz de uma CA própria?}\n    C -->|Sim| D[Self-signed raiz, instalar como confiável]\n    C -->|Não| E[Emitido pela CA interna com EKU adequado]\n    B -->|Sim, exposto ao browser| F{Qual o uso?}\n    F -->|Site TLS servidor| G{Quantos nomes?}\n    G -->|Um único nome| H[Single DV, escopo mínimo]\n    G -->|Vários nomes fixos| I[SAN multidomínio]\n    G -->|Muitos subdomínios de 1 nível| J[Wildcard, proteger muito a chave]\n    F -->|Autenticar cliente mTLS| K[clientAuth por CA de confiança mútua]\n    F -->|Assinar aplicativo ou binário| L[Code signing, chave em HSM ou token]\n    F -->|Assinar e cifrar e-mail| M[S/MIME emailProtection]\n    H --> N{Exigência jurídica ou contratual de OV/EV?}\n    I --> N\n    J --> N\n    N -->|Não| O[DV já basta, mesmo cadeado no browser]\n    N -->|Sim| P[OV ou EV, validação da organização]",
+    "legenda": "O caminho comum termina em DV, que já entrega o mesmo cadeado. OV/EV só entram quando há exigência jurídica ou contratual — não por segurança visual, que o browser moderno não mostra mais."
+  },
+  "tabelas": [
+    {
+      "titulo": "Níveis de validação: o que a CA realmente checa",
+      "colunas": [
+        "Nível",
+        "O que a CA valida",
+        "Emissão",
+        "No browser moderno"
+      ],
+      "linhas": [
+        [
+          "DV (Domain Validation)",
+          "Apenas controle do domínio (desafio DNS/HTTP/e-mail)",
+          "Minutos, automatizada (ex.: ACME/Let's Encrypt)",
+          "Cadeado comum — nada de especial"
+        ],
+        [
+          "OV (Organization Validation)",
+          "Controle do domínio + existência legal da organização",
+          "Horas a dias, com checagem manual",
+          "Cadeado comum; dados da org só no detalhe do certificado"
+        ],
+        [
+          "EV (Extended Validation)",
+          "Validação jurídica estendida da empresa (registros oficiais)",
+          "Dias, processo mais rigoroso",
+          "Cadeado comum — a antiga barra verde com o nome foi REMOVIDA"
+        ]
+      ]
+    },
+    {
+      "titulo": "Escopo de nomes: quem cada certificado cobre",
+      "colunas": [
+        "Tipo",
+        "Cobre",
+        "Não cobre",
+        "Risco/observação"
+      ],
+      "linhas": [
+        [
+          "Single",
+          "Exatamente um nome (ex.: www.example.com)",
+          "Qualquer outro nome ou subdomínio",
+          "Escopo mínimo; raio de dano menor"
+        ],
+        [
+          "SAN (multi-domínio)",
+          "Vários nomes DNS listados na extensão SAN",
+          "Nomes que não estão na lista",
+          "Flexível; browser só olha a SAN, ignora o CN"
+        ],
+        [
+          "Wildcard",
+          "*.example.com = um nível de subdomínios",
+          "O domínio nu (example.com) e dois níveis (a.b.example.com)",
+          "Uma chave protege tudo; vazamento é catastrófico"
+        ]
+      ]
+    },
+    {
+      "titulo": "Origem da confiança",
+      "colunas": [
+        "Origem",
+        "Encadeia até raiz confiável?",
+        "Onde usar",
+        "Onde é erro"
+      ],
+      "linhas": [
+        [
+          "Emitido por CA pública",
+          "Sim, cadeia até raiz no truststore do SO/browser",
+          "Qualquer serviço exposto na internet",
+          "-"
+        ],
+        [
+          "Self-signed / CA interna",
+          "Não (ou só na sua CA privada instalada manualmente)",
+          "Lab, testes, rede interna, raiz de CA própria",
+          "Site público — gera aviso e ensina mau hábito"
+        ]
+      ]
+    },
+    {
+      "titulo": "Tipos por uso (Extended Key Usage)",
+      "colunas": [
+        "Uso",
+        "EKU técnico",
+        "Exemplo",
+        "Onde inspecionar"
+      ],
+      "linhas": [
+        [
+          "TLS servidor",
+          "serverAuth",
+          "Site HTTPS que o browser abre",
+          "openssl s_client / handshake TLS"
+        ],
+        [
+          "TLS cliente (mTLS)",
+          "clientAuth",
+          "App ou dispositivo que se autentica no servidor",
+          "Config do servidor que exige certificado do cliente"
+        ],
+        [
+          "Code signing",
+          "codeSigning",
+          "Assinar instalador, driver ou binário",
+          "Propriedades do executável assinado"
+        ],
+        [
+          "S/MIME",
+          "emailProtection",
+          "Assinar e cifrar e-mail",
+          "Cliente de e-mail (Outlook, Thunderbird)"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "DV emitido para domínio sequestrado",
+      "como_funciona": "O atacante toma controle do domínio (DNS comprometido, subdomínio abandonado apontando para serviço dele, ou registro expirado) e pede um DV gratuito. Como a CA só verifica controle do domínio, a emissão é legítima e o cadeado aparece normal. A vítima vê HTTPS e confia.",
+      "sinal": "Certificado DV recém-emitido para um nome que você não provisionou; registros de Certificate Transparency mostrando emissões inesperadas.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Wildcard vazado cobre tudo de um nível",
+      "como_funciona": "A chave privada de um *.example.com vaza (backup exposto, repositório, servidor invadido). Com ela o atacante consegue se passar por QUALQUER subdomínio daquele nível — api, login, pagamentos — de uma só vez, sem precisar emitir nada novo.",
+      "sinal": "Chave de wildcard encontrada em local não previsto; tráfego TLS válido para subdomínios a partir de host desconhecido.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Self-signed aceito por engano",
+      "como_funciona": "Um serviço apresenta certificado autoassinado (ou o atacante injeta um via man-in-the-middle) e o usuário, acostumado a clicar 'aceitar o risco', instala a exceção. A partir daí o TLS está cifrado, porém contra o interlocutor errado — sem nenhuma garantia de identidade.",
+      "sinal": "Avisos de certificado não confiável sendo dispensados por hábito; exceções de segurança acumuladas no browser.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Confundir cadeado com legitimidade da empresa",
+      "como_funciona": "O phishing usa um domínio parecido (paypa1.com) com DV válido. O usuário vê o cadeado e conclui que é a empresa real. Como o EV perdeu o destaque visual, não há mais sinal no browser que distinga a empresa verdadeira da falsa.",
+      "sinal": "Domínios sósia com HTTPS válido; campanhas de phishing com cadeado.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Certificado usado fora do EKU pretendido",
+      "como_funciona": "Uma organização reaproveita um certificado de TLS de servidor para tentar assinar código ou autenticar cliente. Verificadores rigorosos rejeitam pelo EKU, mas configurações frouxas podem aceitar, ampliando a superfície de abuso de uma única chave.",
+      "sinal": "Mesma chave/certificado aparecendo em contextos diferentes; EKU incompatível com o uso real.",
+      "gravidade": "Média",
+      "gravidade_cor": "info"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Registro CAA no DNS",
+      "como_funciona": "O registro DNS CAA declara QUAIS CAs podem emitir para o seu domínio. A checagem do CAA é obrigatória para CAs publicamente confiáveis, que consultam o registro antes de emitir e recusam se não estiverem autorizadas — barrando emissões indevidas por outras CAs.",
+      "cobre": "DV emitido por CA não autorizada; emissão inesperada",
+      "limite": "Só vale para CAs que respeitam a norma (CA pirata ou interna pode ignorar); não impede quem já controla o domínio de usar a CA autorizada."
+    },
+    {
+      "nome": "Monitorar Certificate Transparency",
+      "como_funciona": "Todo certificado público confiável é registrado em logs CT. Monitorar esses logs para o seu domínio revela emissões que você não pediu — inclusive DV para subdomínio sequestrado — permitindo revogar e reagir rápido.",
+      "cobre": "DV para domínio/subdomínio sequestrado; emissões surpresa",
+      "limite": "Detecta depois da emissão (detecção, não prevenção); não cobre certificados internos fora dos logs."
+    },
+    {
+      "nome": "Escopo mínimo em vez de wildcard amplo",
+      "como_funciona": "Preferir single ou SAN com os nomes estritamente necessários reduz o raio de dano. Se um certificado vazar, só os poucos nomes listados são afetados, não um nível inteiro de subdomínios.",
+      "cobre": "Wildcard vazado que cobre tudo",
+      "limite": "Mais certificados para gerenciar; exige automação de emissão/renovação (ex.: ACME)."
+    },
+    {
+      "nome": "Proteger a chave do wildcard (e de todas)",
+      "como_funciona": "Guardar a chave privada em HSM ou cofre, restringir permissões de arquivo, nunca versionar em repositório e rotacionar periodicamente. Para code signing, chave em token/HSM passou a ser obrigatória pelas regras do CA/Browser Forum.",
+      "cobre": "Wildcard vazado; abuso de chave de code signing",
+      "limite": "Não impede comprometimento do host onde a chave é usada em tempo de execução."
+    },
+    {
+      "nome": "Não ensinar o usuário a aceitar avisos",
+      "como_funciona": "Em ambientes internos, distribuir a CA raiz privada no truststore das máquinas para que os certificados internos sejam confiáveis sem clique. Assim o aviso de certificado volta a significar 'algo errado' e não vira ruído dispensado por hábito.",
+      "cobre": "Self-signed aceito por engano; MITM aproveitando o hábito",
+      "limite": "Exige gestão de distribuição da raiz; não protege máquinas fora do seu controle."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ler Subject, SAN e Basic Constraints de um certificado",
+      "cenario": "Você baixou ou tem um arquivo cert.pem e quer saber exatamente o que ele cobre, se é CA ou folha, e para que serve.",
+      "comandos": "# Ver o texto completo do certificado\nopenssl x509 -in cert.pem -noout -text\n\n# Só o Subject e o Issuer (self-signed = Subject igual ao Issuer)\nopenssl x509 -in cert.pem -noout -subject -issuer\n\n# Só os nomes cobertos (a SAN é o que o browser valida)\nopenssl x509 -in cert.pem -noout -ext subjectAltName\n\n# Basic Constraints (CA:TRUE = pode assinar; CA:FALSE = folha) e usos\nopenssl x509 -in cert.pem -noout -ext basicConstraints,keyUsage,extendedKeyUsage",
+      "explicacao": "Se Subject e Issuer forem idênticos, é self-signed. A SAN diz os nomes reais cobertos (um *.example.com ali indica wildcard). Basic Constraints com CA:TRUE marca um certificado de CA; o EKU (serverAuth, clientAuth, codeSigning, emailProtection) revela o uso pretendido. O flag -ext exige OpenSSL 1.1.1 ou mais recente."
+    },
+    {
+      "titulo": "Inspecionar o certificado que um servidor apresenta no TLS",
+      "cenario": "Você quer ver ao vivo qual certificado, nível e nomes um site público entrega no handshake.",
+      "comandos": "# Puxar o certificado servido e ver SAN + Issuer\nopenssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null \\\n  | openssl x509 -noout -subject -issuer -ext subjectAltName\n\n# Ver as datas de validade\nopenssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null \\\n  | openssl x509 -noout -dates",
+      "explicacao": "O -servername envia o SNI, essencial quando o servidor hospeda vários domínios. O Issuer revela a CA (ou aponta self-signed se bater com o Subject). Depois, informe esses mesmos campos no Inspetor TLS do site para ver como cada regra de validação os julga."
+    },
+    {
+      "titulo": "Criar e inspecionar um keystore Java (keytool)",
+      "cenario": "Em stacks Java/Quarkus você lida com certificados dentro de keystores PKCS12/JKS e precisa conferir alias, cadeia e uso.",
+      "comandos": "# Gerar um par self-signed para lab (NÃO usar em produção pública)\nkeytool -genkeypair -alias servidor -keyalg RSA -keysize 2048 \\\n  -dname \"CN=localhost, O=Lab, C=BR\" -validity 365 \\\n  -ext SAN=dns:localhost \\\n  -keystore lab.p12 -storetype PKCS12 -storepass changeit\n\n# Listar o conteúdo e ver o certificado em detalhe\nkeytool -list -v -keystore lab.p12 -storetype PKCS12 -storepass changeit\n\n# Exportar para PEM e reinspecionar com openssl\nkeytool -exportcert -alias servidor -keystore lab.p12 -storetype PKCS12 \\\n  -storepass changeit -rfc -file servidor.pem\nopenssl x509 -in servidor.pem -noout -subject -ext subjectAltName,basicConstraints",
+      "explicacao": "O keytool -list -v mostra Owner (Subject), Issuer, validade e extensões. Incluir -ext SAN=dns:localhost já grava a SAN, sem a qual o browser recusaria o nome. Exportar com -rfc gera PEM legível pelo openssl, permitindo confirmar SAN e Basic Constraints com as mesmas ferramentas do primeiro laboratório. Um certificado gerado assim é self-signed: Owner e Issuer coincidem."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Browser mostra NET::ERR_CERT_COMMON_NAME_INVALID ou 'nome não confere'",
+      "causa_provavel": "O nome acessado não está na SAN. O browser moderno ignora o CN; se o host não está listado na Subject Alternative Name, recusa.",
+      "comando": "openssl x509 -in cert.pem -noout -ext subjectAltName",
+      "leitura": "Confira se o nome acessado aparece na lista DNS da SAN. Se só estiver no CN, o certificado precisa ser reemitido com a SAN correta."
+    },
+    {
+      "sintoma": "Erro de certificado autoassinado (18 DEPTH_ZERO_SELF_SIGNED_CERT na folha; 19 SELF_SIGNED_CERT_IN_CHAIN quando a raiz autoassinada da cadeia não é confiável)",
+      "causa_provavel": "O certificado ou a cadeia não encadeia até uma raiz confiável do sistema — tipicamente self-signed ou CA interna não instalada.",
+      "comando": "openssl x509 -in cert.pem -noout -subject -issuer",
+      "leitura": "Se Subject e Issuer forem iguais, é self-signed. Em ambiente interno, instale a CA raiz no truststore; em produção pública, use certificado emitido por CA confiável."
+    },
+    {
+      "sintoma": "Assinatura de código ou mTLS rejeitada mesmo com certificado 'válido'",
+      "causa_provavel": "EKU incompatível: um certificado serverAuth sendo usado para codeSigning/clientAuth, ou vice-versa.",
+      "comando": "openssl x509 -in cert.pem -noout -ext extendedKeyUsage",
+      "leitura": "O EKU precisa casar com o uso: codeSigning para assinar binários, clientAuth para mTLS, emailProtection para S/MIME. EKU errado exige certificado apropriado."
+    },
+    {
+      "sintoma": "Wildcard não funciona para o domínio nu ou para subdomínio de dois níveis",
+      "causa_provavel": "Wildcard cobre apenas um nível: *.example.com não vale para example.com nem para a.b.example.com.",
+      "comando": "openssl x509 -in cert.pem -noout -ext subjectAltName",
+      "leitura": "Se precisar do domínio nu, inclua example.com na SAN além do *.example.com; para dois níveis, adicione *.b.example.com explicitamente."
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="calc-form-card">
+            <h2 class="h6 calc-form-title">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">merge</span> Sumarizar (rota resumo)
+            </h2>
+            <p class="calc-hint">
+                Junta várias redes no menor prefixo que cobre todas — o que se anuncia em
+                <code translate="no">area range</code> (OSPF) ou <code translate="no">ip summary-address</code> (EIGRP).
+            </p>
+            <form id="formSumarizar"
+                  hx-post="/calculadora/api/sumarizar"
+                  hx-target="#saidaAgregar"
+                  hx-swap="innerHTML"
+                  hx-disabled-elt="find button[type='submit']">
+                <div class="mb-3">
+                    <label for="sumRedes" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> Redes, uma por linha</label>
+                    <textarea class="aed-input form-control calc-textarea" id="sumRedes" name="redes" rows="6"
+                              spellcheck="false" required>192.168.0.0/24
+192.168.1.0/24
+192.168.2.0/24
+192.168.3.0/24</textarea>
+                    <div class="form-text text-muted">Aceita vírgula, ponto e vírgula ou quebra de linha.</div>
+                </div>
+                <button type="submit" class="aed-btn aed-btn-indigo w-100"
+                        title="Calcular a rota resumo (super-rede) agregando a lista de sub-redes">
+                    <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Sumarizar
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
+                        title="Esvaziar os campos e apagar o resultado">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                </button>
+            </form>
+        </div>
+
+        <div class="calc-form-card mt-3">
+            <h2 class="h6 calc-form-title">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">compare_arrows</span> Comparar dois blocos
+            </h2>
+            <p class="calc-hint">
+                Descobre se duas redes colidem, se uma contém a outra, ou se convivem sem conflito.
+            </p>
+            <form id="formComparar"
+                  hx-post="/calculadora/api/comparar"
+                  hx-target="#saidaAgregar"
+                  hx-swap="innerHTML"
+                  hx-disabled-elt="find button[type='submit']">
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label for="cmpA" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">square</span> Bloco A</label>
+                        <input type="text" class="aed-input form-control input-ipv4" id="cmpA" name="blocoA"
+                               value="10.0.0.0/16" spellcheck="false" autocomplete="off" required>
+                    </div>
+                    <div class="col-6">
+                        <label for="cmpB" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">square</span> Bloco B</label>
+                        <input type="text" class="aed-input form-control input-ipv4" id="cmpB" name="blocoB"
+                               value="10.0.5.0/24" spellcheck="false" autocomplete="off" required>
+                    </div>
+                </div>
+                <button type="submit" class="aed-btn aed-btn-amber w-100"
+                        title="Verificar relação de sobreposição, contenção ou independência entre os blocos">
+                    <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Comparar
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
+                        title="Esvaziar os campos e apagar o resultado">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div id="saidaAgregar" class="calc-saida">
+            <div class="calc-placeholder">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">merge</span>
+                <p class="mb-0">Sumarize uma lista de redes ou compare dois blocos.
+                    O resultado aparece aqui.</p>
+            </div>
+        </div>
+    </div>
+</div>

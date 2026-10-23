@@ -1,0 +1,48 @@
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="calc-form-card">
+            <h2 class="h6 calc-form-title">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">linear_scale</span> Faixa de IPs para CIDR
+            </h2>
+            <p class="calc-hint">
+                O cliente pede "libere de 10.0.0.5 até 10.0.3.200"; o equipamento só entende prefixo.
+                Aqui sai a menor lista de blocos que cobre <em>exatamente</em> essa faixa.
+            </p>
+
+            <form id="formFaixa"
+                  hx-post="/calculadora/api/faixa"
+                  hx-target="#saidaFaixa"
+                  hx-swap="innerHTML"
+                  hx-disabled-elt="find button[type='submit']">
+                <div class="mb-3">
+                    <label for="faixaInicio" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span> IP inicial</label>
+                    <input type="text" class="aed-input form-control input-ipv4" id="faixaInicio" name="inicio"
+                           value="10.0.0.5" spellcheck="false" autocomplete="off" required>
+                </div>
+                <div class="mb-3">
+                    <label for="faixaFim" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span> IP final</label>
+                    <input type="text" class="aed-input form-control input-ipv4" id="faixaFim" name="fim"
+                           value="10.0.3.200" spellcheck="false" autocomplete="off" required>
+                </div>
+                <button type="submit" class="aed-btn aed-btn-execute w-100"
+                        title="Converter a faixa de IPs na menor lista equivalente de blocos CIDR">
+                    <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Converter
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
+                        title="Esvaziar os campos e apagar o resultado">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div id="saidaFaixa" class="calc-saida">
+            <div class="calc-placeholder">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">linear_scale</span>
+                <p class="mb-0">Informe o início e o fim da faixa para ver os blocos CIDR equivalentes.</p>
+            </div>
+        </div>
+    </div>
+</div>

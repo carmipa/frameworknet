@@ -1,0 +1,483 @@
+{
+  "resumo": "O TCP (Transmission Control Protocol) é o protocolo de transporte confiável e orientado a conexão da Internet: antes de enviar dados, os dois lados estabelecem uma conexão (handshake de três vias) e, durante a troca, cada byte enviado é numerado, confirmado e retransmitido se necessário. É ele quem entrega o fluxo de bytes em ordem, sem duplicatas e sem perdas visíveis à aplicação, cuidando ainda do controle de fluxo e de congestionamento. Roda sobre o IP e sustenta a maior parte da Web, do e-mail e das APIs (HTTP, HTTPS, SSH). Em troca dessa confiabilidade, paga com latência extra e mais overhead do que o UDP.",
+  "ficha": [
+    {
+      "rotulo": "RFC principal",
+      "valor": "RFC 9293 (2022), que consolida a RFC 793 (1981) e emendas",
+      "dica": "A RFC 9293 é o texto atual e unificado; a 793 é a histórica original"
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Transporte (camada 4 no modelo OSI / Transport no TCP/IP)",
+      "dica": "Fica acima do IP e abaixo das aplicações"
+    },
+    {
+      "rotulo": "Encapsulamento",
+      "valor": "Segmento TCP viaja dentro do payload de um pacote IP (protocolo IP número 6)",
+      "dica": "No campo Protocol do cabeçalho IPv4, TCP = 6"
+    },
+    {
+      "rotulo": "Tamanho do cabeçalho",
+      "valor": "20 bytes (160 bits) sem opções; até 60 bytes com opções",
+      "dica": "O campo Data offset diz, em múltiplos de 4 bytes, onde os dados começam"
+    },
+    {
+      "rotulo": "Endereçamento",
+      "valor": "Porta de origem e porta de destino (16 bits cada, 0 a 65535)",
+      "dica": "O par (IP, porta) dos dois lados identifica unicamente a conexão"
+    },
+    {
+      "rotulo": "Modelo de serviço",
+      "valor": "Fluxo de bytes confiável, ordenado, full-duplex e orientado a conexão",
+      "dica": "Não preserva fronteiras de mensagem: é um stream contínuo"
+    },
+    {
+      "rotulo": "Segurança nativa",
+      "valor": "Nenhuma: sem criptografia nem autenticação próprias",
+      "dica": "A proteção vem de camadas superiores, tipicamente TLS (HTTPS)"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Confiabilidade por ACK e retransmissão",
+      "icone": "verified",
+      "texto": "Cada segmento enviado precisa ser confirmado. O receptor devolve um ACK dizendo qual o próximo byte que espera. Se o emissor não receber a confirmação dentro de um tempo (RTO, timeout de retransmissão), reenvia o segmento. Assim, perdas na rede são corrigidas sem que a aplicação perceba.",
+      "destaque": "Perdeu, reenvia: a rede pode falhar, o TCP não deixa a aplicação ver."
+    },
+    {
+      "titulo": "Números de sequência",
+      "icone": "tag",
+      "texto": "O TCP numera cada byte do fluxo, não cada pacote. O número de sequência inicial (ISN) é sorteado no handshake e vai crescendo. Com isso o receptor remonta os dados na ordem certa mesmo que os pacotes cheguem embaralhados, e descarta duplicatas.",
+      "destaque": "Numera bytes, não pacotes: por isso remonta o fluxo em ordem."
+    },
+    {
+      "titulo": "Janela deslizante e controle de fluxo",
+      "icone": "sync_alt",
+      "texto": "O campo Janela informa quantos bytes o receptor ainda consegue aceitar no buffer. O emissor nunca manda mais do que essa janela permite, evitando afogar um receptor lento. Conforme os dados são consumidos e confirmados, a janela desliza para frente.",
+      "destaque": "O receptor dita o ritmo: janela zero manda o emissor esperar."
+    },
+    {
+      "titulo": "Controle de congestionamento (slow start)",
+      "icone": "speed",
+      "texto": "Além da janela do receptor, o emissor mantém uma janela de congestionamento (cwnd) que reflete o que a REDE aguenta. No slow start ela começa pequena e dobra a cada RTT até um limiar; ao detectar perda, o TCP recua. Assim a rede não entra em colapso quando muitos fluxos disputam a banda.",
+      "destaque": "Começa devagar, acelera; ao perder pacote, freia."
+    },
+    {
+      "titulo": "Handshake de três vias",
+      "icone": "handshake",
+      "texto": "Antes de qualquer dado, cliente e servidor trocam SYN, SYN-ACK e ACK. Nessa troca os dois combinam os números de sequência iniciais e opções (MSS, escala de janela). Só depois a conexão fica ESTABLISHED e os dados podem fluir nos dois sentidos.",
+      "destaque": "Três apertos de mão sincronizam os contadores dos dois lados."
+    },
+    {
+      "titulo": "TIME_WAIT no encerramento",
+      "icone": "hourglass_top",
+      "texto": "Quem fecha a conexão ativamente entra em TIME_WAIT e espera cerca de 2x o tempo máximo de vida do segmento (2*MSL). Isso garante que o ACK final chegue e que segmentos atrasados da conexão antiga não contaminem uma conexão nova com o mesmo par de portas.",
+      "destaque": "Espera calculada para não confundir uma conexão velha com a nova."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Ciclo de vida de uma conexão TCP: abertura em 3 vias e encerramento em 4 tempos",
+    "definicao": "sequenceDiagram\n    participant C as Cliente\n    participant S as Servidor\n    Note over S: LISTEN (aguardando conexões)\n    Note over C: CLOSED\n    C->>S: SYN (seq=x)\n    Note over C: SYN_SENT\n    S-->>C: SYN-ACK (seq=y, ack=x+1)\n    Note over S: SYN_RECEIVED\n    C->>S: ACK (ack=y+1)\n    Note over C,S: ESTABLISHED (dados nos dois sentidos)\n    C->>S: FIN (seq=m)\n    Note over C: FIN_WAIT_1\n    S-->>C: ACK (ack=m+1)\n    Note over C: FIN_WAIT_2\n    Note over S: CLOSE_WAIT\n    S->>C: FIN (seq=n)\n    Note over S: LAST_ACK\n    C-->>S: ACK (ack=n+1)\n    Note over C: TIME_WAIT (espera 2 MSL)\n    Note over S: CLOSED",
+    "legenda": "As setas cheias (->>) são as mensagens que cada lado inicia; as tracejadas (-->>) são as respostas/confirmações. Cada Note marca o estado da máquina de estados TCP em cada momento. Repare que são 3 mensagens para abrir e 4 para fechar, porque cada lado encerra o seu sentido do fluxo separadamente."
+  },
+  "cabecalho": {
+    "titulo": "Cabeçalho TCP completo (20 bytes / 160 bits sem opções)",
+    "nota": "Somando todos os campos fixos: 16+16+32+32+4+4+8+16+16+16 = 160 bits = 20 bytes. Esse é o tamanho mínimo do cabeçalho, sem opções. O campo Opções é variável (aqui mostrado com 0 bits) e, quando presente, pode levar o cabeçalho a até 60 bytes; o campo Data offset é que informa onde os dados de fato começam. Obs.: pela RFC 9293 são 4 bits reservados e 8 bits de controle (CWR, ECE, URG, ACK, PSH, RST, SYN, FIN).",
+    "campos": [
+      {
+        "nome": "Porta de origem",
+        "bits": 16,
+        "descricao": "Número da porta do processo que enviou o segmento (0 a 65535).",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Porta de destino",
+        "bits": 16,
+        "descricao": "Número da porta do processo que deve receber o segmento; junto com os IPs define a conexão.",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "Número de sequência",
+        "bits": 32,
+        "descricao": "Posição, no fluxo de bytes, do primeiro byte de dados deste segmento. No SYN, carrega o ISN (sequência inicial).",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "Número de confirmação (ACK)",
+        "bits": 32,
+        "descricao": "Próximo byte que o emissor espera receber; válido somente quando a flag ACK está ligada.",
+        "cor": "#059669"
+      },
+      {
+        "nome": "Data offset",
+        "bits": 4,
+        "descricao": "Tamanho do cabeçalho TCP em palavras de 32 bits (4 bytes); diz onde os dados começam. Valor 5 = 20 bytes.",
+        "cor": "#d97706"
+      },
+      {
+        "nome": "Reservado",
+        "bits": 4,
+        "descricao": "Bits reservados para uso futuro; devem ser zero.",
+        "cor": "#dc2626"
+      },
+      {
+        "nome": "Flags (CWR,ECE,URG,ACK,PSH,RST,SYN,FIN)",
+        "bits": 8,
+        "descricao": "Oito bits de controle que definem o papel do segmento (abrir, confirmar, resetar, encerrar, sinalizar congestionamento).",
+        "cor": "#4f46e5"
+      },
+      {
+        "nome": "Janela",
+        "bits": 16,
+        "descricao": "Quantidade de bytes que o emissor deste segmento pode receber a partir do byte confirmado; base do controle de fluxo.",
+        "cor": "#0d9488"
+      },
+      {
+        "nome": "Checksum",
+        "bits": 16,
+        "descricao": "Soma de verificação sobre cabeçalho, dados e um pseudo-cabeçalho IP, para detectar corrupção dos bits.",
+        "cor": "#dc2626"
+      },
+      {
+        "nome": "Urgent pointer",
+        "bits": 16,
+        "descricao": "Deslocamento que aponta o fim dos dados urgentes; só tem sentido com a flag URG ligada.",
+        "cor": "#d97706"
+      },
+      {
+        "nome": "Opções",
+        "bits": 0,
+        "descricao": "Campo de tamanho variável (aqui 0 bits): carrega MSS, escala de janela, timestamps, SACK. Preenchido com padding até múltiplo de 32 bits.",
+        "cor": "#7c3aed"
+      }
+    ]
+  },
+  "tabelas": [
+    {
+      "titulo": "Flags de controle do TCP",
+      "colunas": [
+        "Flag",
+        "Nome",
+        "Significado"
+      ],
+      "linhas": [
+        [
+          "CWR",
+          "Congestion Window Reduced",
+          "Emissor avisa que reduziu a janela de congestionamento em resposta a ECN."
+        ],
+        [
+          "ECE",
+          "ECN-Echo",
+          "Ecoa que houve congestionamento sinalizado pela rede."
+        ],
+        [
+          "URG",
+          "Urgent",
+          "Indica que o campo Urgent pointer é válido; há dados urgentes."
+        ],
+        [
+          "ACK",
+          "Acknowledgment",
+          "O campo Número de confirmação é válido; confirma dados recebidos."
+        ],
+        [
+          "PSH",
+          "Push",
+          "Pede a entrega imediata dos dados à aplicação, sem aguardar o buffer encher."
+        ],
+        [
+          "RST",
+          "Reset",
+          "Aborta a conexão imediatamente; usado em erro ou porta fechada."
+        ],
+        [
+          "SYN",
+          "Synchronize",
+          "Inicia conexão e sincroniza números de sequência."
+        ],
+        [
+          "FIN",
+          "Finish",
+          "Encerra o envio de dados neste sentido; começa o fechamento."
+        ],
+        [
+          "NS",
+          "Nonce Sum",
+          "Proteção experimental do ECN contra ocultação de congestionamento (RFC 3540, hoje histórica); não faz parte dos 8 bits de controle atuais."
+        ]
+      ]
+    },
+    {
+      "titulo": "Principais estados da máquina TCP",
+      "colunas": [
+        "Estado",
+        "Lado típico",
+        "Quando ocorre"
+      ],
+      "linhas": [
+        [
+          "LISTEN",
+          "Servidor",
+          "Aguardando pedidos de conexão (SYN) numa porta aberta."
+        ],
+        [
+          "SYN_SENT",
+          "Cliente",
+          "Enviou SYN e espera o SYN-ACK do servidor."
+        ],
+        [
+          "SYN_RECEIVED",
+          "Servidor",
+          "Recebeu SYN, respondeu SYN-ACK e espera o ACK final."
+        ],
+        [
+          "ESTABLISHED",
+          "Ambos",
+          "Conexão aberta; dados trafegam nos dois sentidos."
+        ],
+        [
+          "FIN_WAIT_1 / FIN_WAIT_2",
+          "Quem fecha",
+          "Enviou FIN e aguarda o ACK e o FIN do outro lado."
+        ],
+        [
+          "CLOSE_WAIT / LAST_ACK",
+          "Quem recebe o fecho",
+          "Recebeu FIN, ainda pode enviar dados; depois envia seu FIN."
+        ],
+        [
+          "TIME_WAIT",
+          "Quem fechou ativo",
+          "Aguarda 2 MSL para garantir o ACK final e limpar segmentos antigos."
+        ],
+        [
+          "CLOSED",
+          "Ambos",
+          "Conexão encerrada; nenhum recurso associado."
+        ]
+      ]
+    },
+    {
+      "titulo": "TCP vs UDP",
+      "colunas": [
+        "Característica",
+        "TCP",
+        "UDP"
+      ],
+      "linhas": [
+        [
+          "Conexão",
+          "Orientado a conexão (handshake)",
+          "Sem conexão (dispara e esquece)"
+        ],
+        [
+          "Confiabilidade",
+          "Garante entrega e ordem",
+          "Não garante entrega nem ordem"
+        ],
+        [
+          "Controle de fluxo/congestionamento",
+          "Sim",
+          "Não"
+        ],
+        [
+          "Cabeçalho",
+          "20 a 60 bytes",
+          "8 bytes (fixo)"
+        ],
+        [
+          "Fronteira de mensagem",
+          "Fluxo de bytes contínuo",
+          "Preserva datagramas"
+        ],
+        [
+          "Latência/overhead",
+          "Maior",
+          "Menor"
+        ],
+        [
+          "Usos típicos",
+          "HTTP/HTTPS, SSH, e-mail, APIs",
+          "DNS, VoIP, vídeo ao vivo, jogos, QUIC"
+        ]
+      ]
+    },
+    {
+      "titulo": "Portas conhecidas famosas (well-known, 0-1023)",
+      "colunas": [
+        "Porta",
+        "Serviço",
+        "Descrição"
+      ],
+      "linhas": [
+        [
+          "20 / 21",
+          "FTP",
+          "Transferência de arquivos (dados / controle)"
+        ],
+        [
+          "22",
+          "SSH",
+          "Acesso remoto seguro e SFTP"
+        ],
+        [
+          "23",
+          "Telnet",
+          "Terminal remoto em texto puro (inseguro)"
+        ],
+        [
+          "25",
+          "SMTP",
+          "Envio de e-mail entre servidores"
+        ],
+        [
+          "53",
+          "DNS",
+          "Resolução de nomes (também usa UDP)"
+        ],
+        [
+          "80",
+          "HTTP",
+          "Web sem criptografia"
+        ],
+        [
+          "110 / 143",
+          "POP3 / IMAP",
+          "Leitura de e-mail"
+        ],
+        [
+          "443",
+          "HTTPS",
+          "Web com TLS"
+        ],
+        [
+          "3306",
+          "MySQL",
+          "Banco de dados (registrada, fora da faixa well-known)"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "SYN flood",
+      "como_funciona": "O atacante dispara uma enxurrada de SYN (muitas vezes com IP de origem forjado) e nunca completa o handshake. Cada SYN faz o servidor alocar uma conexão meio-aberta na fila de backlog; a fila enche e conexões legítimas passam a ser recusadas. É um ataque clássico de negação de serviço.",
+      "sinal": "Muitas conexões presas em SYN_RECEIVED e a fila de backlog cheia; clientes reais recebem timeout ou reset.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "RST injection / spoofing",
+      "como_funciona": "O atacante forja um segmento com a flag RST, usando IPs, portas e um número de sequência dentro da janela da conexão alvo. O TCP, ao receber um RST válido, derruba a conexão na hora. É usado para censura e para cortar sessões à força.",
+      "sinal": "Conexões caindo abruptamente sem motivo (connection reset by peer) exatamente em certos destinos ou padrões de tráfego.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Sequence prediction / hijacking",
+      "como_funciona": "Se o número de sequência inicial (ISN) for previsível, o atacante consegue adivinhar o próximo valor e injetar segmentos que o receptor aceita como legítimos, inserindo dados ou sequestrando a sessão sem estar no caminho do tráfego (ataque cego).",
+      "sinal": "Dados inesperados/adulterados no fluxo; sessões autenticadas assumidas por terceiros. Historicamente ligado a ISN sequencial ou pouco aleatório.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Reset/manipulação por MITM",
+      "como_funciona": "Um atacante posicionado no caminho (Wi-Fi aberto, gateway comprometido) lê os números de sequência reais e injeta RSTs perfeitos ou altera dados. Como vê o tráfego, não precisa adivinhar nada: a conexão sem criptografia fica totalmente exposta.",
+      "sinal": "Conexões cortadas de forma consistente numa rede específica; conteúdo alterado em tráfego sem TLS.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Esgotamento de conexões (Sockstress / slow)",
+      "como_funciona": "O atacante abre muitas conexões reais e as mantém vivas com janela mínima ou muito lentas, consumindo memória e slots de conexão do servidor até ele parar de atender novos clientes. Difere do SYN flood por completar o handshake.",
+      "sinal": "Grande número de conexões ESTABLISHED ociosas ou com janela pequena; consumo de memória crescente no servidor.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "SYN cookies",
+      "como_funciona": "Sob ataque, o servidor deixa de guardar estado por SYN: ele codifica as informações da conexão dentro do próprio ISN do SYN-ACK. Só aloca recursos quando o ACK final chega de volta com o cookie válido, esvaziando o alvo do SYN flood.",
+      "cobre": "SYN flood e outros ataques de meio-aberto.",
+      "limite": "Descarta algumas opções TCP no caso extremo e adiciona custo de CPU; não resolve floods que completam o handshake."
+    },
+    {
+      "nome": "ISN aleatório (RFC 6528)",
+      "como_funciona": "O número de sequência inicial é gerado combinando um relógio com um hash secreto dos endereços e portas, tornando o ISN imprevisível para quem está fora da conexão.",
+      "cobre": "Sequence prediction e hijacking cego.",
+      "limite": "Não protege contra atacante no caminho (MITM), que enxerga os números reais."
+    },
+    {
+      "nome": "Firewall stateful",
+      "como_funciona": "O firewall acompanha a máquina de estados de cada conexão e só aceita segmentos coerentes com o estado atual (um RST ou ACK sem conexão correspondente é descartado), além de limitar a taxa de novos SYN por origem.",
+      "cobre": "RST injection, pacotes fora de estado e parte dos floods.",
+      "limite": "Guarda estado (pode ser saturado); não inspeciona conteúdo criptografado nem detém MITM interno."
+    },
+    {
+      "nome": "TLS por cima do TCP",
+      "como_funciona": "A camada TLS cifra e autentica o payload. Mesmo que um atacante injete ou leia segmentos, não consegue forjar dados válidos nem entender o conteúdo; a adulteração é detectada e a sessão cai de forma segura.",
+      "cobre": "Leitura e adulteração de dados, incluindo MITM sobre o conteúdo.",
+      "limite": "Não impede o RST injection na camada TCP (a conexão ainda pode ser derrubada); protege dados, não a disponibilidade."
+    },
+    {
+      "nome": "Rate limiting e listas de bloqueio",
+      "como_funciona": "Limitar conexões novas por IP/sub-rede e bloquear origens abusivas (na borda ou via scrubbing anti-DDoS) reduz o volume que chega ao servidor.",
+      "cobre": "Floods volumétricos e esgotamento de conexões.",
+      "limite": "IPs forjados e botnets distribuídas driblam limites por origem; pode afetar usuários legítimos atrás de NAT."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Listar conexões e estados com ss",
+      "cenario": "Você quer ver rapidamente todas as conexões TCP da máquina, em que estado estão e quais portas estão em LISTEN, para diagnosticar um serviço que não responde.",
+      "comandos": "# Todas as conexões TCP com números (sem resolver nomes)\nss -tan\n\n# Só as portas em escuta, com o processo dono\nss -tlnp\n\n# Contar conexões por estado\nss -tan | awk 'NR>1 {print $1}' | sort | uniq -c",
+      "explicacao": "O ss (substituto moderno do netstat) mostra a coluna State: LISTEN, ESTAB, SYN-SENT, TIME-WAIT etc. Um monte de SYN-RECV pode indicar SYN flood; muitos TIME-WAIT indicam fechamento ativo em massa. O -p revela qual processo abriu cada porta."
+    },
+    {
+      "titulo": "Capturar handshake e flags com tcpdump",
+      "cenario": "Você precisa provar se o handshake está completando e ver quais flags cada segmento carrega ao acessar um serviço na porta 443.",
+      "comandos": "# Capturar só os SYN (início de conexão) na porta 443\nsudo tcpdump -ni eth0 'tcp[tcpflags] & tcp-syn != 0 and port 443'\n\n# Capturar SYN e RST juntos (aberturas e resets)\nsudo tcpdump -ni eth0 'tcp[tcpflags] & (tcp-syn|tcp-rst) != 0'\n\n# Ver o 3-way handshake completo de forma legível\nsudo tcpdump -ni eth0 'port 443' -c 10",
+      "explicacao": "O filtro tcp[tcpflags] lê o byte de flags do cabeçalho. Um SYN sem o SYN-ACK de volta aponta porta filtrada ou host inalcançável; um RST logo após o SYN significa porta fechada (connection refused). Ver SYN, SYN-ACK e ACK em sequência confirma conexão saudável."
+    },
+    {
+      "titulo": "Abrir e testar conexões com nc (netcat)",
+      "cenario": "Você quer testar manualmente se uma porta TCP está aberta e até trocar bytes crus com o serviço, sem um cliente dedicado.",
+      "comandos": "# Testar se a porta 80 responde (modo verboso, só scan)\nnc -zv example.com 80\n\n# Abrir conexão e falar HTTP na mão\nprintf 'GET / HTTP/1.0\\r\\n\\r\\n' | nc example.com 80\n\n# Subir um servidor de escuta local para testes\nnc -l 9000",
+      "explicacao": "O nc completa o handshake TCP por você. Com -z ele só verifica se a porta abre (útil para varredura leve); connection refused = porta fechada com RST, e travar até estourar = pacotes filtrados por firewall. O modo -l transforma o nc num servidor para observar o outro lado da conexão."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Conexões travadas em SYN_SENT",
+      "causa_provavel": "O cliente enviou o SYN mas nunca recebeu o SYN-ACK: firewall descartando (drop) o pacote, serviço caído ou rota bloqueada.",
+      "leitura": "O SYN saiu mas não há resposta. Se fosse porta fechada, viria um RST rápido; ficar preso em SYN_SENT indica tráfego filtrado silenciosamente. Compare com um destino que funciona.",
+      "comando": "ss -tan state syn-sent; sudo tcpdump -ni any 'tcp[tcpflags] & tcp-syn != 0'"
+    },
+    {
+      "sintoma": "Muitas conexões em TIME_WAIT",
+      "causa_provavel": "O lado local fecha muitas conexões de curta duração ativamente (típico de cliente HTTP sem keep-alive ou proxy sob carga).",
+      "leitura": "TIME_WAIT é normal e temporário (2 MSL); em volume alto, só vira problema se esgotar as portas efêmeras. Prefira keep-alive/reúso de conexão a tentar reduzir o timer, que existe por segurança.",
+      "comando": "ss -tan state time-wait | wc -l"
+    },
+    {
+      "sintoma": "Connection refused (recusada) vs timeout",
+      "causa_provavel": "Refused: o host respondeu com RST porque não há ninguém escutando naquela porta. Timeout: o pacote foi descartado por firewall e nenhuma resposta voltou.",
+      "leitura": "Refused é uma resposta rápida e explícita (host vivo, porta fechada); timeout é silêncio até estourar o tempo (host inalcançável ou porta filtrada). A diferença aponta para causas opostas.",
+      "comando": "nc -zv host 443; ss -tlnp | grep :443"
+    },
+    {
+      "sintoma": "Fila de backlog cheia / SYN_RECV em excesso",
+      "causa_provavel": "Possível SYN flood, ou backlog do serviço dimensionado pequeno para o pico de conexões.",
+      "leitura": "Muitos SYN_RECV sem avançar para ESTABLISHED sugerem handshakes incompletos. Verifique se os SYN cookies estão ativos e se as origens são plausíveis ou forjadas.",
+      "comando": "ss -tan state syn-recv | wc -l; cat /proc/sys/net/ipv4/tcp_syncookies"
+    },
+    {
+      "sintoma": "Conexões ESTABLISHED que caem sozinhas",
+      "causa_provavel": "RST injection/MITM, NAT expirando conexões ociosas, ou keep-alive desabilitado em caminho com timeout curto.",
+      "leitura": "Se as quedas coincidem com uma rede específica, suspeite de RST forjado. Se ocorrem após ficar ocioso, é mais provável a expiração de estado no NAT/firewall. O tcpdump revela quem enviou o RST.",
+      "comando": "sudo tcpdump -ni any 'tcp[tcpflags] & tcp-rst != 0'"
+    }
+  ]
+}

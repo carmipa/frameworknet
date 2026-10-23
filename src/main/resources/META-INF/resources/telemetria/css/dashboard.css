@@ -1,0 +1,421 @@
+/* Telemetria — alinhado ao design system dark (tokens do spec). */
+
+.telemetry-page {
+    max-width: 100%;
+    margin-inline: auto;
+}
+
+/* ---- KPIs ---- */
+.aed-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.aed-kpi-card {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.07));
+    border-radius: 1rem;
+    background: linear-gradient(180deg, #0f1622, #0a0e16);
+}
+
+.aed-kpi-icon {
+    flex-shrink: 0;
+    width: 2.4rem;
+    height: 2.4rem;
+    display: grid;
+    place-items: center;
+    border-radius: 0.7rem;
+}
+
+.aed-kpi-icon .material-symbols-outlined { font-size: 1.3rem; }
+.aed-kpi-icon.blue { background: rgba(96, 165, 250, 0.14); color: #60a5fa; }
+.aed-kpi-icon.teal { background: rgba(45, 212, 191, 0.14); color: #2dd4bf; }
+.aed-kpi-icon.indigo { background: rgba(129, 140, 248, 0.14); color: #818cf8; }
+.aed-kpi-icon.amber { background: rgba(245, 158, 11, 0.14); color: #f59e0b; }
+.aed-kpi-icon.rose { background: rgba(244, 63, 94, 0.14); color: #f43f5e; }
+
+.aed-kpi-label {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #7d8aa1;
+}
+
+.aed-kpi-value {
+    font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
+    font-size: 1.7rem;
+    line-height: 1.1;
+    color: var(--aed-text, #eef2f8);
+}
+
+/* ---- Gráficos ---- */
+.aed-charts-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1.2fr;
+    gap: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.aed-charts-grid .aed-card { min-width: 0; }
+/* NUNCA limitar o canvas por CSS: o Chart.js dimensiona o elemento e usa essa
+   medida para converter a posicao do mouse em ponto do grafico. Uma regra de
+   altura por fora espreme o desenho sem que a biblioteca saiba, e o hover passa
+   a apontar para o lugar errado - o grafico parece "morto". A altura vai na
+   caixa em volta, com maintainAspectRatio:false no lado do JavaScript. */
+.aed-charts-grid .tele-chart-box { height: 14rem; }
+
+/* ---- Console ao vivo ---- */
+.console-card { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.btn-toggle-console,
+.btn-copy-console,
+.btn-clear-console { display: inline-flex; align-items: center; }
+
+.aed-console,
+.console-body {
+    background: #04060c;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.7rem;
+    padding: 0.9rem 1rem;
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    font-size: .75rem;
+    line-height: 1.85;
+    color: var(--aed-text-secondary, #8b97ad);
+    max-height: 21rem;
+    overflow-y: auto;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.console-body.expanded { max-height: 40rem; }
+
+/* Linhas coloridas do console (montadas no JS) */
+.cl-ts { color: var(--aed-text-faint, #5b6679); }
+.cl-lvl { color: var(--aed-teal, #2dd4bf); font-weight: 600; }
+.cl-lvl.warn { color: #f59e0b; }
+.cl-lvl.error { color: #f43f5e; }
+.cl-msg { color: var(--aed-text-secondary, #8b97ad); }
+
+.telemetry-path {
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    color: var(--aed-text-faint, #5b6679);
+    font-size: .75rem;
+}
+
+/* ---- Histórico de eventos ---- */
+.telemetry-search {
+    max-width: 18rem;
+    background: #0a0e16;
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.1));
+    color: var(--aed-text, #eef2f8);
+}
+
+.telemetry-table-count { font-size: 0.76rem; color: var(--aed-text-secondary, #8b97ad); }
+
+.telemetry-table { font-size: 0.8rem; }
+
+.telemetry-table thead th {
+    position: sticky;
+    top: 0;
+    background: #0c1018;
+    border-color: var(--aed-border, rgba(255, 255, 255, 0.08)) !important;
+    color: var(--aed-text-faint, #5b6679);
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.telemetry-table td {
+    vertical-align: middle;
+    border-color: var(--aed-border, rgba(255, 255, 255, 0.05)) !important;
+}
+
+.telemetry-table td.mono,
+.telemetry-table td.col-hora,
+.telemetry-table td.col-evento,
+.telemetry-table td.col-msg {
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    font-size: 0.76rem;
+}
+
+/* A mensagem inteira fica na tela, quebrando linha: com reticências ela só existia no title (dica de mouse, que
+   não aparece no toque nem no teclado). */
+.telemetry-table td.col-msg {
+    max-width: 22rem;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    color: var(--aed-text-secondary, #8b97ad);
+}
+
+.tele-badge {
+    display: inline-block;
+    padding: 0.05rem 0.5rem;
+    border-radius: 0.4rem;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+.tele-badge.info { color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.4); background: rgba(96, 165, 250, 0.1); }
+.tele-badge.warn { color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.1); }
+.tele-badge.error { color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.4); background: rgba(244, 63, 94, 0.1); }
+
+.tele-status { display: inline-flex; align-items: center; gap: 0.35rem; }
+.tele-dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #34d399; }
+.tele-dot.err { background: #f43f5e; }
+
+.telemetry-pagination { color: var(--aed-text-secondary, #8b97ad); font-size: 0.82rem; }
+
+.tele-empty {
+    text-align: center;
+    color: var(--aed-text-faint, #5b6679);
+    padding: 1.5rem;
+}
+
+.aed-console::-webkit-scrollbar { width: 0.5rem; }
+.aed-console::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 1rem; }
+
+@media (max-width: 60em) {
+    .aed-charts-grid { grid-template-columns: 1fr; }
+}
+
+/* ---- Controles do cabeçalho (período / autoatualização) ---- */
+.tele-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #7d8aa1;
+}
+
+.tele-controls .form-select {
+    background: #0a0e16;
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.12));
+    color: var(--aed-text, #eef2f8);
+    min-width: 8.5rem;
+}
+
+.tele-updated {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--aed-text-faint, #5b6679);
+}
+
+.tele-updated .material-symbols-outlined { font-size: 1rem; }
+.tele-updated strong { color: var(--aed-text-secondary, #8b97ad); font-weight: 600; }
+.tele-updated-sep { opacity: 0.5; }
+
+/* ---- KPIs (6 colunas + sublabel + estado ruim) ---- */
+.tele-kpi-6 { grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); }
+
+.aed-kpi-sub {
+    font-size: .75rem;
+    color: var(--aed-text-faint, #5b6679);
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    margin-top: 0.15rem;
+}
+
+.aed-kpi-value.kpi-bad,
+.kpi-bad { color: #f43f5e !important; }
+
+/* ---- Grids de 2 colunas (gráficos e tabelas) ---- */
+.tele-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.tele-grid-2 .aed-card { min-width: 0; }
+.tele-grid-2 .tele-chart-box { height: 15rem; }
+
+.tele-chart-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--aed-text-secondary, #8b97ad);
+    text-transform: uppercase;
+    font-size: .75rem;
+    letter-spacing: 0.03em;
+    margin: 0.3rem 0 0.7rem;
+}
+
+.tele-chart-title .material-symbols-outlined { font-size: 1.1rem; }
+
+@media (max-width: 62em) {
+    .tele-grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ---- Tabelas de endpoints ---- */
+.tele-endpoints { font-size: 0.76rem; }
+.tele-endpoints th.num, .tele-endpoints td.num { text-align: right; white-space: nowrap; }
+.telemetry-table td.mono, .tele-endpoints td.mono { font-family: var(--aed-font-mono, "JetBrains Mono", monospace); }
+
+/* A rota inteira fica na tela, quebrando linha (com reticências e sem title, "/academia/fundamentos/hexadecimal"
+   aparecia cortada sem jeito de ler o resto). */
+.tele-endpoints td.col-endpoint,
+.telemetry-table td.col-endpoint {
+    max-width: 15rem;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    color: var(--aed-text-secondary, #8b97ad);
+}
+
+.txt-err { color: #f43f5e; font-weight: 600; }
+.txt-warn { color: #f59e0b; font-weight: 600; }
+
+/* ---- Badge de método HTTP ---- */
+.tele-metodo {
+    display: inline-block;
+    padding: 0.02rem 0.4rem;
+    border-radius: 0.35rem;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #8b97ad;
+}
+
+.tele-metodo.m-get { color: #34d399; border-color: rgba(52, 211, 153, 0.4); }
+.tele-metodo.m-post { color: #60a5fa; border-color: rgba(96, 165, 250, 0.4); }
+.tele-metodo.m-put { color: #f59e0b; border-color: rgba(245, 158, 11, 0.4); }
+.tele-metodo.m-delete { color: #f43f5e; border-color: rgba(244, 63, 94, 0.4); }
+
+/* ---- Ferramentas do console ---- */
+.tele-console-tools .form-select,
+.tele-console-tools .form-control {
+    background: #0a0e16;
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.12));
+    color: var(--aed-text, #eef2f8);
+}
+
+.tele-console-tools .form-select { min-width: 9rem; }
+#t-console-pausar.active { color: #f59e0b; border-color: rgba(245, 158, 11, 0.5); }
+
+/* ---------- Menu de exportacao ----------
+   Especificidade reforcada (ul.dropdown-menu) porque o Bootstrap define
+   .dropdown-menu com fundo branco; sem isso o menu sai claro no painel escuro. */
+ul.dropdown-menu.tele-export-menu {
+    background: linear-gradient(180deg, #111826, #0a0e17);
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: .75rem;
+    padding: .35rem;
+    min-width: 15rem;
+}
+
+ul.tele-export-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    border-radius: .5rem;
+    padding: .5rem .7rem;
+    color: #c7d0de;
+    font-size: .86rem;
+}
+
+ul.tele-export-menu .dropdown-item:hover,
+ul.tele-export-menu .dropdown-item:focus {
+    background: rgba(255, 255, 255, .06);
+    color: #eef2f8;
+}
+
+ul.tele-export-menu .material-symbols-outlined {
+    font-size: 1.15rem;
+    color: #2dd4bf;
+}
+
+ul.tele-export-menu small {
+    margin-left: auto;
+    color: #5b6679;
+    font-size: .75rem;
+}
+
+/* ---------- Impressao: so o conteudo, sem casca ----------
+   O botao "Imprimir" leva a TELA para o papel; quem decide o recorte e este
+   bloco, nao o JavaScript. Fundo escuro vira claro: painel dark impresso gasta
+   tinta e sai ilegivel. */
+@media print {
+    .aed-topnav,
+    .aed-lang-selector,
+    .tele-controls,
+    #dataset-resultado,
+    .btn-clear-console,
+    .btn-copy-console,
+    #t-console-pausar {
+        display: none !important;
+    }
+
+    body.aed-app,
+    .telemetry-page {
+        background: #fff !important;
+        color: #111 !important;
+    }
+
+    .aed-card,
+    .card-tech {
+        background: #fff !important;
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+
+    .aed-kpi-value,
+    .aed-kpi-label,
+    h2, h6, td, th, .small {
+        color: #111 !important;
+    }
+
+    .tele-chart-box {
+        height: 12rem !important;
+        break-inside: avoid;
+    }
+
+    .console-telemetria,
+    #console-telemetria {
+        max-height: none !important;
+        overflow: visible !important;
+        background: #fff !important;
+        color: #111 !important;
+    }
+}
+
+/* Caixa do grafico: quem manda na altura. O canvas preenche 100% dela. */
+.tele-chart-box {
+    position: relative;
+    width: 100%;
+    height: 15rem;
+}
+
+.tele-chart-box canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+@media (max-width: 36em) {
+    .tele-chart-box { height: 13rem; }
+}
+
+/* ---------- Menu suspenso escapando do cartao ----------
+   O cartao do cabecalho recorta o que passa da borda, e o menu "Exportar"
+   abre para baixo: o ultimo item ficava cortado. Duas regras resolvem, e as
+   duas sao necessarias - liberar o recorte sem elevar o menu o deixaria
+   atras dos cartoes de KPI que vem logo abaixo. */
+.tele-header-card {
+    overflow: visible;
+    position: relative;
+    z-index: 20;
+}
+
+ul.dropdown-menu.tele-export-menu {
+    z-index: 1080;
+    box-shadow: 0 1.5rem 3rem -1rem rgba(0, 0, 0, .85);
+}

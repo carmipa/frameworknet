@@ -1,0 +1,11 @@
+<div class="w-100">
+    <div class="mb-3">
+        <div class="small text-secondary mb-1">
+            Diagrama da topologia
+            {#if !fluxo.alcanca}(o nó em vermelho é onde o fluxo trava){#else}(destino em verde){/if}:
+        </div>
+        <pre class="aprof-mermaid" translate="no">{mermaid}</pre>
+    </div>
+
+    {#include segurancaRede/partials/diagnostico_fluxo.html /}
+</div>

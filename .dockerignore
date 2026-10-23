@@ -1,0 +1,29 @@
+# Contexto de build multi-stage (Gradle compila dentro da imagem)
+.git
+.github
+# Segredos nunca entram no contexto de build (defesa em profundidade: hoje o Dockerfile faz
+# COPY seletivo e nao pega .env, mas um COPY . . futuro vazaria segredo para a imagem).
+.env
+.env.*
+!.env.example
+.idea
+.vscode
+.cursor
+.gradle
+build
+python
+logs
+docker-data
+data
+# Exclui só o README da raiz (usado no GitHub) e docs auxiliares — NÃO varrer src/,
+# pois /documentacao renderiza src/main/resources/README.md (precisa entrar no jar).
+/README.md
+entrega-aed
+**/*.iml
+**/.DS_Store
+terminals
+agent-transcripts
+
+# Dependencias dos roteiros de navegador (17,5 MB): nao entram na imagem (OPS-19).
+scripts/node_modules
+scripts/vendor-globo/node_modules

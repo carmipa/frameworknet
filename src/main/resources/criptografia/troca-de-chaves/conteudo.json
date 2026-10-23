@@ -1,0 +1,235 @@
+{
+  "resumo": "Como dois lados que nunca se falaram antes chegam ao mesmo segredo trocando apenas valores públicos por um canal que qualquer um pode ler. O truque é o Diffie-Hellman: cada lado escolhe um número privado, deriva dele um valor público, envia esse valor público, e combina o público do outro com o próprio privado. O segredo compartilhado nasce dos dois lados sem nunca ter viajado pela rede. A variante moderna é o ECDHE (Diffie-Hellman efêmero sobre curvas elípticas), usado no handshake TLS: gera um par de chaves novo e descartável a cada conexão. Isso entrega forward secrecy (PFS, sigilo futuro): mesmo que a chave privada de longo prazo do servidor vaze amanhã, as sessões gravadas ontem continuam ilegíveis, porque as chaves que as protegeram já foram jogadas fora. O modelo antigo, RSA key transport, não tinha essa propriedade: o cliente cifrava o segredo com a chave pública do servidor e o mandava pronto, então vazar a chave RSA decifrava todo o tráfego passado capturado. O TLS 1.3 aposentou o key transport: o handshake completo sempre usa troca efêmera. A exceção é a retomada só com PSK (modo psk_ke) e os dados 0-RTT, que não têm forward secrecy.",
+  "ficha": [
+    {
+      "rotulo": "Objetivo",
+      "valor": "Estabelecer um segredo compartilhado por canal aberto",
+      "dica": "Ninguém transmite o segredo; ambos o calculam"
+    },
+    {
+      "rotulo": "Mecanismo moderno",
+      "valor": "ECDHE (Diffie-Hellman efêmero em curva elíptica, ex.: X25519), cada vez mais no híbrido pós-quântico X25519MLKEM768 (ML-KEM, FIPS 203)",
+      "dica": "Par de chaves novo e descartável por conexão"
+    },
+    {
+      "rotulo": "Propriedade-chave",
+      "valor": "Forward secrecy (PFS)",
+      "dica": "Vazar a chave de longo prazo não expõe sessões passadas"
+    },
+    {
+      "rotulo": "Onde acontece",
+      "valor": "Handshake TLS (key_share em ClientHello/ServerHello)",
+      "dica": "No TLS 1.3 o handshake completo é sempre efêmero; a retomada psk_ke não"
+    },
+    {
+      "rotulo": "Aposentado",
+      "valor": "RSA key transport",
+      "dica": "Sem PFS; removido no TLS 1.3"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Segredo por canal aberto",
+      "icone": "vpn_key",
+      "texto": "No Diffie-Hellman cada lado guarda um número privado e publica apenas um valor derivado dele. Alice envia A_pub, Bob envia B_pub. Alice combina seu privado com B_pub; Bob combina o seu com A_pub. Os dois chegam ao mesmo segredo S, que nunca trafegou. Um espião vê A_pub e B_pub mas não consegue reverter para o privado (problema do logaritmo discreto).",
+      "destaque": "O segredo é calculado dos dois lados, nunca transmitido"
+    },
+    {
+      "titulo": "Efêmero da forward secrecy",
+      "icone": "lock_clock",
+      "texto": "ECDHE gera um par de chaves temporário para cada sessão e o descarta ao final. Como a chave que protegeu a sessão já não existe, uma captura do tráfego gravada hoje não pode ser decifrada amanhã, mesmo que a chave privada de longo prazo do servidor caia nas mãos do atacante.",
+      "destaque": "Efêmero = chaves descartáveis = sessões passadas ficam protegidas"
+    },
+    {
+      "titulo": "Efêmero contra estático",
+      "icone": "published_with_changes",
+      "texto": "No DH estático o mesmo par de chaves é reutilizado por muitas conexões, então um único vazamento compromete tudo o que foi protegido por ele. No efêmero (o E de ECDHE / DHE) cada conexão tem seu próprio par, e o comprometimento fica confinado àquela única sessão.",
+      "destaque": "Reúso concentra o risco; efêmero o isola por sessão"
+    },
+    {
+      "titulo": "Autenticação e segredo são coisas separadas",
+      "icone": "badge",
+      "texto": "O ECDHE cria o segredo mas não prova com quem você fala; sem autenticar, um homem-no-meio pode fazer dois ECDHE, um com cada lado. Por isso o servidor assina os valores efêmeros com sua chave de longo prazo (RSA ou ECDSA do certificado). A chave de longo prazo autentica; a chave efêmera cria o segredo.",
+      "destaque": "A chave de longo prazo assina; a efêmera negocia"
+    },
+    {
+      "titulo": "RSA key transport (o modelo obsoleto)",
+      "icone": "history",
+      "texto": "No TLS antigo o cliente sorteava o pre-master secret e o enviava cifrado com a chave pública RSA do servidor. Não havia efêmero: quem gravasse o tráfego e depois obtivesse a chave privada RSA decifrava retroativamente todas as sessões. O TLS 1.3 removeu esse modo.",
+      "destaque": "Sem efêmero, uma chave vazada abre todo o passado gravado"
+    },
+    {
+      "titulo": "O lugar no handshake TLS",
+      "icone": "handshake",
+      "texto": "No TLS 1.3 o cliente já manda seu key_share (valor ECDHE) no ClientHello; o servidor responde com o próprio key_share no ServerHello e assina a troca com o certificado. Em uma ida e volta os dois derivam o segredo e passam a cifrar. A cifra simétrica (AES-GCM, ChaCha20) que protege os dados vem desse segredo via derivação de chave (HKDF).",
+      "destaque": "key_share no ClientHello/ServerHello estabelece a sessão em 1-RTT"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Diffie-Hellman efêmero (ECDHE): valores públicos viram segredo compartilhado",
+    "definicao": "sequenceDiagram\n    participant A as Alice (cliente)\n    participant B as Bob (servidor)\n    Note over A: escolhe privada a (efêmera)\n    Note over B: escolhe privada b (efêmera)\n    A->>A: calcula A_pub = a * G\n    B->>B: calcula B_pub = b * G\n    A->>B: ClientHello + key_share A_pub\n    B->>A: ServerHello + key_share B_pub + assinatura do certificado\n    A->>A: calcula S = a * B_pub\n    B->>B: calcula S = b * A_pub\n    Note over A,B: S idêntico dos dois lados, nunca transmitido\n    Note over A,B: chaves de sessão = HKDF(S), dados cifrados com AES-GCM",
+    "legenda": "G é o ponto gerador da curva; a e b são os privados efêmeros, descartados ao fim da sessão. Um espião vê A_pub e B_pub, mas reverter para a ou b exige resolver o logaritmo discreto. Os valores efêmeros vão assinados pela chave de longo prazo do certificado para impedir homem-no-meio."
+  },
+  "tabelas": [
+    {
+      "titulo": "Diffie-Hellman x ECDHE x RSA key transport",
+      "colunas": [
+        "Aspecto",
+        "DH clássico (grupo finito)",
+        "ECDHE (curva elíptica)",
+        "RSA key transport (obsoleto)"
+      ],
+      "linhas": [
+        [
+          "Como surge o segredo",
+          "Ambos calculam por exponenciação modular",
+          "Ambos calculam por multiplicação de ponto",
+          "Cliente sorteia e envia cifrado ao servidor"
+        ],
+        [
+          "Forward secrecy",
+          "Só se efêmero (DHE)",
+          "Sim (sempre efêmero em uso prático)",
+          "Não"
+        ],
+        [
+          "Custo/desempenho",
+          "Chaves grandes (2048-4096 bits), mais lento",
+          "Chaves curtas (256 bits ~ 3072 RSA), rápido",
+          "Baixo no handshake, mas sem PFS"
+        ],
+        [
+          "Base de segurança",
+          "Logaritmo discreto em grupo finito",
+          "Logaritmo discreto em curva elíptica",
+          "Fatoração / segredo da chave privada RSA"
+        ],
+        [
+          "Status no TLS 1.3",
+          "DHE permitido (grupos ffdhe)",
+          "Padrão recomendado; o híbrido X25519MLKEM768 já é oferecido por padrão pelos navegadores atuais",
+          "Removido"
+        ]
+      ]
+    },
+    {
+      "titulo": "Efêmero x estático",
+      "colunas": [
+        "Critério",
+        "Efêmero (ECDHE/DHE)",
+        "Estático (DH/ECDH fixo)"
+      ],
+      "linhas": [
+        [
+          "Par de chaves",
+          "Novo e descartável por sessão",
+          "Reutilizado em muitas sessões"
+        ],
+        [
+          "Forward secrecy",
+          "Sim",
+          "Não"
+        ],
+        [
+          "Impacto de um vazamento",
+          "Confinado àquela sessão",
+          "Compromete todo o tráfego protegido pela chave"
+        ],
+        [
+          "Uso típico hoje",
+          "TLS 1.2/1.3, o padrão",
+          "Raro; cenários legados ou casos específicos"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Logjam (rebaixamento para grupos DH fracos)",
+      "como_funciona": "Um homem-no-meio força a negociação para DHE de exportação de 512 bits. Como muitos servidores compartilhavam poucos grupos primos padrão, o atacante pré-computa o trabalho pesado sobre aquele primo e depois quebra cada sessão rapidamente, recuperando o segredo compartilhado.",
+      "sinal": "Servidor aceita cipher suites DHE_EXPORT ou parâmetros DH de 512/768 bits; grupo primo comum é reutilizado.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Ausência de forward secrecy (RSA key transport)",
+      "como_funciona": "Sem troca efêmera, o segredo é protegido apenas pela chave privada de longo prazo do servidor. O atacante grava o tráfego cifrado hoje e, ao obter a chave privada depois (roubo, intimação, Heartbleed), decifra retroativamente tudo o que capturou.",
+      "sinal": "Cipher suites TLS_RSA_WITH_... em uso; nenhuma suite ECDHE/DHE negociada.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Homem-no-meio por falta de autenticação do efêmero",
+      "como_funciona": "DH cru não autentica os participantes. Se os valores efêmeros não forem assinados/validados, o atacante faz um ECDHE com o cliente e outro com o servidor, ficando no meio e lendo tudo. A defesa é assinar os valores com o certificado e validar a cadeia.",
+      "sinal": "Certificado não validado, assinatura do key_share ignorada, ou confiança em CA indevida.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Parâmetros DH não verificados / grupos customizados suspeitos",
+      "como_funciona": "Servidor apresenta parâmetros DH próprios (primo p e gerador g) que podem ser compostos, de ordem pequena ou construídos com backdoor, enfraquecendo o logaritmo discreto e permitindo recuperar o segredo.",
+      "sinal": "Grupo DH não padrão, primo não seguro ou gerador de ordem pequena; ausência de grupos ffdhe nomeados.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Small-subgroup / ponto inválido em ECDH",
+      "como_funciona": "O atacante envia um ponto público que não pertence à curva ou pertence a um subgrupo de ordem pequena; sem validação, o servidor calcula um segredo em um espaço reduzido, vazando bits da chave privada estática (agravado quando a chave é reutilizada).",
+      "sinal": "Servidor não valida se o ponto recebido está na curva; uso de ECDH estático reutilizado.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Preferir ECDHE (troca efêmera)",
+      "como_funciona": "Configurar o servidor para negociar suites ECDHE (ou DHE), gerando par de chaves novo por sessão. Garante forward secrecy: um vazamento futuro da chave de longo prazo não decifra sessões gravadas.",
+      "cobre": "Ausência de PFS, decifragem retroativa",
+      "limite": "Não autentica sozinho; depende da assinatura pelo certificado e da validação do cliente."
+    },
+    {
+      "nome": "Grupos e curvas fortes",
+      "como_funciona": "Usar curvas robustas (X25519, secp256r1) e, em DHE, grupos ffdhe2048+ nomeados em vez de primos de 512/768 bits ou grupos customizados. Elimina o material fraco que o Logjam explora.",
+      "cobre": "Logjam, parâmetros DH fracos",
+      "limite": "Grupos maiores custam desempenho; não substitui remover suites de exportação."
+    },
+    {
+      "nome": "TLS 1.3 (somente efêmero)",
+      "como_funciona": "Adotar TLS 1.3, que removeu RSA key transport, renegociação e suites de exportação: o handshake completo usa (EC)DHE efêmero com AEAD. Para a retomada também ter PFS, aceite só o modo psk_dhe_ke e evite 0-RTT onde o sigilo e o replay importam.",
+      "cobre": "RSA key transport, rebaixamento para modos fracos",
+      "limite": "Exige suporte de cliente e servidor; middleboxes antigos podem interferir."
+    },
+    {
+      "nome": "Validação de pontos e parâmetros",
+      "como_funciona": "Verificar que o ponto EC recebido está na curva correta e não em subgrupo de ordem pequena, e que os parâmetros DH são seguros. Bloqueia small-subgroup e pontos inválidos.",
+      "cobre": "Small-subgroup, ponto inválido, primos compostos",
+      "limite": "Depende da implementação TLS estar correta e atualizada."
+    },
+    {
+      "nome": "Desabilitar suites legadas e exigir autenticação",
+      "como_funciona": "Remover TLS_RSA_* e DHE_EXPORT, forçar validação de certificado e assinatura do key_share. Impede rebaixamento e homem-no-meio por efêmero não autenticado.",
+      "cobre": "RSA key transport, Logjam, MITM",
+      "limite": "Pode quebrar clientes muito antigos; requer política de compatibilidade."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Confirmar ECDHE e forward secrecy na conexão",
+      "cenario": "Verificar qual troca de chaves o servidor negocia e se há PFS.",
+      "comandos": "openssl s_client -connect example.com:443 -tls1_3 </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject\n\n# ver a suite e o grupo negociados\necho | openssl s_client -connect example.com:443 2>/dev/null | grep -E 'Cipher|Temp Key|TLS1.3 group|Protocol'",
+      "explicacao": "A linha 'Server Temp Key' ou 'Peer Temp Key' (ex.: X25519, 253 bits), ou 'Negotiated TLS1.3 group' (ex.: X25519MLKEM768) no OpenSSL 3.5 ou mais novo, confirma troca efêmera e forward secrecy. Uma suite ECDHE_ no campo Cipher também indica PFS; TLS_RSA_ indicaria key transport sem PFS."
+    },
+    {
+      "titulo": "Testar se o servidor ainda aceita RSA key transport (sem PFS)",
+      "cenario": "Detectar suites legadas sem forward secrecy.",
+      "comandos": "# tentar forcar uma suite RSA key transport (sucesso = sem PFS)\nopenssl s_client -connect example.com:443 -cipher 'AES256-SHA' -tls1_2 </dev/null 2>/dev/null | grep -E 'Cipher|New,'\n\n# listar as suites RSA (sem ECDHE/DHE) que a lib conhece\nopenssl ciphers -v 'AES256-SHA:DES-CBC3-SHA' | awk '{print $1, $3, $4}'",
+      "explicacao": "Se a conexão completa com uma suite cujo Kx=RSA, o servidor aceita key transport sem forward secrecy e deveria desabilitá-la. Um handshake_failure indica que ele já rejeita esse modo legado."
+    },
+    {
+      "titulo": "Gerar parâmetros DH fortes e inspecionar um grupo",
+      "cenario": "Produzir parâmetros DHE seguros e conferir o tamanho do primo.",
+      "comandos": "# gerar parametros DH de 2048 bits (evita Logjam/512 bits)\nopenssl dhparam -out dhparams.pem 2048\n\n# inspecionar tamanho e validade do grupo\nopenssl dhparam -in dhparams.pem -noout -text | head -3",
+      "explicacao": "O cabeçalho mostra 'DH Parameters: (2048 bit)'. Parâmetros de 2048 bits ou mais, ou o uso de grupos ffdhe nomeados, evitam os primos fracos de 512 bits explorados pelo Logjam. Em ECDHE o análogo é escolher curvas como X25519 na configuração do servidor."
+    }
+  ]
+}

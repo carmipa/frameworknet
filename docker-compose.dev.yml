@@ -1,0 +1,69 @@
+# Desenvolvimento / teste local com Docker (sem a rede externa do Nginx Proxy Manager).
+#
+# Uso recomendado:  .\scripts\subir.ps1        (Windows)
+#
+# `docker compose -f docker-compose.dev.yml up -d --build` direto SO funciona se
+# ja existir um `.env` com ADMIN_API_KEY e CSRF_SECRET fortes. O perfil aqui e
+# `prod` (de proposito, para espelhar a producao) e nele o
+# SegredosObrigatoriosVerificador RECUSA iniciar com o valor de dev abaixo, que e
+# publico no repositorio — o container morre no boot. O subir.ps1 gera esse .env
+# na primeira execucao; e por isso que ele e o caminho recomendado, nao um atalho.
+#
+# Espelha a producao de proposito — mesma imagem, mesmo Redis, mesmo perfil.
+# Ambiente de dev que difere do de producao esconde justamente os defeitos que
+# so aparecem la, e este projeto ja pagou por isso (variavel que nao chegava ao
+# container, telemetria sem Redis).
+#
+# Dados persistidos em ./docker-data no host.
+
+services:
+  framework-net:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: framework-net-java-quarkus:dev
+    container_name: framework-net-java-dev
+    ports:
+      - "127.0.0.1:${HTTP_PORT:-8081}:8080"
+    environment:
+      QUARKUS_PROFILE: prod
+      QUARKUS_HTTP_PORT: "8080"
+      # Segredos de desenvolvimento: valores obvios de dev, nunca os de producao.
+      ADMIN_API_KEY: ${ADMIN_API_KEY:-dev-admin-key-local}
+      CSRF_SECRET: ${CSRF_SECRET:-dev-csrf-secret-local}
+      # Login pelo GitHub fica DESLIGADO em dev: a OAuth App tem um unico
+      # callback registrado, o de producao, e localhost nao casaria com ele.
+      # Sem credencial, a tela oferece so o acesso de contingencia.
+      GITHUB_OAUTH_CLIENT_ID: ${GITHUB_OAUTH_CLIENT_ID:-}
+      GITHUB_OAUTH_CLIENT_SECRET: ${GITHUB_OAUTH_CLIENT_SECRET:-}
+      GITHUB_OAUTH_LOGINS_PERMITIDOS: ${GITHUB_OAUTH_LOGINS_PERMITIDOS:-}
+      GITHUB_DATASET_TOKEN: ${GITHUB_DATASET_TOKEN:-}
+      # Cache L2 e janela de telemetria: mesmo Redis da producao.
+      QUARKUS_REDIS_HOSTS: redis://framework-net-redis-dev:6379
+      FRAMEWORK_CACHE_DISTRIBUIDO_ENABLED: "true"
+    depends_on:
+      - redis
+    volumes:
+      - ./docker-data:/deployments/data
+      # - ${GEO_DB_HOST_PATH:-./docker-data/geo/GeoLite2-City.mmdb}:/deployments/data/geo/GeoLite2-City.mmdb:ro
+    # Sem healthcheck aqui: vale o HEALTHCHECK do Dockerfile (/health, 30 s), o mesmo da producao.
+    # O antigo batia em / a cada 15 s e cada batida virava evento de telemetria (auditoria OPS-09).
+    mem_limit: ${MEM_LIMIT:-768m}
+    memswap_limit: ${MEM_LIMIT:-768m}
+    mem_reservation: 256m
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    image: redis:7-alpine
+    container_name: framework-net-redis-dev
+    # Mesmo comando e teto da producao: sem disco, 48 MB e allkeys-lru. O dev com AOF e noeviction
+    # escondia o comportamento real (em producao o Stream e o cache dividem 48 MB e o Redis despeja).
+    command: redis-server --save "" --appendonly no --maxmemory 48mb --maxmemory-policy allkeys-lru
+    mem_limit: 64m
+    memswap_limit: 64m
+    restart: unless-stopped

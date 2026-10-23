@@ -1,0 +1,162 @@
+{! Lição Fundamentos · Camadas e encapsulamento. Ver (a mensagem descendo a pilha), Mexer
+   (mensagem e transporte escolhidos pelo aluno, tamanhos ao vivo) e Provar (tamanho do quadro,
+   com a correção dizendo qual camada faltou). Contas no navegador (R10).
+   Variáveis: nivel, licao, proxima, activeMainMenu. !}
+{#include shared/base.html}
+{#title}Camadas e encapsulamento — Academia | Framework de Redes A&D{/title}
+{#description}Lição de encapsulamento da Academia: escreva uma mensagem, escolha TCP ou UDP e veja cada camada somar o seu cabeçalho até o quadro Ethernet, com preenchimento e FCS.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/academia/core/css/academia.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5 acad-pagina" data-acad-licao="{licao.id}">
+    {#include shared/main_menu.html activeMainMenu='academia' /}
+    {#include academia/core/cabecalho-licao.html /}
+
+    <div class="acad-etapas">
+        <section class="acad-etapa acad-etapa-larga acad-leitura" id="ler" aria-labelledby="ler-titulo">
+            <h2 class="acad-etapa-titulo" id="ler-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
+                Entenda
+            </h2>
+            <p class="acad-explica">Leia primeiro; depois veja a mensagem descendo a pilha e calcule o tamanho de um quadro.</p>
+            <div class="acad-leitura-texto">
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
+                    <p>Mandar uma mensagem pela rede envolve problemas diferentes: entregar ao programa certo, achar o caminho até
+                    o outro computador e passar o sinal pelo cabo ou pelo Wi-Fi. Cada problema é resolvido por uma
+                    <strong>camada</strong>. No modelo TCP/IP elas são: <strong>aplicação</strong>, <strong>transporte</strong>,
+                    <strong>rede</strong> (internet) e <strong>enlace</strong>. Cada camada coloca na frente da mensagem o seu
+                    <strong>cabeçalho</strong>, com o que ela precisa para trabalhar — isso se chama <strong>encapsulamento</strong>.</p>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
+                    <p>A mensagem da aplicação vira a carga do <strong>segmento</strong> de transporte, que soma <span class="acad-valor" translate="no">20</span> bytes de
+                    cabeçalho no TCP ou <span class="acad-valor" translate="no">8</span> no UDP. O segmento vira a carga do <strong>pacote</strong> IPv4, que soma
+                    <span class="acad-valor" translate="no">20</span> bytes. O pacote vira a carga do <strong>quadro</strong> Ethernet, que soma <span class="acad-valor" translate="no">14</span> bytes na frente e
+                    <span class="acad-valor" translate="no">4</span> no fim (o FCS, que serve para detectar erro de transmissão).</p>
+                    <p>A Ethernet exige que a carga do quadro tenha no mínimo <span class="acad-valor" translate="no">46</span> bytes; se tiver menos, completa com
+                    <strong>preenchimento</strong>. Por isso o menor quadro tem <span class="acad-valor" translate="no">64</span> bytes (<span class="acad-valor" translate="no">14 + 46 + 4</span>).</p>
+                    <p>Exemplo: a mensagem "Oi" (2 bytes) por TCP: <span class="acad-valor" translate="no">2 + 20 = 22</span> no segmento, <span class="acad-valor" translate="no">22 + 20 = 42</span> no
+                    pacote; como 42 é menor que 46, entram <span class="acad-valor" translate="no">4</span> bytes de preenchimento; o quadro fica com
+                    <span class="acad-valor" translate="no">14 + 46 + 4 = 64</span> bytes.</p>
+                    <p>As contas da lição usam os cabeçalhos mínimos. Na vida real o TCP e o IPv4 podem levar opções (até 40
+                    bytes em cada um, e aí o cabeçalho chega a 60 bytes), e o preâmbulo da Ethernet, que vem antes do quadro, não entra nessa conta.</p>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
+                    <ul>
+                        <li>Esquecer os <span class="acad-valor" translate="no">4</span> bytes do FCS no fim do quadro.</li>
+                        <li>Pôr preenchimento quando a carga já passa de 46 bytes — ele só existe para completar o mínimo.</li>
+                        <li>Contar letras em vez de bytes: em UTF-8 uma letra acentuada, como <span class="acad-valor" translate="no">é</span>, ocupa <span class="acad-valor" translate="no">2</span> bytes.</li>
+                    </ul>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
+                    <ul>
+                        <li>TCP <span class="acad-valor" translate="no">20</span> · UDP <span class="acad-valor" translate="no">8</span> · IPv4 <span class="acad-valor" translate="no">20</span> · Ethernet <span class="acad-valor" translate="no">14 + 4</span>.</li>
+                        <li>Carga mínima do quadro <span class="acad-valor" translate="no">46</span>; quadro mínimo <span class="acad-valor" translate="no">64</span> bytes.</li>
+                    </ul>
+                </section>
+            </div>
+        </section>
+
+        <section class="acad-etapa" id="ver" aria-labelledby="ver-titulo">
+            <h2 class="acad-etapa-titulo" id="ver-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span>
+                Ver
+            </h2>
+            <p class="acad-explica">
+                Cada camada embrulha o que recebeu da de cima com o próprio cabeçalho. O transporte põe
+                <span class="acad-valor" translate="no">20</span> bytes (TCP) ou <span class="acad-valor" translate="no">8</span>
+                (UDP); o IPv4, <span class="acad-valor" translate="no">20</span>; a Ethernet,
+                <span class="acad-valor" translate="no">14</span> na frente e <span class="acad-valor" translate="no">4</span>
+                de FCS no fim — e completa com preenchimento se a carga do quadro não chegar a
+                <span class="acad-valor" translate="no">46</span> bytes.
+            </p>
+            <div id="ver-animacao">
+                <div class="acad-pilha" id="ver-pilha" aria-label="As camadas do exemplo"></div>
+                {#include academia/core/controles-animacao.html /}
+            </div>
+        </section>
+
+        <section class="acad-etapa" id="mexer" aria-labelledby="mexer-titulo">
+            <h2 class="acad-etapa-titulo" id="mexer-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">touch_app</span>
+                Mexer
+            </h2>
+            <div class="acad-campo">
+                <label for="mexer-mensagem">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">chat</span>
+                    Mensagem da aplicação
+                </label>
+                <textarea id="mexer-mensagem" aria-describedby="mexer-mensagem-eco" class="form-control" rows="2" maxlength="1000" data-history="off"
+                          title="Escreva qualquer texto; acento ocupa mais de um byte em UTF-8">Oi</textarea>
+                <span class="acad-eco" id="mexer-mensagem-eco"></span>
+            </div>
+            <div class="acad-campo">
+                <label for="mexer-transporte">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_horiz</span>
+                    Transporte
+                </label>
+                <select id="mexer-transporte" class="form-select" title="Escolhe o protocolo de transporte e o tamanho do cabeçalho dele">
+                    <option value="TCP" selected>TCP (20 bytes de cabeçalho)</option>
+                    <option value="UDP">UDP (8 bytes de cabeçalho)</option>
+                </select>
+            </div>
+            <div class="acad-pilha" id="mexer-pilha" aria-label="As camadas da sua mensagem"></div>
+            <dl class="acad-resultado">
+                <div><dt>Carga</dt><dd id="mexer-carga" translate="no">0</dd></div>
+                <div><dt>Segmento</dt><dd id="mexer-segmento" translate="no">0</dd></div>
+                <div><dt>Pacote IPv4</dt><dd id="mexer-pacote" translate="no">0</dd></div>
+                <div><dt>Preenchimento</dt><dd id="mexer-preenchimento" translate="no">0</dd></div>
+                <div><dt>Quadro Ethernet</dt><dd id="mexer-quadro" translate="no">0</dd></div>
+            </dl>
+        </section>
+
+        <section class="acad-etapa acad-etapa-larga" id="provar" aria-labelledby="provar-titulo">
+            <h2 class="acad-etapa-titulo" id="provar-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span>
+                Provar
+            </h2>
+            <p class="acad-pergunta" id="provar-pergunta"></p>
+            <form id="provar-form" class="row g-3 align-items-end" novalidate>
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="provar-resposta">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">edit</span>
+                        <span>Tamanho do quadro, em bytes</span>
+                    </label>
+                    <input id="provar-resposta" aria-describedby="provar-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="16" title="Some todas as camadas, do cabeçalho Ethernet ao FCS">
+                </div>
+                <div class="col-12 col-md-6 d-flex flex-wrap gap-2 align-items-center">
+                    <button type="submit" class="aed-btn aed-btn-teal" title="Confere a sua resposta">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">check_circle</span>
+                        <span>Conferir</span>
+                    </button>
+                    <button type="button" class="aed-btn aed-btn-neutral" id="provar-outra"
+                            title="Troca por outra pergunta, sem contar tentativa">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">casino</span>
+                        <span>Outra pergunta</span>
+                    </button>
+                </div>
+            </form>
+            <span class="acad-eco d-block mt-1" id="provar-eco"></span>
+            <div class="acad-feedback" id="provar-feedback" aria-live="polite"></div>
+            <div class="acad-placar" id="provar-placar"></div>
+        </section>
+    </div>
+
+    {#include academia/core/rodape-licao.html /}
+</div>
+{/content}
+{#extraScripts}
+<script src="/academia/core/js/normalizador.js?v=20261002b"></script>
+<script src="/academia/core/js/motor.js?v=20261002b"></script>
+<script src="/academia/core/js/progresso.js?v=20261002b"></script>
+<script src="/academia/core/js/niveis.js?v=20261002b"></script>
+<script src="/academia/core/js/sinais.js?v=20261002b"></script>
+<script src="/academia/fundamentos/js/contas-fundamentos.js?v=20261002b"></script>
+<script src="/academia/fundamentos/js/camadas.js?v=20261002b"></script>
+{/extraScripts}
+{/include}

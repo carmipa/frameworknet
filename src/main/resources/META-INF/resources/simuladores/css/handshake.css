@@ -1,0 +1,142 @@
+/* Simulador de handshake TCP (sub-aba do Tráfego). */
+
+.hs-estados {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 1.4rem 0 0.6rem;
+}
+
+.hs-endpoint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.08));
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.02);
+    flex: 1 1 12rem;
+}
+
+.hs-endpoint .material-symbols-outlined {
+    color: var(--aed-teal, #2dd4bf);
+}
+
+.hs-endpoint-nome {
+    font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
+    color: var(--aed-text, #eef2f8);
+}
+
+.hs-estado-chip {
+    margin-left: auto;
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    font-size: 0.78rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 0.4rem;
+    color: var(--aed-teal, #2dd4bf);
+    background: rgba(45, 212, 191, 0.1);
+    border: 1px solid rgba(45, 212, 191, 0.35);
+    transition: all 0.2s ease;
+}
+
+/* ---- Diagrama de sequência ---- */
+.hs-diagrama {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.8rem;
+    /* pista central entre cliente (esq.) e servidor (dir.) */
+    border-left: 2px dashed rgba(255, 255, 255, 0.08);
+    border-right: 2px dashed rgba(255, 255, 255, 0.08);
+    padding: 0.5rem clamp(0.5rem, 4%, 2rem);
+}
+
+.hs-passo {
+    display: grid;
+    grid-template-columns: minmax(9rem, 40%) 1fr;
+    gap: 0.3rem 1rem;
+    align-items: center;
+    padding: 0.5rem 0;
+    opacity: 0.25;
+    filter: grayscale(0.6);
+    transition: opacity 0.35s ease, filter 0.35s ease;
+}
+
+.hs-passo.revelado {
+    opacity: 1;
+    filter: none;
+}
+
+.hs-passo.para-cliente {
+    grid-template-columns: minmax(9rem, 40%) 1fr;
+    direction: rtl;
+}
+
+.hs-passo.para-cliente .hs-texto {
+    direction: ltr;
+}
+
+.hs-seta {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-width: 0;
+}
+
+.hs-flags {
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    font-size: .75rem;
+    font-weight: 700;
+    padding: 0.12rem 0.5rem;
+    border-radius: 62.4375rem;
+    white-space: nowrap;
+}
+
+.hs-seta.syn .hs-flags { color: #0a0e16; background: #2dd4bf; }
+.hs-seta.ack .hs-flags { color: #0a0e16; background: #6366f1; }
+.hs-seta.dados .hs-flags { color: #0a0e16; background: #f59e0b; }
+.hs-seta.fin .hs-flags { color: #0a0e16; background: #f43f5e; }
+
+.hs-linha {
+    flex: 1 1 auto;
+    height: .125rem;
+    background: currentColor;
+    opacity: 0.5;
+    min-width: 1.5rem;
+}
+
+.hs-seta.syn { color: #2dd4bf; }
+.hs-seta.ack { color: #6366f1; }
+.hs-seta.dados { color: #f59e0b; }
+.hs-seta.fin { color: #f43f5e; }
+
+.hs-ponta {
+    font-size: 0.8rem;
+}
+
+.hs-seqack {
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    font-size: 0.76rem;
+    color: var(--aed-text-secondary, #8b97ad);
+}
+
+.hs-texto strong {
+    color: var(--aed-text, #eef2f8);
+    font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
+    font-size: 0.92rem;
+}
+
+.hs-desc {
+    color: var(--aed-text-faint, #5b6679);
+    font-size: 0.82rem;
+    margin-top: 0.1rem;
+}
+
+@media (max-width: 40em) {
+    .hs-passo,
+    .hs-passo.para-cliente {
+        grid-template-columns: 1fr;
+        direction: ltr;
+    }
+}

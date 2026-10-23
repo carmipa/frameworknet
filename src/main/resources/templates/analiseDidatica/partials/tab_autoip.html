@@ -1,0 +1,26 @@
+<form method="POST" class="row g-3 calc-form" data-tab-form="autoip">
+    <input type="hidden" name="tab" value="autoip">
+    <div class="col-lg-8">
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Endereço IPv4</label>
+        <input type="text" name="ip" class="form-control input-ipv4 bg-dark text-light border-secondary {#if invalidFields.contains('ip')}is-invalid{/if}"
+               placeholder="Ex.: 172.19.44.116" value="{ipPre}" inputmode="text" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="col-lg-2">
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Régua</label>
+        <select aria-label="Régua" name="regua_count" class="form-select bg-dark text-light border-secondary">
+            <option value="5" {#if reguaCountPre == '5'}selected{/if}>5</option>
+            <option value="10" {#if reguaCountPre == '10'}selected{/if}>10</option>
+            <option value="15" {#if reguaCountPre == '15'}selected{/if}>15</option>
+            <option value="25" {#if reguaCountPre == '25'}selected{/if}>25</option>
+            <option value="50" {#if reguaCountPre == '50'}selected{/if}>50</option>
+            <option value="100" {#if reguaCountPre == '100'}selected{/if}>100</option>
+        </select>
+    </div>
+    <div class="col-lg-2 tab-actions d-grid gap-2">
+        <button type="submit" name="modo" value="autoip" class="aed-btn aed-btn-execute w-100"
+                data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Executar: descobrir automaticamente o melhor prefixo para o IP informado">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Executar
+        </button>
+    </div>
+</form>

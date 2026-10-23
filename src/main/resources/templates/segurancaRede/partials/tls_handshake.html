@@ -1,0 +1,34 @@
+<div class="w-100">
+    <h3 class="h5 d-flex flex-wrap align-items-center gap-2 text-white mb-1">
+        <span class="material-symbols-outlined" translate="no" aria-hidden="true">handshake</span> {hs.titulo}
+        {#if hs.sucesso}
+        <span class="badge bg-success">conexão estabelecida</span>
+        {#else}
+        <span class="badge bg-danger">handshake abortado</span>
+        {/if}
+    </h3>
+    <p class="small text-secondary mb-3">{hs.desfecho}</p>
+
+    <div class="d-flex flex-column gap-2">
+        {#for p in hs.passos}
+        <div class="p-2 rounded" style="background-color: rgba(0,0,0,0.2);{#if p.falha} border-left: 3px solid #f87171;{/if}">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="text-muted small">{p.ordem}</span>
+                <span class="badge {#if p.remetente == 'CLIENTE'}bg-info text-dark{#else}bg-secondary{/if}">{p.remetente}</span>
+                <strong class="text-white">{p.mensagem}</strong>
+                {#if p.cifrado}
+                <span class="badge bg-dark border border-secondary" title="já viaja sob as chaves de sessão">
+                    <span class="material-symbols-outlined" style="font-size: 0.9rem; vertical-align: middle;" translate="no" aria-hidden="true">lock</span> cifrado
+                </span>
+                {#else}
+                <span class="badge bg-warning text-dark" title="ainda em texto claro">
+                    <span class="material-symbols-outlined" style="font-size: 0.9rem; vertical-align: middle;" translate="no" aria-hidden="true">lock_open</span> claro
+                </span>
+                {/if}
+                {#if p.falha}<span class="resultado-deny fw-bold">✕ aborta aqui</span>{/if}
+            </div>
+            <div class="text-muted small mt-1">{p.descricao}</div>
+        </div>
+        {/for}
+    </div>
+</div>

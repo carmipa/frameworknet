@@ -1,0 +1,81 @@
+<div class="aed-card card-tech loc-nota mb-4" role="note">
+    <span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span>
+    <div>
+        <strong>Encapsulamento camada a camada.</strong>
+        Digite uma mensagem de aplicação e veja-a ser <strong>embrulhada</strong> pelo modelo TCP/IP
+        (Aplicação → Transporte → Rede → Enlace), cada camada somando seu cabeçalho até virar um
+        <em>quadro</em> Ethernet. No destino, o processo se inverte (desencapsulamento).
+    </div>
+</div>
+
+<form id="form-encap" class="encap-form" autocomplete="off"
+      hx-post="/simuladores/api/encapsular"
+      hx-target="#encap-resultado"
+      hx-swap="innerHTML"
+      hx-disabled-elt="find button[type='submit']">
+    <div class="row g-3">
+        <div class="col-12">
+            <label class="form-label small text-secondary mb-1" for="encap-msg"><span class="material-symbols-outlined" aria-hidden="true" translate="no">chat</span> Mensagem da aplicação</label>
+            <input type="text" id="encap-msg" name="mensagem" class="form-control bg-dark text-light border-secondary"
+                   maxlength="512" value="GET / HTTP/1.1" placeholder="ex.: GET / HTTP/1.1">
+            <div class="form-text aed-ajuda">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
+                <span>O que a aplicação quer enviar (o "recheio"). <strong>Exemplos:</strong>
+                <code translate="no">GET / HTTP/1.1</code> (um pedido de página), <code translate="no">Olá, servidor!</code>.
+                Este texto é o que as camadas abaixo vão embrulhar.</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <label class="form-label small text-secondary mb-1" for="encap-transporte"><span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_horiz</span> Transporte</label>
+            <select id="encap-transporte" name="transporte" class="form-select bg-dark text-light border-secondary">
+                <option value="TCP" selected>TCP</option>
+                <option value="UDP">UDP</option>
+            </select>
+        </div>
+        <div class="col-6 col-md-3">
+            <label class="form-label small text-secondary mb-1" for="encap-porta-origem"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span> Porta origem</label>
+            <input type="text" id="encap-porta-origem" name="portaOrigem" class="form-control bg-dark text-light border-secondary"
+                   inputmode="numeric" value="51000" placeholder="51000">
+        </div>
+        <div class="col-6 col-md-3">
+            <label class="form-label small text-secondary mb-1" for="encap-porta-destino"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span> Porta destino</label>
+            <input type="text" id="encap-porta-destino" name="portaDestino" class="form-control bg-dark text-light border-secondary"
+                   inputmode="numeric" value="80" placeholder="80">
+        </div>
+        <div class="col-6 col-md-3">
+            <label class="form-label small text-secondary mb-1" for="encap-ip-origem"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span> IP origem</label>
+            <input type="text" id="encap-ip-origem" name="ipOrigem" class="form-control bg-dark text-light border-secondary"
+                   value="192.168.0.10" placeholder="192.168.0.10">
+        </div>
+        <div class="col-12 col-md-3">
+            <label class="form-label small text-secondary mb-1" for="encap-ip-destino"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span> IP destino</label>
+            <input type="text" id="encap-ip-destino" name="ipDestino" class="form-control bg-dark text-light border-secondary"
+                   value="142.250.79.14" placeholder="142.250.79.14">
+        </div>
+    </div>
+    <div class="form-text aed-ajuda mt-2">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
+        <span><strong>Transporte:</strong> TCP (confiável, ex.: web) ou UDP (rápido, ex.: DNS/vídeo).
+        <strong>Portas</strong> vão de 1 a 65535 — origem é alta e aleatória (ex.: <code translate="no">51000</code>),
+        destino é a do serviço (<code translate="no">80</code> web, <code translate="no">443</code> HTTPS, <code translate="no">53</code> DNS).
+        <strong>IPs</strong> no formato <code translate="no">a.b.c.d</code> (origem = você; destino = o servidor).
+        Na dúvida, use o botão <strong>"Exemplo DNS (UDP/53)"</strong>.</span>
+    </div>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+        <button type="submit" class="aed-btn aed-btn-teal"
+                title="Executar o encapsulamento da mensagem pelas 4 camadas do modelo TCP/IP">
+            <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Encapsular
+        </button>
+        <button type="button" id="encap-exemplo-dns" class="aed-btn aed-btn-neutral"
+                title="Carregar um exemplo de consulta DNS sobre UDP porta 53">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Exemplo DNS (UDP/53)
+        </button>
+        <button type="button" id="encap-limpar" class="aed-btn aed-btn-danger" data-limpar
+                title="Esvaziar os campos e apagar a visualização de camadas de encapsulamento">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">delete_sweep</span> Limpar
+        </button>
+    </div>
+</form>
+
+<div id="encap-resultado" aria-live="polite"></div>

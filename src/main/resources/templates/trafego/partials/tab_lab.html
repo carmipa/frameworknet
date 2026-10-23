@@ -1,0 +1,27 @@
+<div class="aed-card card-tech loc-nota mb-4" role="note">
+    <span class="material-symbols-outlined" aria-hidden="true" translate="no">biotech</span>
+    <div>
+        <strong>Laboratório didático (simulado).</strong>
+        Compare padrões de tráfego <strong>DNS</strong> e <strong>ICMP</strong> normais e suspeitos
+        (tunneling), veja o indicador de cada suspeita e por que o mesmo sinal pode ser um falso positivo.
+        Os dados são fictícios; nada é capturado da rede.
+    </div>
+</div>
+
+<div class="aed-mode-grid mb-3" role="group" aria-label="Cenários do laboratório">
+    {#for c in cenariosLab}
+    <button type="button" class="aed-mode-btn"
+            hx-get="/trafego/api/lab?cenario={c.id}"
+            hx-target="#lab-resultado" hx-swap="innerHTML"
+            title="Analisar: {c.titulo}">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">biotech</span><span>{c.titulo}</span>
+    </button>
+    {/for}
+</div>
+
+<div id="lab-resultado" aria-live="polite">
+    <div class="text-muted text-center d-flex flex-column align-items-center justify-content-center py-5">
+        <span class="material-symbols-outlined" style="font-size: 4rem; opacity: 0.2;" translate="no" aria-hidden="true">biotech</span>
+        <p class="mt-3">Escolha um cenário acima para comparar tráfego normal e suspeito.</p>
+    </div>
+</div>

@@ -1,0 +1,247 @@
+{
+  "resumo": "O Modelo OSI (Open Systems Interconnection), padronizado pela ISO em 1984, divide a comunicação em rede em sete camadas empilhadas, cada uma com uma responsabilidade única e bem definida. A ideia central é a separação de responsabilidades: em vez de um único bloco monolítico cuidar de tudo (do cabo elétrico até a tela do navegador), cada camada resolve um problema específico e oferece um serviço para a camada imediatamente acima. Ao enviar dados, a informação desce a pilha — da Aplicação (7) até a Física (1) — ganhando um cabeçalho a cada nível (encapsulamento); ao receber, os dados sobem a pilha, e cada camada remove o cabeçalho que a sua equivalente colocou do outro lado. Esse é o princípio da comunicação par a par (peer-to-peer): a camada N do emissor conversa logicamente com a camada N do receptor, como se houvesse um canal direto entre elas, mesmo que fisicamente tudo trafegue pelo cabo na camada 1. O OSI é, na prática, mais um modelo didático e de referência do que uma implementação (a internet real usa a pilha TCP/IP, mais enxuta), mas continua sendo a linguagem comum para diagnosticar problemas: saber em qual camada a falha ocorre transforma um \"a internet não funciona\" vago em um problema localizado e resolvível.",
+  "ficha": [
+    {
+      "rotulo": "Modelo",
+      "valor": "OSI - Open Systems Interconnection",
+      "dica": "Modelo de referência, não uma implementação real."
+    },
+    {
+      "rotulo": "Número de camadas",
+      "valor": "7 (da Física até a Aplicação)"
+    },
+    {
+      "rotulo": "Padronizado por",
+      "valor": "ISO, em 1984 (ISO 7498; revisada como ISO/IEC 7498-1:1994)"
+    },
+    {
+      "rotulo": "Mnemônico (baixo para cima)",
+      "valor": "Faça Este Rango Todo Sábado A Anoitecer",
+      "dica": "Física, Enlace, Rede, Transporte, Sessão, Apresentação, Aplicação."
+    },
+    {
+      "rotulo": "Contraparte prática",
+      "valor": "Pilha TCP/IP, com 4 a 5 camadas",
+      "dica": "É o modelo que a internet realmente usa no dia a dia."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Separação de responsabilidades",
+      "icone": "layers",
+      "texto": "Cada camada resolve um único problema e não precisa saber como as outras funcionam por dentro. A camada de Transporte garante a entrega confiável sem se importar se o meio físico é cabo de cobre, fibra ou Wi-Fi. Isso permite trocar uma tecnologia (por exemplo, migrar de Ethernet para Wi-Fi, o que troca as camadas 1 e 2) sem reescrever tudo acima.",
+      "destaque": "Uma camada, uma responsabilidade."
+    },
+    {
+      "titulo": "Comunicação par a par (peer-to-peer)",
+      "icone": "sync_alt",
+      "texto": "A camada N do emissor conversa logicamente com a camada N do receptor. O cabeçalho que a camada de Rede (3) do emissor escreve só é lido e removido pela camada de Rede (3) do destino. Cada nível enxerga um canal direto com seu par do outro lado, mesmo que, fisicamente, tudo desça até o cabo e volte a subir.",
+      "destaque": "Camada 3 fala com camada 3, camada 4 com camada 4."
+    },
+    {
+      "titulo": "Encapsulamento: os dados descem a pilha",
+      "icone": "download",
+      "texto": "Ao enviar, a mensagem parte da Aplicação (7) e desce até a Física (1). Em cada camada, um cabeçalho é adicionado ao dado que veio de cima, como envelopes dentro de envelopes. A unidade de dados muda de nome ao longo do caminho: mensagem, segmento (Transporte), pacote (Rede), quadro (Enlace) e bits (Física).",
+      "destaque": "Enviar = envelopar; cada camada acrescenta seu cabeçalho."
+    },
+    {
+      "titulo": "Desencapsulamento: os dados sobem a pilha",
+      "icone": "upload",
+      "texto": "No destino, o processo se inverte: os bits chegam na Física (1) e sobem até a Aplicação (7). Cada camada abre o envelope correspondente, lê e remove o cabeçalho colocado pela sua equivalente no emissor, e entrega o conteúdo para a camada de cima. É o espelho exato do encapsulamento.",
+      "destaque": "Receber = desenvelopar, camada por camada."
+    },
+    {
+      "titulo": "Abstração e interoperabilidade",
+      "icone": "hub",
+      "texto": "Como cada camada oferece uma interface padronizada para a de cima, fabricantes diferentes conseguem criar equipamentos e softwares que funcionam juntos. Um roteador de uma marca fala com a placa de rede de outra porque ambos respeitam o contrato de cada camada. Sem esse padrão comum, cada rede seria uma ilha incompatível.",
+      "destaque": "Padrão comum = equipamentos de fabricantes diferentes se entendem."
+    },
+    {
+      "titulo": "Diagnóstico por camada",
+      "icone": "troubleshoot",
+      "texto": "O maior valor prático do OSI é transformar um problema vago em um problema localizado. Perguntar 'em qual camada isso quebrou?' guia a investigação de baixo para cima: o cabo está conectado (1)? Há endereço MAC/IP (2 e 3)? A porta responde (4)? O certificado é válido (6)? O serviço está no ar (7)?",
+      "destaque": "Isolar a camada da falha é metade da solução."
+    }
+  ],
+  "diagrama": {
+    "titulo": "As 7 camadas OSI: dados descem no emissor e sobem no receptor",
+    "definicao": "flowchart TB\n    subgraph EMISSOR[\"EMISSOR - dados descem a pilha\"]\n        direction TB\n        E7[\"7 Aplicação<br/>HTTP, DNS, SMTP\"]\n        E6[\"6 Apresentação<br/>TLS, JPEG, ASCII\"]\n        E5[\"5 Sessão<br/>RPC, NetBIOS\"]\n        E4[\"4 Transporte<br/>TCP, UDP\"]\n        E3[\"3 Rede<br/>IP, ICMP\"]\n        E2[\"2 Enlace<br/>Ethernet, MAC\"]\n        E1[\"1 Física<br/>Cabo, Wi-Fi, bits\"]\n        E7 --> E6 --> E5 --> E4 --> E3 --> E2 --> E1\n    end\n    E1 --> MEIO{{\"Meio físico<br/>cabo / rádio / fibra\"}}\n    MEIO --> R1\n    subgraph RECEPTOR[\"RECEPTOR - dados sobem a pilha\"]\n        direction TB\n        R1[\"1 Física<br/>bits recebidos\"]\n        R2[\"2 Enlace<br/>quadro\"]\n        R3[\"3 Rede<br/>pacote\"]\n        R4[\"4 Transporte<br/>segmento\"]\n        R5[\"5 Sessão\"]\n        R6[\"6 Apresentação\"]\n        R7[\"7 Aplicação<br/>mensagem entregue\"]\n        R1 --> R2 --> R3 --> R4 --> R5 --> R6 --> R7\n    end",
+    "legenda": "No emissor a mensagem parte da Aplicação (7) e desce até a Física (1), ganhando um cabeçalho em cada camada (encapsulamento). Ela atravessa o meio físico como bits e, no receptor, sobe da Física (1) até a Aplicação (7), sendo desenvelopada camada por camada. As setas verticais mostram o caminho real dos dados; a comunicação par a par (camada N com camada N) é lógica: cada nível só entende o cabeçalho escrito pela sua equivalente do outro lado."
+  },
+  "tabelas": [
+    {
+      "titulo": "As 7 camadas OSI: função, unidade de dados e exemplos",
+      "colunas": [
+        "#",
+        "Camada",
+        "Função principal",
+        "Unidade (PDU)",
+        "Exemplos"
+      ],
+      "linhas": [
+        [
+          "7",
+          "Aplicação",
+          "Interface com o usuário e os aplicativos de rede; é onde os programas pedem serviços de rede",
+          "Dados / Mensagem",
+          "HTTP, HTTPS, DNS, SMTP, FTP, SSH"
+        ],
+        [
+          "6",
+          "Apresentação",
+          "Traduz, criptografa e comprime os dados para um formato comum entre as pontas",
+          "Dados",
+          "TLS/SSL, JPEG, PNG, ASCII, UTF-8"
+        ],
+        [
+          "5",
+          "Sessão",
+          "Abre, mantém e encerra as sessões (conversas) entre as aplicações",
+          "Dados",
+          "RPC, NetBIOS, sockets, PPTP"
+        ],
+        [
+          "4",
+          "Transporte",
+          "Entrega fim a fim, controle de fluxo, ordenação e confiabilidade; usa portas",
+          "Segmento (TCP) / Datagrama (UDP)",
+          "TCP, UDP, portas 80/443"
+        ],
+        [
+          "3",
+          "Rede",
+          "Endereçamento lógico (IP) e roteamento entre redes diferentes",
+          "Pacote",
+          "IP, ICMP, roteadores, IPsec"
+        ],
+        [
+          "2",
+          "Enlace",
+          "Endereçamento físico (MAC) e entrega quadro a quadro no mesmo enlace",
+          "Quadro",
+          "Ethernet, Wi-Fi (802.11), switches, ARP"
+        ],
+        [
+          "1",
+          "Física",
+          "Transmite os bits crus como sinais elétricos, luz ou rádio pelo meio",
+          "Bit",
+          "Cabo UTP, fibra óptica, Wi-Fi, hub, RJ45"
+        ]
+      ]
+    },
+    {
+      "titulo": "Mnemônicos para memorizar a ordem das camadas",
+      "colunas": [
+        "Sentido",
+        "Frase",
+        "Iniciais"
+      ],
+      "linhas": [
+        [
+          "De baixo para cima (1 a 7)",
+          "Faça Este Rango Todo Sábado A Anoitecer",
+          "F-E-R-T-S-A-A"
+        ],
+        [
+          "De cima para baixo (7 a 1)",
+          "Alunos Aplicados Sempre Tiram Raízes Em Física",
+          "A-A-S-T-R-E-F"
+        ],
+        [
+          "Em inglês (1 a 7)",
+          "Please Do Not Throw Sausage Pizza Away",
+          "P-D-N-T-S-P-A"
+        ]
+      ]
+    },
+    {
+      "titulo": "OSI x TCP/IP: como o modelo teórico mapeia na prática",
+      "colunas": [
+        "Camadas OSI",
+        "Camada TCP/IP correspondente",
+        "Exemplos práticos"
+      ],
+      "linhas": [
+        [
+          "7 Aplicação + 6 Apresentação + 5 Sessão",
+          "Aplicação",
+          "HTTP, DNS, TLS, SMTP"
+        ],
+        [
+          "4 Transporte",
+          "Transporte",
+          "TCP, UDP"
+        ],
+        [
+          "3 Rede",
+          "Internet",
+          "IP, ICMP"
+        ],
+        [
+          "2 Enlace + 1 Física",
+          "Acesso à rede (Enlace/Física)",
+          "Ethernet, Wi-Fi, cabos"
+        ]
+      ]
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Inspecionar as camadas 1 e 2 (Física e Enlace)",
+      "cenario": "Confirmar se a interface está ativa (link físico) e ver seu endereço MAC, que é o endereçamento da camada 2.",
+      "comandos": "# Windows\nipconfig /all\nGet-NetAdapter\n\n# Linux / macOS\nip link show\nip -s link",
+      "explicacao": "O estado 'UP' e a existência de link indicam que a camada 1 está funcionando (há sinal no meio). O endereço físico (MAC) exibido pertence à camada 2 (Enlace). Se a interface aparece como 'DOWN' ou 'media disconnected', o problema está na base da pilha: cabo, porta ou adaptador."
+    },
+    {
+      "titulo": "Testar a camada 3 (Rede) com IP e roteamento",
+      "cenario": "Verificar conectividade lógica até um destino e mapear o caminho (rotas) que o pacote percorre entre redes.",
+      "comandos": "# Alcance na camada 3 (usa ICMP)\nping 8.8.8.8\n\n# Caminho salto a salto (roteamento)\ntracert 8.8.8.8      # Windows\ntraceroute 8.8.8.8   # Linux / macOS\n\n# Ver a tabela de rotas e o gateway\nip route             # Linux\nroute print          # Windows",
+      "explicacao": "O ping usa ICMP, um protocolo da camada 3, e prova que há endereçamento IP e rota até o destino. Pingar o IP numérico (8.8.8.8) em vez do nome isola a camada 3 da camada 7: se o IP responde mas o nome não, o problema é DNS (aplicação), não roteamento."
+    },
+    {
+      "titulo": "Testar as camadas 4 e 7 (Transporte e Aplicação)",
+      "cenario": "Descobrir se uma porta específica está aberta (camada 4) e se o serviço de fato responde no protocolo esperado (camada 7).",
+      "comandos": "# Camada 4: a porta 443 aceita conexão?\nTest-NetConnection google.com -Port 443   # Windows\nnc -vz google.com 443                      # Linux / macOS\n\n# Camada 7: o serviço HTTP responde?\ncurl -v https://google.com\n\n# Portas em uso na máquina local\nnetstat -ano       # Windows\nss -tulpn          # Linux",
+      "explicacao": "Abrir a conexão TCP na porta (Test-NetConnection / nc) valida a camada 4: existe um socket escutando. Já o curl -v sobe até a camada 7, mostrando o handshake TLS (camada 6) e a resposta HTTP. Assim você separa 'a porta está fechada' (4) de 'a porta abre mas o serviço erra' (7)."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Nenhum link de rede; interface aparece como 'desconectada'",
+      "causa_provavel": "Camada 1 (Física): cabo solto ou rompido, porta do switch morta, adaptador desligado ou Wi-Fi fora de alcance.",
+      "leitura": "Comece sempre pela base da pilha. Sem sinal no meio físico, nada acima funciona.",
+      "comando": "ip link show / Get-NetAdapter"
+    },
+    {
+      "sintoma": "Tem link, mas não pega endereço ou não acha o gateway na rede local",
+      "causa_provavel": "Camada 2 (Enlace) ou DHCP: conflito de MAC, VLAN errada, tabela ARP corrompida ou switch bloqueando a porta.",
+      "leitura": "O sinal chega (camada 1 ok), mas o quadro não é entregue ao vizinho correto no mesmo enlace.",
+      "comando": "arp -a"
+    },
+    {
+      "sintoma": "Ping ao gateway funciona, mas não alcança a internet",
+      "causa_provavel": "Camada 3 (Rede): rota padrão ausente ou errada, IP fora da faixa, gateway incorreto ou roteamento quebrado.",
+      "leitura": "Endereçamento local ok, mas o pacote não encontra caminho para outras redes.",
+      "comando": "tracert 8.8.8.8"
+    },
+    {
+      "sintoma": "O site não carrega, mas o IP numérico responde ao ping",
+      "causa_provavel": "Camada 7 (Aplicação): falha de DNS. O nome não está sendo resolvido para IP.",
+      "leitura": "A rede (camada 3) funciona; quem falha é o serviço de nomes. Testar o IP direto isola a camada.",
+      "comando": "nslookup example.com"
+    },
+    {
+      "sintoma": "Conexão recusada ou fica pendurada ao acessar um serviço",
+      "causa_provavel": "Camada 4 (Transporte): porta fechada, serviço caído ou firewall bloqueando a porta específica.",
+      "leitura": "Há rota IP, mas não há socket escutando ou o firewall descarta o pacote antes do serviço.",
+      "comando": "Test-NetConnection host -Port 443"
+    },
+    {
+      "sintoma": "Navegador acusa erro de certificado ou de conexão segura",
+      "causa_provavel": "Camada 6 (Apresentação): certificado TLS expirado, inválido, cadeia incompleta ou relógio da máquina errado.",
+      "leitura": "A conexão TCP (camada 4) abre, mas a negociação de criptografia falha antes da aplicação trocar dados.",
+      "comando": "curl -v https://host"
+    }
+  ]
+}

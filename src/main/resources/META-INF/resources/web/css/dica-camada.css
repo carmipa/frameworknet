@@ -1,0 +1,83 @@
+/*
+ * Tooltip compartilhado (dica.css v1.2 copiado SEM edição) numa camada de cascata própria.
+ *
+ * Por que camada: o adaptador (web/js/field-tooltips.js) põe a classe .dica no próprio link ou botão que já
+ * tinha dica, em vez de embrulhá-lo — embrulhar quebraria o menu suspenso do Bootstrap (ele acha o menu pelo
+ * irmão do botão) e os seletores de filho direto (.input-group > ...). Fora de camada, o
+ * ".dica { display: inline-flex }" do canônico empataria em especificidade com ".nav-link { display: block }"
+ * e ganharia por ordem, mudando o layout de centenas de itens. Dentro da camada, qualquer regra do site
+ * (Bootstrap, app.css, aed-command-center.css) vence a do canônico — o canônico só decide onde o site não diz
+ * nada, que é o que ele precisa decidir (posição, visibilidade, foco, toque, Esc).
+ */
+@import url("/web/css/dica.css?v=20261022") layer(dica-canonica);
+
+/* Tema escuro do site: o balão segue as cores do design system (contraste 4,5:1 conferido no fundo #0b1220). */
+:root {
+    --dica-bg: #0b1220;
+    --dica-fg: #e6edf7;
+    --dica-gatilho: #5eead4;
+}
+
+.dica__texto {
+    border: 1px solid rgba(94, 234, 212, 0.35);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* Quando a classe .dica está no PRÓPRIO link ou botão (menu, item de lista, grupo de botões), o
+   ".dica:has(:focus-visible)" do canônico não enxerga o foco — :has() olha só os descendentes. Mesmo efeito,
+   respeitando o Esc (data-fechada) do canônico. */
+.dica:focus-visible:not([data-fechada]) > .dica__texto {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Dica de um CONTROLE (link, botão, item de menu) deixa o clique passar para o que está embaixo dela. Medido em
+   22/10/2026 no menu do celular: aberto o suspenso "IPv6", a dica dele cobria o item "Topologia" logo abaixo, e o
+   mouse que descia até ele caía DENTRO da dica (que é filha do botão "IPv6"), mantendo-a aberta — o clique em
+   "Topologia" nunca chegava. Só o "?" (dica__gatilho) continua com a dica alcançável pelo ponteiro (WCAG 1.4.13);
+   nos controles o texto segue no foco do teclado e na descrição lida pelo leitor de tela. */
+.dica:not(:has(> .dica__gatilho)) > .dica__texto {
+    pointer-events: none;
+}
+
+/* Envoltório de campo de formulário: ocupa a linha do bloco, como o próprio campo ocupava (form-control é 100%). */
+.dica.dica-bloco {
+    display: block;
+}
+
+/* Esc e começar a digitar DISPENSAM a dica (data-fechada), mesmo com o mouse parado sobre o campo. No dica.css
+   v1.2 a regra de mostrar no hover do campo tem especificidade maior que a de dispensar e vencia — a dica ficava
+   sobre o campo de baixo enquanto a pessoa digitava (WCAG 1.4.13; revisão de boa-fé, 22/10/2026). Fora da
+   camada, estas vencem qualquer regra do canônico. */
+.campo[data-fechada] .dica__texto,
+.dica[data-fechada] > .dica__texto {
+    visibility: hidden;
+    opacity: 0;
+}
+
+/* Menu aberto: a dica do botão que o abriu não fica por cima dos itens do próprio menu. */
+.dica[aria-expanded="true"] > .dica__texto,
+[aria-expanded="true"] > .dica > .dica__texto {
+    visibility: hidden;
+    opacity: 0;
+}
+
+/* Toque: o "hover" grudado depois do toque não mostra a dica de um CONTROLE (ela cobria os itens vizinhos do menu
+   do celular). No toque a dica de controle aparece pelo foco do teclado e no leitor de tela; o "?" segue abrindo
+   no toque, como no canônico. */
+@media (hover: none) {
+    .dica:not(:has(> .dica__gatilho)):not([data-aberta]):not(:focus-visible):not(:has(:focus-visible)) > .dica__texto {
+        visibility: hidden;
+        opacity: 0;
+    }
+}
+
+/* O gatilho que nasceu de um ícone de ajuda ("info") mantém o ícone do site dentro dele. */
+.dica__gatilho > .material-symbols-outlined {
+    font-size: 1.1em;
+}
+
+/* O "?" de títulos e cabeçalhos de coluna acompanha o texto em vez de empurrar a linha. */
+:is(h1, h2, h3, h4, h5, h6, th, label, legend) > .dica:last-child {
+    margin-inline-start: 0.25em;
+}

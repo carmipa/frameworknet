@@ -1,0 +1,43 @@
+{#include shared/base.html}
+{#title}Acesso administrativo | Framework de Redes A&D{/title}
+{#extraHead}<meta name="robots" content="noindex">{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='' /}
+    <div class="aed-card card-tech aed-admin-card">
+        <div class="aed-admin-intro">
+        <span class="aed-eyebrow aed-eyebrow-amber">Administração</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Acesso administrativo</h1>
+        <p class="small text-secondary mb-3">
+            Necessário apenas para <strong class="text-light">Exportação</strong> de dados sensíveis.
+            {#if !enforcementActive}
+            <span class="d-block mt-2 text-info">Proteção por API key desativada neste ambiente.</span>
+            {/if}
+        </p>
+
+        {#if erro}
+        <div class="alert alert-danger py-2 small">Chave inválida. Tente novamente.</div>
+        {/if}
+
+        </div>
+        <div class="aed-admin-acesso">
+        <form method="POST" action="/admin/login" class="problem-box p-3 border border-secondary rounded">
+            <input type="hidden" name="redirect" value="{redirect}">
+            <div class="mb-3">
+                <label class="form-label text-secondary small" for="admin-api-key"><span class="material-symbols-outlined" aria-hidden="true" translate="no">vpn_key</span> API key administrativa</label>
+                <input type="password" id="admin-api-key" name="api_key" class="form-control font-monospace"
+                       autocomplete="current-password" required {#if !enforcementActive}disabled{/if}>
+            </div>
+            <button type="submit" class="aed-btn aed-btn-amber w-100" {#if !enforcementActive}disabled{/if}>
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">login</span> Entrar
+            </button>
+        </form>
+
+        <p class="small text-secondary mt-3 mb-0">
+            Para scripts, envie o header <code class="text-info" translate="no">X-Admin-Api-Key</code> em cada requisição.
+        </p>
+        </div>
+    </div>
+</div>
+{/content}
+{/include}

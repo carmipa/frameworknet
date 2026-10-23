@@ -1,0 +1,71 @@
+{#include shared/base.html}
+{#title}Calculadora IPv6 (CIDR) | Framework de Redes A&D{/title}
+{#description}Calculadora IPv6: divide prefixos em sub-redes (contagem 2^n exata), deriva EUI-64/SLAAC a partir do MAC e gera prefixos ULA (RFC 4193) — sem broadcast nem a conta de hosts úteis do IPv4.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/calculadora/css/calculadora.css?v=20261023" />
+<link rel="stylesheet" href="/ipv6/css/ipv6.css?v=20261022" />
+{/extraHead}
+{#content}
+<div class="container py-4">
+    {#include shared/main_menu.html activeMainMenu=activeMainMenu /}
+
+    <header class="mb-4">
+        <h1 class="aed-title">
+            <span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">calculate</span>
+            Calculadora IPv6 (CIDR)
+        </h1>
+        <p class="aed-subtitle">
+            Divida prefixos em sub-redes, derive o endereço SLAAC (EUI-64) a partir do MAC e gere um
+            prefixo ULA privado. IPv6 conta <strong>endereços</strong> e <strong>sub-redes</strong> por
+            potência de 2 — sem broadcast e sem "hosts úteis = total − 2".
+        </p>
+    </header>
+
+    <div class="aed-card card-tech p-4 shadow ipv6-wrap" data-active-tab="dividir">
+        <span class="aed-eyebrow">Calculadora IPv6</span>
+        <div class="aed-mode-grid tab-nav mb-3" role="tablist">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dividir" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Sub-redes: divida um prefixo base no prefixo alvo e conte quantas cabem (2^n exato)">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_on</span><span>Sub-redes</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="eui64" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="EUI-64: derive o Interface ID e o endereço SLAAC a partir de um /64 + MAC">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">badge</span><span>EUI-64</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="ula" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="ULA: gere um prefixo privado fd00::/8 pseudo-aleatório (RFC 4193)">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">vpn_lock</span><span>ULA</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="sumarizar" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Sumarizar: supernet (menor prefixo comum), blocos mesclados e contenção">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">merge</span><span>Sumarizar</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="faixa" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Faixa → CIDR: converte uma faixa de endereços na lista mínima de prefixos">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">linear_scale</span><span>Faixa → CIDR</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="vlan" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="VLANs: uma LAN /64 por VLAN + gateway (SVI), trunk 802.1Q e CLI Cisco">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span><span>VLANs</span>
+            </button>
+        </div>
+
+        <div class="tab-panel" data-tab-panel="dividir">{#include ipv6/partials/tab_dividir.html /}</div>
+        <div class="tab-panel" data-tab-panel="eui64">{#include ipv6/partials/tab_eui64.html /}</div>
+        <div class="tab-panel" data-tab-panel="ula">{#include ipv6/partials/tab_ula.html /}</div>
+        <div class="tab-panel" data-tab-panel="sumarizar">{#include ipv6/partials/tab_sumarizar.html /}</div>
+        <div class="tab-panel" data-tab-panel="faixa">{#include ipv6/partials/tab_faixa.html /}</div>
+        <div class="tab-panel" data-tab-panel="vlan">{#include ipv6/partials/tab_vlan.html /}</div>
+    </div>
+</div>
+{/content}
+{#extraScripts}
+<script src="/ipv6/js/ipv6.js?v=20261002"></script>
+{/extraScripts}
+{/include}

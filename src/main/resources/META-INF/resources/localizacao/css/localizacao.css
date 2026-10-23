@@ -1,0 +1,355 @@
+/* Estilos do módulo Localização. Carregado só em templates/localizacao/index.html. */
+
+.loc-nota {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    padding: 1rem 1.2rem;
+    border-left: 3px solid var(--aed-teal, #2dd4bf);
+}
+
+.loc-nota .material-symbols-outlined {
+    color: var(--aed-teal, #2dd4bf);
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+.loc-nota strong {
+    color: var(--aed-text, #eef2f8);
+}
+
+.loc-forms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.25rem 3%;
+    margin-bottom: 4%;
+}
+
+.loc-forms form {
+    padding: 4% 5%;
+}
+
+/* Cards de CEP e GPS (fora do grid .loc-forms) precisam do mesmo respiro interno,
+   senão o rótulo/input encostam na borda e o botão "vaza" à direita. */
+.loc-cep-form {
+    padding: clamp(1rem, 4%, 1.6rem);
+}
+
+.loc-cep-form .loc-input-row {
+    max-width: 100%;
+}
+
+.loc-cep-form .loc-input-row .aed-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.loc-form-title {
+    font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
+    font-size: 1.05rem;
+    margin: 0.3rem 0 0.9rem;
+    color: var(--aed-text, #eef2f8);
+}
+
+.loc-input-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.loc-input-row .form-control {
+    flex: 1 1 10rem;
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+}
+
+.loc-resultado {
+    padding: 4% 5%;
+}
+
+.loc-result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 0.6rem 1.4rem;
+    margin-top: 0.6rem;
+}
+
+.loc-result-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--aed-border, rgba(255, 255, 255, 0.06));
+}
+
+.loc-result-item .k {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--aed-text-faint, #5b6679);
+}
+
+.loc-result-item .v {
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    color: var(--aed-text, #eef2f8);
+    word-break: break-word;
+}
+
+.loc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 62.4375rem;
+    font-size: 0.78rem;
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.12));
+}
+
+.loc-alerta {
+    color: var(--aed-risk-attention, #f59e0b);
+    font-size: 0.85rem;
+    margin-top: 0.6rem;
+}
+
+.loc-erro {
+    color: var(--aed-risk-critical, #f43f5e);
+}
+
+/* Layout dividido do resultado GeoIP: relatório à esquerda, globo 3D à direita.
+   Especificidade de ID para vencer #geo-sucesso:not(.d-none){display:flow-root} em app.css. */
+#geo-sucesso.geo-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: stretch;
+}
+
+@media (max-width: 62em) {
+    #geo-sucesso.geo-split {
+        grid-template-columns: 1fr;
+    }
+}
+
+.geo-globe-wrap {
+    position: relative;
+    min-height: 26rem;
+    border-radius: var(--aed-radius-card, 0.75rem);
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 38%, #0b1b33 0%, #07101f 55%, #04070e 100%);
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.08));
+    margin-top: 1rem;
+}
+
+#geo-globe {
+    position: absolute;
+    inset: 0;
+}
+
+#geo-globe canvas {
+    display: block;
+    cursor: grab;
+}
+
+.geo-globe-cap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.4rem 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: .75rem;
+    color: #8fb4d8;
+    background: linear-gradient(180deg, rgba(4, 7, 14, 0), rgba(4, 7, 14, 0.85));
+    pointer-events: none;
+}
+
+.geo-globe-cap .material-symbols-outlined {
+    font-size: 1rem;
+}
+
+/* ---- Autoteste de vazamento de IP / privacidade ---- */
+.priv-verdict {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    padding: 0.9rem 1.1rem;
+    border-radius: var(--aed-radius-card, 0.75rem);
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.1));
+    margin-bottom: 1rem;
+}
+
+.priv-verdict .material-symbols-outlined { font-size: 1.6rem; flex-shrink: 0; }
+.priv-verdict.priv-ok { background: rgba(45, 212, 191, 0.08); border-color: rgba(45, 212, 191, 0.35); }
+.priv-verdict.priv-ok .material-symbols-outlined { color: #2dd4bf; }
+.priv-verdict.priv-warn { background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.35); }
+.priv-verdict.priv-warn .material-symbols-outlined { color: #f59e0b; }
+.priv-verdict.priv-risk { background: rgba(244, 63, 94, 0.08); border-color: rgba(244, 63, 94, 0.4); }
+.priv-verdict.priv-risk .material-symbols-outlined { color: #f43f5e; }
+
+.priv-alertas {
+    margin: 0.4rem 0 0;
+    padding-left: 1.1rem;
+    font-size: 0.85rem;
+    color: var(--aed-text-secondary, #8b97ad);
+}
+
+.priv-alertas code,
+.priv-cand code {
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    color: var(--aed-text, #eef2f8);
+    background: rgba(255, 255, 255, 0.06);
+    padding: 0 0.25rem;
+    border-radius: 0.25rem;
+}
+
+.priv-sec {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-transform: uppercase;
+    font-size: .75rem;
+    letter-spacing: 0.03em;
+    color: var(--aed-text-faint, #5b6679);
+    margin: 1.1rem 0 0.5rem;
+    border-bottom: 1px solid var(--aed-border, rgba(255, 255, 255, 0.07));
+    padding-bottom: 0.3rem;
+}
+
+.priv-sec .material-symbols-outlined { font-size: 1.05rem; }
+
+.priv-cands { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.priv-cand {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid var(--aed-border, rgba(255, 255, 255, 0.12));
+    font-size: 0.82rem;
+}
+
+.priv-cand span { color: var(--aed-text-secondary, #8b97ad); }
+.priv-cand.priv-ok { border-left-color: #2dd4bf; }
+.priv-cand.priv-warn { border-left-color: #f59e0b; }
+.priv-cand.priv-risk { border-left-color: #f43f5e; }
+
+/* Localização pelo IP (bandeira + país) dentro do card de vazamento */
+.priv-local {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem 1.4rem;
+    align-items: center;
+}
+
+.priv-local-flag {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex-shrink: 0;
+}
+
+.priv-flag {
+    border-radius: 0.25rem;
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.15));
+    object-fit: cover;
+}
+
+.priv-flag-emoji { font-size: 2rem; line-height: 1; }
+
+.priv-local-pais {
+    font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
+    font-size: 1.25rem;
+    color: var(--aed-text, #eef2f8);
+    line-height: 1.1;
+}
+
+.priv-local-cc {
+    display: inline-block;
+    margin-top: 0.2rem;
+    font-size: .75rem;
+    letter-spacing: 0.06em;
+    color: var(--aed-text-faint, #5b6679);
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.15));
+    border-radius: 0.3rem;
+    padding: 0 0.35rem;
+}
+
+.priv-local-grid { flex: 1 1 20rem; margin: 0; }
+
+/* Split do "hero" da aba Vazamento: veredito+localização à esquerda, globo à direita */
+.priv-split {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.priv-split.has-globe {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+}
+
+@media (max-width: 62em) {
+    .priv-split.has-globe {
+        grid-template-columns: 1fr;
+    }
+}
+
+.priv-hero-info { min-width: 0; }
+
+/* Globo 3D da aba Vazamento/Privacidade */
+.priv-globe-wrap {
+    position: relative;
+    min-height: 24rem;
+    border-radius: var(--aed-radius-card, 0.75rem);
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 38%, #0b1b33 0%, #07101f 55%, #04070e 100%);
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.08));
+}
+
+#priv-globe { position: absolute; inset: 0; }
+#priv-globe canvas { display: block; cursor: grab; }
+
+.priv-globe-cap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.5rem 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #cfe0f2;
+    background: linear-gradient(180deg, rgba(4, 7, 14, 0), rgba(4, 7, 14, 0.85));
+    pointer-events: none;
+}
+
+.priv-globe-cap .priv-flag { width: 1.5rem; height: 1.125rem; }
+.priv-globe-cap .priv-flag-emoji { font-size: 1.2rem; }
+
+.loc-map {
+    /* Altura fluida: adapta a celular/tablet/desktop pela altura do viewport. */
+    height: clamp(16rem, 55vh, 34rem);
+    width: 100%;
+    border-radius: var(--aed-radius-card, 0.75rem);
+    z-index: 0;
+}
+
+/* Corrige contraste dos controles Leaflet no tema escuro */
+.loc-map .leaflet-control-attribution {
+    background: rgba(6, 8, 15, 0.7);
+    color: #8b97ad;
+}
+
+.loc-map .leaflet-control-attribution a {
+    color: #2dd4bf;
+}
+
+/* Botão de pausa do giro do globo (WCAG 2.2.2), criado pelo geo-globe.js logo depois do quadro do globo. */
+.globo-pausa {
+    margin-top: .5rem;
+}

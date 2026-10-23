@@ -1,0 +1,279 @@
+{
+  "resumo": "Assinatura digital e MAC resolvem o mesmo problema central — provar que uma mensagem veio de quem se diz e que ninguém a alterou — mas com garantias diferentes. A assinatura digital usa criptografia assimétrica: quem envia assina com a chave PRIVADA e qualquer pessoa verifica com a chave PÚBLICA, o que gera não-repúdio (só o dono da privada poderia ter assinado). O MAC (tipicamente HMAC) usa uma única chave simétrica compartilhada: rápido e simples, prova integridade e autenticidade entre as partes que possuem a chave, mas NÃO dá não-repúdio, porque qualquer detentor da chave poderia ter gerado a etiqueta. Ponto técnico: no RSA e no ECDSA assina-se o HASH da mensagem; o HMAC e o Ed25519 recebem a mensagem inteira e fazem o hash por dentro do esquema. Nem assinatura nem MAC escondem o conteúdo (isso é trabalho da cifra). Para amarrar uma chave pública a uma identidade real entra o certificado X.509 assinado por uma CA — a cadeia de confiança que impede um impostor de apresentar a própria chave pública como sendo a sua.",
+  "ficha": [
+    {
+      "rotulo": "Objetivo",
+      "valor": "Provar origem (autenticidade) e integridade de uma mensagem",
+      "dica": "Não confundir com confidencialidade: nenhum dos dois esconde o dado"
+    },
+    {
+      "rotulo": "Assinatura digital",
+      "valor": "Assimétrica — chave privada assina, chave pública verifica",
+      "dica": "RSA-PSS, ECDSA, Ed25519"
+    },
+    {
+      "rotulo": "MAC",
+      "valor": "Simétrico — a MESMA chave gera e valida a etiqueta",
+      "dica": "HMAC-SHA256 é o padrão prático"
+    },
+    {
+      "rotulo": "Propriedade que separa os dois",
+      "valor": "Assinatura dá não-repúdio; MAC só prova que foi alguém com a chave",
+      "dica": "Precisa de prova para terceiro? Assinatura. Segredo compartilhado? MAC"
+    },
+    {
+      "rotulo": "O que é realmente processado",
+      "valor": "No RSA/ECDSA, o hash da mensagem; no Ed25519, a mensagem inteira (com hash interno)",
+      "dica": "A operação de chave custa o mesmo para 1 GB ou 32 bytes; o que cresce com o tamanho é só o hash"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "RSA e ECDSA assinam o hash da mensagem",
+      "icone": "fingerprint",
+      "texto": "No RSA e no ECDSA, a mensagem passa por um hash (ex.: SHA-256) e a operação criptográfica cara recai sobre esses poucos bytes; o Ed25519 e o HMAC recebem a mensagem inteira e fazem o hash por dentro. Isso torna a assinatura de tamanho fixo e eficiente independentemente do tamanho do arquivo. Por isso a resistência a colisão do hash é parte da segurança da assinatura: quebrar o hash equivale a forjar a assinatura.",
+      "destaque": "RSA/ECDSA: hash primeiro, assinatura depois"
+    },
+    {
+      "titulo": "Privada assina, pública verifica",
+      "icone": "key",
+      "texto": "Na assinatura a chave privada é usada para gerar e a pública para verificar — o inverso do uso na cifra assimétrica. Como só o dono guarda a privada, uma verificação válida prova que ele, e ninguém mais, produziu a assinatura.",
+      "destaque": "Assimetria = não-repúdio"
+    },
+    {
+      "titulo": "MAC autentica, mas não dá não-repúdio",
+      "icone": "groups",
+      "texto": "HMAC usa uma única chave secreta partilhada entre emissor e receptor. Uma etiqueta válida prova que veio de alguém que conhece a chave — mas como AMBOS a conhecem, o receptor também poderia tê-la gerado. Logo, não serve como prova para um terceiro nem em disputa jurídica.",
+      "destaque": "Sem não-repúdio"
+    },
+    {
+      "titulo": "Certificados amarram a chave a uma identidade",
+      "icone": "verified",
+      "texto": "Uma chave pública sozinha é anônima. O certificado X.509 vincula a chave pública a uma identidade (domínio, pessoa, serviço) por meio de uma assinatura de uma Autoridade Certificadora (CA). Verificar a assinatura de um par exige confiar na cadeia de certificados até uma raiz confiável.",
+      "destaque": "Cadeia de confiança (PKI)"
+    },
+    {
+      "titulo": "Integridade e autenticidade, não sigilo",
+      "icone": "info",
+      "texto": "Tanto assinatura quanto MAC deixam a mensagem em claro; eles apenas anexam uma prova de que ela não mudou e de quem veio. Para também esconder o conteúdo é preciso combinar com uma cifra — de preferência um esquema AEAD (ex.: AES-GCM) que já integra cifra e autenticação.",
+      "destaque": "Não substitui cifra"
+    },
+    {
+      "titulo": "O nonce da assinatura é crítico",
+      "icone": "warning",
+      "texto": "Algoritmos como ECDSA e DSA precisam de um valor aleatório por assinatura (nonce k) que deve ser único, secreto e imprevisível. Falhar nisso não degrada a segurança aos poucos: vaza a chave privada por completo. Ed25519 elimina esse risco derivando o nonce de forma determinística.",
+      "destaque": "Reúso de k = chave exposta"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Assinatura (par de chaves) versus HMAC (chave única)",
+    "definicao": "sequenceDiagram\n    participant A as Alice (emissor)\n    participant B as Bob (verificador)\n    Note over A,B: 1) ASSINATURA DIGITAL - chaves diferentes\n    Note over A: h = SHA-256(m)\n    A->>A: s = Sign(chave_privada, h)\n    A->>B: envia m + s\n    Note over B: h2 = SHA-256(m)\n    B->>B: Verify(chave_publica, h2, s)\n    B-->>A: válido (só a privada de Alice pode ter assinado)\n    Note over A,B: 2) HMAC - a MESMA chave secreta k dos dois lados\n    Note over A: t = HMAC(k, m)\n    A->>B: envia m + t\n    Note over B: t2 = HMAC(k, m), compara em tempo constante\n    B-->>A: t == t2 significa íntegro, mas sem não-repúdio",
+    "legenda": "Na assinatura, quem verifica NÃO possui a chave privada — por isso há não-repúdio. No HMAC, os dois lados compartilham k, então a etiqueta prova integridade e origem entre eles, mas nenhum pode provar a um terceiro qual dos dois a gerou."
+  },
+  "tabelas": [
+    {
+      "titulo": "Assinatura digital versus MAC (HMAC)",
+      "colunas": [
+        "Propriedade",
+        "Assinatura digital",
+        "MAC / HMAC"
+      ],
+      "linhas": [
+        [
+          "Tipo de chave",
+          "Par assimétrico: privada assina, pública verifica",
+          "Chave simétrica única, compartilhada"
+        ],
+        [
+          "Integridade",
+          "Sim",
+          "Sim"
+        ],
+        [
+          "Autenticidade de origem",
+          "Sim",
+          "Sim (entre quem tem a chave)"
+        ],
+        [
+          "Não-repúdio",
+          "Sim — só o dono da privada pode assinar",
+          "Não — qualquer detentor da chave pode gerar"
+        ],
+        [
+          "Verificável por terceiro",
+          "Sim, basta a chave pública",
+          "Não, exige a chave secreta"
+        ],
+        [
+          "Custo computacional",
+          "Maior (RSA/curva elíptica)",
+          "Menor (apenas hash)"
+        ],
+        [
+          "Precisa de PKI/certificado",
+          "Geralmente sim, para amarrar identidade",
+          "Não, só distribuir a chave com segurança"
+        ]
+      ]
+    },
+    {
+      "titulo": "Algoritmos: assinatura (RSA/ECDSA/Ed25519) e MAC (HMAC)",
+      "colunas": [
+        "Algoritmo",
+        "Categoria",
+        "Nonce / aleatoriedade",
+        "Observação técnica"
+      ],
+      "linhas": [
+        [
+          "RSA-PSS",
+          "Assinatura",
+          "Aleatório (salt do PSS)",
+          "Prefira PSS a PKCS#1 v1.5; chaves de 2048 bits ou mais"
+        ],
+        [
+          "ECDSA (P-256)",
+          "Assinatura",
+          "Exige nonce k único, secreto e imprevisível",
+          "Reúso ou previsibilidade de k vaza a chave privada"
+        ],
+        [
+          "Ed25519 (EdDSA)",
+          "Assinatura",
+          "Determinístico por design (nonce derivado da chave + mensagem)",
+          "Rápido, curto (64 bytes) e imune a reúso de nonce"
+        ],
+        [
+          "HMAC-SHA256",
+          "MAC",
+          "Sem nonce",
+          "Construção aninhada resistente a length extension"
+        ]
+      ]
+    },
+    {
+      "titulo": "Quando usar cada um",
+      "colunas": [
+        "Cenário",
+        "Escolha",
+        "Por que"
+      ],
+      "linhas": [
+        [
+          "Terceiro precisa verificar / valor legal",
+          "Assinatura (Ed25519 ou RSA-PSS)",
+          "Não-repúdio e verificação com chave pública"
+        ],
+        [
+          "Duas partes que já compartilham um segredo",
+          "HMAC",
+          "Mais rápido e simples, dispensa PKI"
+        ],
+        [
+          "Token/cookie emitido e validado pelo mesmo servidor",
+          "HMAC",
+          "Quem emite e quem valida são o mesmo dono da chave"
+        ],
+        [
+          "Atualização de firmware ou release público",
+          "Assinatura",
+          "Muitos clientes verificam com a chave pública embutida"
+        ],
+        [
+          "Chamada entre microsserviços com segredo comum",
+          "HMAC",
+          "Baixo custo e chave fácil de rotacionar"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Reúso de nonce no ECDSA/DSA",
+      "como_funciona": "ECDSA usa um valor aleatório k por assinatura. Se o mesmo k for reaproveitado em duas mensagens diferentes (ou for previsível), dá para resolver duas equações e recuperar a chave privada com álgebra simples. Foi assim que a chave de assinatura do PlayStation 3 (ECDSA) vazou.",
+      "sinal": "Duas assinaturas distintas com o mesmo valor de r; RNG fraco, VM clonada ou embarcado sem entropia.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Length extension em MAC mal construído",
+      "como_funciona": "Construir MAC como H(chave || mensagem) com hashes de Merkle-Damgård (MD5, SHA-1, SHA-256) permite ao atacante, sem conhecer a chave, calcular um MAC válido para mensagem+padding+sufixo a partir do MAC observado, estendendo o dado autenticado.",
+      "sinal": "Código caseiro concatenando chave e dado direto no hash em vez de usar HMAC.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Confusão de algoritmo (alg:none / downgrade)",
+      "como_funciona": "O verificador aceita o algoritmo declarado pelo próprio token. O atacante troca RS256 por 'none' (assinatura vazia aceita) ou por HS256 usando a chave pública RSA como se fosse segredo HMAC, forjando tokens válidos.",
+      "sinal": "JWT com header alg=none aceito; verificador que não fixa o algoritmo esperado.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Comparação de MAC em tempo variável (timing)",
+      "como_funciona": "Comparar a etiqueta com == ou memcmp para no primeiro byte diferente. Medindo o tempo de resposta, o atacante descobre a etiqueta correta byte a byte e forja um MAC válido sem a chave.",
+      "sinal": "Verificação usando igualdade de string comum em vez de comparação de tempo constante.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Assinatura sobre o dado errado / falta de binding",
+      "como_funciona": "A verificação confirma que a assinatura é válida, mas não amarra a chave a uma identidade nem confere o que foi assinado (ex.: aceitar qualquer certificado autoassinado, ou assinar um hash sem contexto que pode ser reaproveitado em outro protocolo).",
+      "sinal": "Verify retorna válido mas não se checa cadeia de certificados, emissor ou domínio.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Ed25519 (assinatura determinística)",
+      "como_funciona": "O nonce é derivado deterministicamente do hash da chave privada com a mensagem, então nunca se repete nem depende do RNG do sistema no momento da assinatura. Elimina de raiz a classe de reúso/previsibilidade de nonce.",
+      "cobre": "Reúso e previsibilidade de nonce (que afligem ECDSA/DSA)",
+      "limite": "Continua sem dar não-repúdio útil sem uma PKI que ligue a chave pública a uma identidade"
+    },
+    {
+      "nome": "RFC 6979 (nonce determinístico para ECDSA)",
+      "como_funciona": "Quando é preciso manter ECDSA legado, gera-se k de forma determinística a partir da chave e da mensagem via HMAC, dispensando aleatoriedade em tempo de execução e removendo o risco de k repetido.",
+      "cobre": "Nonce fraco ou repetido em ECDSA existente",
+      "limite": "Não corrige implementação vulnerável a canal lateral na multiplicação de curva"
+    },
+    {
+      "nome": "HMAC em vez de hash concatenado",
+      "como_funciona": "A construção HMAC(k, m) = H((k xor opad) || H((k xor ipad) || m)) aninha dois hashes com padding, tornando a extensão de comprimento inviável mesmo sobre hashes Merkle-Damgård.",
+      "cobre": "Length extension e MACs caseiros",
+      "limite": "Segue simétrico: sem não-repúdio e exige distribuir/rotacionar a chave com segurança"
+    },
+    {
+      "nome": "Comparação em tempo constante",
+      "como_funciona": "Validar a etiqueta com funções como hmac.compare_digest (Python), crypto.timingSafeEqual (Node) ou CRYPTO_memcmp, que sempre percorrem todos os bytes e não vazam onde ocorreu a diferença.",
+      "cobre": "Ataque de timing na verificação de MAC/assinatura",
+      "limite": "Protege só a comparação; não substitui logging e rate limiting contra força bruta"
+    },
+    {
+      "nome": "Fixar o algoritmo e validar a cadeia de certificados",
+      "como_funciona": "O verificador define uma allowlist do algoritmo esperado (rejeita alg=none e trocas RS256/HS256) e, para chaves públicas, valida a cadeia X.509 até uma CA raiz confiável, conferindo emissor, validade e domínio.",
+      "cobre": "Confusão de algoritmo e falta de binding de identidade",
+      "limite": "Depende de gestão correta das raízes confiáveis e de revogação (CRL/OCSP) atualizada"
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Assinar e verificar com ECDSA (P-256)",
+      "cenario": "Gerar um par de chaves, assinar um arquivo com a privada e verificar com a pública. O openssl calcula o hash internamente — você assina o digest, não o arquivo bruto.",
+      "comandos": "# 1) chave privada ECDSA P-256 e a pública correspondente\nopenssl ecparam -name prime256v1 -genkey -noout -out priv.pem\nopenssl ec -in priv.pem -pubout -out pub.pem\n\n# 2) mensagem de teste\necho \"transferir 100 para Bob\" > msg.txt\n\n# 3) assinar (SHA-256 sobre msg.txt, assinatura em msg.sig)\nopenssl dgst -sha256 -sign priv.pem -out msg.sig msg.txt\n\n# 4) verificar com a chave pública\nopenssl dgst -sha256 -verify pub.pem -signature msg.sig msg.txt\n# saída esperada: Verified OK\n\n# 5) prova de integridade: altere 1 byte e verifique de novo\necho \"transferir 900 para Bob\" > msg.txt\nopenssl dgst -sha256 -verify pub.pem -signature msg.sig msg.txt\n# saída esperada: Verification failure",
+      "explicacao": "A verificação usa apenas pub.pem — quem verifica nunca toca na chave privada, e por isso há não-repúdio. Qualquer mudança na mensagem muda o hash e reprova a assinatura."
+    },
+    {
+      "titulo": "Ed25519: assinatura determinística sem nonce",
+      "cenario": "Repetir o fluxo com Ed25519, que assina o dado bruto (o hash é interno ao esquema) e não depende de RNG por assinatura.",
+      "comandos": "# chave privada e pública Ed25519\nopenssl genpkey -algorithm ed25519 -out ed_priv.pem\nopenssl pkey -in ed_priv.pem -pubout -out ed_pub.pem\n\n# Ed25519 NÃO leva -sha256: use pkeyutl com -rawin\nopenssl pkeyutl -sign -inkey ed_priv.pem -rawin -in msg.txt -out ed.sig\nopenssl pkeyutl -verify -pubin -inkey ed_pub.pem -rawin -in msg.txt -sigfile ed.sig\n# saída esperada: Signature Verified Successfully\n\n# assinar duas vezes gera a MESMA assinatura (determinismo)\nopenssl pkeyutl -sign -inkey ed_priv.pem -rawin -in msg.txt -out ed2.sig\ncmp ed.sig ed2.sig && echo \"assinaturas idênticas: nonce determinístico\"",
+      "explicacao": "Como o nonce interno vem da chave e da mensagem, duas assinaturas da mesma mensagem são idênticas — não há janela para reúso de nonce como no ECDSA."
+    },
+    {
+      "titulo": "HMAC-SHA256: MAC com chave compartilhada",
+      "cenario": "Gerar e comparar uma etiqueta HMAC usando as duas sintaxes do openssl. A mesma chave gera e valida — não há chave pública.",
+      "comandos": "# sintaxe clássica (chave como senha)\nopenssl dgst -sha256 -hmac \"chave_secreta_compartilhada\" msg.txt\n\n# sintaxe moderna do comando mac (OpenSSL 3), chave em hex\nopenssl mac -digest SHA256 \\\n  -macopt hexkey:00112233445566778899aabbccddeeff \\\n  -in msg.txt HMAC\n\n# verificar = recalcular com a MESMA chave e comparar os hex\n# se um byte de msg.txt mudar, o HMAC muda por completo",
+      "explicacao": "Qualquer um que tenha 'chave_secreta_compartilhada' pode gerar OU validar a etiqueta — daí o HMAC provar integridade e origem entre as partes, mas não servir como prova para um terceiro (sem não-repúdio)."
+    }
+  ]
+}

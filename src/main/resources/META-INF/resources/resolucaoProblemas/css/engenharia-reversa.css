@@ -1,0 +1,225 @@
+/* Estilos da aba "Engenharia reversa" do módulo de Resolução de Problemas.
+   O que é comum às duas abas (cards, títulos, chips) continua em resolucao-page.css;
+   aqui fica só o que é próprio desta tela. Unidades: rem para espaço e fonte,
+   em nos breakpoints, px só em borda e sombra. */
+
+/* --- Barra das duas abas --- */
+.reversa-abas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+}
+
+.reversa-aba {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1.1rem;
+    border: 1px solid var(--aed-border);
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--aed-text-secondary);
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.reversa-aba:hover,
+.reversa-aba:focus-visible {
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--aed-text);
+}
+
+.reversa-aba.is-active {
+    background: var(--aed-teal-dim);
+    border-color: rgba(45, 212, 191, 0.45);
+    color: var(--aed-teal);
+    box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.2);
+}
+
+.reversa-aba .material-symbols-outlined {
+    font-size: 1.5rem;
+}
+
+.reversa-aba-texto {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.reversa-aba-texto strong {
+    font-size: 0.92rem;
+}
+
+.reversa-aba-texto small {
+    font-size: .75rem;
+    color: var(--aed-text-faint);
+}
+
+.reversa-aba.is-active .reversa-aba-texto small {
+    color: rgba(45, 212, 191, 0.75);
+}
+
+/* --- Entrada --- */
+.reversa-entrada {
+    font-family: var(--aed-font-mono) !important;
+    font-size: 0.8rem !important;
+    line-height: 1.45;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: auto;
+}
+
+/* --- Resumo em blocos --- */
+.reversa-resumo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.6rem;
+}
+
+.reversa-kpi {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.7rem 0.5rem;
+    border: 1px solid var(--aed-border);
+    border-radius: 0.7rem;
+    background: linear-gradient(180deg, var(--aed-card-top), var(--aed-card-bottom));
+    text-align: center;
+}
+
+.reversa-kpi-valor {
+    font-family: var(--aed-font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--aed-text);
+    line-height: 1;
+}
+
+.reversa-kpi-valor .material-symbols-outlined {
+    font-size: 1.6rem;
+}
+
+.reversa-kpi-rotulo {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--aed-text-faint);
+}
+
+.reversa-kpi.is-fix {
+    border-color: rgba(245, 158, 11, 0.4);
+}
+
+.reversa-kpi.is-fix .reversa-kpi-valor {
+    color: var(--aed-risk-attention);
+}
+
+.reversa-kpi.is-erro {
+    border-color: rgba(244, 63, 94, 0.45);
+}
+
+.reversa-kpi.is-erro .reversa-kpi-valor {
+    color: var(--aed-risk-critical);
+}
+
+.reversa-kpi.is-ok {
+    border-color: rgba(52, 211, 153, 0.45);
+}
+
+.reversa-kpi.is-ok .reversa-kpi-valor {
+    color: var(--aed-risk-safe);
+}
+
+/* --- Tabelas da aba --- */
+.reversa-tabela thead th {
+    background: #101725;
+    color: #7dd3fc;
+    border-color: #24304a;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: .75rem;
+}
+
+.reversa-tabela td {
+    border-color: rgba(255, 255, 255, 0.06);
+    vertical-align: top;
+}
+
+.reversa-badge-icone {
+    font-size: 0.85rem;
+    vertical-align: -0.15rem;
+}
+
+/* --- Antes e depois de uma correção --- */
+.reversa-antes,
+.reversa-depois {
+    display: inline-block;
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.3rem;
+    font-family: var(--aed-font-mono);
+    font-size: .75rem;
+    white-space: nowrap;
+}
+
+.reversa-antes {
+    background: rgba(244, 63, 94, 0.14);
+    color: #fda4af;
+    text-decoration: line-through;
+    text-decoration-color: rgba(244, 63, 94, 0.6);
+}
+
+.reversa-depois {
+    background: rgba(52, 211, 153, 0.14);
+    color: #6ee7b7;
+}
+
+.reversa-seta {
+    margin: 0 0.3rem;
+    color: var(--aed-text-faint);
+}
+
+/* --- Script corrigido --- */
+.reversa-codigo {
+    max-height: 22rem;
+    padding: 0.65rem 0.75rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.5rem;
+    background: #04060c;
+    color: #d1d5db;
+    font-family: var(--aed-font-mono);
+    font-size: .75rem;
+    line-height: 1.5;
+    overflow: auto;
+    white-space: pre;
+}
+
+@media (max-width: 36em) {
+    .reversa-aba {
+        width: 100%;
+    }
+}
+
+/* --- Impressão: só o resultado, sem casca --- */
+@media print {
+    .aed-topnav,
+    .reversa-abas,
+    .reversa-exportacao,
+    .aed-lang-selector,
+    form[action="/resolucao-problemas"] .aed-btn {
+        display: none !important;
+    }
+
+    .reversa-codigo {
+        max-height: none;
+        white-space: pre-wrap;
+    }
+
+    .aed-card,
+    .card-tech,
+    .problem-box {
+        break-inside: avoid;
+    }
+}

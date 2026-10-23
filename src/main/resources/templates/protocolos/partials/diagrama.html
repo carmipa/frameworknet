@@ -1,0 +1,18 @@
+{! Diagrama de arquitetura/fluxo (Mermaid), compartilhado por TODAS as páginas de
+    aprofundamento (genéricas e dedicadas). Recebe o objeto `diagrama`
+    (DiagramaArquitetura). A página que inclui deve carregar mermaid + o init
+    (aprofundamento-diagrama.js) e o CSS aprofundamento.css. Uso:
+    {#include protocolos/partials/diagrama.html diagrama=conteudo.diagrama /} !}
+{#if diagrama}
+<section id="diagrama" class="aprof-secao">
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> {diagrama.titulo}</h2>
+    <div class="card-tech p-3 aprof-diagrama-caixa">
+        <pre class="mermaid aprof-mermaid" translate="no">{diagrama.definicao}</pre>
+    </div>
+    {#if diagrama.legenda}
+    <p class="small text-secondary mt-2 mb-0 aprof-legenda">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span> {diagrama.legenda}
+    </p>
+    {/if}
+</section>
+{/if}

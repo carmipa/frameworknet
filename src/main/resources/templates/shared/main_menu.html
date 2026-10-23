@@ -1,0 +1,244 @@
+<nav class="aed-topnav" aria-label="Menu principal">
+    <div style="flex: 1; display: flex;">
+        <a href="/" class="aed-brand">
+            <span class="aed-brand-logo" aria-hidden="true">
+                <img src="/icone.png?v=20260710c" alt="" width="1376" height="768" loading="lazy">
+            </span>
+            <div class="aed-brand-text">
+                <span class="aed-brand-kicker">Menu principal</span>
+                <span class="aed-brand-title">Framework de Redes</span>
+            </div>
+        </a>
+    </div>
+    {! No celular o menu inteiro (grade de rótulos) tem perto de 20rem de altura: ele recolhe atrás
+       deste botão. Sai escondido do servidor e só aparece quando o aed-shell.js liga o recolhimento —
+       sem JavaScript, o menu fica sempre aberto e nada fica inalcançável. !}
+    <button type="button" class="aed-nav-recolher" aria-expanded="false" aria-controls="aed-nav-itens" hidden
+            title="Mostra ou esconde os itens do menu do site">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu</span>
+        <span>Menu</span>
+    </button>
+    <div class="aed-nav-tabs" id="aed-nav-itens">
+        <a href="/"
+           class="aed-nav-link {#if activeMainMenu == 'home'}is-active{/if}"
+           title="Página inicial do framework">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">home</span>
+            <span>Início</span>
+        </a>
+        {! Academia logo depois de Início, da esquerda para a direita: ordem de Paulo (01/10/2026,
+            corrigindo a anterior que a punha antes de Início). MenuRotasHttpTest congela a posição. !}
+        <a href="/academia"
+           class="aed-nav-link {#if activeMainMenu == 'academia'}is-active{/if}"
+           title="Academia: lições de redes do básico ao avançado, com animação, cálculo ao vivo e exercício corrigido">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span>
+            <span>Academia</span>
+        </a>
+        {! Menu suspenso "IPv4": agrupa as ferramentas IPv4 que eram itens soltos no topo
+            (Análise, Calculadora, Resolução VLSM). Mesma mecânica de Topologia/Operações; os
+            itens seguem aed-nav-link (a guarda de contagem os vê). !}
+        <div class="dropdown aed-nav-drop">
+            <button type="button"
+                    class="aed-nav-drop-toggle {#if activeMainMenu == 'analise' || activeMainMenu == 'calculadora' || activeMainMenu == 'resolucao'}is-active{/if}"
+                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"
+                    title="IPv4: análise didática, calculadora de sub-redes/VLAN e resolução VLSM">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_4</span>
+                <span>IPv4</span>
+                <span class="material-symbols-outlined aed-nav-drop-caret" aria-hidden="true" translate="no">expand_more</span>
+            </button>
+            <div class="dropdown-menu aed-nav-drop-menu">
+                <a href="/analise"
+                   class="aed-nav-link {#if activeMainMenu == 'analise'}is-active{/if}"
+                   title="Análise didática de IPv4: CIDR, máscara, wildcard e comparador">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">insights</span>
+                    <span>Análise Didática</span>
+                </a>
+                <a href="/calculadora"
+                   class="aed-nav-link {#if activeMainMenu == 'calculadora'}is-active{/if}"
+                   title="Calculadora de sub-redes e VLANs: dividir blocos, plano de VLAN, sumarização e faixa para CIDR">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>
+                    <span>Calculadora</span>
+                </a>
+                <a href="/resolucao-problemas"
+                   class="aed-nav-link {#if activeMainMenu == 'resolucao'}is-active{/if}"
+                   title="VLSM dinâmico, WAN e roteamento">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">extension</span>
+                    <span>Resolução (VLSM+WAN)</span>
+                </a>
+            </div>
+        </div>
+        {! Menu suspenso "IPv6": espelha o IPv4 com três itens — Análise Didática, Calculadora e
+            Resolução (delegação de prefixo). Mesma mecânica/ícones do dropdown IPv4; os itens seguem
+            aed-nav-link (a guarda de contagem os vê). !}
+        <div class="dropdown aed-nav-drop">
+            <button type="button"
+                    class="aed-nav-drop-toggle {#if activeMainMenu == 'ipv6' || activeMainMenu == 'ipv6-analise' || activeMainMenu == 'ipv6-resolucao'}is-active{/if}"
+                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"
+                    title="IPv6: análise didática, calculadora de sub-redes e resolução (delegação de prefixo)">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_6</span>
+                <span>IPv6</span>
+                <span class="material-symbols-outlined aed-nav-drop-caret" aria-hidden="true" translate="no">expand_more</span>
+            </button>
+            <div class="dropdown-menu aed-nav-drop-menu">
+                <a href="/ipv6/analise"
+                   class="aed-nav-link {#if activeMainMenu == 'ipv6-analise'}is-active{/if}"
+                   title="Análise Didática IPv6: 128 bits célula-a-célula, tipo IANA, comparador e domínio (AAAA)">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">insights</span>
+                    <span>Análise Didática</span>
+                </a>
+                <a href="/ipv6"
+                   class="aed-nav-link {#if activeMainMenu == 'ipv6'}is-active{/if}"
+                   title="Calculadora IPv6: divisão em sub-redes, EUI-64/SLAAC e gerador de ULA">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>
+                    <span>Calculadora IPv6</span>
+                </a>
+                <a href="/ipv6/resolucao"
+                   class="aed-nav-link {#if activeMainMenu == 'ipv6-resolucao'}is-active{/if}"
+                   title="Resolução IPv6: planejador de delegação de prefixo (o análogo IPv6 do VLSM)">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">extension</span>
+                    <span>Resolução IPv6</span>
+                </a>
+            </div>
+        </div>
+        <a href="/laboratorios"
+           class="aed-nav-link {#if activeMainMenu == 'laboratorios'}is-active{/if}"
+           title="Laboratórios interativos: acompanhe passo a passo, com animação e explicações, o que acontece numa comunicação de rede">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span>
+            <span>Laboratórios</span>
+        </a>
+        {! Menu suspenso "Topologia": agrupa os módulos de referência (portas,
+            protocolos, certificados, camadas, criptografia, Wi-Fi) para encurtar o
+            topo. Os itens continuam sendo aed-nav-link (a guarda de contagem os vê);
+            o gatilho tem classe própria e fica ativo quando qualquer um está ativo.
+            Dropdown do Bootstrap (bundle já carregado no base.html). !}
+        <div class="dropdown aed-nav-drop">
+            <button type="button"
+                    class="aed-nav-drop-toggle {#if activeMainMenu == 'portas' || activeMainMenu == 'protocolos' || activeMainMenu == 'certificados' || activeMainMenu == 'camadas' || activeMainMenu == 'criptografia' || activeMainMenu == 'wifi'}is-active{/if}"
+                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"
+                    title="Topologia: portas, protocolos, certificados, camadas, criptografia e Wi-Fi">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span>
+                <span>Topologia</span>
+                <span class="material-symbols-outlined aed-nav-drop-caret" aria-hidden="true" translate="no">expand_more</span>
+            </button>
+            <div class="dropdown-menu aed-nav-drop-menu">
+                <a href="/portas"
+                   class="aed-nav-link {#if activeMainMenu == 'portas'}is-active{/if}"
+                   title="Catálogo de portas TCP/UDP e aprofundamentos por família">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">settings_ethernet</span>
+                    <span>Portas</span>
+                </a>
+                <a href="/protocolos"
+                   class="aed-nav-link {#if activeMainMenu == 'protocolos'}is-active{/if}"
+                   title="Catálogo de protocolos de rede">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span>
+                    <span>Protocolos</span>
+                </a>
+                <a href="/certificados"
+                   class="aed-nav-link {#if activeMainMenu == 'certificados'}is-active{/if}"
+                   title="Certificados digitais X.509 / PKI: formatos, campos, tipos e aprofundamentos">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">workspace_premium</span>
+                    <span>Certificados</span>
+                </a>
+                <a href="/camadas"
+                   class="aed-nav-link {#if activeMainMenu == 'camadas'}is-active{/if}"
+                   title="Modelo de camadas OSI × TCP/IP: PDUs, dispositivos e encapsulamento">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span>
+                    <span>Camadas</span>
+                </a>
+                <a href="/criptografia"
+                   class="aed-nav-link {#if activeMainMenu == 'criptografia'}is-active{/if}"
+                   title="Criptografia: algoritmos, forças, hash, assinatura e um playground">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">enhanced_encryption</span>
+                    <span>Criptografia</span>
+                </a>
+                <a href="/wifi"
+                   class="aed-nav-link {#if activeMainMenu == 'wifi'}is-active{/if}"
+                   title="Wi-Fi 802.11: padrões, canais, segurança (WPA) e planejador de canais">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">wifi</span>
+                    <span>Wi-Fi</span>
+                </a>
+            </div>
+        </div>
+        {! Menu suspenso "Operações": ferramentas práticas de análise/operação sobre
+            a rede (localização, tráfego, ferramentas CLI, diagnóstico, segurança).
+            Mesma mecânica da Topologia: itens continuam aed-nav-link; gatilho ativo
+            quando qualquer um está ativo. !}
+        <div class="dropdown aed-nav-drop">
+            <button type="button"
+                    class="aed-nav-drop-toggle {#if activeMainMenu == 'localizacao' || activeMainMenu == 'trafego' || activeMainMenu == 'ferramentas' || activeMainMenu == 'diagnostico' || activeMainMenu == 'seguranca'}is-active{/if}"
+                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"
+                    title="Operações: localização, tráfego, ferramentas, diagnóstico e segurança">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">network_check</span>
+                <span>Operações</span>
+                <span class="material-symbols-outlined aed-nav-drop-caret" aria-hidden="true" translate="no">expand_more</span>
+            </button>
+            <div class="dropdown-menu aed-nav-drop-menu">
+                <a href="/localizacao"
+                   class="aed-nav-link {#if activeMainMenu == 'localizacao'}is-active{/if}"
+                   title="Localização por IP (GeoIP) e por CEP no mapa">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">pin_drop</span>
+                    <span>Localização</span>
+                </a>
+                <a href="/trafego"
+                   class="aed-nav-link {#if activeMainMenu == 'trafego'}is-active{/if}"
+                   title="Tráfego e pacotes: painel ao vivo (simulação), decodificador (hex), encapsulamento e handshake TCP">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">travel_explore</span>
+                    <span>Tráfego</span>
+                </a>
+                <a href="/ferramentas"
+                   class="aed-nav-link {#if activeMainMenu == 'ferramentas'}is-active{/if}"
+                   title="Ferramentas de rede (CLI): catálogo, aprofundamentos e construtor de comando">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span>
+                    <span>Ferramentas</span>
+                </a>
+                <a href="/diagnostico"
+                   class="aed-nav-link {#if activeMainMenu == 'diagnostico'}is-active{/if}"
+                   title="Simulador de ferramentas de diagnóstico (PING e DNS)">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">troubleshoot</span>
+                    <span>Diagnóstico</span>
+                </a>
+                <a href="/seguranca"
+                   class="aed-nav-link {#if activeMainMenu == 'seguranca'}is-active{/if}"
+                   title="Testador de regras de Firewall / ACL">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">security</span>
+                    <span>Segurança (ACL)</span>
+                </a>
+            </div>
+        </div>
+        <a href="/telemetria" rel="nofollow"
+           class="aed-nav-link {#if activeMainMenu == 'telemetria'}is-active{/if}"
+           title="Dashboard de telemetria e console ao vivo">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">monitoring</span>
+            <span>Telemetria</span>
+        </a>
+        <a href="/documentacao"
+           class="aed-nav-link {#if activeMainMenu == 'documentacao'}is-active{/if}"
+           title="Documentação técnica do projeto">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
+            <span>Documentação</span>
+        </a>
+        <a href="/sobre"
+           class="aed-nav-link {#if activeMainMenu == 'sobre'}is-active{/if}"
+           title="Sobre o projeto, o autor e as tecnologias usadas">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">badge</span>
+            <span>Sobre</span>
+        </a>
+    </div>
+
+    <!-- Seletor de Idiomas (Tradução Frontend) — imagens de bandeira servidas pelo próprio site
+         (ícone local, nunca CDN), pois emoji de bandeira não renderiza no Windows
+         (aparece "BR"/"US"/"ES"). -->
+    <div class="aed-lang-selector" translate="no">
+        <button type="button" onclick="aedTranslate('pt')" class="aed-lang-btn" title="Português (Brasil)" aria-label="Traduzir para Português">
+            <img src="/web/img/bandeiras/br.png?v=20261001" width="26" height="20" alt="PT" loading="lazy">
+        </button>
+        <button type="button" onclick="aedTranslate('en')" class="aed-lang-btn" title="English (US)" lang="en" aria-label="Translate to English">
+            <img src="/web/img/bandeiras/us.png?v=20261001" width="26" height="20" alt="EN" loading="lazy">
+        </button>
+        <button type="button" onclick="aedTranslate('es')" class="aed-lang-btn" title="Español" lang="es" aria-label="Traducir al Español">
+            <img src="/web/img/bandeiras/es.png?v=20261001" width="26" height="20" alt="ES" loading="lazy">
+        </button>
+    </div>
+</nav>
+{! Alvo do link "Pular para o conteúdo": o menu fica dentro do <main> de cada página, então pular para o
+   <main> devolvia o foco ao primeiro link do menu. O alvo é o ponto logo depois dele. !}
+<span id="inicio-do-conteudo" class="aed-inicio-conteudo" tabindex="-1"></span>

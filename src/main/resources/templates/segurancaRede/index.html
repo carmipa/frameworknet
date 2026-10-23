@@ -1,0 +1,504 @@
+{#include shared/base.html}
+{#title}Segurança de Rede | Framework de Redes A&D{/title}
+{#description}Segurança de rede na prática: testador de regras de firewall e ACL para conferir se uma regra libera ou bloqueia exatamente o tráfego que você espera.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/segurancaRede/css/seguranca.css?v=20261022" />
+{/extraHead}
+{#content}
+
+<div class="container py-4">
+    {#include shared/main_menu.html activeMainMenu=activeMainMenu /}
+
+    <header class="mb-4">
+        <h1 class="aed-title">
+            <span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">security</span>
+            Segurança de Rede
+        </h1>
+        <p class="aed-subtitle">
+            Simuladores didáticos de defesa: teste regras de Firewall (ACL) com pacotes forjados e
+            inspecione uma conexão TLS como um validador faria. Tudo simulado — nenhuma conexão real é aberta.
+        </p>
+    </header>
+
+    <div class="aed-card card-tech p-4 shadow" data-aed-tabs data-active-tab="acl">
+        <span class="aed-eyebrow">Ferramenta</span>
+        <div class="aed-mode-grid tab-nav mb-3" role="tablist">
+            <button type="button" class="aed-mode-btn tab-trigger active" data-tab="acl" role="tab"
+                    title="Firewall (ACL): forje um pacote e veja se a regra o captura (MATCH) e se a linha libera ou descarta">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">rule</span><span>Firewall (ACL)</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="tls" role="tab"
+                    title="Inspeção TLS: avalie nome, validade, cadeia, protocolo e cipher de um certificado">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span><span>Inspeção TLS / Certificado</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="estado" role="tab"
+                    title="Firewall com estado × sem estado: compare como cada modelo trata a mesma sequência de pacotes">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">alt_route</span><span>Com estado × sem estado</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="handshake" role="tab"
+                    title="Handshake TLS 1.3 passo a passo: o que é claro, o que é cifrado e onde uma incompatibilidade aborta">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">handshake</span><span>Handshake TLS</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="fluxo" role="tab"
+                    title="Alcança o destino? Diagnostique um fluxo salto a salto e veja onde ele trava">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span><span>Alcança o destino?</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="topologia" role="tab"
+                    title="Monte sua própria topologia (equipamentos, enlaces, VLANs, ACLs) e teste se um fluxo alcança o destino">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">account_tree</span><span>Montar topologia</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="canvas" role="tab"
+                    title="Mesma topologia, montada arrastando equipamentos e ligando interfaces num canvas visual (alternativa ao texto)">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">drag_pan</span><span>Canvas (arrastar)</span>
+            </button>
+        </div>
+
+        <!-- ACL -->
+        <div class="tab-panel active" data-tab-panel="acl">
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <div class="aed-card h-100">
+                        <div class="card-header bg-transparent border-0 pb-0">
+                            <h2 class="h5 d-flex align-items-center gap-2 mb-0 text-white" style="color: var(--aed-risk-attention) !important;">
+                                <span class="material-symbols-outlined" translate="no" aria-hidden="true">rule</span>
+                                Regra de Firewall
+                            </h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="formAcl"
+                                  hx-post="/seguranca/api/testar"
+                                  hx-target="#resultadoContainer"
+                                  hx-swap="innerHTML"
+                                  hx-disabled-elt="find button[type='submit']">
+                                <div class="mb-3">
+                                    <label for="aclRegra" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">rule</span> Sintaxe da Regra ACL (estilo Cisco)</label>
+                                    <input type="text" class="aed-input form-control" id="aclRegra" name="regra"
+                                           value="permit tcp any any eq 80" placeholder="permit tcp 192.168.1.0 0.0.0.255 any eq 80" required>
+                                    <div class="form-text aed-ajuda">
+                                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
+                                        <span><strong>Estendida:</strong> <strong>permit</strong> (libera) ou <strong>deny</strong> (bloqueia) + protocolo + origem + destino,
+                                        com <code translate="no">eq</code>/<code translate="no">range</code> de porta <em>depois</em> de quem ele filtra
+                                        (logo após a origem = porta de origem; após o destino = porta de destino).
+                                        <strong>Padrão</strong> (1–99): só a origem.
+                                        <strong>Exemplos:</strong> <code translate="no">permit ip any any</code>, <code translate="no">deny tcp host 10.0.0.1 any eq 22</code>,
+                                        <code translate="no">access-list 10 permit 192.168.1.0 0.0.0.255</code>.</span>
+                                    </div>
+                                </div>
+                                <hr class="border-secondary opacity-25">
+
+                                <h3 class="h6 text-white mb-3">Pacote Forjado <span class="text-secondary small fw-normal">— o pacote de teste que você "joga" na regra</span></h3>
+                                <div class="mb-3">
+                                    <label for="aclProtocolo" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_horiz</span> Protocolo do pacote</label>
+                                    <select class="aed-input form-select" id="aclProtocolo" name="protocolo"
+                                            title="Protocolo do pacote de teste: uma regra tcp não captura UDP nem ICMP; ip captura todos">
+                                        <option value="tcp" selected>TCP</option>
+                                        <option value="udp">UDP</option>
+                                        <option value="icmp">ICMP</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="ipOrigem" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span> IP de Origem</label>
+                                    <input type="text" class="aed-input form-control" id="ipOrigem" name="ipOrigem" value="192.168.1.15" placeholder="192.168.1.15" required>
+                                    <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>Quem envia o pacote. <strong>Ex.:</strong> <code translate="no">192.168.1.15</code>.</span></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="portaOrigem" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span> Porta Origem</label>
+                                    <input type="number" class="aed-input form-control" id="portaOrigem" name="portaOrigem" placeholder="49152" value="49152" min="1" max="65535">
+                                    <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>De qual porta o pacote sai. Cliente comum usa uma porta alta, efêmera: <code translate="no">49152</code>–<code translate="no">65535</code>.</span></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="ipDestino" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span> IP de Destino</label>
+                                    <input type="text" class="aed-input form-control" id="ipDestino" name="ipDestino" value="8.8.8.8" placeholder="8.8.8.8" required>
+                                    <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>Para onde o pacote vai. <strong>Ex.:</strong> <code translate="no">8.8.8.8</code>.</span></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="portaDestino" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span> Porta Destino</label>
+                                    <input type="number" class="aed-input form-control" id="portaDestino" name="portaDestino" placeholder="80" value="80" min="1" max="65535" required>
+                                    <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>A porta do serviço. <strong>Ex.:</strong> <code translate="no">80</code> (HTTP), <code translate="no">443</code> (HTTPS), <code translate="no">22</code> (SSH).</span></div>
+                                </div>
+
+                                <button type="submit" class="aed-btn aed-btn-amber w-100" id="btnTestar"
+                                        title="Confere se a regra captura o pacote (MATCH) e o que a linha manda fazer: permit libera, deny descarta">
+                                    <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Testar regra
+                                </button>
+                                <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
+                                        title="Esvaziar os campos e apagar o resultado">
+                                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-7">
+                    <div class="aed-card h-100 d-flex flex-column">
+                        <div class="card-header bg-transparent border-0 pb-0">
+                            <h2 class="h5 d-flex align-items-center gap-2 mb-0 text-white" style="color: var(--aed-risk-safe) !important;">
+                                <span class="material-symbols-outlined" translate="no" aria-hidden="true">analytics</span>
+                                Resultado da Avaliação
+                            </h2>
+                        </div>
+                        <div class="card-body d-flex align-items-center justify-content-center text-center flex-grow-1" id="resultadoContainer">
+                            <div class="text-muted">
+                                <span class="material-symbols-outlined" style="font-size: 4rem; opacity: 0.2;" translate="no" aria-hidden="true">policy</span>
+                                <p class="mt-3">Configure a regra e injete o pacote para ver se o Firewall irá permitir o tráfego.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INSPEÇÃO TLS -->
+        <div class="tab-panel" data-tab-panel="tls">
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <div class="aed-card h-100">
+                        <div class="card-header bg-transparent border-0 pb-0">
+                            <h2 class="h5 d-flex align-items-center gap-2 mb-0 text-white" style="color: var(--aed-indigo) !important;">
+                                <span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span>
+                                Certificado / Conexão
+                            </h2>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-secondary">Informe os atributos da conexão. O inspetor aplica as mesmas checagens de um navegador — sem abrir conexão real.</p>
+                            <form id="formTls"
+                                  hx-post="/seguranca/api/tls"
+                                  hx-target="#tlsResultado"
+                                  hx-swap="innerHTML"
+                                  hx-disabled-elt="find button[type='submit']">
+                                <div class="mb-3">
+                                    <label for="tlsHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Nome acessado (o que você digitou na barra)</label>
+                                    <input type="text" class="aed-input form-control" id="tlsHost" name="hostAcessado"
+                                           value="frameworknet.carminati.dev.br" required>
+                                    <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>O endereço que a pessoa digitou. <strong>Ex.:</strong> <code translate="no">seubanco.com.br</code>.</span></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tlsCn" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">badge</span> Nome no certificado (SAN) — use * para curinga</label>
+                                    <input type="text" class="aed-input form-control" id="tlsCn" name="nomeCertificado"
+                                           value="frameworknet.carminati.dev.br" required>
+                                    <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>O nome para o qual o certificado foi emitido. <strong>Teste o ataque:</strong> ponha um nome DIFERENTE do de cima e veja a falha. Curinga: <code translate="no">*.example.com</code>.</span></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tlsDias" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">event</span> Dias para expirar</label>
+                                    <input type="text" class="aed-input form-control" id="tlsDias" name="diasParaExpirar"
+                                           inputmode="numeric" value="60" required>
+                                    <div class="form-text aed-ajuda"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span><span>Quantos dias faltam para vencer. <strong>Ex.:</strong> <code translate="no">60</code> (válido), <code translate="no">10</code> (vence em breve), <code translate="no">-3</code> (expirado há 3 dias).</span></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tlsSelf" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">verified</span> Emissor</label>
+                                    <select id="tlsSelf" name="autoassinado" class="form-select bg-dark text-light border-secondary">
+                                        <option value="nao" selected>CA confiável</option>
+                                        <option value="sim">Autoassinado / não confiável</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tlsVersao" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> Versão do TLS negociada</label>
+                                    <select id="tlsVersao" name="versaoTls" class="form-select bg-dark text-light border-secondary">
+                                        <option>TLS 1.3</option>
+                                        <option>TLS 1.2</option>
+                                        <option>TLS 1.1</option>
+                                        <option>TLS 1.0</option>
+                                        <option>SSL 3.0</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tlsCipher" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">enhanced_encryption</span> Cipher suite negociada</label>
+                                    <select id="tlsCipher" name="cipher" class="form-select bg-dark text-light border-secondary">
+                                        <option>TLS_AES_128_GCM_SHA256</option>
+                                        <option>TLS_CHACHA20_POLY1305_SHA256</option>
+                                        <option>ECDHE-RSA-AES256-GCM-SHA384</option>
+                                        <option>ECDHE-RSA-AES128-CBC-SHA</option>
+                                        <option>RC4-MD5</option>
+                                        <option>DES-CBC3-SHA</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="aed-btn aed-btn-indigo w-100"
+                                        title="Aplicar as checagens de nome, validade, cadeia, protocolo e cipher (simulado)">
+                                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">verified_user</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                                    Inspecionar Certificado
+                                </button>
+                                <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
+                                        title="Esvaziar os campos e apagar o resultado">
+                                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                                </button>
+                            </form>
+
+                            <div class="tls-referencia mt-3">
+                                <h3 class="h6 tls-ref-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">checklist</span> As 5 checagens que um navegador faz</h3>
+                                <ol class="tls-ref-lista">
+                                    <li><strong>Nome (SAN):</strong> o host acessado tem de estar no certificado — senão é o erro de nome divergente que um MITM provocaria.</li>
+                                    <li><strong>Validade:</strong> dentro do período <code translate="no">notBefore…notAfter</code>; expirado é recusado.</li>
+                                    <li><strong>Cadeia:</strong> a assinatura sobe até uma CA raiz confiável; autoassinado não sobe.</li>
+                                    <li><strong>Protocolo:</strong> TLS 1.3 ideal, 1.2 aceitável; 1.0/1.1/SSL são obsoletos.</li>
+                                    <li><strong>Cipher:</strong> AEAD (GCM/CHACHA20) forte; CBC atenção; RC4/3DES/NULL quebrados.</li>
+                                </ol>
+                                <p class="tls-ref-nota"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span> O veredito geral é o <strong>pior</strong> estado entre as cinco — uma falha recusa a conexão, como no navegador.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-7">
+                    <div class="aed-card h-100 d-flex flex-column">
+                        <div class="card-header bg-transparent border-0 pb-0">
+                            <h2 class="h5 d-flex align-items-center gap-2 mb-0 text-white" style="color: var(--aed-risk-safe) !important;">
+                                <span class="material-symbols-outlined" translate="no" aria-hidden="true">fact_check</span>
+                                Veredito da Inspeção
+                            </h2>
+                        </div>
+                        <div class="card-body flex-grow-1" id="tlsResultado">
+                            <div class="text-muted text-center d-flex flex-column align-items-center justify-content-center h-100">
+                                <span class="material-symbols-outlined" style="font-size: 4rem; opacity: 0.2;" translate="no" aria-hidden="true">lock</span>
+                                <p class="mt-3">Preencha os atributos da conexão e veja o que um navegador aprovaria, alertaria ou recusaria.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Firewall com estado × sem estado (P01) -->
+        <div class="tab-panel" data-tab-panel="estado">
+            <p class="small text-secondary mb-3">
+                Escolha um cenário e compare, passo a passo, como um firewall <strong>sem estado</strong>
+                (ACL que julga cada pacote isolado) e um <strong>com estado</strong> (tabela de conexões)
+                tratam a MESMA sequência de pacotes.
+            </p>
+            <div class="aed-mode-grid mb-3" role="group" aria-label="Cenários de firewall">
+                {#for c in cenarios}
+                <button type="button" class="aed-mode-btn"
+                        hx-get="/seguranca/api/estado?cenario={c.id}"
+                        hx-target="#estadoResultado" hx-swap="innerHTML"
+                        title="Simular: {c.titulo}">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">alt_route</span><span>{c.titulo}</span>
+                </button>
+                {/for}
+            </div>
+            <div id="estadoResultado">
+                <div class="text-muted text-center d-flex flex-column align-items-center justify-content-center py-5">
+                    <span class="material-symbols-outlined" style="font-size: 4rem; opacity: 0.2;" translate="no" aria-hidden="true">alt_route</span>
+                    <p class="mt-3">Escolha um cenário acima para ver os dois firewalls lado a lado.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Handshake TLS 1.3 interativo (P03) -->
+        <div class="tab-panel" data-tab-panel="handshake">
+            <p class="small text-secondary mb-3">
+                Avance o handshake TLS 1.3 mensagem a mensagem: veja o que viaja em claro, onde as chaves
+                passam a valer (o resto fica cifrado) e em que ponto uma incompatibilidade derruba a conexão.
+            </p>
+            <div class="aed-mode-grid mb-3" role="group" aria-label="Cenários de handshake TLS">
+                {#for c in cenariosHandshake}
+                <button type="button" class="aed-mode-btn"
+                        hx-get="/seguranca/api/tls-handshake?cenario={c.id}"
+                        hx-target="#handshakeResultado" hx-swap="innerHTML"
+                        title="Simular: {c.titulo}">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">handshake</span><span>{c.titulo}</span>
+                </button>
+                {/for}
+            </div>
+            <div id="handshakeResultado">
+                <div class="text-muted text-center d-flex flex-column align-items-center justify-content-center py-5">
+                    <span class="material-symbols-outlined" style="font-size: 4rem; opacity: 0.2;" translate="no" aria-hidden="true">handshake</span>
+                    <p class="mt-3">Escolha um cenário acima para percorrer o handshake passo a passo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alcança o destino? — diagnóstico de fluxo (P05 v1) -->
+        <div class="tab-panel" data-tab-panel="fluxo">
+            <p class="small text-secondary mb-3">
+                O tráfego sai da origem e chega ao destino? Escolha um cenário e veja o caminho salto a
+                salto — e o ponto exato onde ele trava (VLAN isolada, gateway errado ou ACL negando).
+            </p>
+            <div class="aed-mode-grid mb-3" role="group" aria-label="Cenários de fluxo">
+                {#for c in cenariosFluxo}
+                <button type="button" class="aed-mode-btn"
+                        hx-get="/seguranca/api/fluxo?cenario={c.id}"
+                        hx-target="#fluxoResultado" hx-swap="innerHTML"
+                        title="Diagnosticar: {c.titulo}">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span><span>{c.titulo}</span>
+                </button>
+                {/for}
+            </div>
+            <div id="fluxoResultado">
+                <div class="text-muted text-center d-flex flex-column align-items-center justify-content-center py-5">
+                    <span class="material-symbols-outlined" style="font-size: 4rem; opacity: 0.2;" translate="no" aria-hidden="true">route</span>
+                    <p class="mt-3">Escolha um cenário acima para diagnosticar a alcançabilidade do fluxo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Montar topologia — diagnóstico sobre topologia arbitrária (P05 fase 2) -->
+        <div class="tab-panel" data-tab-panel="topologia">
+            <p class="small text-secondary mb-2">
+                Monte a topologia (um item por linha), edite à vontade e teste se um fluxo alcança o
+                destino. Formato: <code translate="no">host H1 vlan=10 gw=R1</code>, <code translate="no">switchl3 R1 vlans=10,20</code>,
+                <code translate="no">firewall FW deny=tcp/23</code>, <code translate="no">server S1 vlan=20 porta=443</code>,
+                <code translate="no">link A B</code>.
+            </p>
+            <div class="aed-mode-grid mb-2" role="group" aria-label="Inserir equipamento">
+                <button type="button" class="aed-btn aed-btn-neutral" data-topo-add="host H1 vlan=10 gw=R1">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">computer</span> + Host</button>
+                <button type="button" class="aed-btn aed-btn-neutral" data-topo-add="switchl3 R1 vlans=10,20">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> + Switch L3</button>
+                <button type="button" class="aed-btn aed-btn-neutral" data-topo-add="firewall FW deny=tcp/23">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> + Firewall</button>
+                <button type="button" class="aed-btn aed-btn-neutral" data-topo-add="server S1 vlan=20 porta=443">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span> + Servidor</button>
+                <button type="button" class="aed-btn aed-btn-neutral" data-topo-add="link A B">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">cable</span> + Enlace</button>
+            </div>
+            <form hx-post="/seguranca/api/topologia" hx-target="#topoResultado" hx-swap="innerHTML"
+                  hx-disabled-elt="find button[type='submit']" autocomplete="off">
+                <textarea aria-label="Descrição da topologia: equipamentos, enlaces, VLANs e ACLs" id="topo-texto" name="topologia" rows="8"
+                          class="form-control bg-dark text-light border-secondary"
+                          style="font-family: var(--bs-font-monospace, monospace);">host H1 vlan=10 gw=R1
+switchl3 R1 vlans=10,20
+firewall FW deny=tcp/23
+server S1 vlan=20 porta=443
+link H1 R1
+link R1 FW
+link FW S1</textarea>
+                <div class="row g-2 mt-2">
+                    <div class="col-sm-4">
+                        <label class="form-label small text-secondary" for="topo-origem"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">call_made</span> Origem (host)</label>
+                        <input id="topo-origem" name="origem" value="H1" class="form-control form-control-sm bg-dark text-light border-secondary">
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label small text-secondary" for="topo-destino"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">call_received</span> Destino</label>
+                        <input id="topo-destino" name="destino" value="S1" class="form-control form-control-sm bg-dark text-light border-secondary">
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label small text-secondary" for="topo-porta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span> Porta</label>
+                        <input id="topo-porta" name="porta" value="443" class="form-control form-control-sm bg-dark text-light border-secondary">
+                    </div>
+                </div>
+                <button type="submit" class="aed-btn aed-btn-teal mt-3"
+                        title="Avaliar se o fluxo alcança o destino nesta topologia">
+                    <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Testar fluxo
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral" data-limpar
+                        title="Esvaziar os campos e apagar o resultado">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                </button>
+            </form>
+            <div id="topoResultado" class="mt-3" aria-live="polite"></div>
+        </div>
+
+        <!-- Canvas (arrastar) — mesma topologia montada visualmente (alternativa ao texto) -->
+        <div class="tab-panel" data-tab-panel="canvas">
+            <p class="small text-secondary mb-2">
+                Arraste os equipamentos para posicioná-los; clique em <strong>Ligar</strong> e depois em dois
+                equipamentos para criar um enlace; selecione um equipamento para editar VLAN, gateway, ACL ou porta.
+                Ao avaliar, o canvas vira <strong>exatamente o mesmo texto</strong> do montador e usa o mesmo motor.
+            </p>
+            <div class="aed-mode-grid mb-2" role="group" aria-label="Inserir equipamento no canvas">
+                <button type="button" class="aed-btn aed-btn-neutral" data-canvas-add="host">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">computer</span> + Host</button>
+                <button type="button" class="aed-btn aed-btn-neutral" data-canvas-add="switchl3">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> + Switch L3</button>
+                <button type="button" class="aed-btn aed-btn-neutral" data-canvas-add="firewall">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> + Firewall</button>
+                <button type="button" class="aed-btn aed-btn-neutral" data-canvas-add="server">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span> + Servidor</button>
+                <button type="button" class="aed-btn aed-btn-neutral" id="canvas-ligar" aria-pressed="false"
+                        title="Modo ligar: clique em dois equipamentos para criar um enlace">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">cable</span> Ligar</button>
+                <button type="button" class="aed-btn aed-btn-neutral" id="canvas-limpar"
+                        title="Remover todos os equipamentos e enlaces do canvas">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+            </div>
+            <div class="topo-canvas-wrap">
+                <svg id="topo-canvas" class="topo-canvas" viewBox="0 0 900 460" role="img"
+                     aria-label="Canvas de topologia: equipamentos e enlaces">
+                    <g data-canvas-links></g>
+                    <g data-canvas-nodes></g>
+                </svg>
+                <p id="canvas-dica" class="small text-secondary mt-1 mb-0">
+                    <span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">info</span>
+                    Comece adicionando equipamentos acima.
+                </p>
+            </div>
+
+            <div id="canvas-props" class="topo-props mt-2" hidden>
+                <div class="row g-2 align-items-end">
+                    <div class="col-6 col-sm-3">
+                        <label class="form-label small text-secondary" for="cp-id">
+                            <span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">badge</span> Nome</label>
+                        <input id="cp-id" class="form-control form-control-sm bg-dark text-light border-secondary" autocomplete="off">
+                    </div>
+                    <div class="col-6 col-sm-3" data-prop="vlan">
+                        <label class="form-label small text-secondary" for="cp-vlan">
+                            <span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span> VLAN</label>
+                        <input id="cp-vlan" class="form-control form-control-sm bg-dark text-light border-secondary" inputmode="numeric" autocomplete="off">
+                    </div>
+                    <div class="col-6 col-sm-3" data-prop="gw">
+                        <label class="form-label small text-secondary" for="cp-gw">
+                            <span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">router</span> Gateway</label>
+                        <input id="cp-gw" class="form-control form-control-sm bg-dark text-light border-secondary" autocomplete="off">
+                    </div>
+                    <div class="col-6 col-sm-3" data-prop="vlans">
+                        <label class="form-label small text-secondary" for="cp-vlans">
+                            <span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span> VLANs roteadas</label>
+                        <input id="cp-vlans" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="10,20" autocomplete="off">
+                    </div>
+                    <div class="col-6 col-sm-3" data-prop="deny">
+                        <label class="form-label small text-secondary" for="cp-deny">
+                            <span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">block</span> Nega (deny)</label>
+                        <input id="cp-deny" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="tcp/23" autocomplete="off">
+                    </div>
+                    <div class="col-6 col-sm-3" data-prop="porta">
+                        <label class="form-label small text-secondary" for="cp-porta">
+                            <span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span> Porta aberta</label>
+                        <input id="cp-porta" class="form-control form-control-sm bg-dark text-light border-secondary" inputmode="numeric" autocomplete="off">
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <button type="button" class="aed-btn aed-btn-neutral w-100" id="cp-remover"
+                                title="Remover este equipamento e seus enlaces">
+                            <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span> Remover
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-2 mt-2">
+                <div class="col-sm-4">
+                    <label class="form-label small text-secondary" for="canvas-origem"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">call_made</span> Origem (host)</label>
+                    <input id="canvas-origem" class="form-control form-control-sm bg-dark text-light border-secondary" autocomplete="off">
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label small text-secondary" for="canvas-destino"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">call_received</span> Destino</label>
+                    <input id="canvas-destino" class="form-control form-control-sm bg-dark text-light border-secondary" autocomplete="off">
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label small text-secondary" for="canvas-porta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span> Porta</label>
+                    <input id="canvas-porta" value="443" class="form-control form-control-sm bg-dark text-light border-secondary" autocomplete="off">
+                </div>
+            </div>
+            <button type="button" class="aed-btn aed-btn-teal mt-3" id="canvas-avaliar"
+                    title="Serializar o canvas e avaliar se o fluxo alcança o destino (mesmo motor do montador em texto)">
+                <span class="spinner-border spinner-border-sm" id="canvas-spin" role="status" aria-hidden="true" hidden></span>
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Testar fluxo
+            </button>
+            <details class="mt-2">
+                <summary class="small text-secondary">Ver o texto equivalente (o que o canvas gera)</summary>
+                <pre id="canvas-texto" class="small text-light bg-dark border-secondary rounded p-2 mt-1 mb-0" style="white-space:pre-wrap;" translate="no"></pre>
+            </details>
+            <div id="canvasResultado" class="mt-3" aria-live="polite"></div>
+        </div>
+    </div>
+</div>
+
+{/content}
+{#extraScripts}
+<script src="/web/js/aed-tabs.js?v=20260710"></script>
+<script src="/web/vendor/mermaid-11.17.2/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script src="/web/js/seguranca-topologia.js?v=20261022"></script>
+<script src="/web/js/seguranca-canvas.js?v=20260925"></script>
+{/extraScripts}
+{/include}

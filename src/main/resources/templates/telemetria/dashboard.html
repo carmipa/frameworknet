@@ -1,0 +1,348 @@
+{#include shared/base.html}
+{#title}Telemetria | Framework de Redes A&D{/title}
+{#extraHead}
+<link rel="stylesheet" href="/telemetria/css/dashboard.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-4 telemetry-page aed-page">
+    {#include shared/main_menu.html activeMainMenu='telemetria' /}
+
+    <div class="aed-card card-tech p-4 mb-3 tele-header-card">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+            <div>
+                <span class="aed-eyebrow">Observabilidade</span>
+                <h1 class="h2 mb-1" style="font-family:var(--aed-font-display);">Telemetria do Framework</h1>
+                <p class="text-secondary small mb-0">Saúde HTTP, latência (percentis), endpoints e console em tempo real.</p>
+            </div>
+            <div class="tele-controls d-flex flex-wrap align-items-end gap-2">
+                <label class="tele-field">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">schedule</span> <span>Período</span>
+                    <select id="t-periodo" class="form-select form-select-sm">
+                        <option value="15">Últimos 15 min</option>
+                        <option value="60" selected>Última hora</option>
+                        <option value="360">Últimas 6 h</option>
+                        <option value="1440">Últimas 24 h</option>
+                        <option value="10080">Últimos 7 dias</option>
+                        <option value="0">Tudo</option>
+                    </select>
+                </label>
+                <label class="tele-field">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">autorenew</span> <span>Autoatualização</span>
+                    <select id="t-autorefresh" class="form-select form-select-sm">
+                        <option value="0">Desativada</option>
+                        <option value="5000">5 s</option>
+                        <option value="10000" selected>10 s</option>
+                        <option value="30000">30 s</option>
+                        <option value="60000">1 min</option>
+                    </select>
+                </label>
+                <button type="button" class="aed-btn aed-btn-neutral" id="btn-refresh-telemetria"
+                        title="Recarregar métricas e gráficos de telemetria imediatamente">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">refresh</span> Atualizar
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral" id="btn-imprimir-telemetria"
+                        data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="Abre a impressao do navegador com o painel: KPIs, graficos e tabelas.">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">print</span> Imprimir
+                </button>
+                <div class="dropdown d-inline-block">
+                    <button type="button" class="aed-btn aed-btn-json dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false" id="btn-exportar-telemetria"
+                            title="Exportar dados de telemetria em formato JSON, CSV, TXT ou HTML">
+                        <span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> Exportar
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end tele-export-menu" aria-labelledby="btn-exportar-telemetria">
+                        <li><a class="dropdown-item" href="/telemetria/api/exportar?formato=json">
+                            <span class="material-symbols-outlined" translate="no" aria-hidden="true">data_object</span> JSON
+                            <small>OTLP compartilhável</small></a></li>
+                        <li><a class="dropdown-item" href="/telemetria/api/exportar?formato=csv">
+                            <span class="material-symbols-outlined" translate="no" aria-hidden="true">table</span> CSV
+                            <small>abre no Excel</small></a></li>
+                        <li><a class="dropdown-item" href="/telemetria/api/exportar?formato=txt">
+                            <span class="material-symbols-outlined" translate="no" aria-hidden="true">description</span> TXT
+                            <small>relatório para leitura</small></a></li>
+                        <li><a class="dropdown-item" href="/telemetria/api/exportar?formato=html">
+                            <span class="material-symbols-outlined" translate="no" aria-hidden="true">html</span> HTML
+                            <small>tabela pronta para imprimir</small></a></li>
+                    </ul>
+                </div>
+                {#if datasetConfigurado}
+                <button type="button" class="aed-btn aed-btn-teal" id="btn-sincronizar-dataset"
+                        data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="Gera o dataset sanitizado em memória e publica no repositório público {datasetDestino}. Nada fica guardado no servidor.">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">cloud_upload</span> Sincronizar dataset
+                </button>
+                {#else}
+                <button type="button" class="aed-btn aed-btn-neutral" id="btn-sincronizar-dataset" disabled
+                        data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="Falta GITHUB_DATASET_TOKEN no .env do servidor.">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">cloud_off</span> Sincronizar dataset
+                </button>
+                {/if}
+            </div>
+            <div id="dataset-resultado" class="mt-3" hidden role="status" aria-live="polite"></div>
+        </div>
+        <p class="small text-secondary mb-0 mt-2 tele-updated">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">schedule</span>
+            Última atualização: <strong id="t-atualizado">--</strong>
+            <span class="tele-updated-sep">·</span>
+            <span id="t-periodo-label">janela: última hora</span>
+        </p>
+    </div>
+
+    <div class="aed-kpi-grid tele-kpi-6">
+        <article class="aed-kpi-card">
+            <div class="aed-kpi-icon blue"><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_vert</span></div>
+            <div>
+                <div class="aed-kpi-label">Requisições</div>
+                <div class="aed-kpi-value" id="t-http-total">0</div>
+            </div>
+        </article>
+        <article class="aed-kpi-card">
+            <div class="aed-kpi-icon teal"><span class="material-symbols-outlined" translate="no" aria-hidden="true">check_circle</span></div>
+            <div>
+                <div class="aed-kpi-label">Taxa de sucesso</div>
+                <div class="aed-kpi-value" id="t-taxa-sucesso">--%</div>
+            </div>
+        </article>
+        <article class="aed-kpi-card">
+            <div class="aed-kpi-icon amber"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span></div>
+            <div>
+                <div class="aed-kpi-label">Erros 4xx (cliente)</div>
+                <div class="aed-kpi-value" id="t-http-4xx">0</div>
+            </div>
+        </article>
+        <article class="aed-kpi-card">
+            <div class="aed-kpi-icon rose"><span class="material-symbols-outlined" translate="no" aria-hidden="true">dangerous</span></div>
+            <div>
+                <div class="aed-kpi-label">Erros 5xx (servidor)</div>
+                <div class="aed-kpi-value" id="t-http-5xx">0</div>
+            </div>
+        </article>
+        <article class="aed-kpi-card">
+            <div class="aed-kpi-icon indigo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">speed</span></div>
+            <div>
+                <div class="aed-kpi-label">Latência P95</div>
+                <div class="aed-kpi-value" id="t-p95" style="font-size:1.35rem;">-- ms</div>
+                <div class="aed-kpi-sub" id="t-latencia-sub">P50 -- · P99 --</div>
+            </div>
+        </article>
+        <article class="aed-kpi-card">
+            <div class="aed-kpi-icon blue"><span class="material-symbols-outlined" translate="no" aria-hidden="true">database</span></div>
+            <div>
+                <div class="aed-kpi-label">Total de eventos</div>
+                <div class="aed-kpi-value" id="t-total-eventos">0</div>
+                <div class="aed-kpi-sub" id="t-modulos-sub">0 módulos</div>
+            </div>
+        </article>
+    </div>
+
+    <div class="tele-grid-2 mb-1">
+        <div class="aed-card card-tech p-3">
+            <span class="aed-eyebrow aed-eyebrow-amber">Tempo real</span>
+            <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Requisições e erros ao longo do tempo</h6>
+            <div class="tele-chart-box">
+                <canvas id="chart-atividade" height="150"></canvas>
+            </div>
+        </div>
+        <div class="aed-card card-tech p-3">
+            <span class="aed-eyebrow">HTTP</span>
+            <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">donut_small</span> Status HTTP por classe</h6>
+            <div class="tele-chart-box">
+                <canvas id="chart-status" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="tele-grid-2 mb-3">
+        <div class="aed-card card-tech p-3">
+            <span class="aed-eyebrow aed-eyebrow-indigo">Análise</span>
+            <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">bar_chart</span> Requisições por módulo</h6>
+            <div class="tele-chart-box">
+                <canvas id="chart-modulos" height="170"></canvas>
+            </div>
+        </div>
+        <div class="aed-card card-tech p-3">
+            <span class="aed-eyebrow">Latência</span>
+            <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">query_stats</span> Latência por percentil (ms)</h6>
+            <div class="tele-chart-box">
+                <canvas id="chart-latencia" height="170"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="tele-grid-2 mb-3">
+        <div class="aed-card card-tech p-3">
+            <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">hourglass_bottom</span> Endpoints mais lentos (P95)</h6>
+            <div class="table-responsive">
+                <table class="table table-dark table-sm telemetry-table tele-endpoints mb-0">
+                    <thead>
+                    <tr><th>Método</th><th>Endpoint</th><th class="num">Chamadas</th><th class="num">P95</th><th class="num">Erros</th></tr>
+                    </thead>
+                    <tbody id="t-top-lentos">
+                    <tr><td colspan="5" class="tele-empty">Sem dados no período.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="aed-card card-tech p-3">
+            <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">error</span> Endpoints com mais erros</h6>
+            <div class="table-responsive">
+                <table class="table table-dark table-sm telemetry-table tele-endpoints mb-0">
+                    <thead>
+                    <tr><th>Método</th><th>Endpoint</th><th class="num">4xx</th><th class="num">5xx</th><th class="num">Chamadas</th></tr>
+                    </thead>
+                    <tbody id="t-top-erros">
+                    <tr><td colspan="5" class="tele-empty">Nenhum erro no período.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Origem do tráfego: de onde vem a carga, por módulo e por rota (dados da própria telemetria) -->
+    <div class="aed-card card-tech p-3 mb-3" id="secao-origem">
+        <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Origem do tráfego</h6>
+        <p class="small text-secondary mb-3">
+            De onde vem a carga DENTRO da aplicação — por módulo e por rota. A telemetria não coleta IP nem
+            localização do visitante (por privacidade); a "origem" aqui é o alvo interno das requisições.
+        </p>
+        <div class="row g-3">
+            <div class="col-lg-5">
+                <div class="tele-chart-box"><canvas id="chart-origem" height="220"></canvas></div>
+            </div>
+            <div class="col-lg-7">
+                <div class="table-responsive">
+                    <table class="table table-dark table-sm telemetry-table mb-0">
+                        <caption class="text-secondary small px-2">Requisições por módulo</caption>
+                        <thead>
+                            <tr>
+                                <th title="Módulo da aplicação (alvo interno da requisição)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Módulo</th>
+                                <th class="text-end" title="Total de requisições no período"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Reqs</th>
+                                <th class="text-end" title="Participação no total de requisições"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">percent</span>%</th>
+                                <th class="text-end" title="Respostas de sucesso (2xx/3xx)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">check_circle</span>OK</th>
+                                <th class="text-end" title="Respostas com erro (4xx/5xx)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">error</span>Erro</th>
+                                <th class="text-end" title="Latência no percentil 95 (ms)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">query_stats</span>P95</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-origem-modulos">
+                            <tr><td colspan="6" class="tele-empty">Sem dados no período.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive mt-3">
+            <table class="table table-dark table-sm telemetry-table tele-endpoints mb-0">
+                <caption class="text-secondary small px-2">Top rotas por volume de chamadas</caption>
+                <thead>
+                    <tr>
+                        <th title="Método HTTP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th>
+                        <th title="Rota/endpoint acessado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">route</span>Rota</th>
+                        <th class="text-end" title="Volume de chamadas no período"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Chamadas</th>
+                        <th class="text-end" title="Chamadas que terminaram em erro"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">error</span>Erros</th>
+                        <th class="text-end" title="Latência no percentil 95 (ms)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">query_stats</span>P95</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-origem-rotas">
+                    <tr><td colspan="5" class="tele-empty">Sem dados no período.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row g-3 mt-1">
+            <div class="col-lg-7">
+                <div class="table-responsive">
+                    <table class="table table-dark table-sm telemetry-table mb-0">
+                        <caption class="text-secondary small px-2">Acessos por país (código ISO informado pela borda — sem IP).
+                            Aparece <code translate="no">??</code> enquanto não houver borda que <strong>sobrescreva</strong> o
+                            cabeçalho: sem isso ele é escolhido por quem visita, e métrica ditada por quem é
+                            medido não é medição.</caption>
+                        <thead>
+                            <tr>
+                                <th title="Código ISO do país informado pela borda, sem IP. ?? = sem fonte confiável (o padrão)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">public</span>País</th>
+                                <th class="text-end" title="Acessos originados desse país"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Acessos</th>
+                                <th class="text-end" title="Participação no total de acessos"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">percent</span>%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-origem-paises">
+                            <tr><td colspan="3" class="tele-empty">Sem dados no período.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="tele-chart-box"><canvas id="chart-clientes" height="200"></canvas></div>
+                <p class="small text-secondary text-center mb-0 mt-1">Bots × pessoas (classificado pelo User-Agent)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="aed-card card-tech console-card mb-3 p-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+            <div>
+                <span class="aed-eyebrow">Console</span>
+                <h3 class="h6 mb-0 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Console ao vivo</h3>
+            </div>
+            <div class="tele-console-tools d-flex flex-wrap gap-2 align-items-center">
+                <select id="t-console-nivel" class="form-select form-select-sm" aria-label="Filtrar por nível">
+                    <option value="">Todos os níveis</option>
+                    <option value="INFO">INFO</option>
+                    <option value="WARN">WARN</option>
+                    <option value="ERROR">ERROR</option>
+                </select>
+                <input type="search" id="t-console-busca" class="form-control form-control-sm telemetry-search" placeholder="Filtrar console..." style="max-width:12.5rem;">
+                <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="t-console-pausar" data-bs-toggle="tooltip" data-bs-placement="top" title="Pausar/retomar rolagem automática">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">pause</span>
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral btn-sm btn-copy-console" data-target="console-telemetria" aria-label="Copiar o console" data-bs-toggle="tooltip" data-bs-placement="top" title="Copiar o conteúdo do console">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span>
+                </button>
+                <button type="button" class="aed-btn aed-btn-danger btn-sm btn-clear-console" data-target="console-telemetria"
+                        title="Limpar todas as mensagens exibidas no console ao vivo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+            </div>
+        </div>
+        <pre class="aed-console console-body" id="console-telemetria" translate="no">Aguardando eventos...</pre>
+        <p class="telemetry-path small text-secondary mb-0 mt-2" id="t-pasta-logs"></p>
+    </div>
+
+    <div class="aed-card card-tech p-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+            <h6 class="mb-0 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico de eventos</h6>
+            <input type="search" class="form-control form-control-sm telemetry-search" id="t-table-search" placeholder="Buscar evento, módulo ou mensagem..." style="max-width:17.5rem;">
+        </div>
+        <p class="telemetry-table-count small text-secondary" id="t-table-count">0 eventos</p>
+        <div class="table-responsive">
+            <table class="table table-dark table-sm table-hover telemetry-table mb-2">
+                <thead>
+                <tr>
+                    <th>Horário</th>
+                    <th>Nível</th>
+                    <th>Módulo</th>
+                    <th>Método</th>
+                    <th>Endpoint</th>
+                    <th>Status</th>
+                    <th class="num">Duração</th>
+                    <th>Mensagem</th>
+                </tr>
+                </thead>
+                <tbody id="t-table-body">
+                <tr><td colspan="8" class="text-secondary">Carregando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="telemetry-pagination d-flex gap-2 align-items-center justify-content-center mt-2">
+            <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="t-page-prev"
+                    title="Página anterior da tabela de eventos de telemetria"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_left</span> Anterior</button>
+            <span id="t-page-info" class="small text-secondary">Página 1</span>
+            <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="t-page-next"
+                    title="Próxima página da tabela de eventos de telemetria"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_right</span> Próxima</button>
+        </div>
+    </div>
+</div>
+{/content}
+{#extraScripts}
+<script src="/web/vendor/chartjs-4.4.0/chart.umd.min.js" integrity="sha384-e6nUZLBkQ86NJ6TVVKAeSaK8jWa3NhkYWZFomE39AvDbQWeie9PlQqM3pmYW5d1g" crossorigin="anonymous"></script>
+<script src="/telemetria/js/dashboard.js?v=20261022"></script>
+{/extraScripts}
+{/include}
+        

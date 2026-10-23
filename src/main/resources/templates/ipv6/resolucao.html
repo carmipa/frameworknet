@@ -1,0 +1,53 @@
+{#include shared/base.html}
+{#title}Resolução IPv6 (Laboratório) | Framework de Redes A&D{/title}
+{#description}Laboratório de Resolução IPv6: Projetar (dos requisitos ao plano — LAN /64, enlaces /127, topologia, gateways, rotas, OSPFv3/EIGRP, Cisco CLI) e Engenharia Reversa (da configuração Cisco IPv6 ao desenho e diagnóstico). O análogo IPv6 da Resolução VLSM, por prefixo e sub-redes.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/calculadora/css/calculadora.css?v=20261023" />
+<link rel="stylesheet" href="/ipv6/css/ipv6.css?v=20261022" />
+{/extraHead}
+{#content}
+<div class="container py-4">
+    {#include shared/main_menu.html activeMainMenu=activeMainMenu /}
+
+    <header class="mb-4">
+        <h1 class="aed-title">
+            <span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">extension</span>
+            Resolução IPv6 (Laboratório)
+        </h1>
+        <p class="aed-subtitle">
+            O análogo IPv6 da Resolução VLSM. Em IPv6 a LAN é sempre <code translate="no">/64</code> (SLAAC) e o enlace
+            ponto-a-ponto é <code translate="no">/127</code> (RFC 6164): planeja-se por <strong>prefixo e quantidade de
+            sub-redes</strong>, não por número de hosts. Projete dos requisitos ao plano, ou faça a
+            engenharia reversa de uma configuração Cisco IPv6.
+        </p>
+    </header>
+
+    <div class="aed-card card-tech p-4 shadow ipv6-wrap" data-active-tab="projetar">
+        <span class="aed-eyebrow">Laboratório IPv6</span>
+        <div class="aed-mode-grid tab-nav mb-3" role="tablist">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="projetar" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Projetar: dos requisitos ao plano de endereçamento IPv6 (LAN, WAN, topologia, rotas, CLI)">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span><span>Projetar</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="engenharia" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Engenharia reversa: da configuração Cisco IPv6 ao desenho, prefixos e diagnóstico">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">manage_search</span><span>Engenharia reversa</span>
+            </button>
+        </div>
+
+        <div class="tab-panel" data-tab-panel="projetar">{#include ipv6/partials/tab_projetar.html /}</div>
+        <div class="tab-panel" data-tab-panel="engenharia">{#include ipv6/partials/tab_engenharia.html /}</div>
+    </div>
+</div>
+{/content}
+{#extraScripts}
+<script src="/web/vendor/mermaid-11.17.2/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script>
+    // strict: rótulo não vira HTML ativo (o IPv6 não usa diretiva click).
+    mermaid.initialize({|{ startOnLoad: false, theme: "dark", securityLevel: "strict", flowchart: { useMaxWidth: false }, sequence: { useMaxWidth: false }, state: { useMaxWidth: false }, class: { useMaxWidth: false }, er: { useMaxWidth: false }, mindmap: { useMaxWidth: false } }|});
+</script>
+<script src="/ipv6/js/ipv6.js?v=20261002"></script>
+{/extraScripts}
+{/include}

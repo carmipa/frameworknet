@@ -1,0 +1,69 @@
+<div class="calc-resultado card-tech shadow">
+    <div class="calc-resumo-head">
+        <span class="aed-eyebrow">Delegação de prefixo</span>
+        <h3 class="h5 mb-1">
+            <span class="material-symbols-outlined text-warning" aria-hidden="true" translate="no">extension</span>
+            {p.baseCidr} → {p.usados} sub-rede(s) /{p.prefixoAlvo}
+        </h3>
+    </div>
+
+    <div class="calc-kpis">
+        <div class="calc-kpi calc-kpi-destaque">
+            <span class="calc-kpi-label">Sub-redes alocadas</span>
+            <strong class="calc-kpi-valor">{p.usados}</strong>
+            <span class="calc-kpi-nota">de {p.capacidade} possíveis</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Capacidade total</span>
+            <strong class="calc-kpi-valor">{p.capacidade}</strong>
+            <span class="calc-kpi-nota">blocos /{p.prefixoAlvo} num /{p.prefixoBase}</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Endereços por sub-rede</span>
+            <strong class="calc-kpi-valor">2^(128−{p.prefixoAlvo})</strong>
+            <span class="calc-kpi-nota">sem broadcast</span>
+        </div>
+    </div>
+
+    {#if p.truncado}
+    <div class="calc-aviso" role="status">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span>
+        <span>A listagem foi limitada para não travar o navegador. O plano pedido continua válido.</span>
+    </div>
+    {/if}
+
+    <h4 class="h6 calc-secao-titulo mt-3">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span>
+        Plano de endereçamento
+    </h4>
+    <div class="table-responsive calc-tabela-scroll">
+        <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
+            <thead>
+                <tr>
+                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span>#</th>
+                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">badge</span>Sub-rede</th>
+                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span>Bloco</th>
+                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">router</span>Gateway</th>
+                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span>Primeiro</th>
+                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span>Último</th>
+                </tr>
+            </thead>
+            <tbody>
+            {#for a in p.alocacoes}
+                <tr>
+                    <td class="text-secondary">{a.indice}</td>
+                    <td class="fw-bold">{a.nome}</td>
+                    <td class="font-monospace fw-bold">{a.rede}{a.prefixoStr}</td>
+                    <td class="font-monospace text-success">{a.gateway}</td>
+                    <td class="font-monospace">{a.primeiro}</td>
+                    <td class="font-monospace text-secondary">{a.ultimo}</td>
+                </tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+
+    <p class="calc-explicacao mt-3">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> {p.enunciado}
+    </p>
+</div>

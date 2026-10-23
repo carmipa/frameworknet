@@ -1,0 +1,300 @@
+{
+  "resumo": "A família de padrões IEEE 802.11 evoluiu de forma contínua desde o padrão original de 1997 (1 e 2 Mbps), saindo de dezenas de Mbps para dezenas de Gbps. A linha original b/a/g estabeleceu as bandas de 2.4 GHz e 5 GHz e a modulação OFDM. A partir do 802.11n (Wi-Fi 4) a Wi-Fi Alliance passou a usar nomes comerciais simplificados: Wi-Fi 4 (802.11n) trouxe MIMO e operação tanto em 2.4 quanto em 5 GHz; Wi-Fi 5 (802.11ac) concentrou-se em 5 GHz com canais de até 160 MHz e MU-MIMO de downlink; Wi-Fi 6/6E (802.11ax) introduziu OFDMA, MU-MIMO bidirecional, modulação 1024-QAM e a banda de 6 GHz; e Wi-Fi 7 (802.11be) adicionou canais de 320 MHz, 4096-QAM e o Multi-Link Operation (MLO), que agrega bandas simultaneamente. Entender qual padrão e qual banda um dispositivo usa é a chave para diagnosticar velocidade baixa, pois um cliente antigo derruba a experiência da rede inteira.",
+  "ficha": [
+    {
+      "rotulo": "Padrões no foco",
+      "valor": "Wi-Fi 4 a Wi-Fi 7 (802.11n / ac / ax / be)",
+      "dica": "Os nomes comerciais Wi-Fi 4/5/6/7 foram criados pela Wi-Fi Alliance; b/a/g não ganharam número"
+    },
+    {
+      "rotulo": "Bandas de operação",
+      "valor": "2.4 GHz, 5 GHz e 6 GHz",
+      "dica": "A banda de 6 GHz só existe a partir do Wi-Fi 6E e do Wi-Fi 7"
+    },
+    {
+      "rotulo": "Velocidade máxima teórica",
+      "valor": "de 11 Mbps (802.11b) até cerca de 23 Gbps (802.11be)",
+      "dica": "Valores de PHY em laboratório; a vazão real fica bem abaixo por overhead e ambiente"
+    },
+    {
+      "rotulo": "Largura de canal",
+      "valor": "22 MHz (b) e 20 MHz (a/g) até 320 MHz (Wi-Fi 7)",
+      "dica": "Canal mais largo = mais velocidade, porém mais suscetível a interferência e menos canais livres"
+    },
+    {
+      "rotulo": "Órgãos responsáveis",
+      "valor": "IEEE (padrão técnico) e Wi-Fi Alliance (certificação e marca)",
+      "dica": "O IEEE define o 802.11; a Wi-Fi Alliance certifica a interoperabilidade"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Banda 2.4 GHz: alcance, mais interferência",
+      "icone": "wifi",
+      "texto": "Ondas mais longas atravessam paredes e alcançam mais longe, mas a banda é estreita e lotada: dividida em canais que se sobrepõem, só três canais por vez não interferem entre si (1, 6 e 11 é o trio padrão). Sofre com micro-ondas, Bluetooth e redes vizinhas.",
+      "destaque": "Melhor alcance, pior desempenho em ambientes cheios"
+    },
+    {
+      "titulo": "Banda 5 GHz: mais rápida, menos alcance",
+      "icone": "speed",
+      "texto": "Oferece muito mais canais e canais mais largos (até 160 MHz), resultando em maior velocidade e menos interferência. Em compensação, o sinal atravessa obstáculos com mais dificuldade e cobre área menor.",
+      "destaque": "Mais velocidade, cobertura mais curta"
+    },
+    {
+      "titulo": "Banda 6 GHz: o salto do Wi-Fi 6E e 7",
+      "icone": "cell_tower",
+      "texto": "Faixa de 5,925 a 7,125 GHz liberada para Wi-Fi 6E e Wi-Fi 7. Traz muitos canais de 20/40/80/160 MHz totalmente novos e livres de equipamentos legados, quase sem congestionamento e sem clientes antigos degradando a banda.",
+      "destaque": "Espectro limpo, exclusivo de dispositivos novos"
+    },
+    {
+      "titulo": "MIMO e MU-MIMO",
+      "icone": "settings_input_antenna",
+      "texto": "MIMO usa várias antenas para transmitir fluxos espaciais paralelos ao mesmo cliente, multiplicando a taxa. MU-MIMO (a partir do Wi-Fi 5) atende vários clientes ao mesmo tempo; no Wi-Fi 6 passa a valer também no sentido de subida.",
+      "destaque": "Vários fluxos e vários usuários simultâneos"
+    },
+    {
+      "titulo": "OFDMA",
+      "icone": "grid_view",
+      "texto": "Introduzido no Wi-Fi 6, divide cada canal em pequenas unidades de recurso (RUs) e entrega pedaços a clientes diferentes na mesma transmissão. Reduz latência e melhora muito redes com muitos dispositivos pequenos (IoT).",
+      "destaque": "Um canal atende vários clientes de uma vez"
+    },
+    {
+      "titulo": "MLO: o diferencial do Wi-Fi 7",
+      "icone": "hub",
+      "texto": "O Multi-Link Operation permite que um dispositivo use 2.4, 5 e 6 GHz simultaneamente, agregando bandas ou usando uma como reserva. Aumenta a vazão e reduz a latência ao escolher o melhor enlace em tempo real.",
+      "destaque": "Uso simultâneo de várias bandas"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Evolução dos padrões 802.11 (1999 a 2024)",
+    "definicao": "flowchart LR\n  b[\"802.11b - 1999\n2.4 GHz - 11 Mbps\nDSSS\"] --> a[\"802.11a - 1999\n5 GHz - 54 Mbps\nOFDM\"]\n  a --> g[\"802.11g - 2003\n2.4 GHz - 54 Mbps\nOFDM\"]\n  g --> n[\"Wi-Fi 4 / 802.11n - 2009\n2.4 e 5 GHz - 600 Mbps\nMIMO\"]\n  n --> ac[\"Wi-Fi 5 / 802.11ac - 2013\n5 GHz - até 6.9 Gbps\nMU-MIMO (downlink)\"]\n  ac --> ax[\"Wi-Fi 6/6E / 802.11ax - 2019\n2.4/5/6 GHz - 9.6 Gbps\nOFDMA + 1024-QAM\"]\n  ax --> be[\"Wi-Fi 7 / 802.11be - 2024\n2.4/5/6 GHz - 23 Gbps\n320 MHz + MLO\"]",
+    "legenda": "Cada geração mantém compatibilidade regressiva com as anteriores na mesma banda; por isso um cliente antigo (ex.: 802.11g) conectado numa rede moderna reduz a eficiência do canal para todos."
+  },
+  "tabelas": [
+    {
+      "titulo": "Padrão x banda x velocidade x largura de canal x técnica",
+      "colunas": [
+        "Padrão (nome comercial)",
+        "Ano",
+        "Banda",
+        "Velocidade máxima teórica",
+        "Largura de canal",
+        "Técnica principal"
+      ],
+      "linhas": [
+        [
+          "802.11b",
+          "1999",
+          "2.4 GHz",
+          "11 Mbps",
+          "22 MHz",
+          "DSSS"
+        ],
+        [
+          "802.11a",
+          "1999",
+          "5 GHz",
+          "54 Mbps",
+          "20 MHz",
+          "OFDM"
+        ],
+        [
+          "802.11g",
+          "2003",
+          "2.4 GHz",
+          "54 Mbps",
+          "20 MHz",
+          "OFDM"
+        ],
+        [
+          "Wi-Fi 4 (802.11n)",
+          "2009",
+          "2.4 e 5 GHz",
+          "600 Mbps",
+          "20 / 40 MHz",
+          "MIMO + OFDM"
+        ],
+        [
+          "Wi-Fi 5 (802.11ac)",
+          "2013",
+          "5 GHz",
+          "até 6.9 Gbps",
+          "20 / 40 / 80 / 160 MHz",
+          "MU-MIMO downlink + 256-QAM"
+        ],
+        [
+          "Wi-Fi 6 / 6E (802.11ax)",
+          "2019",
+          "2.4 / 5 / 6 GHz",
+          "9.6 Gbps",
+          "20 a 160 MHz",
+          "OFDMA + MU-MIMO + 1024-QAM"
+        ],
+        [
+          "Wi-Fi 7 (802.11be)",
+          "2024",
+          "2.4 / 5 / 6 GHz",
+          "cerca de 23 Gbps",
+          "20 a 320 MHz",
+          "MLO + OFDMA + 4096-QAM"
+        ]
+      ]
+    },
+    {
+      "titulo": "Comparação das bandas de frequência",
+      "colunas": [
+        "Banda",
+        "Canais não sobrepostos (20 MHz)",
+        "Alcance",
+        "Interferência",
+        "Observação"
+      ],
+      "linhas": [
+        [
+          "2.4 GHz",
+          "3 (ex.: canais 1, 6 e 11)",
+          "Maior",
+          "Alta",
+          "Compartilhada com Bluetooth, micro-ondas e IoT; muito congestionada"
+        ],
+        [
+          "5 GHz",
+          "Até 25 canais (vários com DFS)",
+          "Médio",
+          "Baixa a média",
+          "Canais DFS exigem liberar a frequência para radares"
+        ],
+        [
+          "6 GHz",
+          "Até 59 canais de 20 MHz",
+          "Menor",
+          "Muito baixa",
+          "Exclusiva de Wi-Fi 6E/7; espectro novo e limpo"
+        ]
+      ]
+    },
+    {
+      "titulo": "Recursos por geração (Wi-Fi 4 a 7)",
+      "colunas": [
+        "Recurso",
+        "Wi-Fi 4",
+        "Wi-Fi 5",
+        "Wi-Fi 6/6E",
+        "Wi-Fi 7"
+      ],
+      "linhas": [
+        [
+          "MIMO (fluxos espaciais)",
+          "Até 4",
+          "Até 8",
+          "Até 8",
+          "Até 8"
+        ],
+        [
+          "MU-MIMO",
+          "Não",
+          "Somente downlink",
+          "Downlink e uplink",
+          "Downlink e uplink"
+        ],
+        [
+          "OFDMA",
+          "Não",
+          "Não",
+          "Sim",
+          "Sim"
+        ],
+        [
+          "Modulação máxima",
+          "64-QAM",
+          "256-QAM",
+          "1024-QAM",
+          "4096-QAM"
+        ],
+        [
+          "Banda de 6 GHz",
+          "Não",
+          "Não",
+          "Somente 6E",
+          "Sim"
+        ],
+        [
+          "MLO (multi-link)",
+          "Não",
+          "Não",
+          "Não",
+          "Sim"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Ataque de rebaixamento (downgrade) de padrão/segurança",
+      "como_funciona": "O atacante força o cliente a negociar um padrão ou protocolo de segurança mais antigo (por exemplo 802.11g com WPA/TKIP, ou até WEP, hoje quebrado) usando quadros forjados ou um ponto de acesso falso que só anuncia recursos legados, tornando o tráfego mais fácil de quebrar.",
+      "sinal": "Cliente moderno conectando em taxas baixas ou usando cifra antiga (WEP/TKIP) numa rede que deveria oferecer WPA3 e alta velocidade.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Evil Twin explorando compatibilidade regressiva",
+      "como_funciona": "Um ponto de acesso malicioso com mesmo SSID anuncia suporte a padrões antigos e sinal mais forte; dispositivos legados ou configurados para banda 2.4 GHz preferem se associar a ele, permitindo interceptar o tráfego.",
+      "sinal": "Duas redes com o mesmo nome, uma só em 2.4 GHz e sem certificação de segurança moderna; quedas e reconexões frequentes.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Interferência e jamming na banda 2.4 GHz",
+      "como_funciona": "Por ter poucos canais e conviver com muitos aparelhos, a banda 2.4 GHz é fácil de saturar com ruído ou tráfego, degradando ou derrubando a conexão dos clientes presos a padrões b/g/n.",
+      "sinal": "Latência alta e perda de pacotes só na banda de 2.4 GHz, enquanto 5/6 GHz seguem estáveis.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Desativar padrões e cifras legados",
+      "como_funciona": "No ponto de acesso, definir taxa/padrão mínimo (por exemplo exigir 802.11n ou superior) e desabilitar WEP/WPA/TKIP, aceitando apenas WPA2-AES ou WPA3.",
+      "cobre": "Ataque de rebaixamento de padrão/segurança",
+      "limite": "Pode desconectar dispositivos muito antigos que só falam b/g ou TKIP."
+    },
+    {
+      "nome": "Habilitar PMF (802.11w) e WPA3",
+      "como_funciona": "O Protected Management Frames protege contra falsificação os quadros de deauthentication, disassociation e action (beacon e probe seguem abertos), o que tira do atacante a deauth forjada que empurra o cliente para o evil twin; o WPA3 adiciona o SAE (Simultaneous Authentication of Equals), resistente à captura e à quebra offline do handshake.",
+      "cobre": "Evil Twin e rebaixamento de segurança",
+      "limite": "Exige clientes e AP compatíveis; PMF obrigatório pode excluir aparelhos antigos."
+    },
+    {
+      "nome": "Priorizar 5/6 GHz e usar band steering",
+      "como_funciona": "Configurar o AP para empurrar clientes capazes para 5 ou 6 GHz reduz a exposição à interferência e ao congestionamento da banda de 2.4 GHz.",
+      "cobre": "Interferência/jamming em 2.4 GHz e evil twin só em 2.4",
+      "limite": "Não resolve dispositivos que só operam em 2.4 GHz nem locais com muitos obstáculos."
+    },
+    {
+      "nome": "Planejamento de canais e monitoramento de espectro",
+      "como_funciona": "Usar um trio sem sobreposição em 2.4 GHz (1, 6 e 11 é o padrão), escolher canais 5/6 GHz com menos ocupação e monitorar o espectro para detectar ruído e APs não autorizados.",
+      "cobre": "Interferência, jamming e detecção de evil twin",
+      "limite": "Não impede o ataque; apenas reduz o impacto e ajuda a detectar."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Velocidade muito abaixo do contratado mesmo perto do roteador",
+      "causa_provavel": "Cliente conectado em banda 2.4 GHz ou negociando padrão antigo (802.11g/n) em vez de 5/6 GHz com ac/ax",
+      "comando": "netsh wlan show interfaces",
+      "leitura": "Verificar os campos Radio type (deve ser 802.11ac/ax/be), Band (5 ou 6 GHz) e Receive/Transmit rate; taxas de 54 Mbps ou banda 2.4 GHz indicam padrão/banda antigos."
+    },
+    {
+      "sintoma": "Rede lenta e instável só quando há muitos dispositivos conectados",
+      "causa_provavel": "Rede sem OFDMA/MU-MIMO (padrões até Wi-Fi 5) saturando o canal com muitos clientes",
+      "comando": "netsh wlan show all",
+      "leitura": "Conferir se o AP e os clientes anunciam 802.11ax/be; a ausência de OFDMA/MU-MIMO explica a queda de desempenho sob muitos dispositivos."
+    },
+    {
+      "sintoma": "Sinal cai ou fica lento ao se afastar poucos metros do roteador",
+      "causa_provavel": "Cliente preso a 5/6 GHz sem roaming ou obstáculos degradando a banda alta, sem cair para 2.4 GHz",
+      "comando": "netsh wlan show interfaces",
+      "leitura": "Observar Signal (%) e Band conforme a distância; sinal despencando em 5/6 GHz sugere usar band steering ou reforçar a cobertura."
+    }
+  ]
+}

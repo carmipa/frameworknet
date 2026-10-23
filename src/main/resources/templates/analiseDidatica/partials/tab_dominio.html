@@ -1,0 +1,20 @@
+<form method="POST" class="row g-3 calc-form" data-tab-form="dominio">
+    <input type="hidden" name="tab" value="dominio">
+    <div class="col-lg-7">
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio/hostname</label>
+        <input type="text" name="ip" class="form-control bg-dark text-light border-secondary {#if invalidFields.contains('ip')}is-invalid{/if}"
+               placeholder="Ex.: google.com" value="{ipPre}" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="col-lg-3">
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> CIDR (opcional)</label>
+        <input type="text" name="cidr" class="form-control input-cidr bg-dark text-light border-secondary {#if invalidFields.contains('cidr')}is-invalid{/if}"
+               inputmode="numeric" maxlength="2" placeholder="ex.: 24" value="{cidrPre}">
+    </div>
+    <div class="col-lg-2 tab-actions d-grid gap-2">
+        <button type="submit" name="modo" value="dominio" class="aed-btn aed-btn-execute w-100"
+                data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Executar: resolver o domínio para IP e analisar a rede resultante">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Executar
+        </button>
+    </div>
+</form>

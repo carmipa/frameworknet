@@ -1,0 +1,430 @@
+{
+  "resumo": "FTP (RFC 959) e TFTP (RFC 1350) são os dois protocolos clássicos de transferência de arquivos, e ambos nasceram sem qualquer proteção. O FTP separa a conversa em dois canais TCP — controle na porta 21 e dados na 20 (modo ativo) — e manda usuário e senha em texto claro, legíveis por quem estiver no caminho. O TFTP é ainda mais simples: roda sobre UDP 69, sem login nenhum, feito para boot de rede e firmware. Estudar os dois importa porque eles ensinam, no mesmo lugar, por que hoje se usa SFTP (subsistema do SSH) ou FTPS (FTP sobre TLS) — e por que confundir esses dois substitutos é um erro comum.",
+  "ficha": [
+    {
+      "rotulo": "RFC",
+      "valor": "959 (FTP), 1350 (TFTP); 4217 (FTPS/AUTH TLS)",
+      "dica": "O FTP é de 1985 e mudou pouco; o TFTP é de 1992 (revisando o RFC 783 de 1981) e continua idêntico no essencial."
+    },
+    {
+      "rotulo": "Porta(s)",
+      "valor": "FTP 21 controle / 20 dados; FTPS 990 (implícito) ou 21 (explícito); SFTP 22; TFTP 69 (UDP)",
+      "dica": "A porta 20 só aparece no modo ativo (origem no servidor). No passivo os dados usam porta efêmera."
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Aplicação",
+      "dica": "Camada 7 do OSI. FTP é um protocolo de texto (comandos ASCII); TFTP é binário com opcode de 2 bytes."
+    },
+    {
+      "rotulo": "Transporte",
+      "valor": "FTP / FTPS / SFTP: TCP · TFTP: UDP",
+      "dica": "O TFTP recria confiabilidade à mão (blocos numerados + ACK) porque o UDP não a oferece."
+    },
+    {
+      "rotulo": "Substitui / relacionados",
+      "valor": "Preferir SFTP (SSH); FTPS onde for exigido FTP",
+      "dica": "TFTP só em rede isolada (PXE, firmware, config de switch); nunca exposto à Internet."
+    },
+    {
+      "rotulo": "Segurança",
+      "valor": "FTP e TFTP: texto claro, sem cifra e (TFTP) sem login",
+      "dica": "SFTP e FTPS cifram; TFTP não tem como cifrar nem autenticar no protocolo base."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Dois canais: controle e dados",
+      "icone": "swap_vert",
+      "texto": "O FTP é o único protocolo comum que usa DUAS conexões TCP. Uma, na porta 21, carrega os comandos e as respostas (USER, PASS, RETR, os códigos 220/331/...). A outra carrega o conteúdo dos arquivos e as listagens. Elas nascem e morrem em momentos diferentes, e é essa separação que torna o FTP tão difícil de passar por NAT e firewall.",
+      "destaque": "Liberar 'a porta do FTP' no firewall nunca é liberar só a 21: a conexão de dados usa outra porta, e onde ela vai depende do modo (ativo ou passivo)."
+    },
+    {
+      "titulo": "Modo ativo x modo passivo",
+      "icone": "sync",
+      "texto": "A pergunta é sempre a mesma: quem ABRE a conexão de dados? No modo ATIVO, o cliente manda PORT dizendo seu IP e porta, e o SERVIDOR conecta de volta (origem porta 20) — o que costuma esbarrar no firewall do cliente. No modo PASSIVO, o cliente manda PASV, o servidor responde 227 com uma porta efêmera própria, e o CLIENTE é quem conecta. Por isso o passivo é o padrão atrás de NAT.",
+      "destaque": "227 Entering Passive Mode (h1,h2,h3,h4,p1,p2): a porta é p1*256+p2. Todo o desafio de firewall do FTP mora nesse detalhe."
+    },
+    {
+      "titulo": "Credenciais em texto plano",
+      "icone": "visibility",
+      "texto": "USER e PASS trafegam como texto ASCII puro pelo canal de controle. Qualquer um que capture o tráfego — Wi-Fi aberto, switch espelhado, um roteador no caminho — lê o usuário e a senha inteiros, sem esforço. Não há hash, não há desafio, não há cifra. É o exemplo didático mais direto de por que 'funciona' não é 'seguro'.",
+      "destaque": "Um único tcpdump com a flag -A na porta 21 revela a senha em claro. Este é o motivo pelo qual o FTP puro está em desuso."
+    },
+    {
+      "titulo": "FTPS não é SFTP",
+      "icone": "enhanced_encryption",
+      "texto": "Os nomes parecem irmãos, mas são protocolos sem parentesco. FTPS é o PROTOCOLO FTP embrulhado em TLS (AUTH TLS explícito na 21, ou implícito na 990): mantém os dois canais e toda a dor de firewall. SFTP é um SUBSISTEMA do SSH, um protocolo totalmente diferente, com um único canal cifrado na porta 22. SFTP não tem nada de FTP além das três letras no fim.",
+      "destaque": "Regra prática: SFTP = SSH (22, um canal). FTPS = FTP + TLS (21/990, dois canais). Trocar um pelo outro na configuração quebra a conexão."
+    },
+    {
+      "titulo": "TFTP: sem login, sobre UDP",
+      "icone": "gpp_bad",
+      "texto": "O TFTP foi desenhado para caber numa ROM de boot: sem autenticação, sem listagem de diretório, sem cifra, sobre UDP 69. Quem alcança a porta lê e grava os arquivos que o servidor expõe. É útil para PXE, imagens de firmware e config de equipamento de rede — desde que a rede em volta seja confiável, porque o protocolo não protege nada por conta própria.",
+      "destaque": "Roubar a config de um switch ou gravar um firmware adulterado por TFTP não exige quebrar senha: não há senha para quebrar."
+    },
+    {
+      "titulo": "Confiabilidade à mão (lockstep)",
+      "icone": "cached",
+      "texto": "Como o UDP não garante entrega nem ordem, o TFTP reconstrói isso do zero: manda um bloco de até 512 bytes, espera o ACK daquele número de bloco, só então manda o próximo (stop-and-wait). Num upload (WRQ) a conversa começa com o servidor confirmando o pedido com um ACK de bloco 0; os dados vão nos blocos 1, 2, 3... Um bloco com menos de 512 bytes sinaliza o fim. Simples, porém lento — e um ótimo exemplo de como se transforma um transporte 'burro' em uma transferência confiável.",
+      "destaque": "Depois do primeiro pacote na porta 69, o servidor responde de uma porta efêmera (o TID) e o resto da conversa acontece nesse novo par de portas."
+    }
+  ],
+  "diagrama": {
+    "titulo": "FTP em modo passivo (PASV) — login e download",
+    "definicao": "sequenceDiagram\n    participant C as Cliente\n    participant S as Servidor FTP\n    Note over C,S: Canal de CONTROLE (TCP 21)\n    C->>S: Conecta na porta 21\n    S-->>C: 220 Serviço pronto\n    C->>S: USER paulo\n    S-->>C: 331 Precisa de senha\n    C->>S: PASS (senha em texto claro)\n    S-->>C: 230 Autenticado\n    C->>S: PASV\n    S-->>C: 227 Modo passivo, porta 51000\n    Note over C,S: Canal de DADOS (porta 51000 efêmera)\n    C->>S: Abre conexão de dados na 51000\n    C->>S: RETR arquivo.txt\n    S-->>C: 150 Abrindo conexão de dados\n    S-->>C: Conteúdo do arquivo (canal de dados)\n    S-->>C: 226 Transferência completa",
+    "legenda": "No modo passivo, o CLIENTE abre as duas conexões (controle e dados) — por isso funciona bem atrás de NAT. Repare que a senha (PASS) cruza o canal de controle em texto claro, antes de qualquer arquivo trafegar: é ali que o sniffing acontece."
+  },
+  "cabecalho": {
+    "titulo": "Pacote TFTP — o único cabeçalho binário aqui",
+    "nota": "O FTP NÃO tem cabeçalho binário: seus comandos são linhas de texto ASCII terminadas em CRLF (ex.: 'USER paulo\\r\\n'). Já o TFTP é binário e começa sempre por um opcode de 16 bits. Os cinco formatos: RRQ/WRQ = opcode + nome-do-arquivo(0) + modo(0); DATA = opcode 3 + número-do-bloco + até 512 bytes; ACK = opcode 4 + número-do-bloco; ERROR = opcode 5 + código + mensagem(0). Abaixo estão os dois campos fixos comuns aos pacotes DATA e ACK.",
+    "campos": [
+      {
+        "nome": "Opcode",
+        "bits": 16,
+        "descricao": "Tipo do pacote: 1=RRQ (ler), 2=WRQ (gravar), 3=DATA, 4=ACK, 5=ERROR. É a primeira coisa em todo pacote TFTP.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Número do bloco / Código",
+        "bits": 16,
+        "descricao": "Nos pacotes DATA e ACK, numera o bloco: os DATA começam em 1 e o ACK devolve o mesmo número (num upload/WRQ o primeiro ACK é de bloco 0, confirmando o pedido) — é assim que o UDP vira confiável. No pacote ERROR, este campo é o código do erro. Em seguida vem o payload: 0 a 512 bytes de dados.",
+        "cor": "#7c3aed"
+      }
+    ]
+  },
+  "tabelas": [
+    {
+      "titulo": "Comandos FTP essenciais",
+      "colunas": [
+        "Comando",
+        "Função",
+        "Canal / observação"
+      ],
+      "linhas": [
+        [
+          "USER",
+          "Envia o nome de usuário",
+          "Controle — em texto claro"
+        ],
+        [
+          "PASS",
+          "Envia a senha",
+          "Controle — em texto claro (o ponto fraco)"
+        ],
+        [
+          "PASV",
+          "Pede modo passivo; servidor devolve 227 com a porta de dados",
+          "Controle — cliente abre a conexão de dados"
+        ],
+        [
+          "PORT",
+          "Modo ativo: cliente informa IP:porta para o servidor conectar de volta",
+          "Controle — origem da fama do bounce attack"
+        ],
+        [
+          "RETR",
+          "Download: servidor envia o arquivo ao cliente",
+          "Abre canal de dados"
+        ],
+        [
+          "STOR",
+          "Upload: cliente envia o arquivo ao servidor",
+          "Abre canal de dados"
+        ],
+        [
+          "LIST",
+          "Lista o diretório (formato longo, estilo ls -l)",
+          "Abre canal de dados"
+        ],
+        [
+          "TYPE",
+          "Define o tipo de representação dos dados: A (ASCII) ou I (binário/Image)",
+          "Controle"
+        ],
+        [
+          "QUIT",
+          "Encerra a sessão",
+          "Controle"
+        ]
+      ]
+    },
+    {
+      "titulo": "Códigos de resposta FTP",
+      "colunas": [
+        "Código",
+        "Classe (1º dígito)",
+        "O que diz"
+      ],
+      "linhas": [
+        [
+          "1xx",
+          "Preliminar positiva",
+          "Ação iniciando; aguarde outra resposta (ex.: 150)"
+        ],
+        [
+          "2xx",
+          "Conclusão positiva",
+          "Comando concluído com sucesso (ex.: 200, 226)"
+        ],
+        [
+          "3xx",
+          "Positiva intermediária",
+          "Aceito, mas falta mais um comando (ex.: 331)"
+        ],
+        [
+          "4xx",
+          "Negativa transitória",
+          "Falhou agora; pode tentar de novo (ex.: 425)"
+        ],
+        [
+          "5xx",
+          "Negativa permanente",
+          "Não vai funcionar como está (ex.: 530, 550)"
+        ],
+        [
+          "220",
+          "2xx",
+          "Serviço pronto para novo usuário"
+        ],
+        [
+          "331",
+          "3xx",
+          "Usuário OK, precisa de senha"
+        ],
+        [
+          "230",
+          "2xx",
+          "Usuário autenticado com sucesso"
+        ],
+        [
+          "227",
+          "2xx",
+          "Entrando em modo passivo (traz IP e porta de dados)"
+        ],
+        [
+          "226",
+          "2xx",
+          "Fechando conexão de dados; transferência concluída"
+        ],
+        [
+          "425",
+          "4xx",
+          "Não conseguiu abrir a conexão de dados"
+        ],
+        [
+          "530",
+          "5xx",
+          "Não autenticado (login errado ou anônimo desativado)"
+        ],
+        [
+          "550",
+          "5xx",
+          "Ação não realizada; arquivo indisponível ou sem permissão"
+        ]
+      ]
+    },
+    {
+      "titulo": "FTP x FTPS x SFTP x TFTP",
+      "colunas": [
+        "Protocolo",
+        "Porta",
+        "Transporte",
+        "Cifra?",
+        "Autenticação"
+      ],
+      "linhas": [
+        [
+          "FTP",
+          "21 (controle) / 20 (dados ativo)",
+          "TCP",
+          "Não",
+          "Usuário e senha em texto claro"
+        ],
+        [
+          "FTPS",
+          "990 (implícito) ou 21 (AUTH TLS explícito)",
+          "TCP",
+          "Sim (TLS)",
+          "Usuário e senha, mas dentro do TLS"
+        ],
+        [
+          "SFTP",
+          "22",
+          "TCP (dentro do SSH)",
+          "Sim (SSH)",
+          "Senha, chave pública ou certificado SSH"
+        ],
+        [
+          "TFTP",
+          "69",
+          "UDP",
+          "Não",
+          "Nenhuma"
+        ]
+      ]
+    },
+    {
+      "titulo": "Opcodes do TFTP (RFC 1350)",
+      "colunas": [
+        "Opcode",
+        "Nome",
+        "Função"
+      ],
+      "linhas": [
+        [
+          "1",
+          "RRQ",
+          "Read Request — pedido de leitura (download)"
+        ],
+        [
+          "2",
+          "WRQ",
+          "Write Request — pedido de gravação (upload)"
+        ],
+        [
+          "3",
+          "DATA",
+          "Bloco de dados (número do bloco + até 512 bytes)"
+        ],
+        [
+          "4",
+          "ACK",
+          "Confirma um bloco pelo número"
+        ],
+        [
+          "5",
+          "ERROR",
+          "Código de erro + mensagem (e encerra a transferência)"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Sniffing de credenciais",
+      "como_funciona": "O canal de controle do FTP carrega USER e PASS em ASCII puro. Um atacante no mesmo segmento (Wi-Fi aberto, porta espelhada, roteador comprometido) captura os pacotes da porta 21 e lê a senha inteira, sem quebrar nada. O TFTP nem senha tem para vazar. Vale para todo o tráfego: comandos, nomes de arquivo e o conteúdo também viajam em claro.",
+      "sinal": "USER e PASS aparecem legíveis num tcpdump/Wireshark da porta 21; nenhum handshake TLS antes do login.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Man-in-the-middle (alteração em trânsito)",
+      "como_funciona": "Como não há cifra nem verificação de integridade, um atacante on-path não só lê como REESCREVE: pode injetar comandos no canal de controle, trocar o conteúdo de um arquivo baixado ou desviar a conexão de dados. No FTPS mal configurado (cliente que não valida o certificado), o MITM se disfarça com um certificado falso.",
+      "sinal": "Arquivo baixado com hash diferente do esperado; conexão FTPS aceita certificado que não encadeia numa CA confiável.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "TFTP sem autenticação (leitura/gravação livre)",
+      "como_funciona": "Quem alcança a porta 69/UDP lê qualquer arquivo que o servidor exponha e, se a gravação estiver ligada, escreve por cima. Em cenários típicos de TFTP isso significa baixar a config de um switch/roteador (com senhas dentro) ou gravar uma imagem de firmware adulterada que será carregada no próximo boot. Servidores mal configurados ainda sofrem directory traversal (../).",
+      "sinal": "Transferências na 69/UDP sem nenhuma troca de credenciais; arquivos de config aparecendo em capturas; TFTP alcançável de fora da rede de gerência.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "FTP bounce attack",
+      "como_funciona": "O comando PORT deixa o cliente indicar QUALQUER IP:porta para a conexão de dados — inclusive o de um terceiro. O atacante manda o servidor FTP abrir conexões de dados contra um host interno, usando o servidor como trampolim para varrer portas ou entregar dados atrás do firewall, escondendo a própria origem. Servidores modernos mitigam recusando PORT para IP diferente do cliente e para portas privilegiadas.",
+      "sinal": "Comandos PORT apontando para IPs que não são o do cliente da sessão; conexões de dados partindo do servidor para hosts inesperados.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Abuso de FTP anônimo",
+      "como_funciona": "Contas anônimas com permissão de escrita viram depósito de material ilícito e ponto de distribuição de malware; anônimo com leitura ampla vaza arquivos que deveriam ser restritos. Combinado com um diretório mal isolado, permite ler além da raiz configurada.",
+      "sinal": "Login 'anonymous' aceito; upload possível sem credenciais; crescimento inexplicado de arquivos no diretório público.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Trocar FTP por SFTP (SSH)",
+      "como_funciona": "SFTP roda como subsistema do SSH: um único canal na porta 22, com login por senha, chave pública ou certificado, e tudo cifrado — comandos, listagem e dados. Some o problema dos dois canais e o da senha em claro de uma vez.",
+      "cobre": "Sniffing de credenciais, MITM e a complexidade de firewall do FTP.",
+      "limite": "É outro protocolo: exige servidor SSH e clientes SFTP; ferramentas que só falam FTP não servem sem adaptação."
+    },
+    {
+      "nome": "FTPS (FTP sobre TLS)",
+      "como_funciona": "Mantém o protocolo FTP mas o embrulha em TLS — explícito (AUTH TLS na 21) ou implícito (990). Cifra o canal de controle e, se configurado (PROT P), também o de dados.",
+      "cobre": "Sniffing e MITM, quando o cliente VALIDA o certificado do servidor.",
+      "limite": "Preserva os dois canais e a dor de NAT/firewall; se só o controle for cifrado (sem proteger dados), o arquivo ainda vaza. Cliente que não valida o certificado reabre a porta para MITM."
+    },
+    {
+      "nome": "Desligar acesso anônimo e exigir credenciais fortes",
+      "como_funciona": "Remove a conta anonymous (ou tira a escrita dela), obriga usuário/senha e confina cada conta ao seu diretório (chroot/jail).",
+      "cobre": "Abuso de FTP anônimo e leitura fora do diretório pretendido.",
+      "limite": "Não cifra nada: sem TLS, as credenciais exigidas continuam viajando em texto claro."
+    },
+    {
+      "nome": "Bloquear o bounce (restringir PORT) e usar modo passivo",
+      "como_funciona": "O servidor recusa conexões de dados para um IP diferente do cliente e para portas privilegiadas; o modo passivo, com faixa de portas definida e liberada no firewall, torna o fluxo previsível.",
+      "cobre": "FTP bounce attack e boa parte dos problemas de conexão de dados atrás de NAT.",
+      "limite": "É defesa do servidor FTP; não substitui a cifra. A faixa passiva precisa ser aberta no firewall com cuidado."
+    },
+    {
+      "nome": "Isolar o TFTP na rede (VLAN de gerência, só leitura, allowlist)",
+      "como_funciona": "Como o protocolo não autentica, a proteção vem de fora: TFTP só numa VLAN de gerência fechada, exposto apenas aos equipamentos que precisam, preferencialmente somente-leitura e com allowlist de IP no firewall.",
+      "cobre": "Leitura/gravação livre e roubo de config em ambientes de PXE/firmware.",
+      "limite": "Não há cifra nem login no protocolo: quem entrar na VLAN continua com acesso total. É contenção, não autenticação."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "1. Ver a senha do FTP em texto claro",
+      "cenario": "Provar, na prática, por que o FTP puro está em desuso.",
+      "comandos": "# terminal 1 - capturar o canal de controle\nsudo tcpdump -i any -A 'tcp port 21'\n\n# terminal 2 - sessão FTP comum\nftp ftp.example.com\n# Name: paulo\n# Password: (digite a senha)\nftp> ls\nftp> quit",
+      "explicacao": "No terminal 1 aparecem, legíveis, as linhas 'USER paulo' e 'PASS <sua senha>' — o -A do tcpdump mostra o payload como texto ASCII. Nenhum handshake TLS acontece antes do login. É o sniffing de credenciais em uma linha."
+    },
+    {
+      "titulo": "2. Comparar com SFTP (o canal cifrado)",
+      "cenario": "Mostrar que o SFTP é outro protocolo e não vaza nada.",
+      "comandos": "# capturar a porta 22 durante um sftp\nsudo tcpdump -i any -A 'tcp port 22'\n\n# em outro terminal\nsftp paulo@servidor\nsftp> get relatorio.pdf\nsftp> quit",
+      "explicacao": "No tcpdump só há bytes cifrados: nenhum comando, nome de arquivo ou senha legível. Tudo (login, comandos e dados) vai num único canal TCP 22 do SSH. Repare que não existe 'PASV' nem porta de dados separada — a diferença estrutural para o FTPS."
+    },
+    {
+      "titulo": "3. FTP passivo e FTPS explícito com lftp",
+      "cenario": "Configurar modo passivo e forçar TLS, cifrando controle e dados.",
+      "comandos": "lftp -u paulo,senha ftp.example.com\nlftp> set ftp:passive-mode on\nlftp> ls\n\n# agora exigindo TLS (FTPS explícito, AUTH TLS na 21)\nlftp> set ftp:ssl-force true\nlftp> set ftp:ssl-protect-data true\nlftp> set ssl:verify-certificate true\nlftp> ls\nlftp> get arquivo.bin",
+      "explicacao": "passive-mode faz o CLIENTE abrir a conexão de dados (bom atrás de NAT). ssl-force exige AUTH TLS no controle; ssl-protect-data cifra também o canal de dados — sem ele, só o login é protegido e o arquivo ainda trafega em claro. verify-certificate é o que fecha a porta para MITM."
+    },
+    {
+      "titulo": "4. TFTP sem autenticação alguma",
+      "cenario": "Ver que ninguém pede login e como o TFTP muda de porta.",
+      "comandos": "# capturar a 69/UDP em outro terminal\nsudo tcpdump -i any -A 'udp port 69'\n\n# transferir sem credenciais\ntftp 192.168.0.1\ntftp> mode octet\ntftp> get switch-config.cfg\ntftp> quit",
+      "explicacao": "Nenhuma etapa pede usuário ou senha. Na captura, o RRQ vai para a porta 69; o servidor responde de uma porta efêmera (o TID) e o resto da transferência usa esse par de portas. Quem alcança a 69 lê (e, se a escrita estiver ligada, grava)."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Login funciona, mas LIST e as transferências travam",
+      "causa_provavel": "Modo ativo atrás de NAT/firewall: o servidor tenta conectar de volta ao cliente e não consegue.",
+      "comando": "ftp> passive\nftp> ls\n# ou, com lftp:\nlftp> set ftp:passive-mode on",
+      "leitura": "Se em modo passivo passa a funcionar, o problema era a conexão de volta do modo ativo. No passivo é o cliente que abre a conexão de dados; garanta que a faixa de portas passivas do servidor esteja liberada no firewall."
+    },
+    {
+      "sintoma": "530 Not logged in",
+      "causa_provavel": "Usuário ou senha errados, ou acesso anônimo desativado no servidor.",
+      "comando": "sudo tcpdump -i any -A 'tcp port 21'\n# observe as linhas USER e PASS e a resposta 331/530",
+      "leitura": "Se o 331 aparece após o USER mas vem 530 após o PASS, a senha está errada ou a conta é barrada. 'anonymous' recusado com 530 significa que o anônimo foi (corretamente) desligado."
+    },
+    {
+      "sintoma": "425 Can't open data connection",
+      "causa_provavel": "O canal de DADOS está bloqueado (controle na 21 abre, mas a porta de dados não), típico de firewall sem a faixa passiva liberada.",
+      "comando": "ftp> passive\nftp> ls\n# no servidor, conferir a faixa passiva configurada (ex. vsftpd)\ngrep -i pasv /etc/vsftpd.conf",
+      "leitura": "O controle funciona e a transferência falha: é sempre o segundo canal. Defina uma faixa de portas passivas fixa no servidor e libere exatamente essa faixa no firewall."
+    },
+    {
+      "sintoma": "FTPS falha com 'certificate verify failed'",
+      "causa_provavel": "Certificado do servidor autoassinado, cadeia incompleta ou nome que não bate com o host.",
+      "comando": "openssl s_client -connect servidor:21 -starttls ftp </dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates",
+      "leitura": "Confira subject/issuer e validade. Se o certificado for legítimo mas autoassinado, instale a CA no cliente — NÃO desligue a verificação (verify-certificate false reabre a porta para MITM)."
+    },
+    {
+      "sintoma": "TFTP dá timeout mesmo com o servidor no ar",
+      "causa_provavel": "UDP 69 bloqueado, ou o firewall stateless não acompanha a mudança para a porta efêmera (TID) que o servidor usa depois do primeiro pacote.",
+      "comando": "sudo tcpdump -i any -n 'udp port 69 or (udp and host 192.168.0.1)'\ntftp 192.168.0.1 -c get switch-config.cfg",
+      "leitura": "Se o RRQ sai para a 69 e a resposta (de uma porta alta do servidor) nunca chega, o firewall está descartando o TID. É preciso um firewall com conntrack de TFTP (ex. módulo nf_conntrack_tftp) ou regra que permita o retorno UDP."
+    }
+  ]
+}

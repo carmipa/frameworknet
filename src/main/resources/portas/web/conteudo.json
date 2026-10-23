@@ -1,0 +1,318 @@
+{
+  "resumo": "A família de portas web é o rosto público da maioria dos sistemas: a porta 80 fala HTTP em texto claro e a 443 fala HTTPS (HTTP dentro de TLS). Em produção, o correto é publicar apenas a 443, redirecionar a 80 para a 443 com um 301 e ativar o HSTS para forçar o navegador a nunca mais tentar texto claro. Portas alternativas (8080, 8443) costumam esconder painéis administrativos, e portas de desenvolvimento (3000, 5000, 8000) frequentemente vazam para a internet sem autenticação nem TLS. Há aprofundamentos dedicados de HTTP e de TLS no site para os detalhes de cada protocolo; aqui o foco é o que expor e o que jamais deixar aberto.",
+  "ficha": [
+    {
+      "rotulo": "Portas principais",
+      "valor": "80 (HTTP) e 443 (HTTPS)",
+      "dica": "80 = texto claro; 443 = cifrado com TLS"
+    },
+    {
+      "rotulo": "Portas alternativas",
+      "valor": "8080, 8443, 8000",
+      "dica": "Comuns em proxies, painéis e servidores de aplicação (Tomcat, etc.)"
+    },
+    {
+      "rotulo": "Portas de dev",
+      "valor": "3000, 5000, 8000, 4200, 5173",
+      "dica": "React, Flask, Django, Angular, Vite. Nunca devem ir a produção pública"
+    },
+    {
+      "rotulo": "Transporte",
+      "valor": "TCP",
+      "dica": "HTTP/3 usa QUIC sobre UDP na 443, mas o negócio ainda começa em TCP na maioria dos casos"
+    },
+    {
+      "rotulo": "Risco típico",
+      "valor": "Sniffing (80) e painel/app exposto sem autenticação (8080, 3000)",
+      "dica": "Texto claro entrega senhas e cookies; painel aberto entrega o servidor inteiro"
+    },
+    {
+      "rotulo": "RFCs de referência",
+      "valor": "RFC 9110/9112 (HTTP), RFC 8446 (TLS 1.3), RFC 6797 (HSTS)",
+      "dica": "Ver aprofundamentos dedicados de HTTP e de TLS no site"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "80 fala aberto, 443 fala cifrado",
+      "icone": "lock",
+      "texto": "Na porta 80, tudo trafega em texto claro: URL, cabeçalhos, cookies e até senhas de formulário passam legíveis pela rede. Na porta 443, o HTTP viaja dentro de uma camada TLS que cifra e autentica o conteúdo. Quem estiver no caminho (Wi-Fi público, provedor, roteador comprometido) lê tudo da 80 e nada da 443.",
+      "destaque": "80 = postal aberto; 443 = envelope lacrado"
+    },
+    {
+      "titulo": "Redirecionar 80 para 443 não basta",
+      "icone": "router",
+      "texto": "O redirecionamento 301 de 80 para 443 é obrigatório, mas a primeira requisição ainda sai em texto claro e pode ser sequestrada (SSL stripping). Por isso existe o HSTS: um cabeçalho que instrui o navegador a só falar HTTPS com aquele domínio por um período longo, eliminando a janela de texto claro nas próximas visitas.",
+      "destaque": "301 fecha a porta; HSTS tranca por dentro"
+    },
+    {
+      "titulo": "Porta alternativa não é porta segura",
+      "icone": "warning",
+      "texto": "Muita gente coloca um painel administrativo na 8080 achando que 'ninguém vai adivinhar'. Scanners varrem a internet inteira em minutos: 8080, 8443, 8000 e 9000 estão entre as primeiras portas testadas. Porta incomum é segurança por obscuridade, que não protege nada sozinha.",
+      "destaque": "Obscuridade não é controle de acesso"
+    },
+    {
+      "titulo": "Servidor de dev não é servidor de produção",
+      "icone": "terminal",
+      "texto": "As portas 3000, 5000 e 8000 sobem servidores de desenvolvimento: sem TLS, com mensagens de erro detalhadas, modo debug ligado e, às vezes, um console que executa código remoto (Werkzeug/Flask). Foram feitos para rodar em localhost, nunca para atender a internet.",
+      "destaque": "Modo debug exposto = execução remota de código"
+    },
+    {
+      "titulo": "Reverse proxy é a fronteira",
+      "icone": "shield",
+      "texto": "O padrão sólido é: só a 443 aberta na borda, atendida por um reverse proxy (Nginx, Caddy, Traefik) ou WAF, que termina o TLS e repassa para a aplicação numa porta interna (8080, 3000) que não é acessível de fora. A aplicação nunca fica exposta diretamente.",
+      "destaque": "Um ponto de entrada, cifrado, com registro e filtragem"
+    },
+    {
+      "titulo": "HTTP e TLS têm aprofundamentos próprios",
+      "icone": "dns",
+      "texto": "Aqui tratamos das portas: quais abrir, quais fechar, como proteger. O funcionamento interno do protocolo HTTP (métodos, cabeçalhos, status) e o handshake do TLS (certificados, versões, cifras) têm aprofundamentos dedicados no site. Vale lê-los para entender o que corre dentro de cada porta.",
+      "destaque": "Portas aqui; protocolos nos aprofundamentos dedicados"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Do navegador ao app: caminho seguro x porta de dev exposta",
+    "definicao": "flowchart TD\n    N[Navegador do usuário] -->|http porta 80| R{Servidor da borda}\n    R -->|Redirect 301 para https| T[TLS na porta 443]\n    N -->|https porta 443| T\n    T -->|Handshake TLS mais HSTS| P[Reverse proxy ou WAF]\n    P -->|proxy interno cifrado ou rede privada| A[Aplicação na porta interna 8080]\n    A --> B[(Banco de dados)]\n    X[Atacante na mesma rede] -.->|escuta tráfego em texto claro| N\n    D[Servidor de dev porta 3000] -.->|exposto sem TLS nem senha| I((Internet pública))\n    I -.->|scanner acha em minutos| ATK[Atacante remoto]\n    classDef seguro fill:#dcfce7,stroke:#16a34a,color:#14532d;\n    classDef perigo fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;\n    class T,P,A seguro;\n    class D,I,ATK,X perigo;",
+    "legenda": "Em verde, o caminho correto: a 80 apenas redireciona, a 443 termina o TLS no reverse proxy e a aplicação vive numa porta interna inalcançável de fora. Em vermelho, os dois erros clássicos: escutar o tráfego em texto claro da porta 80 e deixar um servidor de desenvolvimento (porta 3000) direto na internet, onde scanners o encontram em minutos."
+  },
+  "tabelas": [
+    {
+      "titulo": "Portas web x uso pretendido",
+      "colunas": [
+        "Porta",
+        "Protocolo/uso",
+        "Onde deve ficar",
+        "Expor na internet?"
+      ],
+      "linhas": [
+        [
+          "80",
+          "HTTP em texto claro",
+          "Borda, apenas para redirecionar 301 para 443",
+          "Sim, só como redirecionamento"
+        ],
+        [
+          "443",
+          "HTTPS (HTTP sobre TLS)",
+          "Borda, reverse proxy/WAF",
+          "Sim, este é o ponto público"
+        ],
+        [
+          "8080",
+          "HTTP alternativo (Tomcat, proxies, painéis)",
+          "Rede interna / localhost",
+          "Não"
+        ],
+        [
+          "8443",
+          "HTTPS alternativo",
+          "Rede interna ou borda de sistemas específicos",
+          "Evitar; prefira a 443"
+        ],
+        [
+          "3000",
+          "Dev (React, Node, Grafana)",
+          "localhost do desenvolvedor",
+          "Nunca"
+        ],
+        [
+          "5000 / 8000",
+          "Dev (Flask, Django, uvicorn)",
+          "localhost do desenvolvedor",
+          "Nunca"
+        ]
+      ]
+    },
+    {
+      "titulo": "Texto claro (80) x cifrado (443)",
+      "colunas": [
+        "Aspecto",
+        "HTTP na porta 80",
+        "HTTPS na porta 443"
+      ],
+      "linhas": [
+        [
+          "Confidencialidade",
+          "Nenhuma: tudo legível na rede",
+          "Conteúdo cifrado por TLS"
+        ],
+        [
+          "Senhas e cookies",
+          "Trafegam visíveis (sniffing trivial)",
+          "Protegidos dentro do túnel"
+        ],
+        [
+          "Integridade",
+          "Podem ser alterados em trânsito",
+          "Adulteração é detectada"
+        ],
+        [
+          "Identidade do servidor",
+          "Nenhuma garantia",
+          "Certificado valida quem é o servidor"
+        ],
+        [
+          "Uso recomendado",
+          "Só redirecionar para a 443",
+          "Todo o tráfego real da aplicação"
+        ]
+      ]
+    },
+    {
+      "titulo": "Portas de dev que não podem ir a produção",
+      "colunas": [
+        "Porta",
+        "Ferramenta comum",
+        "Por que é perigoso exposto",
+        "Ação correta"
+      ],
+      "linhas": [
+        [
+          "3000",
+          "React, Next, Node, Grafana",
+          "Sem TLS, às vezes sem senha",
+          "Fechar no firewall; publicar via 443"
+        ],
+        [
+          "5000",
+          "Flask, .NET dev",
+          "Modo debug pode executar código remoto",
+          "Nunca expor; usar servidor WSGI atrás de proxy"
+        ],
+        [
+          "8000",
+          "Django runserver, uvicorn",
+          "Servidor de dev, sem hardening",
+          "Trocar por Gunicorn/uvicorn atrás de proxy"
+        ],
+        [
+          "5173 / 4200",
+          "Vite, Angular",
+          "Hot-reload e código-fonte expostos",
+          "Buildar e servir estático via 443"
+        ],
+        [
+          "9000 / 8081",
+          "SonarQube, consoles diversos",
+          "Painéis administrativos abertos",
+          "Restringir a VPN/rede interna"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Painel administrativo na 8080 exposto",
+      "como_funciona": "O administrador sobe um painel (Tomcat Manager, Jenkins, phpMyAdmin, um dashboard interno) na porta 8080 achando que a porta 'estranha' o protege. Scanners como Shodan e Masscan varrem a internet inteira e listam qualquer 8080 aberta. O atacante encontra o painel, testa credenciais padrão (admin/admin) ou explora uma falha conhecida e assume o servidor.",
+      "sinal": "Requisições a /manager, /admin, /console vindas de IPs desconhecidos; picos de tentativas de login; a 8080 aparecendo em varredura externa",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Sniffing de HTTP em texto claro (porta 80)",
+      "como_funciona": "Em uma rede compartilhada (Wi-Fi de café, rede corporativa, provedor no caminho), o atacante captura os pacotes da porta 80 com Wireshark ou tcpdump. Como o HTTP não é cifrado, ele lê a URL, os cabeçalhos, os cookies de sessão e qualquer senha enviada em formulário, podendo depois sequestrar a sessão do usuário.",
+      "sinal": "Tráfego sensível saindo pela 80; ausência de redirecionamento para a 443; cookies de sessão sem a flag Secure",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Servidor de desenvolvimento aberto (3000/5000/8000)",
+      "como_funciona": "Um desenvolvedor sobe o servidor de dev e liga em 0.0.0.0 em vez de 127.0.0.1, ou uma regra de firewall abre a porta por engano. O servidor de dev entrega mensagens de erro detalhadas, variáveis de ambiente e, no caso do debug do Flask/Werkzeug, um console interativo que executa código Python remoto sem autenticação.",
+      "sinal": "Portas 3000/5000/8000 respondendo a IPs públicos; páginas de erro com stack trace; endpoint /console acessível",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "SSL stripping na primeira requisição",
+      "como_funciona": "Mesmo com redirecionamento de 80 para 443, a primeira visita do usuário sai em HTTP. Um atacante no caminho intercepta esse primeiro pedido, mantém o usuário em HTTP e repassa o conteúdo, capturando tudo. Sem HSTS, o navegador não sabe que aquele site deveria ser sempre HTTPS.",
+      "sinal": "Ausência do cabeçalho Strict-Transport-Security; usuários caindo em HTTP após digitar o domínio sem https://",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Certificado inválido ou TLS fraco na 443",
+      "como_funciona": "A 443 está aberta, mas o certificado está expirado, é autoassinado, ou o servidor aceita TLS 1.0/1.1 e cifras obsoletas. O atacante explora a versão fraca para decifrar o tráfego ou faz o usuário se acostumar a clicar em 'aceitar mesmo assim', abrindo caminho para um man-in-the-middle com certificado falso.",
+      "sinal": "Avisos de certificado no navegador; nota baixa em testes de TLS (SSL Labs); logs aceitando protocolos antigos",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Publicar somente a 443 na borda",
+      "como_funciona": "No firewall, deixe abertas para a internet apenas a 443 (e a 80 exclusivamente para redirecionar). Toda porta de aplicação (8080), painel e serviço de dev fica em rede interna ou ligado a 127.0.0.1. A regra padrão é negar tudo e liberar por exceção.",
+      "cobre": "Painel na 8080 exposto, servidores de dev abertos, portas alternativas varridas por scanners",
+      "limite": "Não protege a própria aplicação na 443 contra falhas de código; é controle de superfície, não de conteúdo"
+    },
+    {
+      "nome": "Reverse proxy / WAF na frente",
+      "como_funciona": "Um Nginx, Caddy, Traefik ou WAF recebe a 443, termina o TLS, aplica filtragem (rate limit, bloqueio de payloads maliciosos, regras OWASP) e repassa para a aplicação numa porta interna. Centraliza certificado, registro e defesa num único ponto controlado.",
+      "cobre": "Exposição direta da aplicação, ataques de camada 7, falta de registro centralizado",
+      "limite": "Um WAF mal configurado dá falsa sensação de segurança; precisa de regras e monitoramento reais"
+    },
+    {
+      "nome": "Redirecionar 80 para 443 e ativar HSTS",
+      "como_funciona": "A porta 80 responde apenas com 301 para https. O servidor envia o cabeçalho Strict-Transport-Security com max-age longo (por exemplo 1 ano) e includeSubDomains, fazendo o navegador só usar HTTPS dali em diante. Considere a preload list para fechar até a primeira visita.",
+      "cobre": "Sniffing na 80, SSL stripping, usuários digitando o domínio sem https",
+      "limite": "O HSTS só protege após a primeira visita bem-sucedida em HTTPS (salvo preload); exige TLS sempre válido, senão trava o acesso"
+    },
+    {
+      "nome": "Fechar 8080/3000/5000 para o mundo externo",
+      "como_funciona": "Servidores de dev ligam em 127.0.0.1, nunca em 0.0.0.0. Painéis e portas alternativas ficam atrás de VPN ou restritos por lista de IPs. Regras de firewall (ufw, security group, iptables) bloqueiam explicitamente essas portas na interface pública.",
+      "cobre": "Painel administrativo exposto, servidor de dev na internet, console de debug remoto",
+      "limite": "Depende de disciplina e revisão contínua; uma regra aberta por engano recria a exposição"
+    },
+    {
+      "nome": "TLS moderno e certificado válido e monitorado",
+      "como_funciona": "Use apenas TLS 1.2/1.3, cifras fortes, certificado emitido por CA confiável (Let's Encrypt automatizado) e renovação automática monitorada. Teste periodicamente com ferramentas de avaliação de TLS e alerte antes do vencimento.",
+      "cobre": "TLS fraco, certificado expirado/inválido, downgrade de protocolo",
+      "limite": "Não substitui os demais controles; TLS forte com painel aberto atrás ainda deixa o servidor vulnerável"
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ver a diferença entre 80 (claro) e 443 (cifrado)",
+      "cenario": "Comparar, na prática, o que trafega em texto claro na porta 80 e o que aparece cifrado na 443, e confirmar o redirecionamento.",
+      "comandos": "# Requisição HTTP na porta 80: deve responder 301 para https\ncurl -I http://example.com\n\n# Seguir o redirecionamento e ver os cabeçalhos finais em HTTPS\ncurl -IL http://example.com\n\n# Verificar o cabeçalho HSTS na resposta HTTPS\ncurl -sI https://example.com | grep -i strict-transport-security\n\n# Capturar tráfego da porta 80 e observar o conteúdo legível (ambiente de teste)\nsudo tcpdump -i any -A 'tcp port 80'",
+      "explicacao": "O curl -I na porta 80 deve trazer um 301 apontando para https. Ao seguir com -IL você chega à resposta HTTPS, onde o grep confirma se o HSTS está presente. O tcpdump mostra, em um ambiente controlado, que na porta 80 a URL e os cabeçalhos aparecem legíveis (-A imprime ASCII) enquanto na 443 o conteúdo seria embaralhado. Rode a captura apenas em rede e sistema que você tenha autorização para testar."
+    },
+    {
+      "titulo": "Descobrir portas web abertas em um alvo autorizado",
+      "cenario": "Mapear quais portas web estão abertas em um servidor que você administra, para confirmar que só a 443 (e a 80 para redirect) estão públicas e que 8080/3000/5000 estão fechadas de fora.",
+      "comandos": "# Varredura das portas web comuns (use apenas em host que você administra)\nnmap -p 80,443,8080,8443,3000,5000,8000,9000 -sV servidor.example.com\n\n# Detectar detalhes de TLS/HTTP nas portas encontradas\nnmap -p 443 --script ssl-enum-ciphers,http-headers servidor.example.com\n\n# Conferir do próprio servidor quem está ouvindo e em qual interface\nsudo ss -tlnp | grep -E ':(80|443|8080|3000|5000|8000)\\b'",
+      "explicacao": "O nmap lista as portas web abertas e a versão dos serviços; o esperado em produção é ver a 80 e a 443, e nada de 8080/3000/5000 respondendo do lado de fora. O script ssl-enum-ciphers revela versões e cifras de TLS aceitas (procure por TLS 1.2/1.3 apenas). O ss rodado no próprio servidor é decisivo: se um serviço aparece ligado a 0.0.0.0 numa porta de dev, ele está exposto; ligado a 127.0.0.1 está seguro. Varredura só é legítima em alvos que você tem autorização para testar."
+    },
+    {
+      "titulo": "Fechar portas de dev e forçar a 443 no firewall",
+      "cenario": "Ajustar o firewall de um servidor Linux para expor apenas a 80 (redirect) e a 443, sem perder o SSH de administração, bloqueando painéis e servidores de dev na interface pública.",
+      "comandos": "# Estado atual do firewall\nsudo ufw status verbose\n\n# Permitir apenas as portas web públicas\nsudo ufw allow 80/tcp\nsudo ufw allow 443/tcp\n\n# Garantir que portas alternativas e de dev estão bloqueadas de fora\nsudo ufw deny 8080/tcp\nsudo ufw deny 3000/tcp\nsudo ufw deny 5000/tcp\n\n# Padrão: negar entrada, permitir saída\nsudo ufw default deny incoming\nsudo ufw default allow outgoing\n\n# ATENÇÃO: se você administra o servidor por SSH, libere o SSH ANTES de ativar o firewall.\n# Sem esta regra, o ufw enable bloqueia a próxima conexão SSH e você fica trancado fora do servidor.\nsudo ufw allow OpenSSH   # ou: sudo ufw limit 22/tcp (libera a 22 limitando tentativas repetidas)\nsudo ufw enable\n\n# Confirmar o resultado\nsudo ufw status numbered",
+      "explicacao": "A postura correta é default deny incoming: nada entra a menos que liberado. Liberamos a 80 (apenas para o redirect) e a 443 (o ponto público real). Antes do ufw enable, o roteiro libera o SSH (allow OpenSSH): ativar o default deny incoming numa sessão remota sem essa regra tranca o administrador fora do servidor, e o próprio ufw avisa que o comando pode interromper conexões SSH. As regras deny explícitas para 8080/3000/5000 deixam a intenção documentada e evitam que uma ferramenta reabra a porta sem querer. Ao final, ufw status numbered confirma o conjunto de regras. Lembre que fechar no firewall complementa, mas não substitui, ligar os serviços de dev apenas em 127.0.0.1."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Site abre em http:// e não redireciona para https",
+      "causa_provavel": "Falta a regra de redirecionamento 301 na porta 80, ou o servidor serve conteúdo real em texto claro",
+      "comando": "curl -IL http://seu-dominio.example",
+      "leitura": "A resposta deve começar com HTTP/1.1 301 e um Location: https://... Se vier 200 servindo a página em HTTP, o tráfego está em texto claro e precisa do redirect."
+    },
+    {
+      "sintoma": "Navegador não força HTTPS mesmo com redirect ativo",
+      "causa_provavel": "Cabeçalho HSTS ausente, deixando a primeira requisição vulnerável a SSL stripping",
+      "comando": "curl -sI https://seu-dominio.example | grep -i strict-transport-security",
+      "leitura": "Sem nenhuma linha de retorno, o HSTS não está configurado. O esperado é algo como Strict-Transport-Security: max-age=31536000; includeSubDomains."
+    },
+    {
+      "sintoma": "Uma porta de dev (3000/5000/8000) responde da internet",
+      "causa_provavel": "Servidor de dev ligado a 0.0.0.0 em vez de 127.0.0.1, ou firewall com a porta aberta",
+      "comando": "sudo ss -tlnp | grep -E ':(3000|5000|8000)\\b'",
+      "leitura": "Se o endereço local aparecer como 0.0.0.0:3000 ou *:3000, o serviço aceita conexões externas. O correto é 127.0.0.1:3000, que só atende localmente."
+    },
+    {
+      "sintoma": "Aviso de certificado ou nota baixa de TLS na 443",
+      "causa_provavel": "Certificado expirado/autoassinado, ou o servidor aceita TLS 1.0/1.1 e cifras fracas",
+      "comando": "nmap -p 443 --script ssl-enum-ciphers seu-dominio.example",
+      "leitura": "Procure por linhas TLSv1.0 ou TLSv1.1 e cifras marcadas com nota C/F; o desejável é apenas TLSv1.2 e TLSv1.3 com cifras fortes. Confira também a data de validade do certificado."
+    }
+  ]
+}

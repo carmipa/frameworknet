@@ -1,0 +1,325 @@
+{
+  "resumo": "As portas de infraestrutura de rede sustentam a Internet nos bastidores: DNS (53) traduz nomes, DHCP (67/68) distribui endereços, NTP (123) sincroniza relógios, SNMP (161/162) monitora equipamentos e LDAP (389/636) autentica usuários em diretórios. Quase todos operam sobre UDP sem estado, o que os torna alvos ideais de ataques de amplificação e reflexão, nos quais um pedido pequeno com IP de origem falsificado gera uma resposta gigante despejada sobre a vítima. A regra de ouro é simples: serviços recursivos, comunidades SNMP \"public\" e diretórios em claro nunca devem ficar expostos na Internet, e todo tráfego sensível deve migrar para as variantes cifradas e autenticadas.",
+  "ficha": [
+    {
+      "rotulo": "Portas da família",
+      "valor": "53, 67/68, 123, 161/162, 389/636",
+      "dica": "DNS, DHCP, NTP, SNMP e LDAP respectivamente. Todas na faixa de portas bem conhecidas (0 a 1023)"
+    },
+    {
+      "rotulo": "Transporte predominante",
+      "valor": "UDP (DNS também usa TCP)",
+      "dica": "UDP sem handshake facilita a falsificação (spoofing) do IP de origem"
+    },
+    {
+      "rotulo": "Risco típico",
+      "valor": "Amplificação/reflexão e vazamento em claro",
+      "dica": "Resposta muito maior que o pedido derruba a vítima por DDoS"
+    },
+    {
+      "rotulo": "RFCs de referência",
+      "valor": "DNS RFC 1035, DHCP RFC 2131, NTP RFC 5905, SNMP RFC 3411, LDAP RFC 4511",
+      "dica": "LDAP sobre TLS: RFC 4513; BCP38 anti-spoofing: RFC 2827"
+    },
+    {
+      "rotulo": "O que nunca expor",
+      "valor": "Resolver recursivo aberto, SNMP community public, LDAP 389 em claro",
+      "dica": "Restrinja por firewall e ACL; prefira 636 (LDAPS) e SNMPv3"
+    },
+    {
+      "rotulo": "Aprofundamento dedicado",
+      "valor": "O DNS tem página própria no site",
+      "dica": "Consulte o aprofundamento de DNS para detalhes de resolução e DNSSEC"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Por que o UDP é o vetor preferido",
+      "icone": "bolt",
+      "texto": "O UDP não tem handshake: o servidor responde ao IP que aparece no pacote sem confirmar que ele realmente enviou o pedido. O atacante escreve o IP da vítima como origem (spoofing) e o serviço entrega a resposta para quem não pediu. Essa é a base da reflexão.",
+      "destaque": "Sem handshake, sem prova de quem pediu"
+    },
+    {
+      "titulo": "Fator de amplificação",
+      "icone": "trending_up",
+      "texto": "É a razão entre o tamanho da resposta e o do pedido. Uma consulta DNS ANY pode devolver dezenas de vezes mais bytes; o monlist do NTP chega a centenas de vezes. Quanto maior o fator, menos máquinas o atacante precisa para gerar um DDoS massivo.",
+      "destaque": "Pedido de bytes, resposta de quilobytes"
+    },
+    {
+      "titulo": "Resolver recursivo aberto",
+      "icone": "dns",
+      "texto": "Um servidor DNS que responde consultas recursivas para qualquer origem da Internet vira arma de amplificação. O correto é restringir a recursão aos clientes internos e servir de forma autoritativa apenas o que é seu. Há um aprofundamento dedicado de DNS no site.",
+      "destaque": "Recursão só para a sua rede"
+    },
+    {
+      "titulo": "SNMP community 'public'",
+      "icone": "security",
+      "texto": "O SNMP v1/v2c usa uma senha em texto claro chamada community; o padrão de fábrica costuma ser 'public' (leitura) e 'private' (escrita). Deixar isso exposto entrega inventário, topologia e até a reconfiguração do equipamento a qualquer um.",
+      "destaque": "'public' e 'private' são senhas conhecidas por todos"
+    },
+    {
+      "titulo": "Em claro versus cifrado",
+      "icone": "lock",
+      "texto": "O LDAP na 389 trafega credenciais e consultas em texto legível; qualquer sniffer na rede lê tudo. O LDAPS na 636 encapsula em TLS. O mesmo raciocínio vale para migrar do SNMPv2c para o SNMPv3 com autenticação e privacidade.",
+      "destaque": "Autenticação em claro é credencial vazada"
+    },
+    {
+      "titulo": "Falsificar a origem só existe sem BCP38",
+      "icone": "shield",
+      "texto": "O IP falsificado só sai da rede do atacante porque o provedor dele não filtra a origem. O BCP38 (ingress filtering) descarta pacotes cuja origem não pertence àquela rede, cortando a raiz de toda reflexão.",
+      "destaque": "Sem spoofing na saída, não há reflexão"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Ataque de amplificação e reflexão via DNS",
+    "definicao": "sequenceDiagram\n    participant A as Atacante (IP falsificado)\n    participant R as Resolver DNS aberto (53/UDP)\n    participant V as Vítima\n    Note over A: Escreve o IP da vítima<br/>como origem do pacote\n    A->>R: Consulta pequena (ANY example.com) com origem falsa da vítima\n    Note over R: O resolver acredita<br/>na origem e responde\n    R-->>V: Resposta enorme enviada para a vítima\n    Note over V: A vítima recebe tráfego<br/>que nunca pediu (DDoS)\n    A->>R: Repete com milhares de resolvers abertos\n    R-->>V: A enxurrada somada satura o link da vítima",
+    "legenda": "As setas contínuas (->>) são os pedidos pequenos do atacante com origem forjada; as tracejadas (-->>) são as respostas grandes que os resolvers despejam sobre a vítima. Um pedido de dezenas de bytes vira resposta de quilobytes, e o volume somado de muitos resolvers derruba o alvo."
+  },
+  "tabelas": [
+    {
+      "titulo": "Porta x serviço x transporte x amplificação",
+      "colunas": [
+        "Porta",
+        "Serviço",
+        "Transporte",
+        "Fator de amplificação típico",
+        "Exposição recomendada"
+      ],
+      "linhas": [
+        [
+          "53",
+          "DNS",
+          "UDP e TCP",
+          "28x a 54x (consulta ANY)",
+          "Autoritativo público; recursivo só interno"
+        ],
+        [
+          "67/68",
+          "DHCP",
+          "UDP",
+          "Não aplicável (link local)",
+          "Nunca roteado para a Internet"
+        ],
+        [
+          "123",
+          "NTP",
+          "UDP",
+          "Até 556x (comando monlist)",
+          "Cliente sai; servidor público só sem monlist"
+        ],
+        [
+          "161/162",
+          "SNMP",
+          "UDP",
+          "6x a 11x (GetBulk)",
+          "Nunca na Internet; só na rede de gerência"
+        ],
+        [
+          "389",
+          "LDAP",
+          "UDP e TCP",
+          "56x a 70x (CLDAP em UDP)",
+          "Nunca exposto; migrar para 636"
+        ],
+        [
+          "636",
+          "LDAPS",
+          "TCP",
+          "Não aplicável (TCP/TLS)",
+          "Exposição controlada por firewall e VPN"
+        ]
+      ]
+    },
+    {
+      "titulo": "Em claro versus variante segura",
+      "colunas": [
+        "Serviço",
+        "Versão/porta em claro",
+        "Versão/porta segura",
+        "O que a versão segura protege"
+      ],
+      "linhas": [
+        [
+          "DNS",
+          "53 UDP/TCP",
+          "DNS sobre TLS (853) e DNSSEC",
+          "Confidencialidade da consulta e integridade da resposta"
+        ],
+        [
+          "SNMP",
+          "161 v1/v2c com community",
+          "161 SNMPv3 (authPriv)",
+          "Autenticação por usuário e cifragem dos dados"
+        ],
+        [
+          "NTP",
+          "123 sem controle",
+          "NTP com restrict e NTS",
+          "Bloqueia o monlist e autentica a fonte de tempo"
+        ],
+        [
+          "LDAP",
+          "389 em texto claro",
+          "636 LDAPS (TLS)",
+          "Cifra credenciais e consultas do diretório"
+        ]
+      ]
+    },
+    {
+      "titulo": "O que expor, restringir ou nunca expor",
+      "colunas": [
+        "Serviço",
+        "Público",
+        "Interno/gerência",
+        "Nunca na Internet"
+      ],
+      "linhas": [
+        [
+          "DNS autoritativo",
+          "Sim, só o seu domínio",
+          "-",
+          "-"
+        ],
+        [
+          "DNS recursivo",
+          "-",
+          "Sim, só os seus clientes",
+          "Resolver aberto"
+        ],
+        [
+          "DHCP",
+          "-",
+          "Sim, no segmento local",
+          "Roteado externamente"
+        ],
+        [
+          "SNMP",
+          "-",
+          "Sim, só SNMPv3",
+          "v1/v2c com 'public'"
+        ],
+        [
+          "LDAP/LDAPS",
+          "-",
+          "Sim, 636 via VPN",
+          "389 em claro"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Amplificação DNS",
+      "como_funciona": "O atacante envia consultas pequenas (do tipo ANY ou a domínios com respostas grandes) com o IP de origem falsificado para o IP da vítima, apontando para milhares de resolvers recursivos abertos. Cada resolver responde com um pacote muito maior direcionado à vítima, somando um volume que satura o link do alvo.",
+      "sinal": "Pico de tráfego UDP de entrada na porta 53 vindo de muitos IPs de resolvers, com respostas grandes sem consulta correspondente.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Amplificação NTP (monlist)",
+      "como_funciona": "O comando legado monlist (modo 7) faz o servidor NTP devolver a lista dos últimos clientes atendidos, gerando uma resposta até centenas de vezes maior que o pedido. Com o IP falsificado, essa resposta gigante é refletida sobre a vítima.",
+      "sinal": "Tráfego UDP 123 anormal, pacotes de resposta muito grandes e consultas monlist nos logs do NTP.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Amplificação SNMP / CLDAP",
+      "como_funciona": "O SNMP GetBulk e o CLDAP (LDAP sobre UDP 389) respondem a consultas não autenticadas com blocos grandes de dados. Refletidos via spoofing, viram vetor de DDoS, além de vazarem inventário e topologia do ambiente.",
+      "sinal": "Respostas volumosas em UDP 161 ou 389 para hosts que nunca consultaram esses serviços.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "SNMP community 'public'",
+      "como_funciona": "Com a community padrão 'public' exposta, o atacante faz um snmpwalk e lê toda a MIB: interfaces, tabelas de roteamento, versões de firmware e até a configuração. Se a 'private' estiver ativa, pode reconfigurar o equipamento.",
+      "sinal": "Consultas SNMP de origens externas respondidas com sucesso; sessões GET/WALK não esperadas nos logs.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "LDAP em claro (389)",
+      "como_funciona": "Com o diretório ouvindo na 389 sem TLS, um atacante posicionado na rede captura os bind requests e lê usuário e senha em texto legível, além de enumerar toda a árvore do diretório.",
+      "sinal": "Binds LDAP simples em texto claro capturáveis por sniffer; ausência de handshake TLS antes da autenticação.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "BCP38 (anti-spoofing / ingress filtering)",
+      "como_funciona": "O provedor e o roteador de borda descartam pacotes cujo endereço de origem não pertence à rede de onde saem. Sem poder forjar a origem, o atacante não consegue refletir respostas para terceiros.",
+      "cobre": "A raiz de toda amplificação e reflexão (DNS, NTP, SNMP, CLDAP)",
+      "limite": "Depende de cada rede implementar na saída; você não controla a borda dos outros"
+    },
+    {
+      "nome": "Fechar o resolver recursivo aberto",
+      "como_funciona": "Configurar o DNS para só aceitar consultas recursivas dos clientes internos (allow-recursion/ACL) e servir de forma autoritativa apenas o seu domínio para o público. Há um aprofundamento dedicado de DNS no site.",
+      "cobre": "Amplificação DNS",
+      "limite": "Não protege o servidor autoritativo, que ainda precisa de RRL"
+    },
+    {
+      "nome": "RRL (Response Rate Limiting)",
+      "como_funciona": "Limita a taxa de respostas idênticas que o servidor DNS envia para uma mesma origem, cortando a repetição explorada na amplificação sem afetar as consultas legítimas normais.",
+      "cobre": "Amplificação a partir de servidores autoritativos",
+      "limite": "Mitiga o volume, não elimina o spoofing na origem"
+    },
+    {
+      "nome": "SNMPv3 e trocar/remover a 'public'",
+      "como_funciona": "Migrar para o SNMPv3 com autenticação e privacidade (authPriv), remover as communities padrão e restringir a 161/162 à rede de gerência por firewall e ACL.",
+      "cobre": "SNMP community public e amplificação SNMP",
+      "limite": "Exige suporte a v3 nos equipamentos legados"
+    },
+    {
+      "nome": "Desativar o NTP monlist e usar LDAPS",
+      "como_funciona": "Desligar o comando monlist (disable monitor / noquery) e restringir as consultas de controle no NTP; no diretório, forçar o LDAPS na 636 com TLS e desativar o bind simples em claro na 389.",
+      "cobre": "Amplificação NTP e LDAP em claro",
+      "limite": "O LDAPS exige gestão de certificados; clientes antigos podem precisar de ajuste"
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Testar se um resolver DNS está aberto e medir a amplificação",
+      "cenario": "Você quer confirmar se um resolver responde recursão para qualquer origem e comparar o tamanho da resposta com o do pedido. Faça isso apenas contra servidores que você administra.",
+      "comandos": "# Consulta recursiva a um domínio externo pelo resolver alvo\ndig @192.0.2.53 example.com A\n# Não recursiva, para comparação\ndig @192.0.2.53 example.com A +norecurse\n\n# Comparar o tamanho: uma resposta muito maior que o pedido indica potencial de amplificação\ndig @192.0.2.53 isc.org ANY +bufsize=4096 | grep -i 'MSG SIZE'\n\n# Se 'status: REFUSED' ou não responder recursão externa, o resolver está corretamente fechado",
+      "explicacao": "Se o resolver devolve NOERROR com dados para domínios de terceiros vindo de fora, ele está aberto e pode ser usado em amplificação. O ideal é ver REFUSED para origens externas. A linha MSG SIZE mostra o volume da resposta usado no cálculo do fator de amplificação."
+    },
+    {
+      "titulo": "Detectar SNMP com a community 'public'",
+      "cenario": "Verificar se um equipamento responde à community padrão e, portanto, vaza a MIB inteira. Rode somente em hosts autorizados da sua rede.",
+      "comandos": "# Tenta ler o sysDescr com a community padrão\nsnmpget -v2c -c public 192.0.2.10 1.3.6.1.2.1.1.1.0\n\n# Percorre a MIB inteira (evidencia o vazamento se responder)\nsnmpwalk -v2c -c public 192.0.2.10 system\n\n# Alternativa cifrada e autenticada (o correto):\nsnmpget -v3 -l authPriv -u monitor -a SHA -A 'SenhaAuth' -x AES -X 'SenhaPriv' 192.0.2.10 1.3.6.1.2.1.1.1.0",
+      "explicacao": "Se o snmpget/snmpwalk com -c public retorna dados, a community padrão está ativa e exposta: qualquer um lê o inventário do equipamento. A linha final mostra o formato SNMPv3 authPriv, que exige usuário, chave de autenticação e chave de privacidade, encerrando o problema."
+    },
+    {
+      "titulo": "Comparar o LDAP em claro (389) com o LDAPS (636)",
+      "cenario": "Confirmar que o bind na 389 trafega em texto legível e validar que a 636 responde com TLS. Use um servidor de diretório de teste seu.",
+      "comandos": "# Bind simples na 389 (a credencial trafega em claro na rede)\nldapsearch -x -H ldap://dir.exemplo.local:389 -D 'cn=admin,dc=exemplo,dc=local' -w 'senha' -b 'dc=exemplo,dc=local' '(uid=paulo)'\n\n# Bind sobre TLS na 636 (LDAPS)\nldapsearch -x -H ldaps://dir.exemplo.local:636 -D 'cn=admin,dc=exemplo,dc=local' -w 'senha' -b 'dc=exemplo,dc=local' '(uid=paulo)'\n\n# Provar que a 389 é legível: capturar e procurar a senha no pacote\nsudo tcpdump -i any -A 'port 389' -c 20",
+      "explicacao": "No tcpdump da porta 389 a senha e os atributos aparecem legíveis, provando o risco do LDAP em claro. Na 636 o tcpdump só mostra o handshake TLS e bytes cifrados. Conclusão prática: desativar o bind simples na 389 e exigir o LDAPS na 636."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Link de rede saturado por tráfego UDP 53 de entrada sem consultas correspondentes",
+      "causa_provavel": "O servidor DNS está sendo usado como refletor em ataque de amplificação, ou o seu resolver está aberto",
+      "comando": "sudo tcpdump -ni any 'udp port 53 and greater 512'",
+      "leitura": "Muitos pacotes de resposta grandes para IPs que nunca consultaram indicam reflexão; feche a recursão e ative o RRL"
+    },
+    {
+      "sintoma": "Rajadas de UDP 123 com respostas anormalmente grandes",
+      "causa_provavel": "Comando monlist ativo no NTP e explorado para amplificação",
+      "comando": "ntpdc -n -c monlist 192.0.2.20",
+      "leitura": "Se o monlist retorna uma lista longa, o servidor é vetor de amplificação; desative o monitor (noquery) e aplique restrict"
+    },
+    {
+      "sintoma": "Equipamentos respondendo consultas SNMP de origens externas",
+      "causa_provavel": "SNMP v1/v2c com community padrão exposto na Internet",
+      "comando": "snmpwalk -v2c -c public 192.0.2.10 system",
+      "leitura": "Retorno com dados confirma a community 'public' ativa; migre para o SNMPv3 e restrinja a 161/162 à rede de gerência"
+    },
+    {
+      "sintoma": "Credenciais de diretório aparecendo em captura de pacotes",
+      "causa_provavel": "Bind LDAP simples na porta 389 sem TLS",
+      "comando": "sudo tcpdump -i any -A 'port 389' -c 20",
+      "leitura": "Usuário e senha legíveis no dump confirmam o LDAP em claro; force o LDAPS na 636 e desative o bind simples sem TLS"
+    }
+  ]
+}

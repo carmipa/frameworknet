@@ -1,0 +1,101 @@
+{! Aba Geral do módulo Certificados: as três tabelas de referência (formatos,
+    campos do X.509, tipos). Reutiliza o CSS dos aprofundamentos (aprof-secao,
+    aprof-tabela) e o sub-menu de dois níveis. Variáveis: catalogo
+    (CatalogoCertificados), grupos/grupoAtivo/aprofundamentoAtivo. !}
+{#include shared/base.html}
+{#title}Certificados (X.509 / PKI) | Framework de Redes A&D{/title}
+{#description}Certificados digitais X.509 e PKI: formatos PEM, DER e PFX, campos do certificado, tipos de validação, cadeia de confiança e aprofundamentos por grupo.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
+<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='certificados' /}
+    {#include certificados/partials/subnav.html /}
+
+    <header class="text-center mb-4">
+        <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">workspace_premium</span></div>
+        <span class="aed-eyebrow aed-eyebrow-teal">Catálogo</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Certificados Digitais (X.509 / PKI)</h1>
+        <p class="text-secondary small mx-auto aed-medida-leitura">
+            Três tabelas de referência: os <strong>formatos</strong> de arquivo (que arquivo é esse?),
+            os <strong>campos</strong> de um X.509 (o que tem dentro?) e os <strong>tipos</strong> de
+            certificado (qual eu preciso?). Os aprofundamentos por grupo estão no submenu acima.
+        </p>
+        <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+            <a href="/certificados/x509" class="aed-btn aed-btn-teal btn-sm" title="O certificado por dentro: TBSCertificate e a estrutura binária ASN.1/DER">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">badge</span> Anatomia do X.509
+            </a>
+            <a href="/protocolos/tls" class="aed-btn aed-btn-neutral btn-sm" title="O protocolo que usa os certificados">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> Protocolo TLS
+            </a>
+            <a href="/seguranca" class="aed-btn aed-btn-neutral btn-sm" title="Inspetor TLS: teste você mesmo a validação de um certificado">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">policy</span> Inspetor TLS
+            </a>
+        </div>
+    </header>
+
+    <section id="formatos" class="aprof-secao">
+        <h2 class="h3 aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">description</span> Formatos e extensões de arquivo</h2>
+        <p class="small text-secondary">A "chave decodificadora": qual arquivo guarda o quê, em que codificação e com qual ferramenta.</p>
+        <div class="table-responsive border border-secondary border-opacity-25 rounded">
+            <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
+                <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">description</span>Extensão</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">code</span>Codificação</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">article</span>Conteúdo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">task_alt</span>Uso típico</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">build</span>Ferramenta</th></tr></thead>
+                <tbody>
+                    {#for f in catalogo.formatos}
+                    <tr>
+                        <td class="fw-bold text-info text-nowrap"><code class="aprof-inline" translate="no">{f.extensao}</code></td>
+                        <td class="small">{f.codificacao}</td>
+                        <td class="small text-light">{f.conteudo}</td>
+                        <td class="small text-light">{f.uso}</td>
+                        <td class="small text-secondary">{f.ferramenta}</td>
+                    </tr>
+                    {/for}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="campos" class="aprof-secao">
+        <h2 class="h3 aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span> Campos de um certificado X.509</h2>
+        <p class="small text-secondary">O que existe dentro de um certificado — do serial às extensões v3. A régua binária (ASN.1/DER) está na <a href="/certificados/x509" class="text-info">Anatomia do X.509</a>.</p>
+        <div class="table-responsive border border-secondary border-opacity-25 rounded">
+            <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
+                <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span>Campo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">help</span>O que é</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">terminal</span>Exemplo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Nota</th></tr></thead>
+                <tbody>
+                    {#for c in catalogo.campos}
+                    <tr>
+                        <td class="fw-bold text-info text-nowrap">{c.campo}</td>
+                        <td class="small text-light">{c.oque}</td>
+                        <td class="small"><code class="aprof-inline" translate="no">{c.exemplo}</code></td>
+                        <td class="small text-secondary">{c.nota}</td>
+                    </tr>
+                    {/for}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="tipos" class="aprof-secao">
+        <h2 class="h3 aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">category</span> Tipos de certificado</h2>
+        <p class="small text-secondary">Por validação (DV/OV/EV) e por uso (servidor, cliente, code signing, S/MIME). Detalhe em <a href="/certificados/tipos" class="text-info">Tipos de certificado</a>.</p>
+        <div class="table-responsive border border-secondary border-opacity-25 rounded">
+            <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
+                <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">verified</span>O que valida</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">task_alt</span>Uso</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Observação</th></tr></thead>
+                <tbody>
+                    {#for t in catalogo.tipos}
+                    <tr>
+                        <td class="fw-bold text-info text-nowrap">{t.tipo}</td>
+                        <td class="small text-light">{t.valida}</td>
+                        <td class="small text-light">{t.uso}</td>
+                        <td class="small text-warning">{t.observacao}</td>
+                    </tr>
+                    {/for}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{/content}
+{/include}

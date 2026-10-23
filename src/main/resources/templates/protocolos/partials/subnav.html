@@ -1,0 +1,45 @@
+{! Sub-menu do módulo Protocolos, em DOIS níveis.
+    Nível 1: as camadas (Geral · Aplicação · Transporte · Rede).
+    Nível 2: os protocolos da camada ativa.
+    Tudo vem de AprofundamentoProtocolo.agrupadoPorCamada() — protocolo novo aparece
+    sozinho ao ser registrado com sua camada, sem edição deste template. !}
+<nav class="protocolo-subnav" aria-label="Camadas e protocolos">
+    <div class="protocolo-subnav-camadas" role="tablist" aria-label="Camadas">
+        <a href="/protocolos"
+           class="protocolo-subnav-item {#if camadaAtiva == 'geral'}is-active{/if}"
+           {#if camadaAtiva == 'geral'}aria-current="page"{/if}
+           title="Catálogo comparativo com todos os protocolos">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_rows</span>
+            <span>Geral</span>
+        </a>
+        {#for cam in camadas}
+        <a href="{cam.itens.get(0).rota}"
+           class="protocolo-subnav-item protocolo-subnav-camada {#if camadaAtiva == cam.nome}is-active{/if}"
+           {#if camadaAtiva == cam.nome}aria-current="page"{/if}
+           title="Camada de {cam.nome}">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span>
+            <span>{cam.nome}</span>
+        </a>
+        {/for}
+        <span class="protocolo-subnav-hint">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
+            Aprofundamento por camada
+        </span>
+    </div>
+
+    {#for cam in camadas}
+    {#if camadaAtiva == cam.nome}
+    <div class="protocolo-subnav-protos" role="tablist" aria-label="Protocolos da camada {cam.nome}">
+        {#for item in cam.itens}
+        <a href="{item.rota}"
+           class="protocolo-subproto {#if aprofundamentoAtivo == item.slug}is-active{/if}"
+           {#if aprofundamentoAtivo == item.slug}aria-current="page"{/if}
+           title="{item.chamada}">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">{item.icone}</span>
+            <span>{item.rotuloMenu}</span>
+        </a>
+        {/for}
+    </div>
+    {/if}
+    {/for}
+</nav>

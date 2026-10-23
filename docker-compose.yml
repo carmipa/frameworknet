@@ -1,0 +1,97 @@
+# Produção na VPS — alinhado ao compose Python (Nginx Proxy Manager + rede externa).
+# Pré-requisito na VPS: docker network create nginx-proxy-network
+#
+# Build e subida:
+#   docker compose build
+#   docker compose up -d
+#
+# GeoIP opcional: copie GeoLite2-City.mmdb para ./data/geo/ e descomente o volume abaixo.
+
+services:
+  framework-net:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: framework-net-java-quarkus:latest
+    container_name: framework-net-java
+    ports:
+      - "127.0.0.1:${HTTP_PORT:-8080}:8080"
+    environment:
+      QUARKUS_PROFILE: prod
+      QUARKUS_HTTP_PORT: "8080"
+      ADMIN_API_KEY: ${ADMIN_API_KEY:?Defina ADMIN_API_KEY no .env ou ambiente}
+      CSRF_SECRET: ${CSRF_SECRET:?Defina CSRF_SECRET no .env ou ambiente}
+      # Login da Telemetria pelo GitHub. Opcionais de propósito: sem eles a
+      # aplicação sobe, o botão do GitHub não é oferecido e resta a contingência.
+      # O .env só alimenta a substituição do compose — o que o container enxerga
+      # é exatamente o que estiver listado aqui.
+      GITHUB_OAUTH_CLIENT_ID: ${GITHUB_OAUTH_CLIENT_ID:-}
+      GITHUB_OAUTH_CLIENT_SECRET: ${GITHUB_OAUTH_CLIENT_SECRET:-}
+      GITHUB_OAUTH_LOGINS_PERMITIDOS: ${GITHUB_OAUTH_LOGINS_PERMITIDOS:-}
+      GITHUB_OAUTH_CALLBACK_URL: ${GITHUB_OAUTH_CALLBACK_URL:-}
+      # Sincronizacao do dataset publico. Token fine-grained, um repositorio so.
+      GITHUB_DATASET_TOKEN: ${GITHUB_DATASET_TOKEN:-}
+      GITHUB_DATASET_REPO: ${GITHUB_DATASET_REPO:-carmipa/framework-net-telemetry-dataset}
+      # Cache L2 das APIs externas (GeoIP, Nominatim). Sobrevive a deploy.
+      QUARKUS_REDIS_HOSTS: redis://framework-net-redis:6379
+      FRAMEWORK_CACHE_DISTRIBUIDO_ENABLED: "true"
+    depends_on:
+      - redis
+    volumes:
+      - framework-net-data:/deployments/data
+      # - ${GEO_DB_HOST_PATH:-./data/geo/GeoLite2-City.mmdb}:/deployments/data/geo/GeoLite2-City.mmdb:ro
+    # Teto de memória do container (cgroup). SEM isto a JVM enxerga a RAM inteira da VPS
+    # e dimensiona o heap por essa fração — causa raiz do consumo alto observado em produção.
+    # A JVM lê este limite e aplica -XX:MaxRAMPercentage (ver JAVA_OPTS_APPEND no Dockerfile).
+    # memswap_limit igual a mem_limit desabilita swap: evita crescer em disco mascarando o problema.
+    mem_limit: ${MEM_LIMIT:-768m}
+    memswap_limit: ${MEM_LIMIT:-768m}
+    mem_reservation: 256m
+    restart: unless-stopped
+    # O log vai para o stdout (json-file do Docker). Sem teto ele cresce sem limite no disco que a
+    # VPS divide com outros serviços (auditoria F27): 3 arquivos de 10 MB por container.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - nginx-proxy-network
+      - framework-net-interna
+
+  # Redis DEDICADO a este projeto.
+  #
+  # Existe um redis-stack-server na VPS, mas ele vive na rede do Pride Security e
+  # não tem senha: usá-lo criaria um vínculo de confiança entre um app didático
+  # público e a infra daquele projeto. Um container próprio de ~10 MB resolve sem
+  # esse acoplamento.
+  #
+  # Guarda só cache de API externa — dado descartável. Por isso não há volume:
+  # perder o conteúdo num restart é aceitável e volta ao comportamento sem cache.
+  # A rede é interna (sem acesso à internet) e a porta não é publicada no host.
+  redis:
+    image: redis:7-alpine
+    container_name: framework-net-redis
+    command: redis-server --save "" --appendonly no --maxmemory 48mb --maxmemory-policy allkeys-lru
+    mem_limit: 64m
+    memswap_limit: 64m
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - framework-net-interna
+
+volumes:
+  framework-net-data:
+    driver: local
+
+networks:
+  nginx-proxy-network:
+    external: true
+  # internal: true impede qualquer saída para a internet a partir desta rede.
+  framework-net-interna:
+    driver: bridge
+    internal: true

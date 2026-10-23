@@ -1,0 +1,391 @@
+{
+  "resumo": "SMTP, POP3 e IMAP formam o trio de protocolos do e-mail: o SMTP (RFC 5321) transporta a mensagem do cliente ao servidor e de servidor a servidor, enquanto POP3 (RFC 1939) e IMAP (RFC 3501) entregam a caixa ao destinatário. Todos são protocolos de texto ASCII sobre TCP, fáceis de inspecionar e, por isso mesmo, historicamente inseguros sem TLS. Dominar o fluxo MUA -> MTA -> MTA -> MDA -> MUA e as portas de cada etapa é a base para configurar envio autenticado e defender o domínio contra spoofing e spam.",
+  "ficha": [
+    {
+      "rotulo": "RFC",
+      "valor": "SMTP: RFC 5321 (envio) - POP3: RFC 1939 - IMAP: RFC 3501",
+      "dica": "SMTP também descrito nas obsoletas RFC 821/2821; submission na RFC 6409; TLS implícito recomendado pela RFC 8314; IMAP4rev2 modernizado na RFC 9051 (2021)"
+    },
+    {
+      "rotulo": "Porta(s)",
+      "valor": "SMTP 25 (relay), 587 e 465 (submission) - POP3 110 e 995 - IMAP 143 e 993",
+      "dica": "587 usa STARTTLS; 465, 995 e 993 são TLS implícito (cifrado desde o início)"
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Aplicação (OSI L7 / camada de aplicação TCP/IP)",
+      "dica": "comandos em texto ASCII respondidos por códigos numéricos de três dígitos"
+    },
+    {
+      "rotulo": "Transporte",
+      "valor": "TCP (orientado a conexão)",
+      "dica": "o TLS roda sobre o mesmo TCP, seja negociado por STARTTLS/STLS ou implícito na porta"
+    },
+    {
+      "rotulo": "Substitui / relacionados",
+      "valor": "SMTP envia; POP3 e IMAP recebem. Depende de DNS (registro MX) e apoia-se em SPF, DKIM, DMARC, TLS e MIME",
+      "dica": "MIME (RFC 2045+) formata anexos e HTML dentro do corpo transportado pelo SMTP"
+    },
+    {
+      "rotulo": "Segurança",
+      "valor": "Sem TLS trafega em claro; sem SPF/DKIM/DMARC o remetente pode ser falsificado",
+      "dica": "STARTTLS/TLS protege o transporte; SPF + DKIM + DMARC autenticam o domínio de origem"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "O caminho de um e-mail",
+      "icone": "hub",
+      "texto": "O cliente de e-mail (MUA) entrega a mensagem ao seu servidor de saída (MTA) por submission. Esse MTA consulta o registro MX no DNS do domínio de destino e fala SMTP com o MTA de entrada. Este passa a mensagem ao MDA, que a grava na caixa postal. O destinatário lê com POP3 ou IMAP.",
+      "destaque": "MUA -> MTA -> MTA -> MDA -> MUA"
+    },
+    {
+      "titulo": "Submission x Relay",
+      "icone": "mail",
+      "texto": "A porta 25 é reservada para relay entre servidores (MTA a MTA) e costuma ser bloqueada na saída das redes domésticas. O cliente humano usa submission: 587 (STARTTLS) ou 465 (TLS implícito), sempre com autenticação.",
+      "destaque": "Cliente = 587/465; servidor a servidor = 25"
+    },
+    {
+      "titulo": "STARTTLS x TLS implícito",
+      "icone": "enhanced_encryption",
+      "texto": "No STARTTLS a conexão começa em texto puro e é promovida a TLS por um comando: STARTTLS no SMTP (587) e no IMAP (143), ou STLS no POP3 (110). No TLS implícito a sessão já nasce cifrada na porta dedicada (465, 993, 995). O implícito evita a janela de exposição e o ataque de downgrade (STARTTLS stripping).",
+      "destaque": "STARTTLS/STLS negocia; implícito já nasce cifrado"
+    },
+    {
+      "titulo": "POP3: baixa e apaga",
+      "icone": "swap_vert",
+      "texto": "O POP3 foi feito para um único dispositivo: conecta, transfere as mensagens da INBOX para a máquina local e, por padrão, apaga a cópia do servidor. O estado (lido, respondido) fica só no dispositivo.",
+      "destaque": "Cópia única, offline, sem pastas no servidor"
+    },
+    {
+      "titulo": "IMAP: sincroniza no servidor",
+      "icone": "sync",
+      "texto": "O IMAP mantém as mensagens, pastas e flags no servidor. Vários dispositivos veem o mesmo estado em tempo real e baixam só os cabeçalhos ou o corpo sob demanda. É o padrão para quem usa celular e desktop juntos.",
+      "destaque": "Estado único no servidor, múltiplos dispositivos"
+    },
+    {
+      "titulo": "SPF, DKIM e DMARC",
+      "icone": "verified_user",
+      "texto": "O SMTP sozinho não prova quem enviou. SPF autoriza os IPs que podem enviar pelo domínio, DKIM assina a mensagem com chave publicada no DNS e o DMARC passa quando pelo menos UM dos dois está alinhado com o domínio do From visível, além de gerar relatórios.",
+      "destaque": "Três camadas de DNS contra falsificação de domínio"
+    }
+  ],
+  "diagrama": {
+    "titulo": "O caminho de um e-mail, da escrita à leitura",
+    "definicao": "flowchart TD\n    A[MUA remetente] -->|Submission 587 ou 465| B[MTA de saída]\n    B -->|SMTP 25 via DNS MX| C[MTA de entrada]\n    C -->|entrega local| D[MDA]\n    D -->|grava mensagem| E[(Caixa postal)]\n    E -->|POP3 995 baixa| F[MUA leitor]\n    E -->|IMAP 993 sincroniza| F",
+    "legenda": "O envio (SMTP) desce de cima para baixo até a caixa postal; a leitura (POP3 ou IMAP) puxa a mensagem da caixa de volta ao cliente. Note que SMTP só entrega até o servidor - quem apresenta a caixa ao usuário é o POP3 ou o IMAP."
+  },
+  "cabecalho": null,
+  "tabelas": [
+    {
+      "titulo": "Comandos SMTP essenciais",
+      "colunas": [
+        "Comando",
+        "Função",
+        "Exemplo",
+        "Resposta típica"
+      ],
+      "linhas": [
+        [
+          "EHLO / HELO",
+          "Identifica o cliente e abre a sessão; EHLO ativa as extensões ESMTP",
+          "EHLO mail.example.com",
+          "250 lista de extensões"
+        ],
+        [
+          "STARTTLS",
+          "Promove a conexão aberta para TLS (submission/relay)",
+          "STARTTLS",
+          "220 pronto para TLS"
+        ],
+        [
+          "AUTH",
+          "Autentica o remetente no submission",
+          "AUTH LOGIN",
+          "235 autenticação aceita"
+        ],
+        [
+          "MAIL FROM",
+          "Define o remetente do envelope (return-path)",
+          "MAIL FROM:<ana@example.com>",
+          "250 OK"
+        ],
+        [
+          "RCPT TO",
+          "Define cada destinatário (pode repetir)",
+          "RCPT TO:<beto@example.net>",
+          "250 OK ou 550"
+        ],
+        [
+          "DATA",
+          "Inicia o corpo; termina com uma linha contendo só um ponto",
+          "DATA",
+          "354 depois 250"
+        ],
+        [
+          "QUIT",
+          "Encerra a sessão",
+          "QUIT",
+          "221 encerrando"
+        ]
+      ]
+    },
+    {
+      "titulo": "Códigos de resposta SMTP",
+      "colunas": [
+        "Código",
+        "Classe",
+        "Significado"
+      ],
+      "linhas": [
+        [
+          "220",
+          "Sucesso",
+          "Serviço pronto (banner de abertura ou após STARTTLS)"
+        ],
+        [
+          "221",
+          "Sucesso",
+          "Encerrando a conexão (resposta ao QUIT)"
+        ],
+        [
+          "235",
+          "Sucesso",
+          "Autenticação aceita"
+        ],
+        [
+          "250",
+          "Sucesso",
+          "Ação concluída (OK do EHLO, MAIL, RCPT e fim do DATA)"
+        ],
+        [
+          "354",
+          "Intermediário",
+          "Pode enviar o corpo agora (após DATA)"
+        ],
+        [
+          "421",
+          "Temporário",
+          "Serviço indisponível, conexão será fechada"
+        ],
+        [
+          "450 / 451",
+          "Temporário",
+          "Falha transitória, tente depois (ex.: greylisting)"
+        ],
+        [
+          "550",
+          "Permanente",
+          "Caixa inexistente ou relay negado"
+        ],
+        [
+          "554",
+          "Permanente",
+          "Transação recusada por política (spam, reputação)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Portas por protocolo",
+      "colunas": [
+        "Protocolo",
+        "Texto / STARTTLS",
+        "TLS implícito",
+        "Uso"
+      ],
+      "linhas": [
+        [
+          "SMTP relay",
+          "25",
+          "-",
+          "Entre servidores (MTA a MTA), guiado pelo registro MX"
+        ],
+        [
+          "SMTP submission",
+          "587 (STARTTLS)",
+          "465",
+          "Envio pelo cliente, com autenticação"
+        ],
+        [
+          "POP3",
+          "110 (STLS)",
+          "995",
+          "Recepção: baixa a caixa para o dispositivo"
+        ],
+        [
+          "IMAP",
+          "143 (STARTTLS)",
+          "993",
+          "Recepção: sincroniza a caixa no servidor"
+        ]
+      ]
+    },
+    {
+      "titulo": "POP3 x IMAP",
+      "colunas": [
+        "Aspecto",
+        "POP3 (RFC 1939)",
+        "IMAP (RFC 3501)"
+      ],
+      "linhas": [
+        [
+          "Modelo",
+          "Baixa e, por padrão, apaga do servidor",
+          "Mantém e sincroniza no servidor"
+        ],
+        [
+          "Pastas",
+          "Só a INBOX",
+          "Múltiplas pastas e rótulos no servidor"
+        ],
+        [
+          "Múltiplos dispositivos",
+          "Ruim: cada um baixa a sua cópia",
+          "Bom: estado único compartilhado"
+        ],
+        [
+          "Flags (lido, respondido)",
+          "Locais, não se propagam",
+          "Guardados no servidor"
+        ],
+        [
+          "Uso offline",
+          "Cópia completa local",
+          "Cache parcial, corpo sob demanda"
+        ],
+        [
+          "Portas",
+          "110 / 995",
+          "143 / 993"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Spoofing de remetente",
+      "como_funciona": "O SMTP não valida quem escreve o MAIL FROM nem o cabeçalho From. Um atacante forja um remetente confiável (banco, chefe) e o servidor de destino aceita se não houver checagem de domínio.",
+      "sinal": "From visível e Return-Path divergentes; SPF/DKIM ausentes ou desalinhados no cabeçalho Authentication-Results.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Open relay",
+      "como_funciona": "Um MTA mal configurado aceita mensagens de qualquer origem para qualquer destino sem autenticar. Spammers usam o servidor como trampolim, queimando a reputação e o IP da vítima.",
+      "sinal": "Teste com MAIL FROM externo e RCPT TO externo retorna 250 (aceito); IP entrando em listas de bloqueio (RBL).",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Sniffing sem TLS",
+      "como_funciona": "Em portas 25/110/143 sem cifra, tudo trafega em texto. Quem estiver na rede captura o conteúdo e as credenciais - o AUTH LOGIN só codifica o usuário e a senha em Base64, trivialmente reversível.",
+      "sinal": "Tráfego legível no Wireshark; string USER/PASS ou 'AUTH LOGIN' em Base64 visível na captura.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Phishing",
+      "como_funciona": "E-mail que imita uma marca ou pessoa para induzir a vítima a entregar credenciais, clicar em link malicioso ou aprovar um pagamento (BEC). Muitas vezes combinado com spoofing ou domínios parecidos.",
+      "sinal": "Domínio quase igual (troca de letra), links encurtados, tom de urgência, anexos inesperados.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Enumeração de usuários (VRFY/RCPT)",
+      "como_funciona": "O atacante testa endereços e usa a diferença de resposta (250 para conta válida, 550 para inexistente) para montar a lista de usuários reais do domínio, alvo de spam e ataque de senha.",
+      "sinal": "Muitos RCPT TO ou VRFY em sequência vindos do mesmo IP, alternando 250 e 550.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "SPF (Sender Policy Framework)",
+      "como_funciona": "Registro TXT no DNS do domínio que lista os IPs e hosts autorizados a enviar. O receptor compara com o domínio do MAIL FROM (envelope).",
+      "cobre": "Uso do domínio por IP não autorizado e spoofing do envelope.",
+      "limite": "Quebra em encaminhamento (forwarding) e valida o return-path, não o From que o usuário vê."
+    },
+    {
+      "nome": "DKIM (DomainKeys Identified Mail)",
+      "como_funciona": "O MTA assina cabeçalhos e corpo com uma chave privada; a chave pública fica no DNS (seletor._domainkey). O receptor valida a assinatura.",
+      "cobre": "Autenticidade do domínio assinante e integridade da mensagem em trânsito.",
+      "limite": "Por si só não diz o que fazer se falhar; a assinatura quebra se o corpo for modificado no caminho."
+    },
+    {
+      "nome": "DMARC",
+      "como_funciona": "Política em _dmarc no DNS que exige o alinhamento de SPF e/ou DKIM com o From visível e define a ação (none, quarantine, reject) mais relatórios agregados.",
+      "cobre": "Spoofing do From visível; fecha a lacuna deixada por SPF e DKIM isolados.",
+      "limite": "Depende de SPF/DKIM configurados; com p=none apenas monitora, sem bloquear."
+    },
+    {
+      "nome": "STARTTLS / TLS implícito",
+      "como_funciona": "Cifra a sessão no submission, no relay e na recepção, protegendo credenciais e conteúdo em trânsito.",
+      "cobre": "Sniffing e roubo de senha ou conteúdo no caminho.",
+      "limite": "STARTTLS sofre downgrade (stripping) sem MTA-STS ou DANE; TLS não protege a mensagem em repouso no servidor."
+    },
+    {
+      "nome": "Autenticação SMTP (AUTH)",
+      "como_funciona": "Exige credencial válida para enviar pelo submission (587/465), impedindo que o servidor vire relay aberto para clientes.",
+      "cobre": "Envio não autorizado através do próprio servidor.",
+      "limite": "Credencial vazada permite envio que parece legítimo; só deve rodar sobre TLS para não trafegar em claro."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Inspecionar STARTTLS no submission",
+      "cenario": "Confirmar que a porta 587 aceita STARTTLS e ver as extensões ESMTP e o certificado.",
+      "comandos": "openssl s_client -starttls smtp -crlf -connect smtp.example.com:587\n# após o handshake TLS:\nEHLO teste.local\nQUIT",
+      "explicacao": "O openssl abre a conexão em claro na 587, envia STARTTLS e faz o handshake TLS; a partir daí você fala SMTP dentro do canal cifrado. Verifique 'Verify return code: 0' e a linha 250-AUTH na resposta ao EHLO. A 250-STARTTLS não aparece de novo: depois do TLS o servidor não volta a anunciá-la (RFC 3207 §4.2); o fato de o s_client ter concluído o STARTTLS já prova que ela foi oferecida."
+    },
+    {
+      "titulo": "Enviar um e-mail de teste com swaks",
+      "cenario": "Depurar entrega e autenticação ponta a ponta, vendo cada linha da conversa SMTP.",
+      "comandos": "swaks --to beto@example.net --from ana@example.com \\\n      --server smtp.example.com:587 --tls \\\n      --auth LOGIN --auth-user ana@example.com",
+      "explicacao": "O swaks conduz toda a sessão (EHLO, STARTTLS via --tls, AUTH, MAIL FROM, RCPT TO, DATA) e imprime cada comando e o código de resposta. No swaks, --tls exige STARTTLS; para TLS implícito na 465 use --tlsc. Ideal para isolar em que passo a entrega falha."
+    },
+    {
+      "titulo": "Conferir TLS implícito (465, 993, 995)",
+      "cenario": "Validar que as portas de TLS implícito respondem cifradas e conferir o certificado.",
+      "comandos": "openssl s_client -connect smtp.example.com:465 -crlf\nopenssl s_client -connect imap.example.com:993 -crlf\nopenssl s_client -connect pop.example.com:995 -crlf",
+      "explicacao": "Nessas portas o TLS é imediato, sem STARTTLS. Serve para inspecionar validade e CN/SAN do certificado e confirmar que a porta implícita está ativa e cifrada."
+    },
+    {
+      "titulo": "Máquina de estados do SMTP em laboratório",
+      "cenario": "Ver a sequência de códigos passo a passo em um servidor de teste isolado.",
+      "comandos": "nc smtp-lab.local 25\nEHLO teste.local\nMAIL FROM:<ana@example.com>\nRCPT TO:<beto@example.com>\nDATA\nSubject: teste\n\ncorpo da mensagem\n.\nQUIT",
+      "explicacao": "Mostra o SMTP cru e os códigos 220 -> 250 -> 250 -> 250 -> 354 -> 250 -> 221. Use apenas em servidor de laboratório: na porta 25 da Internet o tráfego vai em texto puro."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "'Relay access denied' (554 5.7.1 no Postfix; o Exchange usa 550 5.7.1) ao enviar",
+      "causa_provavel": "Cliente tentando enviar sem AUTH ou pela porta 25 (relay) em vez do submission 587/465.",
+      "comando": "swaks --server smtp.example.com:587 --tls --auth LOGIN --auth-user ana@example.com",
+      "leitura": "235 após o AUTH e depois 250 no RCPT TO indicam submission autenticado funcionando."
+    },
+    {
+      "sintoma": "E-mail cai no spam / DMARC fail",
+      "causa_provavel": "SPF ou DKIM ausente ou desalinhado com o domínio do From visível.",
+      "comando": "dig +short TXT example.com ; dig +short TXT _dmarc.example.com ; dig +short TXT seletor._domainkey.example.com",
+      "leitura": "Espere v=spf1 ... -all, v=DMARC1; p=... e v=DKIM1; k=rsa; p=... Sem o registro DMARC não há política; para o DMARC passar basta SPF OU DKIM alinhado com o From — reprova quando NENHUM dos dois alinha."
+    },
+    {
+      "sintoma": "STARTTLS não aparece / cliente cai para texto puro",
+      "causa_provavel": "MTA sem TLS configurado ou stripping de STARTTLS na rede.",
+      "comando": "openssl s_client -starttls smtp -connect smtp.example.com:587",
+      "leitura": "Se o s_client conclui o handshake e mostra 'Verify return code: 0', o servidor oferece STARTTLS e o TLS fechou; se ele falha logo no STARTTLS, o servidor não o anuncia (ou a rede o removeu)."
+    },
+    {
+      "sintoma": "Conexão trava ou dá timeout na porta 25 saindo da rede",
+      "causa_provavel": "Provedor bloqueia a 25 de saída (medida anti-spam); o correto é usar submission.",
+      "comando": "openssl s_client -connect smtp.example.com:465   # ou -starttls smtp -connect smtp.example.com:587",
+      "leitura": "Banner 220 significa porta liberada; ausência de resposta na 25 e liberação na 465/587 confirmam o bloqueio."
+    },
+    {
+      "sintoma": "A mesma mensagem some ao abrir em outro dispositivo",
+      "causa_provavel": "Conta configurada como POP3 (baixa e apaga) em vez de IMAP.",
+      "comando": "openssl s_client -connect mail.example.com:993   # IMAP  vs  :995 POP3",
+      "leitura": "993/143 = IMAP (sincroniza e mantém no servidor); 995/110 = POP3 (baixa e remove) - troque para IMAP para ver a caixa em todos os aparelhos."
+    }
+  ]
+}

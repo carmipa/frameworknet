@@ -1,0 +1,348 @@
+{#include shared/base.html}
+{#title}Catálogo de Protocolos | Framework de Redes A&D{/title}
+{#description}Catálogo de protocolos de rede organizado por camada, com aprofundamentos de HTTP, DNS, TLS, SSH, BGP e outros: para que servem, como funcionam e onde costumam falhar.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/protocolos/css/protocolos.css?v=20260811d">
+<link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
+{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='protocolos' /}
+    {#include protocolos/partials/subnav.html /}
+    <div class="text-center mb-4">
+        <span class="aed-eyebrow aed-eyebrow-indigo">Catálogo</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Catálogo de Protocolos de Rede</h1>
+        <p class="text-secondary small mx-auto aed-medida-leitura">
+            DataGrid didático: camada, transporte, segurança, função e classificação IGP/EGP para roteamento.
+        </p>
+    </div>
+
+    <div class="card-tech p-4 shadow">
+        <div class="comm-catalog" data-grid-id="protocolos">
+            <div class="small text-secondary mb-3 border-start border-info border-2 ps-2 py-1 rounded-1" style="background: rgba(88, 166, 255, 0.06);" role="note">
+                DataGrid didático de protocolos: camada, transporte, segurança, função e classificação <strong class="text-info">IGP</strong> / <strong class="text-primary">EGP</strong> para roteamento.
+            </div>
+            <div class="small text-light mb-3 border-start border-warning border-2 ps-2 py-2 rounded-1" style="background: rgba(210, 153, 34, 0.10);" role="note">
+                <strong class="text-warning">Resumo rápido do módulo de roteamento (PPT):</strong>
+                RIP usa <em>Distance Vector</em> (métrica por hops), OSPF/IS-IS usam <em>Link-State</em> (SPF), e BGP usa <em>Path Vector</em> (políticas entre AS). Em laboratório Cisco, destaque para sintaxe com <code translate="no">network</code> e uso de <strong>wildcard mask</strong> no OSPF.
+            </div>
+            <div class="table-responsive mb-3 border border-secondary border-opacity-25 rounded">
+                <table class="table table-dark table-bordered table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Protocolo</th>
+                            <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">straighten</span>Métrica</th>
+                            <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">low_priority</span>AD</th>
+                            <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">update</span>Convergência</th>
+                            <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">open_in_full</span>Escalabilidade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>RIPv2</td><td>Hop count</td><td>120</td><td>Lenta</td><td>Baixa</td></tr>
+                        <tr><td>OSPFv2/v3</td><td>Cost</td><td>110</td><td>Rápida</td><td>Alta</td></tr>
+                        <tr><td>EIGRP</td><td>Composta</td><td>90/170</td><td>Rápida</td><td>Alta</td></tr>
+                        <tr><td>BGP (eBGP/iBGP)</td><td>AS-PATH e políticas</td><td>20/200</td><td>Moderada</td><td>Muito alta</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="comm-summary mb-3" data-summary-target="protocolos"></div>
+            <div class="d-flex flex-wrap gap-2 mb-2">
+                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">search</span>Busca por protocolo/camada</span>
+                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">tune</span>Filtros por camada, transporte e nível</span>
+                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">hub</span>IGP vs EGP (roteamento)</span>
+                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">swap_vert</span>Clique no cabeçalho para ordenar</span>
+                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">content_copy</span>Copie ou abra detalhes por linha</span>
+            </div>
+            <div class="row g-2 align-items-end mb-2">
+                <div class="col-md-6 col-lg-4">
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1">Alcance (IGP / EGP)
+                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="IGP e EGP" data-bs-content="IGP (Interior Gateway Protocol): troca rotas dentro de um Sistema Autônomo (AS). EGP no sentido moderno refere-se a BGP entre AS. Protocolos que não são de gateway de roteamento ficam em N/A." aria-label="Ajuda: IGP e EGP"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
+                    </label>
+                    <select aria-label="Alcance (IGP / EGP)" class="form-select bg-dark text-light border-secondary" data-grid-alcance="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra por alcance didático: interior (IGP), exterior (EGP) ou não aplicável.">
+                        <option value="all">Todos</option>
+                        <option value="igp">IGP (interior / dentro do AS)</option>
+                        <option value="egp">EGP (exterior — ex.: BGP)</option>
+                        <option value="n/a">N/A (não é classificação IGP/EGP)</option>
+                    </select>
+                </div>
+                <div class="col-md-6 col-lg-8 small text-secondary d-flex align-items-end pb-1 border-start border-secondary border-opacity-25 ps-md-3">
+                    <span><strong class="text-info">IGP</strong> = OSPF, RIP, EIGRP, IS-IS… <span class="text-secondary">|</span> <strong class="text-primary">EGP</strong> na prática = <strong>BGP</strong> entre sistemas autônomos. O restante do catálogo usa <strong>N/A</strong>.</span>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                <label class="small text-secondary mb-0 d-flex align-items-center gap-2 flex-wrap">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> <span>Linhas por página</span>
+                    <select aria-label="Linhas por página" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: auto; min-width: 12rem;" data-grid-page-size="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Paginação da tabela.">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="all">Todos (sem paginar)</option>
+                    </select>
+                </label>
+            </div>
+            <div class="row g-2 align-items-end mb-3">
+                <div class="col-lg-3">
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">search</span> Busca geral</label>
+                    <input type="text" class="form-control bg-dark text-light border-secondary" data-grid-search="protocolos" placeholder="Protocolo, IGP, EGP, camada..." data-bs-toggle="tooltip" data-bs-placement="top" title="Busca geral: digite protocolo, camada, IGP/EGP, transporte ou função.">
+                </div>
+                <div class="col-lg-2">
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">category</span> Categoria</label>
+                    <select aria-label="Categoria" class="form-select bg-dark text-light border-secondary" data-grid-context="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra por categoria: protocolos de roteamento ou outros.">
+                        <option value="all">Todas</option>
+                        <option value="roteamento">Roteamento</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+                <div class="col-lg-2">
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Camada</label>
+                    <select aria-label="Camada" class="form-select bg-dark text-light border-secondary" data-grid-category="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pela camada do modelo (aplicação, transporte, rede, enlace).">
+                        <option value="all">Todas</option>
+                        <option value="aplicação">Aplicação</option>
+                        <option value="transporte">Transporte</option>
+                        <option value="rede">Rede</option>
+                        <option value="enlace">Enlace</option>
+                    </select>
+                </div>
+                <div class="col-lg-1">
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_horiz</span> Transporte</label>
+                    <select aria-label="Transporte" class="form-select bg-dark text-light border-secondary" data-grid-transport="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelo protocolo de transporte (TCP, UDP, ICMP ou N/A).">
+                        <option value="all">Todos</option>
+                        <option value="tcp">TCP</option>
+                        <option value="udp">UDP</option>
+                        <option value="icmp">ICMP</option>
+                        <option value="n/a">N/A</option>
+                    </select>
+                </div>
+                <div class="col-lg-1">
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">equalizer</span> Nível</label>
+                    <select aria-label="Nível" class="form-select bg-dark text-light border-secondary" data-grid-risk="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelo nível didático (crítico, atenção, seguro, didático).">
+                        <option value="all">Todos</option>
+                        <option value="crítico">Crítico</option>
+                        <option value="atenção">Atenção</option>
+                        <option value="seguro">Seguro</option>
+                        <option value="didático">Didático</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 d-flex flex-wrap gap-2 justify-content-lg-end">
+                    <button type="button" class="aed-btn aed-btn-danger btn-sm grid-action-btn" data-grid-clear="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpa busca, filtros e ordenação da tabela."><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+                    <button type="button" class="aed-btn aed-btn-json btn-sm grid-action-btn" data-grid-export-json="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Exporta os protocolos filtrados para arquivo JSON."><span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> JSON</button>
+                    <button type="button" class="aed-btn aed-btn-pdf btn-sm grid-action-btn" data-grid-export-pdf="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Gera versão para impressão/PDF com os dados filtrados."><span class="material-symbols-outlined" translate="no" aria-hidden="true">picture_as_pdf</span> PDF</button>
+                </div>
+            </div>
+
+            <div class="table-responsive d-none d-lg-block datagrid-wrap">
+                <table class="table table-dark table-hover table-bordered align-middle mb-2 datagrid-table" data-grid-table="protocolos">
+                    <thead class="table-dark-header">
+                        <tr>
+                            <th class="sortable" data-sort-key="nome"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Protocolo</th>
+                            <th class="sortable" data-sort-key="camada"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">layers</span>Camada</th>
+                            <th class="sortable" data-sort-key="alcance"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">public</span>IGP/EGP</th>
+                            <th class="sortable" data-sort-key="transporte"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">swap_horiz</span>Transporte</th>
+                            <th class="sortable" data-sort-key="porta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_ethernet</span>Porta comum</th>
+                            <th class="sortable" data-sort-key="seguro"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">shield</span>Seguro</th>
+                            <th class="sortable" data-sort-key="nivel"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">equalizer</span>Nível</th>
+                            <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">functions</span>Função</th>
+                            <th class="text-center" style="width: 13.75rem;" title="Copiar linha, abrir detalhes ou aprofundar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody data-grid-body="protocolos">
+                        {#for item in protocolosCatalogo}
+                        <tr
+                            data-grid-row="protocolos"
+                            data-search="{item.searchText}"
+                            data-categoria="{item.categoria}"
+                            data-nome="{item.nome}"
+                            data-camada="{item.camada}"
+                            data-alcance="{item.alcanceLower}"
+                            data-transporte="{item.transporte}"
+                            data-porta="{item.portaComum}"
+                            data-seguro="{item.seguro}"
+                            data-nivel="{item.badge}"
+                            data-funcao="{item.funcao}"
+                            data-algoritmo="{item.algoritmo}"
+                            data-metrica="{item.metrica}"
+                            data-ad="{item.distanciaAdministrativa}"
+                            data-atualizacao="{item.atualizacao}"
+                            data-sintaxe="{item.sintaxeBase}"
+                            data-dica="{item.dicaDidatica}"
+                            data-convergencia="{item.convergencia}"
+                            data-ecmp="{item.ecmp}"
+                            data-problemas="{item.problemasComuns}"
+                            data-mitigacoes="{item.mitigacoes}"
+                            data-casouso="{item.casoUsoReal}"
+                            data-diagnostico="{item.diagnosticoComandos}">
+                            <td class="fw-bold text-info">{item.nome}</td>
+                            <td>{item.camada}</td>
+                            <td>
+                                {#if item.alcance != 'N/A'}
+                                <span class="badge bg-dark border {#if item.alcance == 'IGP'}border-success text-success{#else if item.alcance == 'EGP'}border-primary text-primary{#else}border-secondary{/if}">{item.alcance}</span>
+                                {#else}
+                                <span class="text-secondary">N/A</span>
+                                {/if}
+                            </td>
+                            <td>{item.transporte}</td>
+                            <td>{item.portaComum}</td>
+                            <td>{item.seguro}</td>
+                            <td><span class="badge bg-dark border border-{item.badgeColor} text-{item.badgeColor}">{item.badge}</span></td>
+                            <td class="small text-info">{item.funcao}</td>
+                            <td class="text-nowrap text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center gap-1">
+                                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-copy="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Copiar os dados deste protocolo."><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span></button>
+                                    <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Abrir os detalhes deste protocolo."><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
+                                    {#if item.temAprofundamento}
+                                    <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Abrir a página de aprofundamento deste protocolo."><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Aprofundar</a>
+                                    {/if}
+                                </div>
+                            </td>
+                        </tr>
+                        {/for}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-lg-none">
+                <div class="row g-3" data-grid-mobile="protocolos">
+                    {#for item in protocolosCatalogo}
+                    <div
+                        class="col-12 card-tech p-3"
+                        data-grid-mobile-row="protocolos"
+                        data-search="{item.searchText}"
+                        data-categoria="{item.categoria}"
+                        data-nome="{item.nome}"
+                        data-camada="{item.camada}"
+                        data-alcance="{item.alcanceLower}"
+                        data-transporte="{item.transporte}"
+                        data-porta="{item.portaComum}"
+                        data-seguro="{item.seguro}"
+                        data-nivel="{item.badge}"
+                        data-funcao="{item.funcao}"
+                        data-algoritmo="{item.algoritmo}"
+                        data-metrica="{item.metrica}"
+                        data-ad="{item.distanciaAdministrativa}"
+                        data-atualizacao="{item.atualizacao}"
+                        data-sintaxe="{item.sintaxeBase}"
+                        data-dica="{item.dicaDidatica}"
+                        data-convergencia="{item.convergencia}"
+                        data-ecmp="{item.ecmp}"
+                        data-problemas="{item.problemasComuns}"
+                        data-mitigacoes="{item.mitigacoes}"
+                        data-casouso="{item.casoUsoReal}"
+                        data-diagnostico="{item.diagnosticoComandos}">
+                        <h2 class="h6 mb-3 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> {item.nome}</h2>
+                        <dl class="small mb-0 protocolo-mobile-dl">
+                            <div class="d-flex flex-wrap justify-content-between gap-2 border-bottom border-secondary border-opacity-25 py-1">
+                                <dt class="mb-0 text-secondary">Camada</dt><dd class="mb-0 text-light">{item.camada}</dd>
+                            </div>
+                            <div class="d-flex flex-wrap justify-content-between gap-2 border-bottom border-secondary border-opacity-25 py-1">
+                                <dt class="mb-0 text-secondary">IGP/EGP</dt>
+                                <dd class="mb-0 text-end">
+                                    {#if item.alcance != 'N/A'}
+                                    <span class="badge bg-dark border {#if item.alcance == 'IGP'}border-success text-success{#else if item.alcance == 'EGP'}border-primary text-primary{#else}border-secondary{/if}">{item.alcance}</span>
+                                    {#else}<span class="text-secondary">N/A</span>{/if}
+                                </dd>
+                            </div>
+                            <div class="d-flex flex-wrap justify-content-between gap-2 border-bottom border-secondary border-opacity-25 py-1">
+                                <dt class="mb-0 text-secondary">Transporte</dt><dd class="mb-0 text-light">{item.transporte}</dd>
+                            </div>
+                            <div class="d-flex flex-wrap justify-content-between gap-2 border-bottom border-secondary border-opacity-25 py-1">
+                                <dt class="mb-0 text-secondary">Porta comum</dt><dd class="mb-0 text-light">{item.portaComum}</dd>
+                            </div>
+                            <div class="d-flex flex-wrap justify-content-between gap-2 border-bottom border-secondary border-opacity-25 py-1">
+                                <dt class="mb-0 text-secondary">Seguro</dt><dd class="mb-0 text-light">{item.seguro}</dd>
+                            </div>
+                            <div class="d-flex flex-wrap justify-content-between gap-2 border-bottom border-secondary border-opacity-25 py-1">
+                                <dt class="mb-0 text-secondary">Nível</dt><dd class="mb-0"><span class="badge bg-dark border border-{item.badgeColor} text-{item.badgeColor}">{item.badge}</span></dd>
+                            </div>
+                            <div class="pt-2">
+                                <dt class="small text-secondary mb-1">Função</dt>
+                                <dd class="small text-info mb-0">{item.funcao}</dd>
+                            </div>
+                        </dl>
+                        <div class="mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex flex-wrap gap-1">
+                            <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-copy="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Copiar os dados deste protocolo."><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span></button>
+                            <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Abrir os detalhes deste protocolo."><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
+                            {#if item.temAprofundamento}
+                            <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Aprofundar</a>
+                            {/if}
+                        </div>
+                    </div>
+                    {/for}
+                </div>
+            </div>
+            <div class="d-flex flex-column align-items-center gap-2 mt-2">
+                <div class="small text-secondary text-center" data-grid-counter="protocolos"></div>
+                <div class="d-flex gap-2 align-items-center justify-content-center">
+                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-prev="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Página anterior."><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_left</span></button>
+                    <span class="small text-secondary" data-grid-page-label="protocolos"></span>
+                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-next="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Próxima página."><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_right</span></button>
+                </div>
+            </div>
+
+            <div class="card-tech p-3 mb-0 mt-4 border border-warning border-opacity-25">
+                <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">build</span> Troubleshooting rápido (roteamento)</h2>
+                <p class="small text-secondary mb-3">
+                    Comandos de validação imediata para laboratório Cisco. Use após aplicar configuração e antes de exportar evidências.
+                </p>
+                <div class="row g-2">
+                    {#for item in protocolosTroubleshooting}
+                    <div class="col-12 col-xl-6">
+                        <div class="border border-secondary border-opacity-25 rounded p-2 h-100">
+                            <div class="small text-info fw-bold mb-1">{item.nome}</div>
+                            <div class="small text-light mb-1"><strong>Falha típica:</strong> {#if item.problemasComuns.isEmpty()}—{#else}{item.problemasComuns}{/if}</div>
+                            <div class="small text-light mb-1"><strong>Mitigação:</strong> {#if item.mitigacoes.isEmpty()}—{#else}{item.mitigacoes}{/if}</div>
+                            <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{item.diagnosticoComandos}</pre>
+                            <div class="mt-2 d-flex justify-content-end">
+                                <button
+                                    type="button"
+                                    class="aed-btn aed-btn-neutral btn-sm"
+                                    data-copy-snippet
+                                    data-copy-label="{item.nome}"
+                                    data-copy-text="{item.diagnosticoComandos}"
+                                    title="Copia os comandos de troubleshooting.">
+                                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar comandos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {/for}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="commDetailsModal" tabindex="-1" aria-labelledby="commDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border border-secondary">
+            <div class="modal-header border-secondary">
+                <h2 class="h5 modal-title" id="commDetailsModalLabel">Detalhes</h2>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body" id="commDetailsModalBody"></div>
+        </div>
+    </div>
+</div>
+{/content}
+{#extraScripts}
+<script src="/web/js/datagrid.js?v=20261002"></script>
+<script>
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => new bootstrap.Tooltip(el));
+    document.querySelectorAll('[data-bs-toggle="popover"]').forEach((el) => new bootstrap.Popover(el));
+    initGrid("protocolos");
+    document.addEventListener("click", async (ev) => {
+        const copyBtn = ev.target.closest("[data-copy-snippet]");
+        if (!copyBtn) return;
+        const text = copyBtn.getAttribute("data-copy-text") || "";
+        const label = copyBtn.getAttribute("data-copy-label") || "Comandos";
+        try {
+            await navigator.clipboard.writeText(text);
+            copyBtn.innerHTML = '<span class="material-symbols-outlined" translate="no" aria-hidden="true">check</span> Copiado';
+            setTimeout(() => { copyBtn.innerHTML = '<span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar comandos'; }, 1500);
+        } catch (err) {
+            console.warn("Falha ao copiar " + label, err);
+        }
+    });
+</script>
+{/extraScripts}
+{/include}

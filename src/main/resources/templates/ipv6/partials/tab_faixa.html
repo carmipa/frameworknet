@@ -1,0 +1,28 @@
+{! Aba "Faixa → CIDR": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
+<div class="calc-form-card mb-3">
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">linear_scale</span> Faixa → CIDR</h2>
+    <p class="calc-hint">Decompõe uma faixa de endereços na menor lista de blocos CIDR que a cobre exatamente.</p>
+    <form id="formFaixa" hx-post="/ipv6/api/faixa" hx-target="#saidaFaixa" hx-swap="innerHTML"
+          hx-disabled-elt="find button[type='submit']">
+        <div class="row g-3 align-items-start">
+            <div class="col-lg-6 col-md-6">
+                <label for="ipv6FaixaIni" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span> Endereço inicial</label>
+                <input type="text" class="aed-input form-control" id="ipv6FaixaIni" name="inicio"
+                       placeholder="2001:db8::" value="2001:db8::" autocomplete="off" spellcheck="false" required>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <label for="ipv6FaixaFim" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span> Endereço final</label>
+                <input type="text" class="aed-input form-control" id="ipv6FaixaFim" name="fim"
+                       placeholder="2001:db8::ffff" value="2001:db8::ffff" autocomplete="off" spellcheck="false" required>
+            </div>
+        </div>
+        <div class="d-flex gap-2 mt-2">
+            <button type="submit" class="aed-btn aed-btn-execute" title="Converter a faixa na lista mínima de blocos CIDR"><span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span><span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Converter</button>
+            <button type="button" class="aed-btn aed-btn-neutral" data-limpar title="Esvaziar e recomeçar"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+        </div>
+    </form>
+</div>
+
+<div id="saidaFaixa" class="calc-saida ipv6-saida-full">
+    <div class="calc-placeholder"><span class="material-symbols-outlined" aria-hidden="true" translate="no">linear_scale</span><p class="mb-0">Informe o endereço inicial e o final (endereços puros, sem /prefixo) para ver a lista mínima de blocos CIDR que cobre a faixa exatamente.</p></div>
+</div>

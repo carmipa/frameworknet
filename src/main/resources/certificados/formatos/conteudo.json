@@ -1,0 +1,317 @@
+{
+  "resumo": "Um certificado X.509 e as chaves associadas são sempre a mesma informação matemática (números, assinaturas, identidades), mas essa informação pode ser embalada em vários formatos de arquivo. Escolher o formato errado é a causa número um de erros do tipo \"unable to load certificate\": o conteúdo está correto, só que a ferramenta esperava outra embalagem. Este aprofundamento separa a CODIFICAÇÃO (PEM em Base64 legível x DER em binário) do CONTAINER (PKCS#12/PFX, que guarda certificado + chave privada + cadeia num único arquivo protegido por senha; PKCS#7/P7B, que só carrega certificados e cadeia, nunca a chave; e o mundo Java com JKS/keytool). Você vai aprender a converter entre todos eles com openssl e keytool, entender por que a chave privada é o ponto sensível de qualquer conversão, e diagnosticar os erros mais comuns. Para ver esses certificados em uso durante um handshake, o site traz o módulo do protocolo TLS; o certificado de um servidor real, campo a campo, sai do openssl s_client | openssl x509 -text.",
+  "ficha": [
+    {
+      "rotulo": "Codificações base",
+      "valor": "PEM (Base64 texto) e DER (binário)",
+      "dica": "PEM = texto entre -----BEGIN----- e -----END-----; DER = os mesmos bytes, porém sem Base64 e sem cabeçalho de texto."
+    },
+    {
+      "rotulo": "Containers",
+      "valor": "PKCS#12 (PFX) e PKCS#7 (P7B)",
+      "dica": "PFX carrega chave privada + cert + cadeia com senha; P7B carrega SÓ certificados e cadeia, jamais a chave."
+    },
+    {
+      "rotulo": "Extensões típicas",
+      "valor": ".pem .crt .cer .key .der .pfx .p12 .p7b .p7c",
+      "dica": "A extensão é apenas convenção, não garante o formato: um .cer pode conter PEM ou DER por dentro."
+    },
+    {
+      "rotulo": "Ferramenta universal",
+      "valor": "openssl (Linux/Windows/mac)",
+      "dica": "x509, rsa, pkey, pkcs12 e pkcs7 cobrem praticamente todas as conversões."
+    },
+    {
+      "rotulo": "Mundo Java",
+      "valor": "keytool + keystore JKS/PKCS12",
+      "dica": "Desde o Java 9 o formato padrão do keystore passou a ser PKCS12, e não mais o proprietário JKS."
+    },
+    {
+      "rotulo": "Ponto sensível",
+      "valor": "a chave privada (.key / dentro do .pfx)",
+      "dica": "Certificado é público; a chave privada nunca deve vazar, ser commitada nem ficar sem senha ou sem permissão restrita."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "PEM: Base64 legível entre marcadores",
+      "icone": "description",
+      "texto": "PEM (Privacy-Enhanced Mail) é um arquivo de TEXTO: os bytes DER são codificados em Base64 e envolvidos por linhas como -----BEGIN CERTIFICATE----- e -----END CERTIFICATE-----. O rótulo importa e diz o que há dentro: CERTIFICATE (certificado), PRIVATE KEY ou RSA PRIVATE KEY (chave), CERTIFICATE REQUEST (CSR). Um mesmo arquivo PEM pode empilhar vários blocos (por exemplo, o certificado do servidor seguido da cadeia intermediária). Por ser texto, é o formato que você copia, cola e inspeciona a olho nu.",
+      "destaque": "Se você vê -----BEGIN-----, é PEM."
+    },
+    {
+      "titulo": "DER: os mesmos dados, em binário",
+      "icone": "category",
+      "texto": "DER (Distinguished Encoding Rules) é a serialização binária canônica da estrutura ASN.1 do certificado. É exatamente o mesmo conteúdo do PEM, só que sem o embrulho Base64 e sem as linhas de texto. Não dá para ler num editor comum (aparece como bytes ilegíveis). É comum em ambientes Windows/Java e em alguns dispositivos. Converter PEM para DER é apenas tirar a camada Base64/marcadores; nada do conteúdo criptográfico muda.",
+      "destaque": "DER = binário; PEM = DER em Base64 com cabeçalho."
+    },
+    {
+      "titulo": "PKCS#12 / PFX: tudo num arquivo com senha",
+      "icone": "lock",
+      "texto": "PKCS#12 (extensões .pfx ou .p12) é um CONTAINER binário que empacota, num único arquivo protegido por senha, o certificado da entidade, a CHAVE PRIVADA correspondente e, opcionalmente, toda a cadeia de intermediárias. É o formato ideal para transportar uma identidade completa entre máquinas (importar num Windows, num navegador, num servidor). Como carrega a chave privada, a senha é a única barreira: um .pfx vazado com senha fraca entrega a identidade inteira.",
+      "destaque": "Cert + chave + cadeia, protegidos por uma senha."
+    },
+    {
+      "titulo": "PKCS#7 / P7B: só certificados, nunca a chave",
+      "icone": "account_tree",
+      "texto": "PKCS#7 (extensões .p7b ou .p7c) é um container pensado para distribuir cadeias de certificados e certificados públicos. Ele NÃO contém chave privada. É útil para entregar a cadeia completa (raiz + intermediárias) a quem precisa confiar num serviço, ou para exportar a cadeia no Windows. Como só tem material público, é seguro compartilhar; não há segredo dentro dele.",
+      "destaque": "Distribui a cadeia pública; chave privada fica de fora."
+    },
+    {
+      "titulo": "JKS/PKCS12 e keytool: o mundo Java",
+      "icone": "verified_user",
+      "texto": "Aplicações Java (Tomcat, Quarkus, servidores em geral) guardam certificados e chaves em um keystore, manipulado pela ferramenta keytool. O formato JKS era o proprietário histórico; a partir do Java 9 o padrão passou a ser PKCS12, interoperável com openssl. A conversão clássica é importar um .pfx para dentro de um keystore com keytool -importkeystore. Cada entrada tem um alias, e o keystore inteiro e o material têm senhas.",
+      "destaque": "Java lê PKCS12 direto; JKS é o formato antigo."
+    },
+    {
+      "titulo": "O que muda e o que não muda na conversão",
+      "icone": "autorenew",
+      "texto": "Converter formato NÃO reassina, não renova e não altera o conteúdo criptográfico: a chave pública, a assinatura da CA, o serial e as datas continuam idênticos. Muda apenas a embalagem (Base64 x binário) e o agrupamento (avulso x container com/sem chave). Por isso o erro típico não é 'certificado inválido', e sim 'formato inesperado' quando você alimenta uma ferramenta com a embalagem errada. No handshake TLS, o que trafega na rede é sempre DER; PEM/PFX/P7B são formas de armazenar e transportar em disco.",
+      "destaque": "Conversão troca a embalagem, nunca o conteúdo assinado."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Conversões entre formatos com openssl",
+    "definicao": "flowchart TD\n    PEM[\"PEM (Base64, texto)<br/>.pem .crt .cer\"]\n    DER[\"DER (binário)<br/>.der .cer\"]\n    PFX[\"PKCS#12 / PFX<br/>.pfx .p12<br/>(cert + chave + cadeia + senha)\"]\n    P7B[\"PKCS#7 / P7B<br/>.p7b .p7c<br/>(só certs / cadeia)\"]\n    KEY[\"Chave privada<br/>.key (PEM)\"]\n    JKS[\"Keystore Java<br/>JKS / PKCS12\"]\n\n    PEM -->|\"openssl x509 -outform der\"| DER\n    DER -->|\"openssl x509 -inform der -outform pem\"| PEM\n    PEM -->|\"openssl pkcs12 -export\"| PFX\n    KEY -.->|\"entra junto no -export\"| PFX\n    PFX -->|\"openssl pkcs12 -nodes\"| PEM\n    PEM -->|\"openssl crl2pkcs7 -nocrl -certfile\"| P7B\n    P7B -->|\"openssl pkcs7 -print_certs\"| PEM\n    PFX -->|\"keytool -importkeystore\"| JKS",
+    "legenda": "A seta pontilhada lembra que a chave privada só entra no PFX no momento do -export. Repare que o P7B nunca recebe a chave: ele só transporta material público (certificados e cadeia). Para DER, o mesmo comando x509 troca apenas -inform/-outform."
+  },
+  "tabelas": [
+    {
+      "titulo": "Formato x codificação x conteúdo x extensão",
+      "colunas": [
+        "Formato",
+        "Codificação",
+        "Contém chave privada?",
+        "Conteúdo típico",
+        "Extensões"
+      ],
+      "linhas": [
+        [
+          "PEM",
+          "Base64 (texto)",
+          "Pode conter (bloco PRIVATE KEY)",
+          "1 ou vários certs, ou chave, ou CSR",
+          "'.pem' '.crt' '.cer' '.key'"
+        ],
+        [
+          "DER",
+          "Binário",
+          "Pode conter (raro em disco)",
+          "1 certificado (ou 1 chave)",
+          "'.der' '.cer'"
+        ],
+        [
+          "PKCS#12 / PFX",
+          "Binário + senha",
+          "SIM",
+          "Cert + chave privada + cadeia",
+          "'.pfx' '.p12'"
+        ],
+        [
+          "PKCS#7 / P7B",
+          "Binário ou Base64",
+          "NÃO",
+          "Só certificados e cadeia",
+          "'.p7b' '.p7c'"
+        ],
+        [
+          "Keystore JKS/PKCS12",
+          "Binário + senha",
+          "SIM",
+          "Entradas (alias) com cert + chave",
+          "'.jks' '.keystore' '.p12'"
+        ]
+      ]
+    },
+    {
+      "titulo": "Matriz de conversão (de / para) com a ferramenta principal",
+      "colunas": [
+        "De \\ Para",
+        "PEM",
+        "DER",
+        "PFX (PKCS#12)",
+        "P7B (PKCS#7)"
+      ],
+      "linhas": [
+        [
+          "PEM",
+          "-",
+          "openssl x509 -outform der",
+          "openssl pkcs12 -export (com a .key)",
+          "openssl crl2pkcs7 -nocrl -certfile"
+        ],
+        [
+          "DER",
+          "openssl x509 -inform der -outform pem",
+          "-",
+          "converter para PEM antes, depois pkcs12 -export",
+          "converter para PEM antes, depois crl2pkcs7"
+        ],
+        [
+          "PFX (PKCS#12)",
+          "openssl pkcs12 -in -nodes",
+          "extrair PEM, depois x509 -outform der",
+          "-",
+          "extrair certs em PEM, depois crl2pkcs7"
+        ],
+        [
+          "P7B (PKCS#7)",
+          "openssl pkcs7 -print_certs",
+          "print_certs -> PEM -> DER",
+          "impossível direto (P7B não tem a chave)",
+          "-"
+        ]
+      ]
+    },
+    {
+      "titulo": "Quando usar cada formato",
+      "colunas": [
+        "Cenário",
+        "Formato recomendado",
+        "Motivo"
+      ],
+      "linhas": [
+        [
+          "Configurar Nginx / Apache",
+          "PEM (cert + chave separados)",
+          "Servidores web leem PEM diretamente"
+        ],
+        [
+          "Importar identidade completa no Windows/IIS",
+          "PFX",
+          "Leva cert + chave + cadeia num arquivo só"
+        ],
+        [
+          "Distribuir a cadeia de confiança",
+          "P7B",
+          "Só material público, seguro compartilhar"
+        ],
+        [
+          "Dispositivo/appliance ou Java legado",
+          "DER / JKS",
+          "Muitos ambientes binários e Java antigo exigem"
+        ],
+        [
+          "App Java moderno (Quarkus, Tomcat)",
+          "PKCS12 (keystore)",
+          "Padrão do keystore desde o Java 9"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Chave privada exposta junto ao certificado",
+      "como_funciona": "Um arquivo PEM que empilha o bloco CERTIFICATE junto com o bloco PRIVATE KEY (ou um .pfx sem senha) é tratado como se fosse 'só o certificado' e acaba enviado por e-mail, colado num chamado, publicado num bucket ou anexado a um ticket. Quem recebe passa a ter a identidade completa e pode se passar pelo servidor.",
+      "sinal": "Bloco -----BEGIN PRIVATE KEY----- dentro de um arquivo que deveria ser público; .pfx que abre sem pedir senha.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Senha fraca no PFX/PKCS#12",
+      "como_funciona": "O .pfx protege a chave privada com uma senha, mas se ela for curta ou óbvia (1234, nome da empresa, 'export'), um atacante que obtenha o arquivo roda um ataque de dicionário/força bruta offline e extrai a chave. Não há bloqueio por tentativas: é um arquivo, ele tenta à vontade na própria máquina.",
+      "sinal": "Senhas curtas, reutilizadas ou fixadas em scripts; .pfx circulando com a senha no mesmo canal.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Chave privada commitada no repositório",
+      "como_funciona": "Durante uma conversão (extrair PEM de um .pfx com -nodes, gerar .key para o Nginx) a chave privada em texto fica na pasta do projeto e vai junto num 'git add .'. Mesmo que apagada depois, ela permanece no histórico do Git e em qualquer clone/fork.",
+      "sinal": "Arquivos .key, .pem com PRIVATE KEY ou .pfx rastreados pelo Git; ausência de .gitignore para esses padrões.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "-nodes deixando a chave sem cifra em disco",
+      "como_funciona": "A opção -nodes (no DES) do openssl grava a chave privada SEM criptografia. É prático para um serviço que precisa ler a chave no boot sem digitar senha, mas transforma o arquivo em segredo puro: qualquer um que leia o arquivo tem a chave. Se as permissões de arquivo estiverem frouxas, todo usuário da máquina a lê.",
+      "sinal": "Uso de -nodes seguido de arquivo .key com permissão 644/legível por todos.",
+      "gravidade": "Alta",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "P7B usado achando que 'protege' a chave",
+      "como_funciona": "Por confusão, alguém tenta enviar 'o certificado com tudo' e escolhe P7B achando que é como o PFX. Como o P7B não carrega a chave, o outro lado não consegue autenticar e, para 'resolver', acaba mandando o .pfx ou a .key por um canal inseguro, criando o vazamento que o formato correto teria evitado.",
+      "sinal": "Handshake falhando por falta de chave privada após importar um P7B; troca de arquivos improvisada logo em seguida.",
+      "gravidade": "Média",
+      "gravidade_cor": "info"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Separar o público do privado e restringir permissões",
+      "como_funciona": "Manter certificado (público) e chave (privada) em arquivos distintos. No .key/.pfx, aplicar permissão restrita: dono lendo apenas (chmod 600 arquivo.key), dono adequado (chown do usuário do serviço) e diretório fechado. No Windows, ACL restrita ao usuário do serviço.",
+      "cobre": "Vazamento por leitura de terceiros na mesma máquina; envio acidental da chave junto do cert.",
+      "limite": "Não protege contra quem tem root/admin nem contra cópia para fora da máquina."
+    },
+    {
+      "nome": "Senha forte e canal separado para o PFX",
+      "como_funciona": "Gerar o .pfx com senha longa e aleatória (gerenciador de segredos, não 1234). Transmitir o arquivo por um canal e a senha por outro (nunca no mesmo e-mail). Trocar/rotacionar após o uso.",
+      "cobre": "Força bruta offline do PFX; interceptação de arquivo + senha no mesmo canal.",
+      "limite": "Senha forte não ajuda se o arquivo já vazou desprotegido; é barreira de tempo, não imunidade."
+    },
+    {
+      "nome": "Nunca commitar chave: .gitignore + varredura de segredos",
+      "como_funciona": "Adicionar padrões (*.key, *.pem, *.pfx, *.p12) ao .gitignore ANTES de gerar os arquivos e rodar um scanner de segredos (git-secrets, gitleaks) no pre-commit para bloquear blocos PRIVATE KEY. Se já vazou no histórico, tratar a chave como comprometida e reemitir.",
+      "cobre": "Chave privada entrando no repositório e no histórico.",
+      "limite": "Chave já publicada exige revogação/reemissão; remover do histórico não desfaz clones existentes."
+    },
+    {
+      "nome": "Evitar -nodes; preferir chave cifrada ou cofre",
+      "como_funciona": "Quando possível, manter a chave cifrada com passphrase, ou guardá-la num cofre de segredos (Vault, KMS, secret do orquestrador) e injetá-la em runtime, em vez de gravar .key em claro no disco.",
+      "cobre": "Chave em texto puro legível no filesystem.",
+      "limite": "Serviços que precisam ler a chave no boot sem interação ainda dependem de proteger o meio onde a passphrase/segredo vive."
+    },
+    {
+      "nome": "Validar o par cert/chave e a cadeia após converter",
+      "como_funciona": "Depois de cada conversão, conferir que o certificado e a chave são o mesmo par (comparar os módulos/hash com openssl) e que a cadeia está completa. Isso evita publicar um cert que não casa com a chave ou uma cadeia quebrada. Para ver o resultado no ar, use o openssl s_client contra o serviço configurado.",
+      "cobre": "Erros silenciosos de conversão (chave trocada, cadeia incompleta).",
+      "limite": "Confirma a correção técnica, não a política de guarda do segredo."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "PEM para DER e de volta (só troca de codificação)",
+      "cenario": "Você recebeu um certificado em PEM e um appliance só aceita DER. Converter e depois voltar para provar que o conteúdo é idêntico.",
+      "comandos": "# PEM -> DER (binário)\nopenssl x509 -in servidor.crt -outform der -out servidor.der\n\n# DER -> PEM (texto)\nopenssl x509 -inform der -in servidor.der -outform pem -out servidor_volta.crt\n\n# Provar que o conteúdo é o mesmo (fingerprints iguais)\nopenssl x509 -in servidor.crt            -noout -fingerprint -sha256\nopenssl x509 -inform der -in servidor.der -noout -fingerprint -sha256",
+      "explicacao": "O comando x509 apenas troca -inform/-outform entre pem e der. As fingerprints SHA-256 idênticas comprovam que a conversão não altera o conteúdo assinado: muda só a embalagem."
+    },
+    {
+      "titulo": "Montar e desmontar um PFX (PKCS#12) com a cadeia",
+      "cenario": "Você tem cert do servidor (PEM), a chave privada (.key) e a cadeia intermediária (chain.pem) e precisa de um .pfx único para importar no Windows; depois precisa extrair de volta o PEM para um Nginx.",
+      "comandos": "# Montar PFX: cert + chave + cadeia, protegido por senha\nopenssl pkcs12 -export \\\n  -inkey servidor.key \\\n  -in servidor.crt \\\n  -certfile chain.pem \\\n  -name \"meu-servico\" \\\n  -out servidor.pfx\n# (o openssl pede a senha de exportacao — use uma senha forte)\n\n# Inspecionar o conteúdo do PFX\nopenssl pkcs12 -in servidor.pfx -info -noout\n\n# Extrair os certificados (sem chave) em PEM: a folha e a cadeia, nessa ordem\nopenssl pkcs12 -in servidor.pfx -clcerts -nokeys -out folha.pem\nopenssl pkcs12 -in servidor.pfx -cacerts -nokeys -out cadeia.pem\ncat folha.pem cadeia.pem > fullchain.pem\n\n# Extrair a chave privada (CUIDADO: -nodes grava a chave SEM cifra)\nopenssl pkcs12 -in servidor.pfx -nocerts -nodes -out extraido.key\nchmod 600 extraido.key",
+      "explicacao": "O -export cria o container; -certfile injeta a cadeia. Na volta, -clcerts traz SÓ a folha e -cacerts só a cadeia: o Nginx precisa das duas, folha primeiro, senão o cliente recebe a cadeia incompleta. -nocerts -nodes traz a chave em claro — por isso o chmod 600 imediato. Sem -nodes, a chave sai cifrada com passphrase, mais segura em disco."
+    },
+    {
+      "titulo": "Importar um PFX para um keystore Java (keytool)",
+      "cenario": "Uma aplicação Java (Tomcat/Quarkus) precisa do certificado e da chave dentro de um keystore. Você parte do servidor.pfx gerado acima.",
+      "comandos": "# Importar o PFX inteiro para um keystore PKCS12 (padrão Java 9+)\nkeytool -importkeystore \\\n  -srckeystore servidor.pfx -srcstoretype PKCS12 \\\n  -destkeystore keystore.p12 -deststoretype PKCS12 \\\n  -srcalias meu-servico -destalias meu-servico\n\n# Conferir as entradas do keystore\nkeytool -list -v -keystore keystore.p12 -storetype PKCS12\n\n# (opcional) Gerar o formato antigo JKS, se algum sistema legado exigir\nkeytool -importkeystore \\\n  -srckeystore servidor.pfx -srcstoretype PKCS12 \\\n  -destkeystore keystore.jks -deststoretype JKS",
+      "explicacao": "O keytool -importkeystore traz a entrada (alias) com cert + chave do PFX para o keystore Java. O destino PKCS12 é o padrão desde o Java 9; JKS só quando um sistema antigo exigir. No PKCS12 a senha do store vale também para as chaves (o keytool ignora um -destkeypass diferente); senhas separadas por chave só existem no JKS."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "openssl responde 'unable to load certificate'",
+      "causa_provavel": "O arquivo está em DER (binário) mas o comando assumiu PEM (o padrão), ou vice-versa.",
+      "comando": "openssl x509 -in arquivo.cer -noout -text   # se falhar, tente:\nopenssl x509 -inform der -in arquivo.cer -noout -text",
+      "leitura": "Se o mesmo arquivo carrega com -inform der e falha sem ele, o conteúdo era binário. A extensão (.cer) não diz o formato; teste as duas codificações."
+    },
+    {
+      "sintoma": "'unable to load private key' ou 'No certificate matches private key'",
+      "causa_provavel": "O bloco lido não é uma chave (é um certificado), ou o cert e a chave não são o mesmo par.",
+      "comando": "openssl rsa -in suposta.key -check -noout\n# comparar par (RSA ou EC): a chave pública dos dois lados\nopenssl x509 -in servidor.crt -noout -pubkey | openssl md5\nopenssl pkey -in servidor.key -pubout       | openssl md5",
+      "leitura": "Os dois md5 da chave pública DEVEM ser iguais para o par casar. Se diferem, você misturou cert e chave de emissões distintas. O -modulus só existe para RSA: num certificado EC o x509 imprime 'No modulus for this public key type' e o pkey nem aceita a opção."
+    },
+    {
+      "sintoma": "PFX importa mas o TLS falha por falta de chave privada",
+      "causa_provavel": "O arquivo era na verdade um P7B (só cadeia/certs), não um PFX — P7B nunca contém a chave.",
+      "comando": "openssl pkcs12 -in arquivo.pfx -info -noout   # se falhar:\nopenssl pkcs7 -in arquivo.p7b -print_certs -noout",
+      "leitura": "Se só o comando pkcs7 funciona, o arquivo é PKCS#7 (sem chave). Você precisa obter a chave privada separadamente e remontar um PFX de verdade."
+    },
+    {
+      "sintoma": "keytool: 'keystore was tampered with, or password was incorrect'",
+      "causa_provavel": "Senha do keystore/chave incorreta, ou tipo de store trocado (JKS x PKCS12).",
+      "comando": "keytool -list -keystore keystore.p12 -storetype PKCS12\nkeytool -list -keystore keystore.jks -storetype JKS",
+      "leitura": "Se muda o resultado ao trocar -storetype, o problema era o tipo declarado, não a senha. Confirme se o store é PKCS12 (padrão moderno) ou JKS (legado)."
+    }
+  ]
+}

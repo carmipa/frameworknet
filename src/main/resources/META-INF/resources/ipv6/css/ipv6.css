@@ -1,0 +1,125 @@
+/* Calculadora IPv6 — reusa as classes .calc-* da Calculadora IPv4; aqui só o específico. */
+.ipv6-bin {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+}
+.ipv6-hextet {
+    font-family: var(--aed-font-mono, ui-monospace, monospace);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    color: #a7f3d0;
+    background: rgba(45, 212, 191, 0.1);
+    border: 1px solid rgba(45, 212, 191, 0.25);
+    border-radius: .375rem;
+    padding: 0.25rem 0.5rem;
+    white-space: nowrap;
+}
+.ipv6-hextet:nth-child(-n+4) {
+    color: #bae6fd;
+    background: rgba(56, 189, 248, 0.1);
+    border-color: rgba(56, 189, 248, 0.25);
+}
+/* Decomposição de 128 bits: rede (prefixo) x interface */
+.ipv6-bits-table td .ipv6-bit-rede,
+.ipv6-bits-table td .ipv6-bit-iface {
+    letter-spacing: 0.06em;
+    border-radius: .1875rem;
+    padding: 0 0.15rem;
+}
+.ipv6-bit-rede { color: #a7f3d0; background: rgba(45, 212, 191, 0.16); }
+.ipv6-bit-iface { color: #bae6fd; background: rgba(56, 189, 248, 0.14); }
+.ipv6-legenda {
+    display: inline-block;
+    margin-right: 0.6rem;
+    padding: 0.05rem 0.4rem;
+    border-radius: .25rem;
+    font-size: .75rem;
+}
+
+/* ---------- Grade de 128 bits célula-a-célula (análogo do "array de 32 bits" do IPv4) ---------- */
+.ipv6-saida-full { width: 100%; }
+/* Dois hextetos (quadros) por linha: as células crescem para preencher a largura e ficam legíveis. */
+.ipv6-bit-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem 1.5rem;
+    align-items: start;
+}
+.ipv6-octeto-group { display: flex; flex-direction: column; align-items: stretch; min-width: 0; width: 100%; }
+.ipv6-bit-row {
+    display: flex;
+    width: 100%;
+    border: 1px solid #444c56;
+    border-radius: 0.4rem;
+    overflow: hidden;
+}
+.ipv6-bit-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: center;
+    border-right: 1px solid #30363d;
+}
+.ipv6-bit-col:last-child { border-right: none; }
+.ipv6-info-top {
+    font-size: .75rem;
+    color: #768390;
+    background: #21262d;
+    line-height: 1.25;
+    padding: 0.1rem 0;
+    white-space: nowrap;
+}
+.ipv6-pow { color: #f0883e; }
+.ipv6-val-bin { font-size: 1.25rem; font-weight: 700; padding: 0.45rem 0; line-height: 1; }
+.ipv6-peso-bot {
+    font-size: .75rem;
+    color: #58a6ff;
+    background: #0d1117;
+    padding: 0.15rem 0;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+.ipv6-octeto-label {
+    font-size: 0.85rem;
+    color: #f2cc60;
+    margin-top: 0.4rem;
+    font-weight: 700;
+    text-align: center;
+    font-family: var(--aed-font-mono, ui-monospace, monospace);
+}
+/* Estado da célula: rede (teal) x interface (azul), aceso (1) x apagado (0) */
+.ipv6-bit-col.rede.on  .ipv6-val-bin { background: #2dd4bf; color: #04231f; }
+.ipv6-bit-col.rede.off .ipv6-val-bin { background: rgba(45, 212, 191, 0.12); color: #5eead4; }
+.ipv6-bit-col.iface.on  .ipv6-val-bin { background: #38bdf8; color: #04202b; }
+.ipv6-bit-col.iface.off .ipv6-val-bin { background: rgba(56, 189, 248, 0.12); color: #7dd3fc; }
+
+/* Marcadores extras: IID (flip U/L, FF:FE) e Comparador (prefixo comum x divergente) */
+.ipv6-bit-col.iid.on  .ipv6-val-bin { background: #38bdf8; color: #04202b; }
+.ipv6-bit-col.iid.off .ipv6-val-bin { background: rgba(56, 189, 248, 0.12); color: #7dd3fc; }
+.ipv6-bit-col.flip.on  .ipv6-val-bin,
+.ipv6-bit-col.flip.off .ipv6-val-bin { background: #f778ba; color: #2b0417; font-weight: 800; }
+.ipv6-bit-col.fffe.on  .ipv6-val-bin { background: #f0883e; color: #2b1204; }
+.ipv6-bit-col.fffe.off .ipv6-val-bin { background: rgba(240, 136, 62, 0.16); color: #f0b17e; }
+.ipv6-bit-col.comum.on  .ipv6-val-bin { background: #2dd4bf; color: #04231f; }
+.ipv6-bit-col.comum.off .ipv6-val-bin { background: rgba(45, 212, 191, 0.12); color: #5eead4; }
+.ipv6-bit-col.diverge.on  .ipv6-val-bin { background: #f0883e; color: #2b1204; }
+.ipv6-bit-col.diverge.off .ipv6-val-bin { background: rgba(240, 136, 62, 0.12); color: #f0b17e; }
+
+.ipv6-mark-flip   { color: #f778ba; background: rgba(247, 120, 186, 0.15); }
+.ipv6-mark-fffe   { color: #f0b17e; background: rgba(240, 136, 62, 0.15); }
+.ipv6-mark-comum  { color: #5eead4; background: rgba(45, 212, 191, 0.15); }
+.ipv6-mark-diverge{ color: #f0b17e; background: rgba(240, 136, 62, 0.15); }
+
+@media (max-width: 767.98px) {
+    /* Em telas estreitas, um hexteto por linha para as 16 células caberem sem espremer. */
+    .ipv6-bit-container { grid-template-columns: 1fr; }
+    .ipv6-val-bin { font-size: 1.05rem; }
+    .ipv6-info-top, .ipv6-peso-bot { font-size: .75rem; }
+}
+
+/* Diagrama de arquitetura (Mermaid) — ocupa a largura total, rola em telas pequenas. */
+.ipv6-diagrama { overflow-x: auto; text-align: center; background: rgba(13, 17, 23, 0.6); border-radius: .5rem; }
+.ipv6-diagrama svg { max-width: 100%; height: auto; }

@@ -1,0 +1,33 @@
+{! Cabeçalho comum das lições da Academia: caminho na trilha, título, duração e o selo de
+   progresso. Variáveis: nivel (Nivel), licao (Licao). O selo é preenchido pelo progresso.js no
+   navegador — o HTML sai anônimo (R5): nenhum dado do aluno é escrito aqui pelo servidor. !}
+<nav class="acad-trilha-caminho mb-2" aria-label="Você está em">
+    <a href="/academia">Academia</a>
+    <span aria-hidden="true">›</span>
+    <a href="{nivel.rota}">{nivel.titulo}</a>
+    <span aria-hidden="true">›</span>
+    <span aria-current="page">{licao.titulo}</span>
+</nav>
+{#include academia/core/mapa-niveis.html /}
+{#include academia/core/navegacao.html atual=licao.id /}
+{#include academia/core/aviso-bloqueio.html /}
+<header class="acad-licao-cabeca">
+    <div>
+        <span class="aed-eyebrow aed-eyebrow-teal">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">{licao.icone}</span>
+            Lição de {nivel.titulo} · cerca de <span translate="no">{licao.minutos}</span> min
+        </span>
+        <h1 class="aed-title" style="font-family:var(--aed-font-display);">{licao.titulo}</h1>
+        <p class="acad-explica mb-0">{licao.resumo}</p>
+    </div>
+    <div>
+        <span class="acad-selo" data-acad-selo="{licao.id}" title="Onde o progresso desta lição está guardado">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">radio_button_unchecked</span>
+            <span>progresso salvo só neste navegador</span>
+        </span>
+        <p class="acad-aviso-local mt-2 mb-0">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span>
+            <span>Sem conta, o progresso fica só neste navegador. Computador compartilhado ou de laboratório pode apagá-lo.</span>
+        </p>
+    </div>
+</header>

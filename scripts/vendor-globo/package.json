@@ -1,0 +1,17 @@
+{
+  "name": "vendor-globo",
+  "private": true,
+  "description": "Gera o pacote local do globo 3D (three + globe.gl) e copia as texturas: a página de Localização deixa de depender do esm.sh e do jsdelivr (auditoria SEC-05).",
+  "type": "module",
+  "scripts": {
+    "construir": "node construir.mjs"
+  },
+  "dependencies": {
+    "globe.gl": "2.34.4",
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.10",
+    "sharp": "0.34.4"
+  }
+}

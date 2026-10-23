@@ -1,0 +1,246 @@
+{#include shared/base.html}
+{#title}Catálogo de Portas | Framework de Redes A&D{/title}
+{#description}Catálogo de portas TCP e UDP com filtro, ordenação e exportação, e aprofundamentos por família: web, e-mail, acesso remoto, arquivos, banco de dados e infraestrutura.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
+<link rel="stylesheet" href="/portas/css/portas.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='portas' /}
+    {#include portas/partials/subnav.html /}
+    <div class="text-center mb-4">
+        <span class="aed-eyebrow aed-eyebrow-indigo">Catálogo</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Catálogo de Portas TCP/UDP</h1>
+        <p class="text-secondary small mx-auto aed-medida-leitura">
+            DataGrid técnico com busca em tempo real, filtros por risco e paginação.
+        </p>
+    </div>
+
+    <div class="aed-stats-bar aed-card card-tech mb-3" data-summary-stats="portas">
+        <div><span class="aed-stat-num total" data-stat="total">—</span><span class="aed-stat-label">Total</span></div>
+        <div><span class="aed-stat-num critical" data-stat="critico">—</span><span class="aed-stat-label">Críticas</span></div>
+        <div><span class="aed-stat-num attention" data-stat="atencao">—</span><span class="aed-stat-label">Atenção</span></div>
+        <div><span class="aed-stat-num safe" data-stat="seguro">—</span><span class="aed-stat-label">Seguras</span></div>
+    </div>
+
+    <div class="card-tech p-3 mb-3 portas-faixas-bloco">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+            <h2 class="h3 portas-faixas-titulo mb-0"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> As três faixas de portas (16 bits)</h2>
+            <a href="/portas/anatomia" class="aed-btn aed-btn-teal btn-sm" title="Entender portas por dentro: 16 bits, socket, portas efêmeras e NAT/PAT">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span> Anatomia das portas
+            </a>
+        </div>
+        <div class="portas-faixas" role="list" aria-label="As três faixas de portas, largura proporcional ao tamanho">
+            <div class="portas-faixa portas-faixa-wk" role="listitem" style="flex-grow: 1024;" title="0 a 1023 — serviços padronizados; abrir exige privilégio no Unix">
+                <span class="portas-faixa-nome">Well-known</span><span class="portas-faixa-range">0–1023</span>
+            </div>
+            <div class="portas-faixa portas-faixa-reg" role="listitem" style="flex-grow: 48128;" title="1024 a 49151 — registradas pela IANA a aplicações">
+                <span class="portas-faixa-nome">Registered</span><span class="portas-faixa-range">1024–49151</span>
+            </div>
+            <div class="portas-faixa portas-faixa-dyn" role="listitem" style="flex-grow: 16384;" title="49152 a 65535 — efêmeras, sorteadas pelo cliente por conexão">
+                <span class="portas-faixa-nome">Dynamic / efêmeras</span><span class="portas-faixa-range">49152–65535</span>
+            </div>
+        </div>
+        <p class="small text-secondary mb-0 mt-2">Um número de 16 bits: <strong class="text-light">65.536</strong> portas possíveis (0–65535), em TCP e UDP separadamente. Largura proporcional ao tamanho de cada faixa.</p>
+    </div>
+
+    <div class="card-tech p-4 shadow">
+        <div class="comm-catalog" data-grid-id="portas">
+            <div class="small text-secondary mb-3 border-start border-info border-2 ps-2 py-1 rounded-1" style="background: rgba(88, 166, 255, 0.06);" role="note">
+                DataGrid técnico de portas para consulta rápida, filtros por risco/categoria e ações operacionais.
+            </div>
+            <div class="comm-summary mb-3" data-summary-target="portas"></div>
+            <div class="d-flex flex-wrap gap-2 mb-2">
+                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">search</span>Busca por porta/serviço</span>
+                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">tune</span>Filtros por risco, categoria e transporte</span>
+                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">swap_vert</span>Clique no cabeçalho para ordenar</span>
+                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">content_copy</span>Copie ou abra detalhes por linha</span>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                <label class="small text-secondary mb-0 d-flex align-items-center gap-2 flex-wrap">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> <span>Linhas por página</span>
+                    <select class="form-select form-select-sm bg-dark text-light border-secondary" style="width: auto; min-width: 12rem;" data-grid-page-size="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Paginação da tabela: escolha quantos registros ver de cada vez ou exiba todos de uma vez.">
+                        <option value="8" selected>8</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="all">Todos (sem paginar)</option>
+                    </select>
+                </label>
+            </div>
+            <div class="row g-2 align-items-end mb-3">
+                <div class="col-lg-3">
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1">Busca geral
+                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="Busca no DataGrid" data-bs-content="Digite porta, serviço, transporte, risco ou categoria para filtrar os registros em tempo real." aria-label="Ajuda: Busca no DataGrid"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
+                    </label>
+                    <input type="text" class="form-control bg-dark text-light border-secondary" data-grid-search="portas" placeholder="Porta, serviço, transporte..." data-bs-toggle="tooltip" data-bs-placement="top" title="Busca geral: digite porta, serviço, transporte, categoria ou risco.">
+                </div>
+                <div class="col-lg-2">
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1">Risco
+                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="Filtro de risco" data-bs-content="Mostra apenas portas com nível Crítico, Atenção, Seguro ou Didático." aria-label="Ajuda: Filtro de risco"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
+                    </label>
+                    <select aria-label="Risco" class="form-select bg-dark text-light border-secondary" data-grid-risk="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelas portas conforme nível de risco didático.">
+                        <option value="all">Todos</option>
+                        <option value="crítico">Crítico</option>
+                        <option value="atenção">Atenção</option>
+                        <option value="seguro">Seguro</option>
+                        <option value="didático">Didático</option>
+                    </select>
+                </div>
+                <div class="col-lg-2">
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1">Categoria
+                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="Faixa de portas" data-bs-content="Filtra por Well-known, Registered ou Dynamic/Private conforme o intervalo da porta." aria-label="Ajuda: Faixa de portas"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
+                    </label>
+                    <select aria-label="Categoria" class="form-select bg-dark text-light border-secondary" data-grid-category="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pela faixa de portas: Well-known, Registered ou Dynamic/Private.">
+                        <option value="all">Todas</option>
+                        <option value="well-known (0-1023)">Well-known</option>
+                        <option value="registered (1024-49151)">Registered</option>
+                        <option value="dynamic/private (49152-65535)">Dynamic/Private</option>
+                    </select>
+                </div>
+                <div class="col-lg-2">
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1">Transporte
+                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="Filtro de transporte" data-bs-content="Filtra registros por TCP, UDP ou combinações TCP/UDP." aria-label="Ajuda: Filtro de transporte"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
+                    </label>
+                    <select aria-label="Transporte" class="form-select bg-dark text-light border-secondary" data-grid-transport="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelo protocolo de transporte (TCP, UDP, TCP/UDP).">
+                        <option value="all">Todos</option>
+                        <option value="tcp">TCP</option>
+                        <option value="udp">UDP</option>
+                        <option value="tcp/udp">TCP/UDP</option>
+                        <option value="udp/tcp">UDP/TCP</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 d-flex flex-wrap gap-2 justify-content-lg-end">
+                    <button type="button" class="aed-btn aed-btn-danger btn-sm grid-action-btn" data-grid-clear="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpa busca, filtros e ordenação da tabela."><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+                    <button type="button" class="aed-btn aed-btn-json btn-sm grid-action-btn" data-grid-export-json="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Exporta os registros filtrados para arquivo JSON."><span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> JSON</button>
+                    <button type="button" class="aed-btn aed-btn-pdf btn-sm grid-action-btn" data-grid-export-pdf="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Gera versão para impressão/PDF com os dados filtrados."><span class="material-symbols-outlined" translate="no" aria-hidden="true">picture_as_pdf</span> PDF</button>
+                </div>
+            </div>
+
+            <div class="table-responsive d-none d-lg-block datagrid-wrap">
+                <table class="table table-dark table-hover table-bordered align-middle mb-2 datagrid-table" data-grid-table="portas">
+                    <thead class="table-dark-header">
+                        <tr>
+                            <th class="sortable" data-sort-key="porta" title="Ordenar por número da porta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_ethernet</span>Porta</th>
+                            <th class="sortable" data-sort-key="servico" title="Ordenar por serviço associado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">dns</span>Serviço</th>
+                            <th class="sortable" data-sort-key="transporte" title="Ordenar por protocolo de transporte"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">swap_horiz</span>Transporte</th>
+                            <th class="sortable" data-sort-key="categoria" title="Ordenar por faixa de categoria"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Categoria</th>
+                            <th class="sortable" data-sort-key="risco" title="Ordenar por nível de risco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">warning</span>Risco</th>
+                            <th title="Ação recomendada para reduzir exposição"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tips_and_updates</span>Recomendação</th>
+                            <th title="Alternativa mais segura para operação"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">verified_user</span>Alternativa segura</th>
+                            <th class="text-center" style="width: 8.75rem;" title="Copiar linha ou abrir detalhes"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody data-grid-body="portas">
+                        {#for item in portasCatalogo}
+                        <tr
+                            data-grid-row="portas"
+                            data-search="{item.porta} {item.servico} {item.protocoloTransporte} {item.categoria} {item.risco} {item.recomendacao} {item.alternativaSegura ?: '-'}"
+                            data-porta="{item.porta}"
+                            data-servico="{item.servico}"
+                            data-transporte="{item.protocoloTransporte}"
+                            data-categoria="{item.categoria}"
+                            data-risco="{item.badge}"
+                            data-recomendacao="{item.recomendacao}"
+                            data-alternativa="{item.alternativaSegura ?: '-'}">
+                            <td class="fw-bold text-info">{item.porta}</td>
+                            <td>{item.servico}</td>
+                            <td>{item.protocoloTransporte}</td>
+                            <td>{item.categoria}</td>
+                            <td><span class="badge bg-dark border border-{item.badgeColor} text-{item.badgeColor}">{item.badge}</span></td>
+                            <td class="small text-info">{item.recomendacao}</td>
+                            <td class="small text-info">{item.alternativaSegura ?: "-"}</td>
+                            <td class="text-nowrap text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center gap-1">
+                                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-copy="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Copiar dados desta linha."><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span></button>
+                                    <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Abrir detalhes desta porta."><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
+                                    {#if item.aprofundamentoRota}
+                                    <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Abrir o aprofundamento do protocolo desta porta"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span></a>
+                                    {/if}
+                                </div>
+                            </td>
+                        </tr>
+                        {/for}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-lg-none">
+                <div class="row g-3" data-grid-mobile="portas">
+                    {#for item in portasCatalogo}
+                    <div
+                        class="col-12 card-tech p-3"
+                        data-grid-mobile-row="portas"
+                        data-search="{item.porta} {item.servico} {item.protocoloTransporte} {item.categoria} {item.risco} {item.recomendacao} {item.alternativaSegura ?: '-'}"
+                        data-porta="{item.porta}"
+                        data-servico="{item.servico}"
+                        data-transporte="{item.protocoloTransporte}"
+                        data-categoria="{item.categoria}"
+                        data-risco="{item.badge}"
+                        data-recomendacao="{item.recomendacao}"
+                        data-alternativa="{item.alternativaSegura ?: '-'}"
+                    >
+                        <h2 class="h6 mb-3 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">settings_ethernet</span> {item.porta} — {item.servico}</h2>
+                        <dl class="small mb-0">
+                            <div class="d-flex flex-wrap justify-content-between gap-2 border-bottom border-secondary border-opacity-25 py-1">
+                                <dt class="mb-0 text-secondary">Transporte</dt><dd class="mb-0 text-light">{item.protocoloTransporte}</dd>
+                            </div>
+                            <div class="d-flex flex-wrap justify-content-between gap-2 border-bottom border-secondary border-opacity-25 py-1">
+                                <dt class="mb-0 text-secondary">Categoria</dt><dd class="mb-0 text-light">{item.categoria}</dd>
+                            </div>
+                            <div class="d-flex flex-wrap justify-content-between gap-2 border-bottom border-secondary border-opacity-25 py-1">
+                                <dt class="mb-0 text-secondary">Risco</dt><dd class="mb-0"><span class="badge bg-dark border border-{item.badgeColor} text-{item.badgeColor}">{item.badge}</span></dd>
+                            </div>
+                            <div class="pt-2">
+                                <dt class="small text-secondary mb-1">Recomendação</dt>
+                                <dd class="small text-info mb-2">{item.recomendacao}</dd>
+                                <dt class="small text-secondary mb-1">Alternativa segura</dt>
+                                <dd class="small text-info mb-0">{item.alternativaSegura ?: "—"}</dd>
+                            </div>
+                        </dl>
+                        <div class="mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center gap-2">
+                            <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-copy="portas" data-bs-toggle="tooltip" title="Copiar linha"><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span></button>
+                            <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="portas" data-bs-toggle="tooltip" title="Detalhes"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
+                            {#if item.aprofundamentoRota}
+                            <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm" data-bs-toggle="tooltip" title="Aprofundamento do protocolo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Aprofundar</a>
+                            {/if}
+                        </div>
+                    </div>
+                    {/for}
+                </div>
+            </div>
+            <div class="d-flex flex-column align-items-center gap-2 mt-2">
+                <div class="small text-secondary text-center" data-grid-counter="portas"></div>
+                <div class="d-flex gap-2 align-items-center justify-content-center">
+                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-prev="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Volta para a página anterior dos resultados filtrados."><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_left</span></button>
+                    <span class="small text-secondary" data-grid-page-label="portas"></span>
+                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-next="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Avança para a próxima página dos resultados filtrados."><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_right</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="commDetailsModal" tabindex="-1" aria-labelledby="commDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border border-secondary">
+            <div class="modal-header border-secondary">
+                <h2 class="h5 modal-title" id="commDetailsModalLabel">Detalhes</h2>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar" data-bs-toggle="tooltip" data-bs-placement="top" title="Fecha a janela de detalhes."></button>
+            </div>
+            <div class="modal-body" id="commDetailsModalBody"></div>
+        </div>
+    </div>
+</div>
+{/content}
+{#extraScripts}
+<script src="/web/js/datagrid.js?v=20261002"></script>
+<script>
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => new bootstrap.Tooltip(el));
+    document.querySelectorAll('[data-bs-toggle="popover"]').forEach((el) => new bootstrap.Popover(el));
+    initGrid("portas");
+</script>
+{/extraScripts}
+{/include}

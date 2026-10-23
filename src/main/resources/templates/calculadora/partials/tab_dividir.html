@@ -1,0 +1,102 @@
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="calc-form-card">
+            <h2 class="h6 calc-form-title">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_on</span> Dividir um bloco
+            </h2>
+            <p class="calc-hint">
+                Exemplo clássico: um <code translate="no">/21</code> tem 2048 endereços. Dividido em <code translate="no">/24</code>
+                cabem <strong>8</strong> sub-redes de 256 endereços cada.
+            </p>
+
+            <form id="formDividir"
+                  hx-post="/calculadora/api/dividir"
+                  hx-target="#saidaDividir"
+                  hx-swap="innerHTML"
+                  hx-disabled-elt="find button[type='submit']">
+
+                <div class="mb-3">
+                    <label for="divBloco" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Bloco base</label>
+                    <input type="text" class="aed-input form-control input-ipv4" id="divBloco" name="bloco"
+                           placeholder="192.168.0.0/21" value="192.168.0.0/21"
+                           inputmode="text" autocomplete="off" spellcheck="false" required>
+                    <div class="form-text text-muted">
+                        Aceita <code translate="no">192.168.0.0/21</code>, <code translate="no">192.168.0.0 255.255.248.0</code>
+                        ou só o endereço com o prefixo no campo abaixo.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="divPrefixoBase" class="form-label text-secondary">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Prefixo do bloco base <span class="text-muted">(opcional)</span>
+                    </label>
+                    <input type="text" class="aed-input form-control input-cidr" id="divPrefixoBase"
+                           name="prefixoBase" inputmode="numeric" maxlength="2" placeholder="21">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tune</span> Critério da divisão</label>
+                    <div class="calc-radio-group" role="radiogroup">
+                        <label class="calc-radio">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> <input type="radio" name="criterio" value="prefixo" checked data-alvo="grupo-prefixo">
+                            <span>Por prefixo alvo</span>
+                        </label>
+                        <label class="calc-radio">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span> <input type="radio" name="criterio" value="quantidade" data-alvo="grupo-quantidade">
+                            <span>Por nº de sub-redes</span>
+                        </label>
+                        <label class="calc-radio">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> <input type="radio" name="criterio" value="hosts" data-alvo="grupo-hosts">
+                            <span>Por hosts necessários</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3 calc-criterio" id="grupo-prefixo">
+                    <label for="divPrefixoAlvo" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo alvo</label>
+                    <input type="text" class="aed-input form-control input-cidr" id="divPrefixoAlvo"
+                           name="prefixoAlvo" inputmode="numeric" maxlength="2" placeholder="24" value="24">
+                    <div class="form-text text-muted">O prefixo de cada sub-rede resultante (0 a 32).</div>
+                </div>
+
+                <div class="mb-3 calc-criterio d-none" id="grupo-quantidade">
+                    <label for="divQuantidade" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span> Quantas sub-redes você precisa</label>
+                    <input type="text" class="aed-input form-control input-numeric" id="divQuantidade"
+                           name="quantidade" inputmode="numeric" placeholder="6" value="6">
+                    <div class="form-text text-muted">
+                        A divisão só acontece em potências de 2 — pedir 6 entrega 8, e a sobra é informada.
+                    </div>
+                </div>
+
+                <div class="mb-3 calc-criterio d-none" id="grupo-hosts">
+                    <label for="divHosts" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> Hosts por sub-rede</label>
+                    <input type="text" class="aed-input form-control input-numeric" id="divHosts"
+                           name="hosts" inputmode="numeric" placeholder="500" value="500">
+                    <div class="form-text text-muted">
+                        A conta reserva rede e broadcast: 500 hosts precisam de 502 endereços, ou seja, um /23.
+                    </div>
+                </div>
+
+                <button type="submit" class="aed-btn aed-btn-execute w-100"
+                        title="Calcular a divisão do bloco em sub-redes conforme o critério selecionado">
+                    <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Calcular
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
+                        title="Esvaziar os campos e apagar o resultado">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div id="saidaDividir" class="calc-saida">
+            <div class="calc-placeholder">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span>
+                <p class="mb-0">Informe o bloco e o critério para ver as sub-redes, a matriz de capacidade
+                    e quantas redes cabem em cada prefixo.</p>
+            </div>
+        </div>
+    </div>
+</div>

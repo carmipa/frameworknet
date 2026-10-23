@@ -1,0 +1,49 @@
+{! Página do nível Transporte (/academia/transporte): as lições na ordem, cada uma com o selo
+   de progresso pintado pelo navegador. Variáveis: nivel (Nivel), activeMainMenu. !}
+{#include shared/base.html}
+{#title}Transporte — Academia | Framework de Redes A&D{/title}
+{#description}Nível Transporte da Academia de redes: o aperto de mão em três vias do TCP com os números de sequência, a janela deslizante e a retransmissão Go-Back-N e seletiva.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/academia/core/css/academia.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5 acad-pagina">
+    {#include shared/main_menu.html activeMainMenu='academia' /}
+    <nav class="acad-trilha-caminho mb-2" aria-label="Você está em">
+        <a href="/academia">Academia</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{nivel.titulo}</span>
+    </nav>
+    {#include academia/core/mapa-niveis.html /}
+    {#include academia/core/navegacao.html atual='' /}
+    {#include academia/core/aviso-bloqueio.html /}
+    <header class="mb-4">
+        <span class="aed-eyebrow aed-eyebrow-teal">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">{nivel.icone}</span>
+            Nível
+        </span>
+        <h1 class="aed-title" style="font-family:var(--aed-font-display);">{nivel.titulo}</h1>
+        <p class="acad-explica">{nivel.resumo}</p>
+        <p class="acad-aviso-local mb-0">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span>
+            <span>Sem conta, o progresso fica só neste navegador. Computador compartilhado ou de laboratório pode apagá-lo.</span>
+        </p>
+    </header>
+    <ol class="acad-licoes">
+        {#for licao in nivel.licoes}
+        <li>
+            <a href="{licao.rota}" class="acad-licao-link" title="Abre a lição {licao.titulo}">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">{licao.icone}</span>
+                <span class="acad-licao-texto">{licao.titulo}<small>{licao.resumo} · cerca de <span translate="no">{licao.minutos}</span> min</small><span class="acad-selo mt-1" data-acad-selo="{licao.id}"></span></span>
+            </a>
+        </li>
+        {/for}
+    </ol>
+</div>
+{/content}
+{#extraScripts}
+<script src="/academia/core/js/progresso.js?v=20261002b"></script>
+<script src="/academia/core/js/niveis.js?v=20261002b"></script>
+<script src="/academia/core/js/selos.js?v=20261002b"></script>
+{/extraScripts}
+{/include}

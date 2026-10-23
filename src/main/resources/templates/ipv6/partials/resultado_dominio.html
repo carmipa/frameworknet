@@ -1,0 +1,20 @@
+{! Domínio → AAAA: cabeçalho do domínio + a MESMA análise rica de 128 bits do endereço resolvido. !}
+<div class="contextual-block resultado-ipv6-block">
+    <div class="aed-card card-tech aed-class-banner shadow mb-3">
+        <div class="p-3 d-flex flex-wrap justify-content-between align-items-start gap-2">
+            <div>
+                <span class="aed-eyebrow">Domínio → IPv6 (AAAA)</span>
+                <div class="aed-class-giant mb-1">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">language</span>
+                    {dom.dominio}
+                </div>
+                <p class="small text-secondary mb-0">Registro AAAA resolvido no servidor · guarda SSRF aplicada</p>
+            </div>
+            <div class="text-end small text-secondary">
+                <div>AAAA: <span class="text-warning fw-bold font-monospace">{dom.enderecoAaaa}</span></div>
+                <div>Tipo: <span class="text-light fw-bold">{dom.analise.base.tipo}</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+{#include ipv6/partials/resultado_analise.html r=dom.analise /}

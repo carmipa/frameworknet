@@ -1,0 +1,85 @@
+<div class="small text-secondary mb-3 border-start border-warning border-2 ps-3 py-2 rounded-1" style="background: rgba(210, 153, 34, 0.09);">
+    <strong class="text-warning">Wildcard na prática Cisco:</strong> máscara invertida usada em <code class="text-info" translate="no">network</code> (EIGRP/OSPF) e ACLs.
+    Esta aba aceita wildcards <strong>contíguas</strong> (equivalente a um único CIDR).
+</div>
+
+<form method="POST" class="row g-3 calc-form" data-tab-form="wildcard">
+    <input type="hidden" name="tab" value="wildcard">
+    <div class="col-lg-5">
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Endereço IPv4 (obrigatório)</label>
+        <input type="text" name="ip" class="form-control input-ipv4 bg-dark text-light border-secondary {#if invalidFields.contains('ip')}is-invalid{/if}"
+               placeholder="Ex.: 172.16.8.8" value="{ipPre}" inputmode="text" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="col-lg-3">
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span> Wildcard mask</label>
+        <input type="text" name="wildcard_mask" class="form-control input-ipv4 bg-dark text-light border-secondary {#if invalidFields.contains('wildcard_mask')}is-invalid{/if}"
+               placeholder="Ex.: 0.0.15.255" value="{wildcardPre}" inputmode="text" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="col-lg-2">
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Régua</label>
+        <select aria-label="Régua" name="regua_count" class="form-select bg-dark text-light border-secondary">
+            <option value="5" {#if reguaCountPre == '5'}selected{/if}>5</option>
+            <option value="10" {#if reguaCountPre == '10'}selected{/if}>10</option>
+            <option value="15" {#if reguaCountPre == '15'}selected{/if}>15</option>
+            <option value="25" {#if reguaCountPre == '25'}selected{/if}>25</option>
+            <option value="50" {#if reguaCountPre == '50'}selected{/if}>50</option>
+            <option value="100" {#if reguaCountPre == '100'}selected{/if}>100</option>
+        </select>
+    </div>
+    <div class="col-lg-2 tab-actions d-grid gap-2">
+        <button type="submit" name="modo" value="wildcard" class="aed-btn aed-btn-execute w-100"
+                data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Executar: validar a wildcard e calcular a rede correspondente">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Executar
+        </button>
+    </div>
+</form>
+
+<div class="card-tech p-3 mt-3">
+    <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_horiz</span> Conversor visual Máscara ↔ Wildcard</h2>
+    <div class="row g-2 mb-3 align-items-end">
+        <div class="col-12 col-lg-5">
+            <label for="wild_mask_input" class="form-label small text-secondary mb-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span> Máscara decimal</label>
+            <input id="wild_mask_input" type="text" class="form-control input-ipv4 bg-dark text-light border-secondary" value="255.255.255.0" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="col-12 col-lg-3">
+            <label for="wild_wildcard_input" class="form-label small text-secondary mb-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span> Wildcard</label>
+            <input id="wild_wildcard_input" type="text" class="form-control input-ipv4 bg-dark text-light border-secondary" value="0.0.0.255" autocomplete="off" spellcheck="false" data-bs-toggle="false" title="">
+        </div>
+        <div class="col-12 col-lg-2 d-grid">
+            <button type="button" id="wild_swap_btn" class="aed-btn aed-btn-amber btn-sm w-100"
+                    title="Faz o caminho inverso: calcula a máscara a partir da wildcard digitada"><span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_horiz</span> Wildcard → Máscara</button>
+        </div>
+    </div>
+    <div id="wild_convert_meta" class="small text-secondary mb-3"></div>
+
+    <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lightbulb</span> Exemplos práticos (ACL / OSPF / EIGRP)</h2>
+    <div class="row g-3">
+        <div class="col-12 col-lg-4">
+            <div class="border border-secondary rounded p-2 h-100 d-flex flex-column">
+                <div class="small fw-bold text-warning mb-1">ACL (rede /24)</div>
+                <pre class="small bg-dark border border-secondary rounded p-2 mb-2 text-light flex-grow-1" translate="no">access-list 101 permit ip 192.168.1.0 0.0.0.255 any</pre>
+                <button type="button" class="btn btn-sm btn-info fw-bold text-dark w-100 copy-cli-model mt-auto"
+                        data-copy-text="access-list 101 permit ip 192.168.1.0 0.0.0.255 any"><span class="material-symbols-outlined align-middle" style="font-size:1rem;" translate="no" aria-hidden="true">content_copy</span> Copiar ACL</button>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="border border-secondary rounded p-2 h-100 d-flex flex-column">
+                <div class="small fw-bold text-warning mb-1">OSPF (área 0)</div>
+                <pre class="small bg-dark border border-secondary rounded p-2 mb-2 text-light flex-grow-1" translate="no">router ospf 1
+ network 10.0.0.0 0.0.0.255 area 0</pre>
+                <button type="button" class="btn btn-sm btn-info fw-bold text-dark w-100 copy-cli-model mt-auto"
+                        data-copy-text="router ospf 1&#10; network 10.0.0.0 0.0.0.255 area 0"><span class="material-symbols-outlined align-middle" style="font-size:1rem;" translate="no" aria-hidden="true">content_copy</span> Copiar OSPF</button>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="border border-secondary rounded p-2 h-100 d-flex flex-column">
+                <div class="small fw-bold text-warning mb-1">EIGRP (AS 100)</div>
+                <pre class="small bg-dark border border-secondary rounded p-2 mb-2 text-light flex-grow-1" translate="no">router eigrp 100
+ network 172.16.0.0 0.0.255.255</pre>
+                <button type="button" class="btn btn-sm btn-info fw-bold text-dark w-100 copy-cli-model mt-auto"
+                        data-copy-text="router eigrp 100&#10; network 172.16.0.0 0.0.255.255"><span class="material-symbols-outlined align-middle" style="font-size:1rem;" translate="no" aria-hidden="true">content_copy</span> Copiar EIGRP</button>
+            </div>
+        </div>
+    </div>
+</div>

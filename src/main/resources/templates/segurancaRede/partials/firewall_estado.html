@@ -1,0 +1,63 @@
+<div class="w-100">
+    <h3 class="h5 text-white d-flex align-items-center gap-2 mb-2">
+        <span class="material-symbols-outlined" translate="no" aria-hidden="true">alt_route</span> {sim.descricao}
+    </h3>
+    <div class="row g-2 small mb-3">
+        <div class="col-md-6">
+            <div class="p-2 rounded h-100" style="background-color: rgba(0,0,0,0.2);">
+                <strong class="text-white">Firewall SEM estado (ACL)</strong><br>
+                <span class="text-secondary">{sim.politicaSemEstado}</span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="p-2 rounded h-100" style="background-color: rgba(0,0,0,0.2);">
+                <strong class="text-white">Firewall COM estado</strong><br>
+                <span class="text-secondary">{sim.politicaComEstado}</span>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-dark table-sm align-middle mb-2">
+            <thead>
+                <tr>
+                    <th style="width: 2.5rem;" title="Ordem do pacote na sequência"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>#</th>
+                    <th title="Direção e flag TCP do pacote"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">mail</span>Pacote</th>
+                    <th title="Veredito do firewall SEM estado (ACL que julga cada pacote isolado)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">rule</span>Sem estado</th>
+                    <th title="Veredito do firewall COM estado (tabela de conexões)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">account_tree</span>Com estado</th>
+                    <th title="Estado da conexão na tabela, antes e depois deste pacote"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">sync_alt</span>Estado (antes &rarr; depois)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#for a in sim.avaliacoes}
+                <tr>
+                    <td class="text-muted">{a.pacote.passo}</td>
+                    <td>
+                        <span class="badge bg-secondary">{#if a.pacote.saida}Saída{#else if a.pacote.entrada}Entrada{#else}{a.pacote.direcao}{/if}</span>
+                        <code class="text-info" translate="no">{a.pacote.flag}</code>
+                        <div class="text-muted small">{a.pacote.resumo}</div>
+                    </td>
+                    <td>
+                        {#if a.semEstado == 'PERMITIDO'}<span class="resultado-permit fw-bold">PERMITIDO</span>
+                        {#else if a.semEstado == 'BLOQUEADO'}<span class="resultado-deny fw-bold">BLOQUEADO</span>
+                        {#else}<span class="text-muted fw-bold">&mdash;</span>{/if}
+                        <div class="text-muted small">{a.razaoSemEstado}</div>
+                    </td>
+                    <td>
+                        {#if a.comEstado == 'PERMITIDO'}<span class="resultado-permit fw-bold">PERMITIDO</span>
+                        {#else if a.comEstado == 'BLOQUEADO'}<span class="resultado-deny fw-bold">BLOQUEADO</span>
+                        {#else}<span class="text-muted fw-bold">&mdash;</span>{/if}
+                        <div class="text-muted small">{a.razaoComEstado}</div>
+                    </td>
+                    <td class="small text-secondary">{a.estadoAntes} &rarr; {a.estadoDepois}</td>
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+    </div>
+    <p class="small text-secondary mb-0">
+        <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;" translate="no" aria-hidden="true">difference</span>
+        Os dois modelos divergiram em <strong>{sim.divergencias}</strong> passo(s) &mdash; tipicamente o
+        tráfego de retorno, que o firewall com estado libera por casar uma conexão registrada e o sem
+        estado derruba por não ter regra de entrada.
+    </p>
+</div>

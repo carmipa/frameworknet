@@ -1,0 +1,227 @@
+{
+  "formatos": [
+    {
+      "extensao": ".pem",
+      "codificacao": "Base64 (PEM) com delimitadores -----BEGIN----- / -----END-----; texto ASCII",
+      "conteudo": "Recipiente genérico: pode guardar certificado, chave privada, cadeia completa ou pedido (CSR); aceita vários blocos concatenados no mesmo arquivo",
+      "uso": "Formato padrão em servidores Linux (Nginx, Apache) e no ecossistema TLS; o mais comum na web",
+      "ferramenta": "openssl (conversão, leitura e geração), ex.: openssl x509 -in cert.pem -text -noout; editável em qualquer editor de texto"
+    },
+    {
+      "extensao": ".der",
+      "codificacao": "Binário DER (Distinguished Encoding Rules); não é legível como texto",
+      "conteudo": "Um único objeto ASN.1 codificado: geralmente um certificado, mas também chave ou CRL",
+      "uso": "Comum no mundo Java e em plataformas Windows; anexo binário de um certificado isolado",
+      "ferramenta": "openssl x509 -inform der -in cert.der -text -noout, keytool; o Windows abre nativamente"
+    },
+    {
+      "extensao": ".crt",
+      "codificacao": "PEM (Base64) ou DER (binário); a extensão não fixa a codificação",
+      "conteudo": "Apenas o certificado público (não a chave privada); pode ser certificado folha ou de CA",
+      "uso": "Arquivo de certificado do servidor ou da autoridade; muito usado no Linux e distribuído por CAs",
+      "ferramenta": "openssl x509 para inspecionar; o Windows reconhece pelo clique duplo"
+    },
+    {
+      "extensao": ".cer",
+      "codificacao": "PEM ou DER; no Windows costuma ser DER binário",
+      "conteudo": "Apenas o certificado público, sem chave privada",
+      "uso": "Extensão preferida no Windows para exportar/importar certificados; equivalente prático ao .crt",
+      "ferramenta": "certutil e a interface de certificados do Windows; openssl também lê"
+    },
+    {
+      "extensao": ".key",
+      "codificacao": "PEM (Base64), frequentemente cifrada com senha; também pode ser DER",
+      "conteudo": "Chave privada (RSA ou EC, em formato tradicional ou PKCS#8); material secreto que nunca deve ser compartilhado",
+      "uso": "Par com o certificado no servidor TLS; exige permissões restritas de leitura (ex.: chmod 600)",
+      "ferramenta": "openssl (genrsa, ecparam, genpkey, pkey); mantenha fora de repositórios e de backups abertos"
+    },
+    {
+      "extensao": ".csr",
+      "codificacao": "PEM (Base64), delimitado por -----BEGIN CERTIFICATE REQUEST----- / -----END CERTIFICATE REQUEST-----",
+      "conteudo": "Pedido de assinatura (PKCS#10): Subject, chave pública e SANs desejadas, assinado pela chave privada; não contém a chave privada",
+      "uso": "Enviado à CA para emitir o certificado; a chave privada permanece com quem gerou",
+      "ferramenta": "openssl req -new -key chave.key -out pedido.csr; a CA processa e devolve o certificado assinado"
+    },
+    {
+      "extensao": ".pfx/.p12",
+      "codificacao": "Binário PKCS#12; protegido por senha",
+      "conteudo": "Pacote com certificado, chave privada e cadeia de intermediárias juntos",
+      "uso": "Transporte e backup do conjunto completo; importado em Windows, IIS e balanceadores",
+      "ferramenta": "openssl pkcs12 (ex.: openssl pkcs12 -in arq.pfx -out arq.pem -nodes), certutil, keytool; a senha protege a chave privada embutida"
+    },
+    {
+      "extensao": ".p7b/.p7c",
+      "codificacao": "PKCS#7; PEM (Base64) ou DER (binário)",
+      "conteudo": "Somente certificados e cadeia (sem chave privada); típico para distribuir a cadeia de CAs",
+      "uso": "Instalação de cadeia no Windows e no Java; entrega do certificado com suas intermediárias",
+      "ferramenta": "openssl pkcs7 -print_certs, certutil; o Windows importa direto"
+    },
+    {
+      "extensao": ".jks/.keystore",
+      "codificacao": "Binário proprietário Java (JKS) ou o padrão atual PKCS#12; protegido por senha",
+      "conteudo": "Repositório de chaves e certificados com apelidos (aliases); guarda chaves privadas e cadeias",
+      "uso": "Aplicações Java e servidores como Tomcat; o JKS está obsoleto, prefira PKCS#12",
+      "ferramenta": "keytool para gerenciar aliases; openssl para converter de e para PKCS#12"
+    }
+  ],
+  "campos": [
+    {
+      "campo": "Version",
+      "oque": "Versão do formato X.509 do certificado; a v3 é a que habilita as extensões modernas (SAN, Key Usage etc.)",
+      "exemplo": "v3 (0x2)",
+      "nota": "Certificados atuais são v3; a v1 não tem extensões e só aparece em raízes muito antigas. O valor codificado é 2 (a v3 vale 0x2)"
+    },
+    {
+      "campo": "Serial Number",
+      "oque": "Número de série atribuído pela CA emissora, único dentro do seu escopo",
+      "exemplo": "0A:1B:2C:3D:4E:5F:60:71",
+      "nota": "Deve ser único por CA e ter entropia suficiente; é usado na revogação (CRL/OCSP) e para identificar o certificado"
+    },
+    {
+      "campo": "Signature Algorithm",
+      "oque": "Algoritmo com que a CA assinou o certificado, combinando função de hash e chave",
+      "exemplo": "sha256WithRSAEncryption ou ecdsa-with-SHA256",
+      "nota": "MD5 e SHA-1 estão banidos na confiança pública; exija SHA-256 ou superior. O campo aparece duas vezes (dentro e fora do TBSCertificate) e ambas devem coincidir"
+    },
+    {
+      "campo": "Issuer",
+      "oque": "Nome distinto (DN) da autoridade certificadora que emitiu o certificado",
+      "exemplo": "C=US, O=Let's Encrypt, CN=R11",
+      "nota": "O Issuer de um certificado é igual ao Subject de quem o assinou; é assim que a cadeia se monta até a raiz"
+    },
+    {
+      "campo": "Validity (Not Before / Not After)",
+      "oque": "Janela de validade: instante inicial (Not Before) e de expiração (Not After), em UTC",
+      "exemplo": "Not Before: 2026-01-10 00:00:00 UTC; Not After: 2026-04-10 23:59:59 UTC",
+      "nota": "Fora da janela o certificado é inválido. Certificados TLS públicos emitidos desde 15/03/2026 duram no máximo 200 dias; o teto cai para 100 dias em 15/03/2027 e para 47 dias em 15/03/2029 (CA/Browser Forum, SC-081). Automatize a renovação (ACME)"
+    },
+    {
+      "campo": "Subject",
+      "oque": "Nome distinto (DN) do titular do certificado; para TLS o CN historicamente trazia o domínio",
+      "exemplo": "CN=www.exemplo.com.br, O=Empresa Ltda, C=BR",
+      "nota": "Os navegadores ignoram o CN para validar o host; o que vale é o SAN. Preencha sempre o SAN"
+    },
+    {
+      "campo": "Subject Public Key Info",
+      "oque": "Chave pública do titular e o algoritmo/parâmetros dela",
+      "exemplo": "RSA 2048 bits ou EC prime256v1 (P-256)",
+      "nota": "RSA no mínimo 2048 bits; ECDSA (P-256) oferece chaves menores e melhor desempenho no handshake TLS"
+    },
+    {
+      "campo": "Subject Alternative Name (SAN)",
+      "oque": "Extensão que lista todos os nomes cobertos: domínios (DNS), IPs e e-mails",
+      "exemplo": "DNS:exemplo.com.br, DNS:www.exemplo.com.br, DNS:*.api.exemplo.com.br",
+      "nota": "É a fonte de verdade para os navegadores. Certificado sem o host no SAN gera erro de nome; confira os SANs realmente servidos com openssl s_client (o Inspetor TLS do site simula essa checagem com o nome que você informa)"
+    },
+    {
+      "campo": "Key Usage",
+      "oque": "Define os usos criptográficos permitidos para a chave (assinatura, cifragem, assinar certificados etc.)",
+      "exemplo": "digitalSignature, keyEncipherment (folha RSA) ou keyCertSign, cRLSign (CA)",
+      "nota": "Costuma ser marcada como crítica; usar a chave fora do que foi declarado quebra a validação. Uma CA precisa de keyCertSign"
+    },
+    {
+      "campo": "Extended Key Usage (EKU)",
+      "oque": "Refina a finalidade do certificado com propósitos específicos",
+      "exemplo": "serverAuth (TLS servidor), clientAuth (mTLS), codeSigning, emailProtection",
+      "nota": "Um certificado de servidor TLS precisa de serverAuth; sem ele o navegador recusa mesmo com o nome correto"
+    },
+    {
+      "campo": "Basic Constraints",
+      "oque": "Indica se o certificado é de uma CA e o limite de profundidade da cadeia (pathlen)",
+      "exemplo": "CA:TRUE, pathlen:0 (CA) ou CA:FALSE (folha)",
+      "nota": "Obrigatória e crítica em certificados de CA; na folha é opcional (CA:FALSE ou ausente). Impede que um certificado comum assine outros"
+    },
+    {
+      "campo": "Authority Key Identifier / Subject Key Identifier",
+      "oque": "O AKI aponta para a chave da CA emissora; o SKI identifica a chave deste certificado",
+      "exemplo": "SKI: 3C:1A:...; AKI: keyid:9F:0B:...",
+      "nota": "O AKI de um certificado casa com o SKI do emissor, acelerando a montagem da cadeia mesmo quando há nomes iguais"
+    },
+    {
+      "campo": "CRL Distribution Points",
+      "oque": "URLs das listas de certificados revogados (CRL) publicadas pela CA",
+      "exemplo": "URI:http://crl.ca.example.com/r11.crl",
+      "nota": "Permite verificar a revogação por lista; as CRLs podem ficar grandes, por isso muitos preferiam o OCSP"
+    },
+    {
+      "campo": "Authority Information Access (OCSP)",
+      "oque": "URLs de serviços da CA: o respondedor OCSP e o certificado do emissor (CA Issuers)",
+      "exemplo": "OCSP - URI:http://ocsp.ca.example.com; CA Issuers - URI:http://ca.example.com/r11.der",
+      "nota": "O OCSP verifica a revogação sob consulta e o OCSP stapling entrega essa resposta no próprio handshake TLS; a Let's Encrypt desligou o OCSP em agosto de 2025 e só publica CRL, e as regras do CA/Browser Forum tornaram o OCSP opcional para as CAs públicas"
+    }
+  ],
+  "tipos": [
+    {
+      "tipo": "DV (Domain Validation)",
+      "valida": "Apenas o controle sobre o domínio (registro DNS, arquivo no servidor ou e-mail de administração)",
+      "uso": "Sites em geral, APIs e ambientes automatizados; emissão rápida e gratuita (ex.: Let's Encrypt)",
+      "observacao": "Não atesta a identidade da organização; cifra a conexão, mas não prova quem está por trás. Suficiente para a maioria dos sites"
+    },
+    {
+      "tipo": "OV (Organization Validation)",
+      "valida": "O controle do domínio mais a existência jurídica da organização (registros públicos, documentos)",
+      "uso": "Sites corporativos e institucionais que querem exibir a organização nos dados do certificado",
+      "observacao": "Mais confiança que o DV, com emissão mais lenta e paga; o navegador não dá destaque visual especial"
+    },
+    {
+      "tipo": "EV (Extended Validation)",
+      "valida": "Verificação rigorosa e documental da organização, seguindo as diretrizes do CA/Browser Forum",
+      "uso": "Bancos, gateways de pagamento e alvos de phishing que exigem o máximo de asseguramento de identidade",
+      "observacao": "O antigo destaque verde na barra sumiu nos navegadores modernos; custo alto e emissão lenta. Avalie se o ganho compensa"
+    },
+    {
+      "tipo": "Wildcard",
+      "valida": "Controle do domínio base; cobre todos os subdomínios de um único nível com o curinga",
+      "uso": "Um certificado para *.exemplo.com.br atende www, api, app etc. sem emitir vários",
+      "observacao": "O curinga cobre só um nível (*.exemplo.com.br não cobre a.b.exemplo.com.br). Uma chave privada comprometida expõe todos os subdomínios"
+    },
+    {
+      "tipo": "Multi-domínio (SAN/UCC)",
+      "valida": "Controle de cada domínio listado; vários nomes distintos no mesmo certificado via SAN",
+      "uso": "Consolidar domínios diferentes (exemplo.com.br, example.net, outro.com) num único certificado",
+      "observacao": "Reduz a gestão, mas cada novo domínio exige reemissão; todos compartilham a mesma chave privada"
+    },
+    {
+      "tipo": "Self-signed (autoassinado)",
+      "valida": "Nada externo: o próprio titular assina com a própria chave; o Issuer é igual ao Subject",
+      "uso": "Desenvolvimento, testes internos e laboratórios; não é confiável por padrão nos navegadores",
+      "observacao": "Gera aviso de segurança em produção; nunca use em site público. Serve para testar o handshake TLS localmente"
+    },
+    {
+      "tipo": "Raiz (Root CA)",
+      "valida": "É a âncora de confiança; autoassinada e distribuída nos repositórios de sistemas e navegadores",
+      "uso": "Topo da cadeia; assina apenas CAs intermediárias, não certificados de servidor",
+      "observacao": "A chave privada é o ativo mais crítico e fica offline (HSM ou air-gap). Um vazamento comprometeria toda a hierarquia"
+    },
+    {
+      "tipo": "Intermediária (Intermediate CA)",
+      "valida": "Assinada pela raiz; emite os certificados folha em nome da raiz",
+      "uso": "Camada operacional entre a raiz e a folha; o servidor deve enviar a intermediária junto na cadeia",
+      "observacao": "Isola a raiz do uso diário; esquecer de servir a intermediária causa erro de cadeia incompleta (o openssl s_client -showcerts mostra quantos certificados o servidor manda)"
+    },
+    {
+      "tipo": "Folha (end-entity)",
+      "valida": "Emitida por uma CA (raiz ou intermediária) para o titular final (servidor, pessoa ou dispositivo)",
+      "uso": "O certificado que o servidor apresenta no handshake TLS; Basic Constraints CA:FALSE",
+      "observacao": "É o certificado do dia a dia; não pode assinar outros certificados. Exige renovação frequente pela validade curta"
+    },
+    {
+      "tipo": "Code signing",
+      "valida": "Identidade da organização ou do desenvolvedor (nível OV ou EV) que assina o software",
+      "uso": "Assinar executáveis, drivers e pacotes para provar origem e integridade; EKU codeSigning",
+      "observacao": "Reduz avisos do sistema operacional; a chave costuma exigir token ou HSM. Um comprometimento permite distribuir malware assinado"
+    },
+    {
+      "tipo": "S/MIME",
+      "valida": "Controle do endereço de e-mail e, conforme o nível, a identidade da pessoa ou organização",
+      "uso": "Assinar e cifrar e-mails; EKU emailProtection e o e-mail no SAN",
+      "observacao": "Garante autenticidade e sigilo da mensagem; exige gestão de chaves para não perder o acesso aos e-mails cifrados"
+    },
+    {
+      "tipo": "Cliente (mTLS)",
+      "valida": "Identidade do cliente (usuário, serviço ou dispositivo) que se autentica no servidor",
+      "uso": "Autenticação mútua em APIs, integrações entre serviços e VPNs; EKU clientAuth",
+      "observacao": "O servidor também exige e valida o certificado do cliente. Fortalece muito o TLS, mas exige distribuir e revogar os certificados dos clientes"
+    }
+  ]
+}

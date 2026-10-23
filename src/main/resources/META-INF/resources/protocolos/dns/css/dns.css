@@ -1,0 +1,308 @@
+/* Estilos exclusivos da página /protocolos/dns.
+   Paleta sky/azul (resolução de nomes, "a agenda da Internet") para separar
+   visualmente do SSH (teal) e do BGP (índigo). Unidades seguem a regra do
+   projeto: rem para espaço e fonte, em nos breakpoints, px só em borda e sombra. */
+
+/* --- Ficha rápida do cabeçalho --- */
+.dns-ficha {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.dns-ficha-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 999rem;
+    background: rgba(56, 189, 248, 0.10);
+    color: var(--aed-text);
+    font-size: .75rem;
+}
+
+.dns-ficha-item strong {
+    color: var(--aed-text-faint);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: .75rem;
+}
+
+/* --- Índice pegajoso --- */
+.dns-indice {
+    position: sticky;
+    /* embaixo do menu do topo quando ele também gruda (aed-shell.js mede a altura) */
+    top: var(--aed-topnav-fixo, 0px);
+    z-index: 3;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.6rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--aed-border);
+    border-radius: var(--aed-radius-card);
+    background: rgba(6, 8, 15, 0.92);
+    backdrop-filter: blur(0.4rem);
+}
+
+.dns-indice a {
+    padding: 0.25rem 0.65rem;
+    border-radius: 0.5rem;
+    color: var(--aed-text-secondary);
+    font-size: 0.76rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.dns-indice a:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--aed-text);
+}
+
+.dns-indice a.is-current {
+    background: rgba(56, 189, 248, 0.18);
+    color: #7dd3fc;
+}
+
+/* --- Seções --- */
+.dns-secao {
+    margin-bottom: 2.5rem;
+    scroll-margin-top: 4.5rem;
+}
+
+.dns-secao-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--aed-border);
+    font-family: var(--aed-font-display);
+    font-size: 1.2rem;
+    color: #7dd3fc;
+}
+
+/* --- Conceitos --- */
+.dns-conceito-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.95rem;
+    color: #7dd3fc;
+    margin-bottom: 0.6rem;
+}
+
+.dns-destaque {
+    padding: 0.5rem 0.7rem;
+    border-left: 3px solid var(--aed-risk-attention);
+    border-radius: 0.4rem;
+    background: rgba(245, 158, 11, 0.08);
+    color: #fcd34d;
+    font-size: 0.8rem;
+}
+
+/* --- Fluxo em passos (resolução recursiva e cadeia DNSSEC) --- */
+.dns-fluxo {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dns-passo {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--aed-border);
+    border-left: 3px solid rgba(56, 189, 248, 0.55);
+    border-radius: 0.6rem;
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.08), transparent 55%);
+}
+
+.dns-passo-num {
+    flex: 0 0 auto;
+    width: 1.6rem;
+    height: 1.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(56, 189, 248, 0.20);
+    color: #7dd3fc;
+    font-family: var(--aed-font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.dns-passo-corpo {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.dns-passo-ator {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--aed-text);
+    margin-bottom: 0.35rem;
+}
+
+.dns-papel {
+    font-weight: 400;
+    font-size: 0.78rem;
+    color: var(--aed-text-secondary);
+}
+
+.dns-passo-troca {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+}
+
+.dns-pergunta {
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.35rem;
+    background: #04060c;
+    color: #7dd3fc;
+    font-family: var(--aed-font-mono);
+    font-size: .75rem;
+}
+
+.dns-resposta {
+    color: var(--aed-text);
+    font-size: 0.8rem;
+}
+
+/* --- Tabelas --- */
+.dns-tabela thead th {
+    background: #0b1622;
+    color: #7dd3fc;
+    border-color: #1e3346;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: .75rem;
+}
+
+.dns-tabela td {
+    border-color: rgba(255, 255, 255, 0.06);
+    vertical-align: top;
+}
+
+.dns-inline {
+    font-family: var(--aed-font-mono);
+    font-size: .75rem;
+    color: #93c5fd;
+    white-space: nowrap;
+}
+
+/* --- Ataques --- */
+.dns-ataque-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.92rem;
+    color: #fca5a5;
+}
+
+.dns-ataque-danger {
+    border-color: rgba(244, 63, 94, 0.35) !important;
+}
+
+.dns-ataque-warning {
+    border-color: rgba(245, 158, 11, 0.30) !important;
+}
+
+.dns-sinal {
+    display: flex;
+    gap: 0.35rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--aed-border);
+    color: var(--aed-text-secondary);
+}
+
+.dns-sinal .material-symbols-outlined {
+    font-size: 1rem;
+    flex: 0 0 auto;
+}
+
+/* --- Laboratório e diagnóstico --- */
+.dns-lab-titulo {
+    font-size: 0.95rem;
+    color: #7dd3fc;
+    margin-bottom: 0.6rem;
+}
+
+.dns-diag-sintoma {
+    display: flex;
+    overflow-wrap: anywhere; /* "NET::ERR_CERT_COMMON_NAME_INVALID" num flex nao encolhe com break-word */
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.92rem;
+    color: #fca5a5;
+    margin-bottom: 0.6rem;
+}
+
+.dns-rotulo {
+    display: inline-block;
+    padding: 0.05rem 0.4rem;
+    margin-right: 0.3rem;
+    border-radius: 0.3rem;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.dns-rotulo-risco {
+    background: rgba(244, 63, 94, 0.16);
+    color: #fda4af;
+}
+
+.dns-rotulo-ok {
+    background: rgba(52, 211, 153, 0.16);
+    color: #6ee7b7;
+}
+
+.dns-codigo {
+    padding: 0.65rem 0.75rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.5rem;
+    background: #04060c;
+    color: #d1d5db;
+    font-family: var(--aed-font-mono);
+    font-size: 0.76rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-x: auto;
+}
+
+.dns-lab-nota {
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--aed-border);
+}
+
+@media (max-width: 36em) {
+    .dns-indice {
+        position: static;
+    }
+
+    .dns-secao-titulo {
+        font-size: 1.05rem;
+    }
+}
+
+/* Ícone do item do índice: o mesmo do título da seção para onde ele leva (UX-10). */
+.dns-indice .material-symbols-outlined {
+    font-size: 1.05em;
+    vertical-align: -0.18em;
+    margin-right: 0.2em;
+}

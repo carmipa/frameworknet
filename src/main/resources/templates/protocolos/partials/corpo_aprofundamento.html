@@ -1,0 +1,165 @@
+{! Corpo COMPARTILHADO de um aprofundamento (índice + conceitos + diagrama +
+    cabeçalho binário + tabelas + ataques + defesas + laboratório + troubleshooting).
+    Dirigido só por `conteudo` (ProtocoloAprofundamento), então serve tanto o módulo
+    Protocolos quanto o Portas. Cabeçalho, sub-menu e botão "voltar" ficam em cada
+    página, porque variam por módulo. Requer o CSS aprofundamento.css e, para o
+    diagrama, o mermaid + aprofundamento-diagrama.js na página que inclui. !}
+<nav class="aprof-indice" aria-label="Índice da página">
+    <a href="#conceitos" data-indice-link title="As ideias centrais"><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Conceitos</a>
+    {#if conteudo.diagrama}<a href="#diagrama" data-indice-link title="Diagrama de arquitetura/fluxo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama</a>{/if}
+    {#if conteudo.cabecalho}<a href="#cabecalho" data-indice-link title="Decomposição binária do cabeçalho"><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> Cabeçalho (bits)</a>{/if}
+    {#if conteudo.tabelas}<a href="#tabelas" data-indice-link title="Tabelas de referência"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_view</span> Tabelas</a>{/if}
+    {#if conteudo.ataques}<a href="#ataques" data-indice-link title="Ataques conhecidos e o sinal observável"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques</a>{/if}
+    {#if conteudo.mitigacoes}<a href="#mitigacoes" data-indice-link title="Defesas e o que cada uma não cobre"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</a>{/if}
+    {#if conteudo.laboratorios}<a href="#laboratorio" data-indice-link title="Comandos para praticar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</a>{/if}
+    {#if conteudo.diagnosticos}<a href="#troubleshooting" data-indice-link title="Sintomas comuns e leitura da saída"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</a>{/if}
+</nav>
+
+<section id="conceitos" class="aprof-secao">
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Como funciona, na essência</h2>
+    <div class="row g-3">
+        {#for item in conteudo.conceitos}
+        <div class="col-12 col-lg-6">
+            <article class="card-tech p-3 h-100 aprof-conceito">
+                <h3 class="aprof-conceito-titulo">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">{item.icone}</span>
+                    {item.titulo}
+                </h3>
+                <p class="small text-light mb-2">{item.texto}</p>
+                {#if item.destaque}<p class="aprof-destaque mb-0">{item.destaque}</p>{/if}
+            </article>
+        </div>
+        {/for}
+    </div>
+</section>
+
+{#include protocolos/partials/diagrama.html diagrama=conteudo.diagrama /}
+
+{#include protocolos/partials/cabecalho_bits.html cabecalho=conteudo.cabecalho /}
+
+{#if conteudo.tabelas}
+<section id="tabelas" class="aprof-secao">
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_view</span> Tabelas de referência</h2>
+    {#for tab in conteudo.tabelas}
+    <div class="aprof-tabela-bloco">
+        <h3 class="aprof-tabela-titulo">{tab.titulo}</h3>
+        <div class="table-responsive border border-secondary border-opacity-25 rounded">
+            <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
+                <thead>
+                    <tr>{#for col in tab.colunas}<th>{col}</th>{/for}</tr>
+                </thead>
+                <tbody>
+                    {#for linha in tab.linhas}
+                    <tr>{#for celula in linha}<td class="small">{celula}</td>{/for}</tr>
+                    {/for}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {/for}
+</section>
+{/if}
+
+{#if conteudo.ataques}
+<section id="ataques" class="aprof-secao">
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques conhecidos</h2>
+    <p class="small text-secondary">Cada cartão traz como o ataque funciona, o sinal observável na rede e a gravidade.</p>
+    <div class="row g-3">
+        {#for at in conteudo.ataques}
+        <div class="col-12 col-xl-6">
+            <article class="card-tech p-3 h-100 aprof-ataque aprof-ataque-{at.gravidadeCor}">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                    <h3 class="aprof-ataque-titulo mb-0">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">{#if at.gravidadeCor == 'danger'}local_fire_department{#else if at.gravidadeCor == 'warning'}warning{#else if at.gravidadeCor == 'info'}info{#else}report{/if}</span>
+                        {at.nome}
+                    </h3>
+                    <span class="badge bg-dark border border-{at.gravidadeCor} text-{at.gravidadeCor}">{at.gravidade}</span>
+                </div>
+                <p class="small text-light mb-2">{at.comoFunciona}</p>
+                <p class="small mb-0 aprof-sinal">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span>
+                    <span><strong>Sinal:</strong> {at.sinal}</span>
+                </p>
+            </article>
+        </div>
+        {/for}
+    </div>
+</section>
+{/if}
+
+{#if conteudo.mitigacoes}
+<section id="mitigacoes" class="aprof-secao">
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</h2>
+    <p class="small text-secondary">A coluna "não cobre" existe de propósito: tratar uma defesa como bala de prata é por onde o furo entra.</p>
+    <div class="table-responsive border border-secondary border-opacity-25 rounded">
+        <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
+            <thead>
+                <tr><th>Defesa</th><th>Como funciona</th><th>Cobre</th><th>Não cobre</th></tr>
+            </thead>
+            <tbody>
+                {#for mit in conteudo.mitigacoes}
+                <tr>
+                    <td class="fw-bold text-info">{mit.nome}</td>
+                    <td class="small text-light">{mit.comoFunciona}</td>
+                    <td class="small text-success"><span class="material-symbols-outlined aprof-td-icone" aria-hidden="true" translate="no">check_circle</span> {mit.cobre}</td>
+                    <td class="small text-warning"><span class="material-symbols-outlined aprof-td-icone" aria-hidden="true" translate="no">cancel</span> {mit.limite}</td>
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+    </div>
+</section>
+{/if}
+
+{#if conteudo.laboratorios}
+<section id="laboratorio" class="aprof-secao">
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</h2>
+    <div class="row g-3">
+        {#for lab in conteudo.laboratorios}
+        <div class="col-12 col-xl-6">
+            <article class="card-tech p-3 h-100 aprof-lab">
+                <h3 class="aprof-lab-titulo">{lab.titulo}</h3>
+                <p class="small text-secondary mb-2">{lab.cenario}</p>
+                <pre class="aprof-codigo" id="aprof-lab-{lab_count}" translate="no">{lab.comandos}</pre>
+                <div class="d-flex justify-content-end mb-2">
+                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-copiar="aprof-lab-{lab_count}"
+                            title="Copiar os comandos do laboratório para a área de transferência">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">content_copy</span> Copiar comandos
+                    </button>
+                </div>
+                {#if lab.explicacao}<p class="small text-light mb-0 aprof-lab-nota">{lab.explicacao}</p>{/if}
+            </article>
+        </div>
+        {/for}
+    </div>
+</section>
+{/if}
+
+{#if conteudo.diagnosticos}
+<section id="troubleshooting" class="aprof-secao">
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</h2>
+    <div class="row g-3">
+        {#for diag in conteudo.diagnosticos}
+        <div class="col-12 col-xl-6">
+            <article class="card-tech p-3 h-100 aprof-diag">
+                <h3 class="aprof-diag-sintoma">
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">bug_report</span>
+                    {diag.sintoma}
+                </h3>
+                <p class="small mb-2"><span class="aprof-rotulo aprof-rotulo-risco">Causa provável</span> {diag.causaProvavel}</p>
+                {#if diag.comando}
+                <pre class="aprof-codigo" id="aprof-diag-{diag_count}" translate="no">{diag.comando}</pre>
+                <div class="d-flex justify-content-end mb-2">
+                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-copiar="aprof-diag-{diag_count}"
+                            title="Copiar comando de diagnóstico para a área de transferência">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">content_copy</span> Copiar
+                    </button>
+                </div>
+                {/if}
+                <p class="small text-light mb-0"><span class="aprof-rotulo aprof-rotulo-ok">Leitura</span> {diag.leitura}</p>
+            </article>
+        </div>
+        {/for}
+    </div>
+</section>
+{/if}

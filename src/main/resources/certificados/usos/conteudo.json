@@ -1,0 +1,252 @@
+{
+  "resumo": "Um certificado X.509 não serve só para o \"cadeado verde\" no navegador. A mesma tecnologia de chave pública assinada por uma CA sustenta quatro usos distintos, e o que separa um do outro é a extensão Extended Key Usage (EKU): o certificado carrega, dentro de si, para que ele pode ser usado. Em HTTPS o servidor prova a identidade do domínio (EKU serverAuth) sobre o protocolo TLS na porta 443 — o protocolo TLS do site mostra essa etapa do handshake, e o Inspetor TLS simula a validação. No mTLS (TLS mútuo) os dois lados apresentam certificado: além do servidor, o cliente também prova quem é (EKU clientAuth), eliminando senha em APIs entre serviços. No code signing o desenvolvedor assina um binário ou driver (EKU codeSigning) para que o sistema operacional confirme origem e integridade antes de executar. No S/MIME o certificado assina e cifra e-mail (EKU emailProtection), garantindo autoria e sigilo da mensagem. Entender EKU é a chave para não aceitar um certificado no lugar errado — e é por confusão de uso que muitos ataques acontecem.",
+  "ficha": [
+    {
+      "rotulo": "O que define o uso",
+      "valor": "Extensão Extended Key Usage (EKU), OID 2.5.29.37",
+      "dica": "Sem EKU compatível, o software deve recusar o certificado para aquele fim"
+    },
+    {
+      "rotulo": "HTTPS / TLS servidor",
+      "valor": "EKU serverAuth (1.3.6.1.5.5.7.3.1)",
+      "dica": "Porta 443; veja o handshake no protocolo TLS do site"
+    },
+    {
+      "rotulo": "mTLS / TLS mútuo",
+      "valor": "serverAuth no servidor + clientAuth (1.3.6.1.5.5.7.3.2) no cliente",
+      "dica": "Os dois lados validam a cadeia um do outro"
+    },
+    {
+      "rotulo": "Code signing",
+      "valor": "EKU codeSigning (1.3.6.1.5.5.7.3.3)",
+      "dica": "Prova origem e integridade do binário/driver"
+    },
+    {
+      "rotulo": "S/MIME (e-mail)",
+      "valor": "EKU emailProtection (1.3.6.1.5.5.7.3.4)",
+      "dica": "Assina (autoria) e cifra (sigilo) a mensagem"
+    },
+    {
+      "rotulo": "Onde ver na prática",
+      "valor": "openssl x509 -text mostra o bloco X509v3 Extended Key Usage",
+      "dica": "Confira SEMPRE antes de confiar num certificado para um uso"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "EKU e quem decide o uso",
+      "icone": "category",
+      "texto": "A extensão Extended Key Usage lista os OIDs que dizem para quais fins a chave pode ser usada: serverAuth, clientAuth, codeSigning, emailProtection. Um certificado emitido para autenticar um servidor web NÃO deveria ser aceito para assinar código, e um cliente TLS bem feito recusa um certificado cujo EKU não contenha o propósito esperado.",
+      "destaque": "EKU é a etiqueta de propósito do certificado — o software deve respeitá-la"
+    },
+    {
+      "titulo": "HTTPS: o servidor se identifica",
+      "icone": "lock",
+      "texto": "No handshake TLS (porta 443), o servidor apresenta um certificado com EKU serverAuth e o nome do domínio no campo Subject Alternative Name. O navegador valida a cadeia até uma CA confiável e confere se o domínio bate. É o uso mais comum e o que o Inspetor TLS do site simula: informe os dados e veja cada regra de validação.",
+      "destaque": "serverAuth + SAN correto = identidade do domínio provada"
+    },
+    {
+      "titulo": "mTLS: os dois lados provam identidade",
+      "icone": "fingerprint",
+      "texto": "No TLS mútuo, além do certificado do servidor, o cliente também apresenta o próprio (EKU clientAuth). O servidor valida a cadeia do cliente e só então aceita a conexão. Isso substitui senhas ou tokens em comunicação entre serviços, porque a posse da chave privada é a prova de identidade.",
+      "destaque": "mTLS exige certificado no cliente, não só no servidor"
+    },
+    {
+      "titulo": "Code signing: origem e integridade",
+      "icone": "verified_user",
+      "texto": "Um certificado com EKU codeSigning assina o hash de um binário ou driver. Quando o usuário executa, o sistema operacional verifica a assinatura: confirma quem assinou (origem) e que o arquivo não foi alterado depois (integridade). Drivers em Windows, por exemplo, só carregam com assinatura válida.",
+      "destaque": "A assinatura não cifra o programa; ela prova quem o publicou e que está intacto"
+    },
+    {
+      "titulo": "S/MIME: e-mail assinado e cifrado",
+      "icone": "description",
+      "texto": "Com EKU emailProtection, o certificado ligado a um endereço de e-mail permite duas coisas: assinar a mensagem (o destinatário confirma o remetente e a integridade) e cifrá-la (só quem tem a chave privada correspondente lê). Assinatura usa a chave privada do remetente; cifra usa a chave pública do destinatário.",
+      "destaque": "Assinar prova autoria; cifrar garante sigilo — são operações distintas"
+    },
+    {
+      "titulo": "Cadeia e confiança são sempre necessárias",
+      "icone": "account_tree",
+      "texto": "Em qualquer dos quatro usos, validar significa construir a cadeia do certificado até uma raiz confiável, checar validade, revogação (via CRL ou OCSP) e o EKU esperado. Pular qualquer etapa — especialmente aceitar sem verificar a cadeia — anula toda a segurança, por mais forte que seja a criptografia.",
+      "destaque": "Criptografia forte com validação fraca = segurança zero"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Os quatro usos de um certificado X.509 e o EKU exigido",
+    "definicao": "flowchart TD\n    CA[CA emite certificado<br/>com EKU específico] --> HTTPS[HTTPS / TLS servidor]\n    CA --> MTLS[mTLS / TLS mútuo]\n    CA --> CS[Code signing]\n    CA --> SMIME[S/MIME / e-mail]\n\n    HTTPS -->|EKU serverAuth| S443[Servidor prova o domínio<br/>na porta 443]\n    MTLS -->|serverAuth + clientAuth| BOTH[Servidor E cliente<br/>provam identidade]\n    CS -->|EKU codeSigning| BIN[Assina binário ou driver<br/>origem + integridade]\n    SMIME -->|EKU emailProtection| MAIL[Assina e cifra<br/>a mensagem]\n\n    S443 -.->|simule a validação| INSP[Inspetor TLS do site<br/>simulação]\n    BOTH -.->|mesmo handshake TLS| INSP",
+    "legenda": "A CA carimba no certificado, via EKU, para que ele serve. HTTPS e mTLS acontecem no handshake TLS (porta 443) — o protocolo TLS do site mostra essa etapa; code signing e S/MIME assinam artefatos fora da conexão."
+  },
+  "tabelas": [
+    {
+      "titulo": "Uso x EKU exigido x exemplo real",
+      "colunas": [
+        "Uso",
+        "EKU (nome / OID)",
+        "Quem apresenta",
+        "Exemplo"
+      ],
+      "linhas": [
+        [
+          "HTTPS (TLS servidor)",
+          "serverAuth / 1.3.6.1.5.5.7.3.1",
+          "Servidor",
+          "Site em https://example.com na porta 443"
+        ],
+        [
+          "mTLS (TLS mútuo)",
+          "clientAuth / 1.3.6.1.5.5.7.3.2",
+          "Cliente (além do servidor)",
+          "Microsserviço A chamando API do microsserviço B"
+        ],
+        [
+          "Code signing",
+          "codeSigning / 1.3.6.1.5.5.7.3.3",
+          "Desenvolvedor / publisher",
+          "Instalador .exe ou driver assinado no Windows"
+        ],
+        [
+          "S/MIME",
+          "emailProtection / 1.3.6.1.5.5.7.3.4",
+          "Remetente / destinatário",
+          "E-mail corporativo assinado e cifrado no Outlook"
+        ]
+      ]
+    },
+    {
+      "titulo": "Assinatura x cifra: o que cada operação usa",
+      "colunas": [
+        "Operação",
+        "Chave usada",
+        "Garante",
+        "Não garante"
+      ],
+      "linhas": [
+        [
+          "Servidor prova identidade (TLS)",
+          "Privada do servidor",
+          "Autenticidade do domínio",
+          "Sigilo por si só (o TLS negocia isso à parte)"
+        ],
+        [
+          "Code signing",
+          "Privada do publisher",
+          "Origem + integridade do arquivo",
+          "Confidencialidade (o binário continua legível)"
+        ],
+        [
+          "Assinar e-mail (S/MIME)",
+          "Privada do remetente",
+          "Autoria + integridade",
+          "Sigilo do conteúdo"
+        ],
+        [
+          "Cifrar e-mail (S/MIME)",
+          "Pública do destinatário",
+          "Sigilo (só o destinatário lê)",
+          "Autoria (por isso costuma-se assinar também)"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Certificado de serverAuth usado fora do propósito",
+      "como_funciona": "Um certificado emitido apenas para autenticar servidor web (EKU serverAuth) é reaproveitado para assinar código ou autenticar cliente. Se o software que consome não checa o EKU, aceita o certificado num contexto para o qual a CA nunca o autorizou, quebrando a separação de usos.",
+      "sinal": "Bloco Extended Key Usage lista TLS Web Server Authentication mas o certificado está sendo usado para code signing ou clientAuth",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Chave de code signing roubada assinando malware",
+      "como_funciona": "O atacante obtém a chave privada de code signing (vazada de um build server, laptop ou repositório). Com ela assina malware, que passa a ser aceito pelo sistema operacional como software legítimo daquela empresa — SmartScreen e verificações de driver deixam de reclamar.",
+      "sinal": "Binários maliciosos com assinatura válida de um publisher conhecido; picos de detecção de malware assinado com o mesmo certificado",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Cliente que não valida a cadeia no mTLS",
+      "como_funciona": "No mTLS, se um dos lados aceita o certificado do outro sem construir e validar a cadeia até uma raiz confiável (ou desliga a verificação para o handshake parar de falhar), qualquer certificado autoassinado passa. O atacante se posiciona no meio e apresenta um certificado forjado que é aceito.",
+      "sinal": "Código com InsecureSkipVerify, verify=none, TrustManager que aceita tudo, ou logs sem erro de validação onde deveria haver",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "S/MIME cifrado sem assinatura (falsa autoria)",
+      "como_funciona": "Cifrar e-mail com a chave pública do destinatário garante sigilo, mas não prova quem enviou. Se o fluxo só cifra e não assina, um atacante pode mandar uma mensagem cifrada válida se passando por outra pessoa; o destinatário lê e confia na origem aparente.",
+      "sinal": "Mensagens cifradas sem bloco de assinatura; ausência de aviso do cliente de e-mail sobre remetente não verificado",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "EKU restrito e emissão por propósito",
+      "como_funciona": "Emitir cada certificado com o EKU mínimo necessário para o uso pretendido, sem empilhar propósitos. E, do lado do consumidor, validar o EKU no momento de usar: recusar serverAuth para code signing, recusar cert sem clientAuth no mTLS, etc.",
+      "cobre": "Uso indevido de certificado fora do propósito",
+      "limite": "Só funciona se o software verificar o EKU; muitos clientes antigos ignoram a extensão"
+    },
+    {
+      "nome": "Proteger a chave de code signing em HSM",
+      "como_funciona": "Guardar a chave privada de code signing em um HSM ou token de hardware, onde a assinatura acontece dentro do dispositivo e a chave nunca sai. Combinar com assinatura via serviço dedicado, acesso auditado e, quando possível, carimbo de tempo (timestamp) para que a assinatura sobreviva à expiração.",
+      "cobre": "Roubo da chave de code signing e assinatura de malware",
+      "limite": "Não impede abuso por quem tem acesso legítimo ao HSM; exige revogação rápida se comprometido"
+    },
+    {
+      "nome": "Validar cadeia dos dois lados no mTLS",
+      "como_funciona": "Configurar servidor e cliente para exigir e validar o certificado do outro contra uma CA confiável (verify obrigatório), checando validade, revogação e EKU. Nunca desabilitar a verificação para silenciar erro de handshake — o erro está apontando um problema real.",
+      "cobre": "Man-in-the-middle por cliente/servidor que não valida cadeia",
+      "limite": "Depende de manter a lista de CAs e a revogação (CRL/OCSP) atualizadas nos dois lados"
+    },
+    {
+      "nome": "Sempre assinar, e cifrar quando preciso, no S/MIME",
+      "como_funciona": "Padronizar assinatura em todo e-mail S/MIME (prova autoria e integridade) e cifra quando o conteúdo for sensível. Clientes devem exibir claramente quando a assinatura falha ou o remetente não é verificado.",
+      "cobre": "Falsa autoria em mensagens apenas cifradas",
+      "limite": "Requer que ambos os lados tenham certificados S/MIME e chaves distribuídas"
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Inspecionar o EKU de um certificado",
+      "cenario": "Você recebeu um certificado e precisa confirmar para que ele foi realmente emitido antes de confiar nele em algum fluxo.",
+      "comandos": "# Ver todas as extensões, incluindo Extended Key Usage\nopenssl x509 -in certificado.pem -noout -text\n\n# Filtrar só o bloco de EKU\nopenssl x509 -in certificado.pem -noout -text | grep -A1 \"Extended Key Usage\"\n\n# Baixar e inspecionar o certificado que um servidor apresenta na porta 443\nopenssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null | openssl x509 -noout -text | grep -A1 \"Extended Key Usage\"",
+      "explicacao": "A saída mostra linhas como TLS Web Server Authentication (serverAuth), TLS Web Client Authentication (clientAuth), Code Signing ou E-mail Protection. Se o propósito esperado não estiver listado, o certificado não deve ser aceito para aquele uso. O mesmo handshake da porta 443 pode ser visto de forma guiada no protocolo TLS do site."
+    },
+    {
+      "titulo": "Exigir certificado de cliente (mTLS) no Nginx",
+      "cenario": "Você quer proteger uma API para que só clientes com certificado emitido pela sua CA consigam conectar — sem senha, só mTLS.",
+      "comandos": "# --- Config de servidor (nginx.conf) ---\n# server {\n#     listen 443 ssl;\n#     server_name api.example.com;\n#\n#     ssl_certificate     /etc/ssl/servidor.crt;\n#     ssl_certificate_key /etc/ssl/servidor.key;\n#\n#     # CA que assinou os certificados de CLIENTE\n#     ssl_client_certificate /etc/ssl/ca-clientes.crt;\n#     ssl_verify_client on;          # exige e VALIDA o cert do cliente\n#     ssl_verify_depth 2;            # profundidade da cadeia\n# }\n\n# --- Teste com curl apresentando o certificado de cliente ---\ncurl --cert cliente.crt --key cliente.key \\\n     --cacert ca-servidor.crt \\\n     https://api.example.com/ping\n\n# Sem --cert a conexão é recusada (400 No required SSL certificate)",
+      "explicacao": "ssl_verify_client on faz o servidor exigir e validar a cadeia do cliente contra ca-clientes.crt; o cliente, por sua vez, valida o servidor com --cacert. Os dois lados provam identidade. Jamais use verify off ou -k para silenciar erro: isso reintroduz o ataque de man-in-the-middle."
+    },
+    {
+      "titulo": "Verificar assinatura de code signing e criar chave em keystore",
+      "cenario": "Você precisa checar se um artefato assinado está íntegro e entender onde a chave de assinatura deve morar.",
+      "comandos": "# Verificar uma assinatura destacada com openssl (CMS/PKCS7)\nopenssl cms -verify -in artefato.p7s -inform DER \\\n    -content artefato.bin -CAfile ca.crt -out /dev/null\n# Saída \"CMS Verification successful\" = origem e integridade OK\n\n# Gerar par de chaves para code signing em keystore PKCS12 (keytool)\n# -ext EKU=codeSigning é obrigatório: sem ele o cert não carrega EKU algum\nkeytool -genkeypair -alias codesign -keyalg RSA -keysize 3072 \\\n    -validity 730 -keystore codesign.p12 -storetype PKCS12 \\\n    -dname \"CN=Code Signing Demo\" -ext EKU=codeSigning\n\n# Conferir o EKU do certificado gerado\nkeytool -list -v -keystore codesign.p12 -storetype PKCS12 | grep -A1 \"ExtendedKeyUsages\"",
+      "explicacao": "A verificação CMS confirma que o artefato não mudou e foi assinado por uma chave encadeada até a CA confiável. Note que keytool -genkeypair só grava o EKU se você passar -ext EKU=codeSigning; sem isso o certificado sai sem propósito declarado. Em produção, a chave privada de code signing deve viver num HSM (storetype PKCS11 apontando para o token), nunca em arquivo .p12 no disco de um build server."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "O nginx responde 400 No required SSL certificate was sent",
+      "causa_provavel": "O servidor exige certificado de cliente (ssl_verify_client on) e o cliente não apresentou nenhum (se apresentou um de CA não aceita, a mensagem é 400 The SSL certificate error)",
+      "leitura": "Confirme que o curl/cliente envia --cert e --key e que o certificado foi assinado pela CA em ssl_client_certificate",
+      "comando": "curl -v --cert cliente.crt --key cliente.key --cacert ca-servidor.crt https://api.example.com/ping"
+    },
+    {
+      "sintoma": "Navegador ou cliente recusa o certificado dizendo uso inválido",
+      "causa_provavel": "O EKU do certificado não inclui o propósito exigido (ex.: falta serverAuth para HTTPS ou clientAuth para mTLS)",
+      "leitura": "Inspecione o bloco Extended Key Usage; se o OID esperado não estiver lá, reemita o certificado com o EKU correto",
+      "comando": "openssl x509 -in certificado.pem -noout -text | grep -A1 \"Extended Key Usage\""
+    },
+    {
+      "sintoma": "Binário assinado aparece como publisher desconhecido após meses",
+      "causa_provavel": "A assinatura foi feita sem carimbo de tempo (timestamp) e o certificado de code signing expirou; sem timestamp a assinatura deixa de ser válida na expiração",
+      "leitura": "Sem saída = não há carimbo de tempo de TSA: reassine com timestamp de uma TSA confiável. Não procure signingTime: ele é a hora declarada pelo próprio signatário e aparece mesmo sem carimbo nenhum",
+      "comando": "openssl pkcs7 -in artefato.p7s -inform DER -print -noout | grep -iE \"timeStampToken|countersignature|1\\.3\\.6\\.1\\.4\\.1\\.311\\.3\\.3\\.1\""
+    },
+    {
+      "sintoma": "E-mail S/MIME chega cifrado mas o cliente não mostra remetente verificado",
+      "causa_provavel": "A mensagem foi cifrada mas não assinada, então não há prova de autoria — sigilo sem autenticidade",
+      "leitura": "Configure o fluxo para assinar sempre; o cliente deve exibir o selo de assinatura válida além do cadeado de cifra",
+      "comando": "openssl cms -cmsout -in email.eml -print -noout | grep -i signerInfo"
+    }
+  ]
+}

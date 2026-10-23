@@ -1,0 +1,482 @@
+{#if res}
+<div class="contextual-block resultado-ipv4-block">
+    <div class="aed-card card-tech aed-class-banner shadow mb-3">
+        <div class="p-3 d-flex flex-wrap justify-content-between align-items-start gap-2">
+            <div>
+                <span class="aed-eyebrow">Resultado</span>
+                <div class="aed-class-giant mb-1">
+                    {#if res.classes_abc_fixas.size > 0}
+                    {#for ref in res.classes_abc_fixas}{#if ref_isFirst}{ref.letra}{/if}{/for}
+                    {#else}
+                    {res.classe}
+                    {/if}
+                    <span class="aed-class-cidr">/{res.cidr}</span>
+                </div>
+                {#if !res.somente_mascara}
+                <p class="small text-secondary mb-0">1º octeto do IP: <span class="text-warning fw-bold">{res.primeiro_octeto}</span> · máscara padrão da classe <span translate="no">{res.mascara_padrao_classe}</span> · prefixo em uso /{res.cidr}</p>
+                {/if}
+            </div>
+            <div class="text-end small text-secondary">
+                {#if !res.somente_mascara}
+                <div>1º octeto: <span class="text-warning fw-bold">{res.primeiro_octeto}</span></div>
+                {/if}
+                <div>Máscara: <span class="text-light fw-bold">{res.mask}</span></div>
+                <div>Rede: <span class="text-light fw-bold">{res.rede}</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dynamic-theme" style="--dyn-bit1: {res.cor_bit1}; --dyn-and: {res.cor_resultado_and}; --dyn-pulo: {res.cor_pulo}; --dyn-resumo: {res.cor_borda_resumo}; --dyn-accent: {res.cor_acento}; --dyn-table-border: {res.cor_borda_tabela}; --dyn-table-th-bg: {res.cor_cabecalho_tabela_bg}; --dyn-table-th-text: {res.cor_cabecalho_tabela_texto}; --dyn-row-highlight: {res.cor_linha_destaque};">
+
+    {#if activeTabPre == 'wildcard'}
+    <div class="card-tech p-4 shadow mb-3">
+        <h2 class="h6 text-warning mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_view</span> Modo Wildcard — resumo limpo</h2>
+        <table class="table table-dark table-bordered table-sm resultados-table mb-0">
+            <tbody>
+                <tr><th>Wildcard informada</th><td class="fw-bold">{#if wildcardPre}{wildcardPre}{#else}{res.wildcard}{/if}</td></tr>
+                <tr><th>Máscara equivalente</th><td>{res.mask}</td></tr>
+                <tr><th>CIDR equivalente</th><td>/{res.cidr}</td></tr>
+                <tr><th>Rede</th><td>{res.rede}</td></tr>
+                <tr><th>1º host</th><td>{res.primeiro_host}</td></tr>
+                <tr><th>Último host</th><td>{res.ultimo_host}</td></tr>
+                <tr><th>Broadcast</th><td>{res.broad}</td></tr>
+                <tr><th>Pulo</th><td><span class="highlight-pulo">{res.pulo}</span></td></tr>
+                <tr><th>Capacidade</th><td>{res.total} IPs ({res.uteis} úteis)</td></tr>
+            </tbody>
+        </table>
+    </div>
+    {#if res.and_table.size > 0}
+    <div class="card-tech p-4 shadow mb-3">
+        <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">123</span> Octetos e validação wildcard</h2>
+        <table class="table table-dark table-bordered table-sm regua-table mb-2">
+            <thead><tr><th>Campo</th><th>1º</th><th>2º</th><th>3º</th><th>4º</th></tr></thead>
+            <tbody>
+                <tr class="and-row-wild"><td>Wildcard</td>{#for col in res.and_table}<td>{col.wild_oct}</td>{/for}</tr>
+                <tr class="and-row-mask"><td>Máscara</td>{#for col in res.and_table}<td>{col.mask_oct}</td>{/for}</tr>
+                <tr><td>Máscara (BIN)</td>{#for col in res.and_table}<td>{col.mask_bin}</td>{/for}</tr>
+            </tbody>
+        </table>
+        <div class="small text-secondary">Regra: em cada octeto, wildcard + máscara = 255.</div>
+        <details class="mt-3">
+            <summary class="text-info small">Laboratório visual (resultado)</summary>
+            <div class="row g-2 mt-2">
+                <div class="col-lg-6"><input id="wild_result_mask" type="text" class="form-control input-ipv4 bg-dark text-light border-secondary" value="{res.mask}" autocomplete="off" spellcheck="false"></div>
+                <div class="col-lg-6"><input id="wild_result_wild" type="text" class="form-control input-ipv4 bg-dark text-light border-secondary" value="{res.wildcard}" autocomplete="off" spellcheck="false"></div>
+            </div>
+            <div id="wild_result_meta" class="small text-secondary mt-2"></div>
+        </details>
+    </div>
+    {/if}
+    {/if}
+
+    {#if res.somente_mascara}
+    <div class="classe-card-unificada cv-{res.classe_variant} card-tech shadow mb-3 py-4 px-3 text-center">
+        <div class="small text-secondary text-uppercase fw-semibold mb-3">Referência — máscara / prefixo</div>
+        {#if res.classes_abc_fixas.size > 0}
+        {#for ref in res.classes_abc_fixas}{#if ref_isFirst}
+        <div class="classe-unif-hero d-flex align-items-baseline justify-content-center flex-wrap gap-2 mb-3">
+            <span class="classe-unif-classe">{ref.letra}</span>
+            <span class="classe-unif-barra">/{res.cidr}</span>
+        </div>
+        <p class="small text-secondary mb-3">{ref.faixa_octeto} · {ref.mascara_padrao}</p>
+        {/if}{/for}
+        {#else}
+        <div class="classe-unif-hero d-flex justify-content-center mb-3">
+            <span class="classe-unif-barra classe-unif-barra-so">/{res.cidr}</span>
+        </div>
+        {/if}
+        <div class="classe-destaque-octeto mb-2">Máscara: <span class="text-warning fw-bold">{res.mask}</span></div>
+        <div class="classe-destaque-faixa">{res.classe_faixa}</div>
+        <div class="small text-secondary mt-3 pt-2 border-top border-secondary border-opacity-25">{res.classe_observacao}</div>
+    </div>
+    <div class="card-tech p-3 shadow mb-3 border border-secondary" style="border-left: 0.312% solid #1f6feb !important;">
+        <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Explicação do cálculo da máscara</h2>
+        <div class="small text-secondary">
+            Máscara: <strong class="text-light">{res.mask}</strong> · Prefixo: <strong class="text-warning">/{res.cidr}</strong><br>
+            Capacidade: <strong class="text-light">{res.total}</strong> IPs totais, <strong class="text-light">{res.uteis}</strong> hosts úteis.
+        </div>
+    </div>
+    {#else}
+    {#if res.classes_abc_fixas.size > 0}
+    <div class="classe-card-unificada cv-{res.classe_variant} card-tech shadow mb-3 py-4 px-3 text-center">
+        {#for ref in res.classes_abc_fixas}{#if ref_isFirst}
+        <div class="classe-unif-hero d-flex align-items-baseline justify-content-center flex-wrap gap-2 mb-3">
+            <span class="classe-unif-classe">{ref.letra}</span>
+            <span class="classe-unif-barra">/{res.cidr}</span>
+        </div>
+        <p class="small text-secondary mb-2">{ref.faixa_octeto} · {ref.mascara_padrao}</p>
+        {/if}{/for}
+        <div class="classe-destaque-octeto mb-2">1º octeto do IP: <span class="text-warning fw-bold">{res.primeiro_octeto}</span></div>
+        <div class="classe-destaque-faixa">{res.classe_faixa}</div>
+        {#if res.classe_observacao}
+        <div class="alert alert-secondary border border-secondary small text-start mt-3 mb-0 py-2">{res.classe_observacao}</div>
+        {/if}
+    </div>
+    {#else}
+    <div class="classe-destaque cv-{res.classe_variant} card-tech shadow mb-3 py-4 px-3 text-center">
+        <div class="classe-destaque-rotulo">Classificação do endereço (1º octeto)</div>
+        <div class="classe-destaque-valor">{res.classe}</div>
+        <div class="classe-destaque-octeto">1º octeto: <span class="text-warning fw-bold">{res.primeiro_octeto}</span> · <span class="text-info">/{res.cidr}</span></div>
+        <div class="classe-destaque-faixa">{res.classe_faixa}</div>
+        {#if res.classe_observacao}
+        <div class="alert alert-secondary border border-secondary small text-start mt-3 mb-0 py-2">{res.classe_observacao}</div>
+        {/if}
+    </div>
+    {/if}
+    {/if}
+
+    {#if activeTabPre != 'wildcard' && octetosBits.size > 0}
+    <div class="card-tech shadow mb-3">
+        <div class="p-3 border-bottom border-secondary text-info fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">bar_chart</span> Decomposição do array de 32 bits</div>
+        <div class="p-3 bit-container">
+            {#for oct in octetosBits}
+            <div class="octeto-group">
+                <div class="bit-row shadow-sm">
+                    {#for bit in oct.bits}
+                    <div class="bit-col">
+                        <div class="info-top">#{bit.num}</div>
+                        <div class="info-top text-danger" style="font-size: 0.75rem;">2<sup>{bit.power}</sup></div>
+                        <div class="val-bin {bit.css}">{bit.val}</div>
+                        <div class="peso-bot">{bit.weight}</div>
+                    </div>
+                    {/for}
+                </div>
+                <div class="octeto-label">OCTETO {oct.numero}: {oct.maskOctet}</div>
+            </div>
+            {/for}
+        </div>
+    </div>
+    {/if}
+
+    {#if !res.somente_mascara && res.and_table.size > 0}
+    <div class="card-tech shadow mb-3">
+        <div class="p-3 border-bottom border-secondary text-warning fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">memory</span> Decomposição bitwise AND (IP × máscara)</div>
+        <div class="p-3 and-table-wrap">
+            <table class="table table-dark table-bordered align-middle and-table mb-2">
+                <thead>
+                    <tr><th>Campo</th><th>Octeto 1</th><th>Octeto 2</th><th>Octeto 3</th><th>Octeto 4</th></tr>
+                </thead>
+                <tbody>
+                    <tr class="and-row-ip"><td>IP (DEC)</td>{#for col in res.and_table}<td>{col.ip_oct}</td>{/for}</tr>
+                    <tr class="and-row-mask"><td>Máscara (DEC)</td>{#for col in res.and_table}<td>{col.mask_oct}</td>{/for}</tr>
+                    <tr><td>IP (BIN)</td>{#for col in res.and_table}<td>{col.ip_bin}</td>{/for}</tr>
+                    <tr><td>Máscara (BIN)</td>{#for col in res.and_table}<td>{col.mask_bin}</td>{/for}</tr>
+                    <tr class="and-row-result"><td>AND (BIN)</td>{#for col in res.and_table}<td>{col.and_bin}</td>{/for}</tr>
+                    <tr class="and-row-result"><td>AND (DEC) = REDE</td>{#for col in res.and_table}<td>{col.and_oct}</td>{/for}</tr>
+                    <tr class="and-row-wild"><td>Wildcard (255−M)</td>{#for col in res.and_table}<td>{col.wild_oct}</td>{/for}</tr>
+                </tbody>
+            </table>
+            <div class="small text-secondary">O AND entre IP e máscara produz a rede; a wildcard é usada em ACL/OSPF.</div>
+        </div>
+    </div>
+    {/if}
+
+    <div class="card-tech p-3 mb-3 dynamic-legend">
+        <div class="top-card-title d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">palette</span> Tema e severidade</div>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="dynamic-legend-chip chip-verde">/24+ Verde</span>
+            <span class="dynamic-legend-chip chip-azul">/17-23 Azul</span>
+            <span class="dynamic-legend-chip chip-ambar">/9-16 Âmbar</span>
+            <span class="dynamic-legend-chip chip-vermelho">/0-8 Vermelho</span>
+        </div>
+        <div class="small mt-2 mb-0"><strong>Nível atual:</strong> {res.nivel_tema} — {res.nivel_tema_descricao}</div>
+    </div>
+
+    {#if wizardCalculo.size > 0}
+    <div class="card-tech p-3 mb-3">
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h2>
+        <div class="table-responsive">
+            <table class="table table-dark table-bordered table-sm wizard-table mb-0">
+                <thead><tr><th>Etapa</th><th>Ação</th><th>Resultado</th></tr></thead>
+                <tbody>
+                {#for passo in wizardCalculo}
+                <tr><td>{passo.icone} {passo.etapa}</td><td>{passo.acao}</td><td>{passo.resultado}</td></tr>
+                {/for}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {/if}
+
+    {#if timelineBloco}
+    <div class="card-tech p-3 mb-3">
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Linha do tempo do bloco</h2>
+        <div class="timeline-bloco">
+            <div class="timeline-step {#if timelineBloco.posicao == 'rede'}is-active{/if}">
+                <div class="timeline-title">Rede</div>
+                <div class="timeline-ip">{timelineBloco.rede}</div>
+            </div>
+            <div class="timeline-step {#if timelineBloco.posicao == 'hosts'}is-active{/if}">
+                <div class="timeline-title">Hosts úteis</div>
+                <div class="timeline-ip">{timelineBloco.primeiro_host} → {timelineBloco.ultimo_host}</div>
+            </div>
+            <div class="timeline-step {#if timelineBloco.posicao == 'broadcast'}is-active{/if}">
+                <div class="timeline-title">Broadcast</div>
+                <div class="timeline-ip">{timelineBloco.broadcast}</div>
+            </div>
+        </div>
+        <div class="small text-secondary mt-2">IP digitado: {timelineBloco.ip}</div>
+    </div>
+    {/if}
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="card-tech p-4 h-100 resumo-box">
+                <h2 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resultados decimais</h2>
+                <div class="table-responsive">
+                    <table class="table table-dark table-bordered table-sm resultados-table mb-2">
+                        <tbody>
+                            <tr><th>Máscara</th><td><span class="text-warning fw-bold">{res.mask}</span> <span class="text-secondary small">/ {res.cidr}</span></td></tr>
+                            {#if res.cidr_origem}<tr><th>CIDR origem</th><td class="text-info">{res.cidr_origem}</td></tr>{/if}
+                            <tr><th>Wildcard</th><td>{res.wildcard}</td></tr>
+                            {#if res.somente_mascara}
+                            <tr><th>Rede</th><td class="text-secondary">— (informe um IP)</td></tr>
+                            {#else}
+                            <tr><th>Rede</th><td>{res.rede}</td></tr>
+                            <tr><th>1º host</th><td class="text-success">{res.primeiro_host}</td></tr>
+                            <tr><th>Último host</th><td class="text-success">{res.ultimo_host}</td></tr>
+                            <tr><th>Broadcast</th><td>{res.broad}</td></tr>
+                            <tr><th>IP (BIN)</th><td class="fw-bold">{res.ip_binario_completo}</td></tr>
+                            {/if}
+                            <tr><th>Pulo</th><td><span class="highlight-pulo">{res.pulo}</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                {#if !res.somente_mascara}
+                <p class="small">Tipo: <span class="fw-bold">{res.ip_tipo_privacidade}</span> — {res.ip_faixa_privacidade}</p>
+                <div class="alert alert-secondary bg-dark border-secondary text-light small py-2">
+                    <strong>Papel do IP:</strong> {res.ip_papel}
+                    {#if res.ip_papel_alerta}<div class="mt-1 text-warning">{res.ip_papel_alerta}</div>{/if}
+                </div>
+                <p class="small">Gateway sugerido: <span class="text-success fw-bold">{res.gateway_sugerido}</span></p>
+                <p class="small">Gateway alternativo: <span class="text-success fw-bold">{res.gateway_alternativo}</span></p>
+                {#if res.resumo_prova_itens.size > 0}
+                <hr class="border-secondary">
+                <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">edit_note</span> Resumo rápido (modo prova)</h2>
+                <table class="table table-dark table-bordered table-sm resumo-table mb-0">
+                    <tbody>{#for item in res.resumo_prova_itens}<tr><th>{item.campo}</th><td>{item.valor}</td></tr>{/for}</tbody>
+                </table>
+                {/if}
+                {/if}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-tech p-4 h-100 resumo-box" style="border-left-color:#238636;">
+                <h2 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Capacidade e hosts</h2>
+                <p>Zeros (host bits): <span class="fw-bold">{res.zeros}</span></p>
+                <p>IPs no bloco: 2<sup>{res.zeros}</sup> = <span class="text-warning fw-bold">{res.total}</span></p>
+                <p>IPs úteis: <span class="text-success fw-bold" style="font-size:1.2rem;">{res.uteis}</span></p>
+                {#if !res.somente_mascara}
+                <hr class="border-secondary">
+                <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Termos da rede</h2>
+                <table class="table table-dark table-bordered table-sm termos-table mb-0">
+                    <tbody>
+                        <tr><td>DNS</td><td>{res.dns_info}</td></tr>
+                        <tr><td>DHCP</td><td>{res.dhcp_info}</td></tr>
+                        <tr><td>Broadcast</td><td>{res.broad}</td></tr>
+                        <tr><td>VLAN</td><td>{res.vlan_info}</td></tr>
+                        <tr><td>WAN</td><td>{res.wan_info}</td></tr>
+                    </tbody>
+                </table>
+                <hr class="border-secondary">
+                <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco CLI</h2>
+                <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{res.cisco_cli}</pre>
+                {/if}
+            </div>
+        </div>
+    </div>
+
+    {#if !res.somente_mascara && res.abertura_intervalos}
+    <div class="card-tech p-3 mb-3">
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Abertura dos intervalos</h2>
+        <table class="table table-dark table-bordered table-sm interval-table mb-2">
+            <thead><tr><th>Tipo</th><th>Detalhe</th><th>Valor</th></tr></thead>
+            <tbody>
+                <tr><td>Conceito</td><td>{res.abertura_intervalos.titulo}</td><td>{res.abertura_intervalos.ips_por_bloco} IPs ({res.abertura_intervalos.uteis_por_bloco} úteis)</td></tr>
+                <tr><td>Faixa atual</td><td>Base calculada</td><td class="text-info">{res.abertura_intervalos.faixa_atual}</td></tr>
+            </tbody>
+        </table>
+        {#if res.abertura_intervalos.exemplos.size > 0}
+        <table class="table table-dark table-bordered table-sm interval-table mb-0">
+            <thead><tr><th>Status</th><th>Subnet</th><th>Faixa</th></tr></thead>
+            <tbody>
+            {#for ex in res.abertura_intervalos.exemplos}
+            <tr class="{#if ex_isFirst}is-faixa-atual{/if}">
+                <td>{#if ex_isFirst}Atual{#else}Próxima{/if}</td>
+                <td>{ex.nome}</td>
+                <td>{ex.faixa}</td>
+            </tr>
+            {/for}
+            </tbody>
+        </table>
+        {/if}
+    </div>
+    {/if}
+
+    {#if !res.somente_mascara && res.proximas_subredes.size > 0}
+    <div class="card-tech p-3 mb-3">
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {res.regua_count})</h2>
+        <div class="table-responsive">
+            <table class="table table-dark table-bordered table-sm regua-table mb-0">
+                <thead><tr><th>Subnet</th><th>Rede</th><th>1º host</th><th>Último host</th><th>Broadcast</th></tr></thead>
+                <tbody>
+                {#for s in res.proximas_subredes}
+                <tr class="{#if s_isFirst}regua-current{/if}">
+                    <td>{s.nome}</td><td>{s.rede}</td><td>{s.primeiro_host}</td><td>{s.ultimo_host}</td><td>{s.broadcast}</td>
+                </tr>
+                {/for}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {/if}
+
+    {#if res.tabela_referencia.size > 0}
+    {#if res.nota_cidr_cisco}
+    <div class="alert alert-info border border-info small py-2 mb-2"><strong>Cisco / CIDR:</strong> {res.nota_cidr_cisco}</div>
+    {/if}
+    <div class="card-tech shadow mb-3">
+        <div class="p-3 border-bottom border-secondary text-info fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">table_chart</span> Tabela de referência dinâmica (octeto {res.octeto_referencia})</div>
+        <div class="p-3 table-responsive">
+            <table class="table table-dark table-bordered table-sm ref-table mb-0">
+                <thead>
+                    <tr><th>128</th><th>64</th><th>32</th><th>16</th><th>8</th><th>4</th><th>2</th><th>1</th><th>Int</th><th>Variação</th><th>IPs</th><th>Máscara</th><th>Barra</th></tr>
+                </thead>
+                <tbody>
+                {#for row in res.tabela_referencia}
+                <tr class="{#if row.is_current}is-current{/if}">
+                    {#for b in row.bits}<td class="{#if b == 0}ref-bit-zero{/if}">{b}</td>{/for}
+                    <td>{row.intervalos}</td><td>{row.variacao}</td><td>{row.ips}</td><td>{row.mascara_octeto}</td><td>/{row.barra}</td>
+                </tr>
+                {/for}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {/if}
+
+    {#if res.tabela_conversao_bits.size > 0}
+    <div class="card-tech shadow mb-3">
+        <div class="p-3 border-bottom border-secondary text-warning fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_horiz</span> Tabela de conversão (bits, bytes, binário e decimal)</div>
+        <div class="p-3 row g-3">
+            <div class="col-md-7">
+                <table class="table table-dark table-bordered table-sm conv-table mb-0">
+                    <thead><tr><th>Referência</th><th>Bits</th><th>Bytes</th><th>Binário</th><th>Decimal</th></tr></thead>
+                    <tbody>
+                    {#for row in res.tabela_conversao_bits}
+                    <tr><td>{row.referencia}</td><td>{row.bits}</td><td>{row.bytes}</td><td>{row.binario}</td><td>{row.decimal}</td></tr>
+                    {/for}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-5">
+                <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Aplicado ao cálculo atual</h2>
+                <table class="table table-dark table-bordered table-sm conv-table mb-0">
+                    <tbody>
+                    {#for item in res.conversao_atual}
+                    <tr><td>{item.chave}</td><td>{item.valor}</td></tr>
+                    {/for}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {/if}
+
+    {#if res.grc_resumo || res.seguranca_dicas.size > 0}
+    <div class="card-tech p-4 shadow mb-3">
+        <h2 class="h6 text-danger mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> Cyber segurança (GRC + contexto)</h2>
+        {#if res.grc_resumo}
+        <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h2>
+        <ul class="small mb-3 grc-list">{#for linha in res.grc_resumo}<li>{linha}</li>{/for}</ul>
+        {/if}
+        {#if res.seguranca_dicas.size > 0}
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span> Alertas e recomendações</h2>
+        {#for dica in res.seguranca_dicas}
+        <div class="alert alert-{dica.tipo} bg-dark border-{dica.tipo} text-light small py-2 mb-2">
+            <span>{dica.icon}</span> {dica.texto}
+        </div>
+        {/for}
+        {/if}
+    </div>
+    {/if}
+
+    {#if !res.somente_mascara && res.cisco_eigrp_exemplo}
+    <div class="card-tech p-4 shadow mb-3 border border-secondary" style="border-left:0.312% solid #d29922 !important;">
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> EIGRP / OSPF — network com wildcard</h2>
+        <p class="small text-secondary mb-2">{res.cisco_roteamento_nota}</p>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="small text-info mb-1 fw-bold">EIGRP</div>
+                <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{res.cisco_eigrp_exemplo}</pre>
+            </div>
+            <div class="col-md-6">
+                <div class="small text-info mb-1 fw-bold">OSPFv2</div>
+                <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{res.cisco_ospf_exemplo}</pre>
+            </div>
+        </div>
+    </div>
+    {/if}
+
+    <div class="card-tech shadow mb-3">
+        <div class="p-3 border-bottom border-secondary text-warning fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dicas de terminal (Linux e Windows)</div>
+        <div class="p-3 small text-secondary">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <h2 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Linux</h2>
+                    <ul class="mb-0"><li><code translate="no">ip a</code> — IPs e máscaras</li><li><code translate="no">ip route</code> — rotas e gateway</li><li><code translate="no">ipcalc 172.19.0.0/20</code> — cálculo de sub-rede</li></ul>
+                </div>
+                <div class="col-md-6">
+                    <h2 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">desktop_windows</span> Windows</h2>
+                    <ul class="mb-0"><li><code translate="no">ipconfig /all</code> — configuração completa</li><li><code translate="no">arp -a</code> — tabela ARP</li><li><code translate="no">tracert 8.8.8.8</code> — caminho até destino</li></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {#if res.banner_contexto}
+    <div class="card-tech border border-info border-2 shadow mb-3 banner-contexto-didatico">
+        <div class="p-3">
+            <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> {res.banner_contexto.titulo}</h2>
+            <p class="small text-secondary mb-3">{res.banner_contexto.subtitulo}</p>
+            <ul class="list-unstyled mb-0">
+            {#for it in res.banner_contexto.itens}
+            <li class="mb-2 pb-2 border-bottom border-secondary border-opacity-25">
+                <div class="text-warning fw-bold text-uppercase small">{it.rotulo}</div>
+                <div class="text-light mt-1">{it.valor}</div>
+            </li>
+            {/for}
+            </ul>
+        </div>
+    </div>
+    {/if}
+
+    {#if res.somente_mascara && res.enunciado_prova}
+    <div class="card-tech border border-warning border-opacity-50 shadow mb-3 enunciado-prova-mascara">
+        <div class="p-3">
+            <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resposta tipo prova (máscara / sub-rede) /{res.cidr}</h2>
+            <p class="small text-secondary mb-2">Itens que costumam ser pedidos em lista quando só se dá a máscara (ou o prefixo):</p>
+            {#if res.enunciado_prova.frase_estilo_quadro}
+            <p class="frase-estilo-quadro p-3 rounded border border-info border-opacity-25 text-light small mb-3" style="background:rgba(31,111,235,0.08);">
+                <span class="text-info text-uppercase small d-block mb-1" style="letter-spacing:0.04em;">Resumo estilo quadro (aula)</span>
+                {res.enunciado_prova.frase_estilo_quadro}
+            </p>
+            {/if}
+            {#if res.enunciado_prova.linha_potencias_quadro}
+            <p class="linha-potencias-quadro p-2 mb-3 rounded small text-secondary border border-secondary border-opacity-25 font-monospace">{res.enunciado_prova.linha_potencias_quadro}</p>
+            {/if}
+            <ul class="list-unstyled mb-0 small">
+                <li class="mb-2"><span class="text-info fw-bold">Qtde intervalos:</span> {res.enunciado_prova.qtde_intervalos} no {res.enunciado_prova.octeto_referencia}º octeto</li>
+                <li class="mb-2"><span class="text-info fw-bold">Variação:</span> <span class="highlight-pulo">{res.enunciado_prova.variacao}</span></li>
+                <li class="mb-2"><span class="text-info fw-bold">IPs por sub-rede:</span> {res.enunciado_prova.ips_total_por_subrede} total, {res.enunciado_prova.ips_uteis_por_subrede} úteis</li>
+            </ul>
+            {#if res.enunciado_prova.nota}
+            <div class="alert alert-secondary border border-secondary small py-2 mt-3 mb-0">{res.enunciado_prova.nota}</div>
+            {/if}
+        </div>
+    </div>
+    {/if}
+
+    </div>
+</div>
+{/if}

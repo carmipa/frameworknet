@@ -1,0 +1,195 @@
+{
+  "resumo": "O par curl e openssl é o kit de bancada para dissecar HTTP e TLS diretamente no terminal, sem depender de navegador ou proxy gráfico. O curl mostra o caminho completo de uma requisição (resolução DNS, aperto de mão TCP, handshake TLS e a troca HTTP), enquanto o openssl abre o canal criptográfico e o certificado por dentro. Este aprofundamento ensina a ler o que cada etapa reporta, a diferenciar erro de rede de erro de aplicação, e a diagnosticar os dois clássicos que travam entrega em produção: cadeia de certificado incompleta ou expirada e loop de redirecionamento. Complementa o material de TLS/Certificados e o Inspetor TLS (simulação): aqui você faz, contra servidores reais, o que lá é explicado ou simulado.",
+  "ficha": [
+    {
+      "rotulo": "Ferramentas",
+      "valor": "curl + openssl",
+      "dica": "curl inspeciona HTTP; openssl abre o TLS e o certificado por dentro"
+    },
+    {
+      "rotulo": "Camadas cobertas",
+      "valor": "DNS, TCP, TLS, HTTP",
+      "dica": "curl -v narra as quatro etapas em sequência na saída de erro"
+    },
+    {
+      "rotulo": "Porta padrão HTTPS",
+      "valor": "443/tcp",
+      "dica": "openssl s_client -connect host:443 fala direto com essa porta"
+    },
+    {
+      "rotulo": "SNI obrigatório",
+      "valor": "-servername (openssl) / nome da URL (curl)",
+      "dica": "sem SNI o servidor pode devolver o certificado errado em hosts compartilhados"
+    },
+    {
+      "rotulo": "Relacionado",
+      "valor": "Inspetor TLS",
+      "dica": "faz contra o servidor real o que o Inspetor TLS (simulação) e o módulo de Certificados explicam"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "curl -v narra a requisição inteira",
+      "icone": "travel_explore",
+      "texto": "O modo verboso imprime cada fase na saída de erro. Linhas com * são notas do curl (DNS, conexão, TLS), > são os cabeçalhos que você envia e < são os que o servidor responde. Ler esses três prefixos separa problema de cliente de problema de servidor.",
+      "destaque": "* nota do curl · > envio · < resposta"
+    },
+    {
+      "titulo": "TLS acontece antes do HTTP",
+      "icone": "lock",
+      "texto": "O handshake TLS negocia versão, cifra e valida o certificado antes de qualquer byte HTTP trafegar. Se o handshake falha, o HTTP nem começa. Por isso erro de certificado nunca vem acompanhado de status HTTP: o túnel não chegou a abrir.",
+      "destaque": "Sem handshake, sem HTTP"
+    },
+    {
+      "titulo": "SNI escolhe qual certificado o servidor mostra",
+      "icone": "dns",
+      "texto": "Um mesmo IP hospeda vários domínios HTTPS. O cliente envia o nome do host no campo SNI durante o handshake para que o servidor devolva o certificado certo. No openssl isso é o -servername; no curl o SNI sai do nome do host na URL. Para testar outro IP mantendo esse nome, use --resolve ou --connect-to; mudar só o cabeçalho Host (-H) não muda o SNI.",
+      "destaque": "-servername = SNI"
+    },
+    {
+      "titulo": "Cadeia de confiança precisa estar completa",
+      "icone": "account_tree",
+      "texto": "O servidor deve enviar o certificado da folha mais os intermediários até encadear numa raiz confiável do sistema. Falta de intermediário é a causa nº 1 de erro que aparece só em alguns clientes: o navegador cacheia o intermediário, o curl não.",
+      "destaque": "folha + intermediários"
+    },
+    {
+      "titulo": "Redirect (3xx) é instrução, não conteúdo",
+      "icone": "sync_alt",
+      "texto": "Respostas 301/302/307/308 trazem um cabeçalho Location apontando para outro endereço. O curl só segue se você pedir com -L. Um Location que aponta de volta para si mesmo cria loop, que o curl corta ao atingir o limite de saltos.",
+      "destaque": "3xx + Location = -L"
+    },
+    {
+      "titulo": "-k desliga a verificação e esconde o problema",
+      "icone": "warning",
+      "texto": "O -k (--insecure) manda o curl aceitar qualquer certificado. Serve para isolar se a falha é de TLS ou de HTTP, nunca para operar. Em produção ele mascara certificado expirado, autoassinado ou man-in-the-middle. Use para diagnosticar, remova em seguida.",
+      "destaque": "Só para diagnóstico"
+    }
+  ],
+  "diagrama": {
+    "titulo": "O que curl -v mostra: do DNS até a resposta HTTP",
+    "definicao": "sequenceDiagram\n    participant C as curl\n    participant R as Resolver DNS\n    participant S as Servidor\n    C->>R: Consulta A/AAAA do host\n    R-->>C: Endereço IP\n    C->>S: TCP SYN (porta 443)\n    S-->>C: SYN-ACK\n    C->>S: ACK (conexão aberta)\n    C->>S: TLS 1.3 ClientHello (versão, cifras, SNI, key_share)\n    S-->>C: ServerHello + Certificado (cadeia) + CertificateVerify + Finished\n    C->>C: Valida cadeia e validade\n    C->>S: Finished (túnel cifrado ativo)\n    C->>S: GET / HTTP/1.1 (linhas com >)\n    S-->>C: HTTP/1.1 200 OK (linhas com <)",
+    "legenda": "Cada seta corresponde a uma linha da saída de curl -v. As notas * marcam DNS, TCP e TLS; > são os cabeçalhos enviados e < os recebidos. Se o fluxo para no bloco TLS, o problema é de certificado ou cifra, não de HTTP."
+  },
+  "tabelas": [
+    {
+      "titulo": "Flags essenciais do curl",
+      "colunas": [
+        "Flag",
+        "O que faz",
+        "Quando usar"
+      ],
+      "linhas": [
+        [
+          "-v",
+          "Modo verboso: imprime DNS, TCP, TLS e cabeçalhos (* > <)",
+          "Diagnóstico geral de qualquer requisição"
+        ],
+        [
+          "-I",
+          "Faz um HEAD: só os cabeçalhos de resposta, sem corpo",
+          "Conferir status, Location e tipo de conteúdo rápido"
+        ],
+        [
+          "-L",
+          "Segue os redirecionamentos indicados no Location",
+          "Quando o endereço responde 3xx e você quer o destino final"
+        ],
+        [
+          "-H",
+          "Adiciona ou sobrescreve um cabeçalho de requisição",
+          "Forçar Host, Authorization, User-Agent ou Accept"
+        ],
+        [
+          "-k",
+          "Aceita certificado inválido (--insecure)",
+          "Isolar se a falha é de TLS; nunca em produção"
+        ],
+        [
+          "--resolve",
+          "Fixa host:porta para um IP, ignorando o DNS",
+          "Testar um servidor específico mantendo SNI e Host corretos"
+        ]
+      ]
+    },
+    {
+      "titulo": "openssl para TLS e certificados",
+      "colunas": [
+        "Comando / flag",
+        "O que faz",
+        "Leitura típica"
+      ],
+      "linhas": [
+        [
+          "s_client -connect host:443",
+          "Abre a conexão TLS e despeja o handshake",
+          "Cadeia enviada, cifra negociada e Verify return code"
+        ],
+        [
+          "-servername host",
+          "Envia o SNI no handshake",
+          "Sem ele, hosts compartilhados devolvem o certificado errado"
+        ],
+        [
+          "-showcerts",
+          "Lista todos os certificados enviados pelo servidor",
+          "Confere se os intermediários vieram junto da folha"
+        ],
+        [
+          "x509 -text",
+          "Decodifica um certificado para texto legível",
+          "Subject, Issuer, datas Not Before/Not After, SAN"
+        ],
+        [
+          "x509 -noout -dates",
+          "Mostra só a validade do certificado",
+          "Detecta expiração sem ler o resto"
+        ],
+        [
+          "x509 -noout -subject -issuer",
+          "Mostra a quem pertence e quem emitiu",
+          "Confirma domínio e autoridade certificadora"
+        ]
+      ]
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Narrar a requisição inteira com curl -v",
+      "cenario": "Ver cada fase (DNS, TCP, TLS, HTTP) de uma chamada HTTPS e entender os prefixos * > <.",
+      "comandos": "curl -v https://example.com/\n\n# Isolar apenas as linhas do handshake TLS:\ncurl -v https://example.com/ 2>&1 | grep -E '^\\* (SSL|TLS|Server certificate|subject|issuer|expire)'",
+      "explicacao": "As linhas iniciadas por * são notas do curl: resolução de IP, conexão TCP e detalhes do TLS (versão, cifra, sujeito e validade do certificado). As linhas > são os cabeçalhos que você envia; as < são a resposta. Se a saída para no bloco TLS, o HTTP nunca começou e o problema é de certificado ou cifra."
+    },
+    {
+      "titulo": "Só os cabeçalhos e o caminho dos redirecionamentos",
+      "cenario": "Descobrir o status e para onde um endereço redireciona sem baixar o corpo da página.",
+      "comandos": "# HEAD: apenas cabeçalhos da resposta\ncurl -I https://example.com/\n\n# Seguir a cadeia de redirects mostrando o cabeçalho de cada salto\ncurl -sIL https://example.com/ | grep -Ei 'HTTP/|^location:'",
+      "explicacao": "O -I pede um HEAD, então o servidor devolve só os cabeçalhos. Com -L o curl segue cada Location; combinando -sIL e filtrando por HTTP/ e Location você vê a sequência de saltos e o status final. É a forma mais rápida de ver um 301 encadeando até o 200."
+    },
+    {
+      "titulo": "Abrir o handshake TLS com openssl s_client",
+      "cenario": "Inspecionar a conexão criptográfica e a cadeia de certificados enviada pelo servidor, com SNI correto.",
+      "comandos": "openssl s_client -connect example.com:443 -servername example.com -showcerts </dev/null\n\n# Só o veredito da validação:\nopenssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null | grep -E 'Verify return code|Cipher'",
+      "explicacao": "O -servername envia o SNI, essencial em IPs que hospedam vários domínios. O -showcerts lista todos os certificados enviados: confira se os intermediários vieram junto da folha. O </dev/null fecha a entrada para o comando não travar esperando dados. Verify return code: 0 (ok) indica cadeia válida; qualquer outro número aponta o motivo da falha."
+    },
+    {
+      "titulo": "Ler o certificado por dentro com x509",
+      "cenario": "Extrair o certificado servido e decodificar sujeito, emissor, validade e nomes alternativos (SAN).",
+      "comandos": "# Baixar o certificado da folha e decodificar completo\nopenssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null \\\n  | openssl x509 -text -noout\n\n# Só o que mais importa em diagnóstico:\nopenssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null \\\n  | openssl x509 -noout -subject -issuer -dates -ext subjectAltName",
+      "explicacao": "O x509 -text -noout despeja o certificado inteiro em texto. Para diagnóstico rápido, -subject e -issuer dizem a quem pertence e quem emitiu, -dates mostra Not Before/Not After (expiração) e -ext subjectAltName lista os domínios cobertos. Se o host acessado não estiver no SAN, o cliente rejeita mesmo com o certificado válido."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "curl aborta com 'SSL certificate problem' e nenhum status HTTP aparece",
+      "causa_provavel": "Cadeia incompleta (falta intermediário), certificado expirado, autoassinado ou host fora do SAN. O handshake TLS falhou antes do HTTP começar.",
+      "comando": "openssl s_client -connect host:443 -servername host -showcerts </dev/null 2>/dev/null | grep -E 'Verify return code|s:|i:'\nopenssl s_client -connect host:443 -servername host </dev/null 2>/dev/null | openssl x509 -noout -dates -subject -ext subjectAltName",
+      "leitura": "Verify return code diferente de 0 confirma a falha. Compare as linhas s: (subject) e i: (issuer) para ver se a cadeia encadeia até uma raiz; se só a folha aparece, faltam intermediários. Confira -dates para expiração e o SAN para ver se o host está listado. Um curl -k que passa prova que o problema é de certificado, não de HTTP."
+    },
+    {
+      "sintoma": "curl -L entra em loop e aborta com 'Maximum (50) redirects followed'",
+      "causa_provavel": "Loop de redirecionamento: dois endereços apontam um para o outro, ou o servidor redireciona para si mesmo (ex.: HTTP para HTTPS que volta para HTTP, ou cookie/Host ausente que reinicia o fluxo).",
+      "comando": "curl -sIL --max-redirs 10 https://host/ | grep -Ei 'HTTP/|^location:'",
+      "leitura": "A lista de pares HTTP/3xx + Location revela o ciclo: quando um Location repete um endereço já visto, está o loop. Verifique se o destino difere da origem a cada salto. Causas comuns: regra de rewrite que reaplica o mesmo redirect, ou falta de um cabeçalho (-H 'Host:' ou cookie) que o servidor espera para encerrar o fluxo."
+    }
+  ]
+}

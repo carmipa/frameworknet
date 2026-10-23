@@ -1,0 +1,194 @@
+/* =========================================================================
+   ACADEMIA · Transporte — só o diagrama de setas e a fileira de segmentos.
+   O resto vem do academia.css. Largura em % e unidades relativas; px só em borda fina.
+   ========================================================================= */
+
+/* ---------- diagrama de setas (aperto de mão) ---------- */
+.acad-lados {
+    display: flex;
+    justify-content: space-between;
+    font-size: .85rem;
+    color: var(--aed-text-secondary);
+    margin-top: .75rem;
+}
+
+.acad-setas {
+    list-style: none;
+    padding: 0;
+    margin: .4rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+}
+
+.acad-seta {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .2rem .75rem;
+    padding: .4rem .7rem;
+    border: 1px solid var(--aed-border);
+    border-radius: .5rem;
+    font-size: .9rem;
+    transition: opacity .3s;
+}
+
+.acad-seta.para-servidor {
+    margin-right: 12%;
+    border-left: 3px solid var(--aed-teal);
+}
+
+.acad-seta.para-cliente {
+    margin-left: 12%;
+    border-right: 3px solid var(--aed-indigo);
+    justify-content: flex-end;
+}
+
+.acad-seta.apagada {
+    opacity: .3;
+}
+
+.acad-seta.destaque {
+    border-color: var(--aed-teal);
+}
+
+/* O segmento viajando: um ponto percorre a seta no sentido do envio a cada passo do "Ver". */
+.acad-seta.destaque::after {
+    content: "";
+    position: absolute;
+    top: calc(50% - .3rem);
+    width: .6rem;
+    height: .6rem;
+    border-radius: 50%;
+    background: var(--aed-teal);
+    box-shadow: 0 0 .6rem rgba(45, 212, 191, .7);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.acad-seta.para-servidor.destaque::after {
+    animation: acad-viaja-direita 1.1s ease-in-out 1;
+}
+
+.acad-seta.para-cliente.destaque::after {
+    background: var(--aed-indigo);
+    box-shadow: 0 0 .6rem rgba(99, 102, 241, .7);
+    animation: acad-viaja-esquerda 1.1s ease-in-out 1;
+}
+
+@keyframes acad-viaja-direita {
+    0% { left: 0; opacity: 1; }
+    85% { opacity: 1; }
+    100% { left: calc(100% - .6rem); opacity: 0; }
+}
+
+@keyframes acad-viaja-esquerda {
+    0% { left: calc(100% - .6rem); opacity: 1; }
+    85% { opacity: 1; }
+    100% { left: 0; opacity: 0; }
+}
+
+.acad-seta-direcao {
+    color: var(--aed-text-secondary);
+}
+
+.acad-seta-flags {
+    font-family: var(--aed-font-mono);
+    font-weight: 600;
+}
+
+.acad-seta-campos {
+    font-family: var(--aed-font-mono);
+}
+
+/* ---------- fileira de segmentos (janela) ---------- */
+.acad-segmentos {
+    list-style: none;
+    padding: 0;
+    margin: .75rem 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 4.5rem), 1fr));
+    gap: .4rem;
+}
+
+.acad-segmento {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .15rem;
+    padding: .45rem .25rem;
+    border: 1px solid var(--aed-border);
+    border-radius: .5rem;
+    font-size: .8rem;
+    color: var(--aed-text-secondary);
+    transition: background-color .3s, border-color .3s;
+}
+
+.acad-segmento-numero {
+    font-family: var(--aed-font-mono);
+    font-size: 1.2rem;
+    color: var(--aed-text);
+}
+
+.acad-segmento.mudou {
+    animation: acad-pulso .6s ease-out 1;
+}
+
+@keyframes acad-pulso {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+}
+
+.acad-segmento.na-janela {
+    outline: 2px dashed var(--aed-teal);
+    outline-offset: 2px;
+}
+
+.acad-segmento.aceito { border-color: var(--aed-risk-safe); background: rgba(45, 212, 191, .14); }
+.acad-segmento.perdido { border-color: var(--aed-risk-critical); background: rgba(239, 68, 68, .14); }
+.acad-segmento.descartado { border-color: var(--aed-risk-attention); background: rgba(245, 158, 11, .12); }
+.acad-segmento.guardado { border-color: var(--aed-indigo); background: rgba(99, 102, 241, .14); }
+
+/* ---------- registro de envios (Mexer) ---------- */
+.acad-registro {
+    list-style: none;
+    padding: 0;
+    margin: .75rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+    font-family: var(--aed-font-mono);
+    font-size: .8rem;
+}
+
+.acad-registro li {
+    border: 1px solid var(--aed-border);
+    border-radius: .4rem;
+    padding: .2rem .45rem;
+}
+
+.acad-registro li.aceito { border-color: var(--aed-risk-safe); }
+.acad-registro li.perdido { border-color: var(--aed-risk-critical); }
+.acad-registro li.descartado { border-color: var(--aed-risk-attention); }
+.acad-registro li.guardado { border-color: var(--aed-indigo); }
+.acad-registro li.estouro { border-style: dashed; color: var(--aed-text-secondary); }
+
+@media (max-width: 576px) {
+    .acad-seta.para-servidor { margin-right: 6%; }
+    .acad-seta.para-cliente { margin-left: 6%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .acad-seta,
+    .acad-segmento {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .acad-seta.destaque::after {
+        animation: none !important;
+        display: none;
+    }
+}

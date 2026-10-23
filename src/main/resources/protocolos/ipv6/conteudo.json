@@ -1,0 +1,380 @@
+{
+  "resumo": "O IPv6 é a versão mais recente do protocolo de rede que resolve o esgotamento de endereços do IPv4, ampliando o espaço de 32 para 128 bits. Além do número gigantesco de endereços, ele traz um cabeçalho base de tamanho fixo (40 bytes) e mais enxuto, elimina o checksum e a fragmentação no roteador, substitui o ARP pelo NDP e acrescenta o SLAAC, com que o host se autoconfigura sem servidor — o DHCPv6 continua existindo, e os dois convivem. O resultado é uma internet projetada para conectividade fim a fim, sem a dependência de NAT que marcou a era IPv4.",
+  "ficha": [
+    {
+      "rotulo": "RFC principal",
+      "valor": "RFC 8200 (IPv6), RFC 4861 (NDP), RFC 4862 (SLAAC)",
+      "dica": "A RFC 8200 (2017) tornou o padrão definitivo, substituindo a antiga RFC 2460."
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Rede (camada 3 do modelo OSI)",
+      "dica": "Mesma camada do IPv4; entrega pacotes fim a fim através de roteadores."
+    },
+    {
+      "rotulo": "Tamanho do endereço",
+      "valor": "128 bits (16 bytes)",
+      "dica": "Quatro vezes maior que os 32 bits do IPv4."
+    },
+    {
+      "rotulo": "Cabeçalho base",
+      "valor": "40 bytes fixos (320 bits)",
+      "dica": "Tamanho constante, sem opções embutidas; extensões ficam em cabeçalhos separados."
+    },
+    {
+      "rotulo": "Encapsulamento",
+      "valor": "Transporta TCP, UDP, ICMPv6 e cabeçalhos de extensão",
+      "dica": "O campo Próximo cabeçalho encadeia o próximo protocolo, como o campo Protocolo no IPv4."
+    },
+    {
+      "rotulo": "Autoconfiguração",
+      "valor": "SLAAC via NDP, sem servidor obrigatório",
+      "dica": "O host pode montar seu próprio endereço escutando o roteador."
+    },
+    {
+      "rotulo": "Segurança",
+      "valor": "Sem criptografia nativa; ICMPv6 é crítico e deve ser filtrado com cuidado",
+      "dica": "IPsec é opcional; NDP não é autenticado por padrão, o que abre espaço para spoofing."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "128 bits: um espaço quase infinito",
+      "icone": "memory",
+      "texto": "Com 128 bits existem cerca de 3,4 x 10^38 endereços possíveis, o suficiente para dar bilhões de endereços a cada pessoa do planeta. Esse tamanho enorme é o que permite abandonar o NAT e voltar ao modelo de conectividade fim a fim.",
+      "destaque": "2^128 ~ 3,4 x 10^38 endereços"
+    },
+    {
+      "titulo": "SLAAC: o host se autoconfigura",
+      "icone": "settings_suggest",
+      "texto": "Com o Stateless Address Autoconfiguration, o host aprende o prefixo da rede escutando o Router Advertisement e forma sozinho o próprio endereço global, sem precisar de um servidor DHCP. Depois verifica se o endereço já está em uso com o processo DAD.",
+      "destaque": "Endereço sem servidor central"
+    },
+    {
+      "titulo": "NDP substitui o ARP",
+      "icone": "account_tree",
+      "texto": "O Neighbor Discovery Protocol roda sobre ICMPv6 e faz o que o ARP fazia no IPv4: descobrir o endereço de camada 2 (MAC) de um vizinho. Ele também descobre roteadores, prefixos e detecta endereços duplicados, unificando várias funções.",
+      "destaque": "ARP -> NDP (sobre ICMPv6)"
+    },
+    {
+      "titulo": "Sem NAT: conectividade fim a fim",
+      "icone": "swap_horiz",
+      "texto": "Como endereços globais não faltam, cada dispositivo pode ter o seu próprio endereço público. Isso simplifica protocolos par a par e diagnósticos, mas transfere a responsabilidade de bloquear acesso indesejado do NAT para o firewall.",
+      "destaque": "Firewall assume o papel do NAT"
+    },
+    {
+      "titulo": "Cabeçalhos de extensão",
+      "icone": "layers",
+      "texto": "O cabeçalho base fica fixo e enxuto; funções opcionais (fragmentação, roteamento, opções hop-by-hop) viram cabeçalhos de extensão encadeados via campo Próximo cabeçalho. Assim o roteador processa rápido o essencial e só a origem fragmenta.",
+      "destaque": "Base enxuta + extensões sob demanda"
+    },
+    {
+      "titulo": "Dual stack: coexistência com IPv4",
+      "icone": "lan",
+      "texto": "Durante a transição, a maioria das redes roda IPv4 e IPv6 ao mesmo tempo (dual stack). O sistema escolhe o protocolo conforme o destino e o DNS, permitindo migrar aos poucos sem quebrar o que já funciona.",
+      "destaque": "IPv4 e IPv6 lado a lado"
+    }
+  ],
+  "diagrama": {
+    "titulo": "SLAAC: como o host monta o endereço escutando o roteador",
+    "definicao": "sequenceDiagram\n    participant H as Host novo\n    participant S as Multicast solicited-node\n    participant R as Roteador\n    H->>H: Forma endereço link-local fe80\n    H->>S: DAD do link-local - Neighbor Solicitation\n    Note over H,S: Ninguém respondeu - o link-local está livre\n    H->>R: Router Solicitation RS para o grupo de todos os roteadores\n    R-->>H: Router Advertisement RA com o prefixo 2001:db8::/64\n    H->>H: Prefixo + ID de interface = endereço global\n    H->>S: DAD - Neighbor Solicitation ao solicited-node do novo endereço\n    Note over H,S: Se ninguém responder o endereço está livre\n    H->>H: Endereço global confirmado e ativo\n    H->>R: Usa o roteador como rota default",
+    "legenda": "O host cria o endereço link-local e confirma por DAD que ninguém o usa, pergunta pelo roteador (RS), recebe o prefixo (RA), monta o endereço global e só o ativa depois de um novo DAD. O Neighbor Solicitation do DAD vai para o grupo solicited-node do próprio endereço testado (RFC 4862), não para os roteadores."
+  },
+  "cabecalho": {
+    "titulo": "Cabeçalho base IPv6 (fixo, 40 bytes / 320 bits)",
+    "nota": "Some os campos: 4 + 8 + 20 + 16 + 8 + 8 + 128 + 128 = 320 bits = 40 bytes. Ao contrário do IPv4, o tamanho é sempre fixo: não há campo de opções embutido, não há checksum (as camadas superiores e a de enlace já verificam integridade) e o roteador não fragmenta. A fragmentação, quando necessária, é feita apenas pela origem por meio de um cabeçalho de extensão.",
+    "campos": [
+      {
+        "nome": "Versão",
+        "bits": 4,
+        "descricao": "Sempre vale 6, identificando que o pacote é IPv6.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Classe de tráfego",
+        "bits": 8,
+        "descricao": "Marca prioridade e QoS (equivalente ao ToS/DSCP do IPv4).",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "Rótulo de fluxo",
+        "bits": 20,
+        "descricao": "Identifica um fluxo específico para tratamento uniforme pelos roteadores.",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "Comprimento do payload",
+        "bits": 16,
+        "descricao": "Tamanho em bytes do que vem após o cabeçalho base (dados + extensões).",
+        "cor": "#059669"
+      },
+      {
+        "nome": "Próximo cabeçalho",
+        "bits": 8,
+        "descricao": "Diz o que vem a seguir: TCP, UDP, ICMPv6 ou um cabeçalho de extensão.",
+        "cor": "#d97706"
+      },
+      {
+        "nome": "Limite de saltos",
+        "bits": 8,
+        "descricao": "Decrementa a cada roteador; ao chegar a zero o pacote é descartado (equivale ao TTL).",
+        "cor": "#dc2626"
+      },
+      {
+        "nome": "Endereço de origem",
+        "bits": 128,
+        "descricao": "Endereço IPv6 de quem enviou o pacote.",
+        "cor": "#4f46e5"
+      },
+      {
+        "nome": "Endereço de destino",
+        "bits": 128,
+        "descricao": "Endereço IPv6 do destinatário final do pacote.",
+        "cor": "#0d9488"
+      }
+    ]
+  },
+  "tabelas": [
+    {
+      "titulo": "Tipos e faixas de endereço IPv6",
+      "colunas": [
+        "Tipo",
+        "Prefixo",
+        "Para que serve"
+      ],
+      "linhas": [
+        [
+          "Link-local",
+          "fe80::/10",
+          "Comunicação apenas dentro do mesmo enlace (rede local). Todo host IPv6 sempre tem um; não é roteável para fora."
+        ],
+        [
+          "ULA (Unique Local)",
+          "fc00::/7",
+          "Endereçamento interno privado, análogo aos endereços privados do IPv4 (10.x, 192.168.x). Não roteável na internet pública."
+        ],
+        [
+          "Unicast global",
+          "2000::/3",
+          "Endereços públicos roteáveis na internet. Os blocos em uso começam em 2001:, 2400:, 2600:, 2800:, 2a00:, 2c00: (cada registro regional tem os seus), não só em 2001:. Uma interface pode ter vários ao mesmo tempo (SLAAC, temporário de privacidade, fixo)."
+        ],
+        [
+          "Multicast",
+          "ff00::/8",
+          "Entrega para um grupo de destinatários. O IPv6 não tem broadcast; usa multicast no lugar."
+        ],
+        [
+          "Loopback",
+          "::1",
+          "A própria máquina, equivalente ao 127.0.0.1 do IPv4."
+        ],
+        [
+          "Não especificado",
+          "::",
+          "Ausência de endereço; usado como origem antes de o host ter um endereço válido (ex.: durante o DAD)."
+        ]
+      ]
+    },
+    {
+      "titulo": "Regras de notação IPv6",
+      "colunas": [
+        "Regra",
+        "Exemplo",
+        "Explicação"
+      ],
+      "linhas": [
+        [
+          "Oito quartetos hex",
+          "2001:0db8:0000:0000:0000:ff00:0042:8329",
+          "O endereço tem 8 grupos de 4 dígitos hexadecimais (quartetos), separados por dois-pontos."
+        ],
+        [
+          "Zeros à esquerda omitidos",
+          "2001:db8:0:0:0:ff00:42:8329",
+          "Cada quarteto pode ter os zeros iniciais removidos (0db8 vira db8, 0042 vira 42)."
+        ],
+        [
+          "Compressão com ::",
+          "2001:db8::ff00:42:8329",
+          "Uma única sequência de quartetos zerados vira ::. Só pode aparecer uma vez por endereço."
+        ],
+        [
+          "Loopback comprimido",
+          "::1",
+          "Sete quartetos zero seguidos de 1, tudo comprimido para ::1."
+        ],
+        [
+          "Endereço com porta",
+          "[2001:db8::1]:443",
+          "Como o endereço usa dois-pontos, ele vai entre colchetes para separar a porta em URLs."
+        ]
+      ]
+    },
+    {
+      "titulo": "IPv6 vs IPv4: o que mudou",
+      "colunas": [
+        "Aspecto",
+        "IPv4",
+        "IPv6"
+      ],
+      "linhas": [
+        [
+          "Tamanho do endereço",
+          "32 bits (~4,3 bilhões)",
+          "128 bits (~3,4 x 10^38)"
+        ],
+        [
+          "Cabeçalho",
+          "Variável, 20 a 60 bytes, com opções",
+          "Fixo em 40 bytes; opções viram cabeçalhos de extensão"
+        ],
+        [
+          "Checksum",
+          "Sim, no cabeçalho",
+          "Não existe (deixado para enlace e transporte)"
+        ],
+        [
+          "Fragmentação",
+          "Roteador e origem podem fragmentar",
+          "Só a origem fragmenta, via cabeçalho de extensão"
+        ],
+        [
+          "Descoberta de vizinho",
+          "ARP (broadcast)",
+          "NDP sobre ICMPv6 (multicast)"
+        ],
+        [
+          "Autoconfiguração",
+          "DHCP (servidor obrigatório)",
+          "SLAAC (sem servidor) ou DHCPv6"
+        ],
+        [
+          "NAT",
+          "Comum, por escassez de endereços",
+          "Dispensável; conectividade fim a fim"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "RA spoofing (roteador falso)",
+      "como_funciona": "Um atacante na rede local envia Router Advertisements forjados anunciando-se como roteador default. Os hosts que confiam no RA passam a rotear o tráfego através dele, permitindo interceptação (man-in-the-middle) ou negação de serviço.",
+      "sinal": "Rota default apontando para um endereço link-local desconhecido; endereços ou prefixos inesperados aparecendo em ip -6 route.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "NDP spoofing / poisoning",
+      "como_funciona": "Equivalente ao ARP poisoning do IPv4: o atacante responde a Neighbor Solicitations com seu próprio MAC, associando o IPv6 de uma vítima ao endereço de enlace errado. O tráfego destinado à vítima é desviado para o atacante.",
+      "sinal": "Entradas na tabela de vizinhos (ip -6 neigh) mudando de MAC sem motivo; dois endereços mapeando para o mesmo MAC.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "RA flood",
+      "como_funciona": "O atacante dispara milhares de Router Advertisements com prefixos diferentes por segundo. Cada RA faz os hosts criarem novos endereços e rotas via SLAAC, esgotando CPU e memória e podendo travar sistemas inteiros.",
+      "sinal": "Explosão de endereços globais por interface; uso de CPU alto ao processar pacotes ICMPv6; travamentos na rede local.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Abuso de cabeçalhos de extensão",
+      "como_funciona": "O atacante encadeia muitos cabeçalhos de extensão ou usa opções hop-by-hop malformadas para escapar de firewalls (que não inspecionam até o cabeçalho real) ou para forçar processamento caro em roteadores, causando evasão ou negação de serviço.",
+      "sinal": "Pacotes com cadeias longas de extensões; regras de firewall sendo contornadas; latência anormal em equipamentos de borda.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Rogue DHCPv6",
+      "como_funciona": "Quando a rede usa DHCPv6, um servidor falso responde às solicitações distribuindo servidores DNS maliciosos ou configurações erradas, redirecionando o tráfego dos hosts para infraestrutura controlada pelo atacante.",
+      "sinal": "Servidor DNS IPv6 inesperado na configuração do host; respostas DHCPv6 vindas de endereço não autorizado.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "RA Guard",
+      "como_funciona": "Recurso no switch que filtra Router Advertisements: só aceita RAs nas portas onde há roteadores legítimos e descarta os que chegam de portas de hosts. Neutraliza roteadores falsos na origem.",
+      "cobre": "RA spoofing e RA flood",
+      "limite": "Pode ser burlado por fragmentação ou cabeçalhos de extensão que escondem o tipo do pacote; exige switch com suporte."
+    },
+    {
+      "nome": "ND inspection / SAVI",
+      "como_funciona": "O switch monitora o tráfego NDP e monta uma tabela confiável de ligações endereço-IPv6 / MAC / porta. Respostas que contradizem essa tabela são descartadas, impedindo o envenenamento de vizinhos.",
+      "cobre": "NDP spoofing / poisoning e rogue DHCPv6 (com DHCPv6 Guard)",
+      "limite": "Depende de hardware compatível e de aprendizado correto das ligações; redes muito dinâmicas exigem ajuste."
+    },
+    {
+      "nome": "Filtrar ICMPv6 com cuidado",
+      "como_funciona": "ICMPv6 é essencial para o funcionamento do IPv6 (NDP, PMTUD, DAD). A política correta é permitir os tipos necessários (Neighbor/Router Solicitation e Advertisement, Packet Too Big) e bloquear apenas os abusivos, em vez de barrar todo ICMPv6.",
+      "cobre": "Abuso de cabeçalhos de extensão e reconhecimento",
+      "limite": "Bloquear ICMPv6 em excesso quebra descoberta de vizinho e PMTUD, causando falhas difíceis de diagnosticar."
+    },
+    {
+      "nome": "Endereços privados temporários (RFC 8981)",
+      "como_funciona": "O host gera IDs de interface aleatórios e rotativos em vez de derivar do MAC, dificultando rastreamento e reduzindo a superfície previsível para ataques direcionados.",
+      "cobre": "Rastreamento e mapeamento de hosts",
+      "limite": "Não impede spoofing na rede local; é privacidade, não autenticação."
+    },
+    {
+      "nome": "Firewall stateful de borda",
+      "como_funciona": "Como o IPv6 dispensa NAT, o firewall passa a ser a única barreira de entrada. Uma política stateful que só permite conexões iniciadas de dentro substitui a proteção implícita que o NAT dava no IPv4.",
+      "cobre": "Acesso externo não solicitado a hosts globais",
+      "limite": "Não protege contra ataques originados na própria rede local (link-local, RA/NDP)."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ver os endereços IPv6 da máquina",
+      "cenario": "Você quer saber quais endereços IPv6 cada interface possui e distinguir o link-local (fe80::) do endereço global.",
+      "comandos": "# Lista todos os endereços IPv6 por interface\nip -6 addr show\n\n# Filtra apenas o escopo global (o endereço roteável)\nip -6 addr show scope global\n\n# Ver só uma interface\nip -6 addr show dev eth0",
+      "explicacao": "Toda interface ativa tem um endereço fe80:: (link-local). Se houver também um endereço 2000::/3 (ex.: 2001:...), o SLAAC ou o DHCPv6 funcionou e a máquina tem conectividade global. Se só aparecer o fe80::, a autoconfiguração falhou."
+    },
+    {
+      "titulo": "Testar conectividade com ping6",
+      "cenario": "Verificar se a máquina alcança o roteador (link-local) e a internet (endereço global).",
+      "comandos": "# Ping para um destino global\nping6 -c 4 2001:4860:4860::8888   # DNS publico do Google\n\n# Ping para o roteador link-local (precisa indicar a interface com %)\nping6 -c 4 fe80::1%eth0\n\n# Descobrir a rota default IPv6\nip -6 route show default",
+      "explicacao": "Endereços link-local exigem o sufixo %interface porque o mesmo fe80:: pode existir em várias interfaces. Se o ping global falha mas o link-local funciona, o problema está na rota default ou no roteamento externo, não na rede local."
+    },
+    {
+      "titulo": "Inspecionar a tabela de vizinhos (NDP)",
+      "cenario": "Diagnosticar problemas de resolução endereço-MAC, o equivalente a olhar a tabela ARP no IPv4.",
+      "comandos": "# Lista a cache de vizinhos com estado\nip -6 neigh show\n\n# Forca a re-descoberta de um vizinho\nip -6 neigh flush all\nping6 -c 1 fe80::1%eth0\nip -6 neigh show",
+      "explicacao": "Cada entrada mostra um estado: REACHABLE (ok), STALE (válido mas antigo), INCOMPLETE (resolução em andamento: NS enviado, sem resposta ainda) ou FAILED (no Linux: desistiu após as retransmissões). INCOMPLETE persistente indica que o vizinho está offline ou que há filtro de ICMPv6 bloqueando o NDP."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Máquina só tem endereço fe80:: e nenhum endereço global",
+      "causa_provavel": "SLAAC falhou: o host não recebeu Router Advertisement, ou o roteador não está anunciando prefixo, ou o RA foi bloqueado por firewall/switch.",
+      "comando": "ip -6 addr show scope global; sysctl net.ipv6.conf.eth0.accept_ra",
+      "leitura": "Se scope global vier vazio, confira se accept_ra=1 (ou 2 se a interface também roteia) e se o roteador realmente envia RA. accept_ra=0 desliga o SLAAC no host."
+    },
+    {
+      "sintoma": "Vizinho preso no estado INCOMPLETE",
+      "causa_provavel": "O host não recebe resposta ao Neighbor Solicitation: vizinho offline, MAC errado, ou ICMPv6 (tipos 135/136) bloqueado por firewall.",
+      "comando": "ip -6 neigh show; ping6 -c 2 fe80::1%eth0",
+      "leitura": "INCOMPLETE que nunca vira REACHABLE aponta para NDP bloqueado ou destino ausente. Verifique se o firewall permite Neighbor Solicitation (tipo 135) e Advertisement (tipo 136)."
+    },
+    {
+      "sintoma": "Sem rota default IPv6 (não alcança a internet)",
+      "causa_provavel": "Nenhum RA válido foi processado, então o host não aprendeu o roteador default; ou o RA Guard descartou o RA legítimo.",
+      "comando": "ip -6 route show default",
+      "leitura": "Saída vazia significa ausência de rota default. Se o link-local do roteador responde ao ping mas não há default, o problema está no anúncio (RA) do roteador ou em filtro no caminho."
+    },
+    {
+      "sintoma": "Endereços globais surgindo e sumindo em excesso",
+      "causa_provavel": "Possível RA flood: múltiplos Router Advertisements com prefixos diferentes fazendo o host criar dezenas de endereços.",
+      "comando": "ip -6 addr show | grep -c 'scope global'",
+      "leitura": "Uma contagem muito alta e crescente de endereços globais sugere ataque de RA flood. Ative RA Guard no switch e limite a taxa de aceitação de RA."
+    },
+    {
+      "sintoma": "Ping global falha mas o ping ao roteador funciona",
+      "causa_provavel": "Conectividade local ok, mas roteamento externo, DNS ou PMTUD (Packet Too Big bloqueado) com problema.",
+      "comando": "ping6 -c 2 fe80::1%eth0; ping6 -c 2 2001:4860:4860::8888",
+      "leitura": "Se o link-local responde e o global não, o roteador local está acessível; investigue a rota default, o upstream do provedor ou filtro de ICMPv6 tipo 2 (Packet Too Big) que quebra a descoberta de MTU."
+    }
+  ]
+}

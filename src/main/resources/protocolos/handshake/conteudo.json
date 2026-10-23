@@ -1,0 +1,442 @@
+{
+  "resumo": "Um handshake é a conversa de abertura em que dois lados combinam parâmetros e provam que conseguem ouvir um ao outro antes de trocar dados úteis. No TCP isso é o 3-way (SYN, SYN-ACK, ACK), que sincroniza os números de sequência de cada ponta; no TLS e no SSH o aperto de mãos vai além e negocia chaves de criptografia e identidade. Sem ele, os dados chegariam sem ordem, sem contexto e sem qualquer garantia de que há alguém do outro lado escutando.",
+  "ficha": [
+    {
+      "rotulo": "RFC",
+      "valor": "TCP: RFC 9293 (obsoleta a 793) - TLS 1.3: RFC 8446 - SSH: RFC 4253 - ISN aleatório: RFC 6528 - Challenge ACK: RFC 5961",
+      "dica": "Handshake não é um protocolo único: cada camada tem o seu"
+    },
+    {
+      "rotulo": "Porta(s)",
+      "valor": "TCP não tem porta fixa (o 3-way vale para qualquer porta); HTTPS/TLS na 443; SSH na 22",
+      "dica": "O handshake TCP acontece antes de a aplicação entrar em cena"
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Transporte (3-way TCP) - Sessão/apresentação (TLS) - Aplicação (SSH)",
+      "dica": "TLS e SSH são apertos de mão construídos sobre o do TCP"
+    },
+    {
+      "rotulo": "Transporte",
+      "valor": "TCP, orientado a conexão e confiável; TLS e SSH rodam por cima do TCP",
+      "dica": "QUIC faz papel equivalente sobre UDP, com handshake integrado ao TLS 1.3"
+    },
+    {
+      "rotulo": "Substitui/relacionados",
+      "valor": "QUIC (handshake + TLS 1.3 sobre UDP), DTLS, troca de chaves Diffie-Hellman (ECDHE)",
+      "dica": "Todos resolvem a mesma questão: combinar antes de falar"
+    },
+    {
+      "rotulo": "Segurança",
+      "valor": "O 3-way TCP não cifra nem autentica - só prova alcançabilidade; sigilo e identidade vêm de TLS/SSH por cima",
+      "dica": "Conexão estabelecida não significa conexão segura"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "O problema: combinar antes de conversar",
+      "icone": "swap_vert",
+      "texto": "Dois programas em máquinas diferentes precisam concordar em parâmetros (números iniciais, tamanho de janela, cifras) e, principalmente, provar que cada um recebe o que o outro envia. O handshake é essa troca de mensagens de abertura que estabelece esse acordo mútuo antes do primeiro byte de dados útil.",
+      "destaque": "Sem acordo prévio, os dados chegariam sem ordem e sem contexto"
+    },
+    {
+      "titulo": "TCP 3-way: SYN, SYN-ACK, ACK",
+      "icone": "bolt",
+      "texto": "O cliente envia SYN anunciando seu número de sequência inicial (x). O servidor responde SYN-ACK, anunciando o seu (y) e confirmando o do cliente (ack=x+1). O cliente fecha com ACK confirmando o do servidor (ack=y+1). Três mensagens: cada lado enviou o seu número e viu o do outro ser confirmado.",
+      "destaque": "O flag SYN consome 1 número de sequência"
+    },
+    {
+      "titulo": "Números de sequência: o segredo compartilhado",
+      "icone": "schema",
+      "texto": "Cada lado escolhe seu próprio número de sequência inicial (ISN). Confirmar um SYN com ack = seq+1 prova que o pacote foi realmente recebido. Depois do handshake, esses contadores ordenam os dados e detectam perda. Se o ISN for previsível, um atacante fora do caminho consegue forjar segmentos.",
+      "destaque": "ack = seq recebido + 1 é a prova de que a ponta ouviu"
+    },
+    {
+      "titulo": "TLS: negociar cifra e chaves",
+      "icone": "enhanced_encryption",
+      "texto": "Sobre o TCP já aberto, o TLS 1.3 faz seu próprio aperto de mãos: ClientHello (versões, cifras e um key share ECDHE), ServerHello (escolhas e key share do servidor), depois certificado e Finished. Ao fim, ambos derivam a mesma chave de sessão sem nunca a transmitirem.",
+      "destaque": "TLS 1.3 fecha o handshake em 1 RTT"
+    },
+    {
+      "titulo": "SSH: troca de chaves + host key",
+      "icone": "key",
+      "texto": "O SSH troca banners de versão, negocia algoritmos (KEXINIT), executa Diffie-Hellman para gerar a chave de sessão e valida a host key do servidor (aquele fingerprint que você confirma no primeiro acesso). Só depois vem a autenticação do usuário.",
+      "destaque": "Na primeira conexão a host key ainda não é conhecida: só protege contra man-in-the-middle se você conferir o fingerprint (depois, o known_hosts faz isso sozinho)"
+    },
+    {
+      "titulo": "Handshake não é autenticação",
+      "icone": "verified_user",
+      "texto": "Concluir o 3-way TCP prova apenas que existe algo escutando e que há caminho de ida e volta. Não prova quem é o outro lado nem esconde os dados. Identidade e sigilo são trabalho das camadas de cima (certificado no TLS, host key + login no SSH).",
+      "destaque": "Alcançabilidade não é identidade"
+    }
+  ],
+  "diagrama": {
+    "titulo": "TCP 3-way handshake (abertura de conexão)",
+    "definicao": "sequenceDiagram\n    participant C as Cliente\n    participant S as Servidor\n    Note over S: Estado LISTEN\n    C->>S: SYN seq=x\n    Note over C: SYN_SENT\n    S->>C: SYN-ACK seq=y ack=x+1\n    Note over S: SYN_RECV\n    C->>S: ACK seq=x+1 ack=y+1\n    Note over C,S: ESTABLISHED - dados podem fluir",
+    "legenda": "Cada lado envia seu número de sequência inicial e vê o outro confirmá-lo com +1. Ao final das três mensagens ambos estão em ESTABLISHED e sabem que há caminho de ida e de volta. São três mensagens, mas o custo é de 1 RTT: o cliente já pode enviar dados junto com o ACK final."
+  },
+  "cabecalho": {
+    "titulo": "Cabeçalho TCP (20 bytes) e os bits de controle",
+    "nota": "O cabeçalho mínimo tem 20 bytes = 160 bits. SEQ e ACK (32 bits cada) carregam os números combinados no handshake. Os 8 bits de controle (flags) ligam ou desligam funções: no aperto de mãos, SYN e ACK são os protagonistas. A soma dos campos abaixo fecha exatamente 160 bits.",
+    "campos": [
+      {
+        "nome": "Porta de Origem",
+        "bits": 16,
+        "descricao": "Porta efêmera escolhida pelo cliente",
+        "cor": "#6366f1"
+      },
+      {
+        "nome": "Porta de Destino",
+        "bits": 16,
+        "descricao": "Porta do serviço (ex.: 443, 22)",
+        "cor": "#6366f1"
+      },
+      {
+        "nome": "Número de Sequência (SEQ)",
+        "bits": 32,
+        "descricao": "ISN no SYN; depois, posição do 1º byte deste segmento",
+        "cor": "#0ea5e9"
+      },
+      {
+        "nome": "Número de Confirmação (ACK)",
+        "bits": 32,
+        "descricao": "Próximo byte esperado; válido quando a flag ACK=1",
+        "cor": "#06b6d4"
+      },
+      {
+        "nome": "Data Offset",
+        "bits": 4,
+        "descricao": "Tamanho do cabeçalho em palavras de 32 bits",
+        "cor": "#64748b"
+      },
+      {
+        "nome": "Reservado",
+        "bits": 4,
+        "descricao": "Bits reservados, enviados como zero",
+        "cor": "#94a3b8"
+      },
+      {
+        "nome": "CWR",
+        "bits": 1,
+        "descricao": "Congestion Window Reduced (ECN)",
+        "cor": "#78716c"
+      },
+      {
+        "nome": "ECE",
+        "bits": 1,
+        "descricao": "ECN-Echo (sinalização de congestionamento)",
+        "cor": "#78716c"
+      },
+      {
+        "nome": "URG",
+        "bits": 1,
+        "descricao": "Marca dado urgente (torna o Urgent Pointer válido)",
+        "cor": "#ec4899"
+      },
+      {
+        "nome": "ACK",
+        "bits": 1,
+        "descricao": "Confirma recebimento; presente no SYN-ACK e no ACK final",
+        "cor": "#3b82f6"
+      },
+      {
+        "nome": "PSH",
+        "bits": 1,
+        "descricao": "Entrega os dados à aplicação sem esperar o buffer",
+        "cor": "#a855f7"
+      },
+      {
+        "nome": "RST",
+        "bits": 1,
+        "descricao": "Aborta/recusa a conexão (porta fechada ou erro)",
+        "cor": "#ef4444"
+      },
+      {
+        "nome": "SYN",
+        "bits": 1,
+        "descricao": "Sincroniza os números de sequência (abre a conexão)",
+        "cor": "#22c55e"
+      },
+      {
+        "nome": "FIN",
+        "bits": 1,
+        "descricao": "Encerra o envio deste lado (fechamento, não abertura)",
+        "cor": "#f59e0b"
+      },
+      {
+        "nome": "Janela (Window)",
+        "bits": 16,
+        "descricao": "Quantos bytes o receptor aceita sem confirmar (controle de fluxo)",
+        "cor": "#14b8a6"
+      },
+      {
+        "nome": "Checksum",
+        "bits": 16,
+        "descricao": "Verificação de integridade de cabeçalho e dados",
+        "cor": "#8b5cf6"
+      },
+      {
+        "nome": "Urgent Pointer",
+        "bits": 16,
+        "descricao": "Offset do dado urgente; só vale se URG=1",
+        "cor": "#f43f5e"
+      }
+    ]
+  },
+  "tabelas": [
+    {
+      "titulo": "Estados TCP durante abertura e fechamento",
+      "colunas": [
+        "Estado",
+        "Quem",
+        "Significado",
+        "Próximo evento típico"
+      ],
+      "linhas": [
+        [
+          "LISTEN",
+          "Servidor",
+          "Aguardando conexões na porta",
+          "Chega SYN -> SYN_RECV"
+        ],
+        [
+          "SYN_SENT",
+          "Cliente",
+          "Enviou SYN, espera SYN-ACK",
+          "Chega SYN-ACK -> ESTABLISHED"
+        ],
+        [
+          "SYN_RECV",
+          "Servidor",
+          "Recebeu SYN, enviou SYN-ACK",
+          "Chega ACK final -> ESTABLISHED"
+        ],
+        [
+          "ESTABLISHED",
+          "Ambos",
+          "Conexão aberta, dados fluindo",
+          "Envio de FIN -> inicia fechamento"
+        ],
+        [
+          "FIN_WAIT_1/2",
+          "Quem fecha ativo",
+          "Enviou FIN, encerrando o envio",
+          "ACK/FIN do outro lado"
+        ],
+        [
+          "TIME_WAIT",
+          "Quem fechou ativo",
+          "Espera 2x MSL antes de liberar a porta",
+          "Timeout (~60s no Linux) -> CLOSED"
+        ]
+      ]
+    },
+    {
+      "titulo": "Comparação: 3-way TCP x TLS x SSH",
+      "colunas": [
+        "Aspecto",
+        "TCP 3-way",
+        "TLS (1.3)",
+        "SSH"
+      ],
+      "linhas": [
+        [
+          "Objetivo",
+          "Abrir conexão confiável",
+          "Cifrar e autenticar o servidor",
+          "Cifrar e autenticar a sessão remota"
+        ],
+        [
+          "Mensagens-chave",
+          "SYN / SYN-ACK / ACK",
+          "ClientHello / ServerHello / Finished",
+          "Versão / KEXINIT / troca DH"
+        ],
+        [
+          "Rodadas (RTT)",
+          "1 RTT (3 mensagens)",
+          "1-RTT (0-RTT em retomada)",
+          "~2 (versão + kex + auth)"
+        ],
+        [
+          "Criptografia",
+          "Nenhuma",
+          "ECDHE + cifra AEAD",
+          "Diffie-Hellman + chaves derivadas"
+        ],
+        [
+          "Prova de identidade",
+          "Nenhuma (só alcançabilidade)",
+          "Certificado X.509",
+          "Host key + autenticação do usuário"
+        ],
+        [
+          "Onde roda",
+          "Camada de transporte",
+          "Sobre o TCP",
+          "Sobre o TCP (porta 22)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Flags de controle e o papel no handshake",
+      "colunas": [
+        "Flag",
+        "Bits",
+        "Papel no aperto de mãos"
+      ],
+      "linhas": [
+        [
+          "SYN",
+          "1",
+          "Sincroniza os números de sequência; presente no 1º e 2º segmentos"
+        ],
+        [
+          "ACK",
+          "1",
+          "Confirma o seq recebido; presente no SYN-ACK e no ACK final"
+        ],
+        [
+          "FIN",
+          "1",
+          "Encerra o envio - usado no fechamento, não na abertura"
+        ],
+        [
+          "RST",
+          "1",
+          "Aborta ou recusa a conexão (porta fechada, estado inválido)"
+        ],
+        [
+          "PSH",
+          "1",
+          "Pede entrega imediata dos dados à aplicação"
+        ],
+        [
+          "URG",
+          "1",
+          "Marca dado urgente e valida o campo Urgent Pointer"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Sequestro de sessão TCP (hijacking)",
+      "como_funciona": "Um atacante que vê o tráfego (on-path) ou que adivinha o número de sequência injeta segmentos com seq válido dentro da janela, inserindo dados ou dessincronizando as duas pontas. Como o TCP não autentica, o receptor aceita como legítimo.",
+      "sinal": "Dados inesperados na sessão, dessincronização, comportamento errático da aplicação",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "SYN flood",
+      "como_funciona": "O atacante despeja uma enxurrada de SYN com IP de origem forjado e nunca envia o ACK final. Cada SYN faz o servidor alocar estado de meia-conexão (SYN_RECV) até a fila de backlog esgotar, recusando clientes legítimos.",
+      "sinal": "Fila SYN_RECV cheia, conexões legítimas recusadas, log do kernel citando SYN flooding",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Previsão de número de sequência (ISN)",
+      "como_funciona": "Se o ISN for gerado por contador previsível, um atacante fora do caminho adivinha o seq esperado e completa o handshake ou injeta dados falsificando o IP de origem, sem nunca ver as respostas.",
+      "sinal": "Conexões ou dados aceitos de origem forjada; segmentos coerentes sem tráfego de retorno visível",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Injeção de RST (reset attack)",
+      "como_funciona": "O atacante envia um segmento com a flag RST e um seq plausível dentro da janela para derrubar abruptamente uma conexão estabelecida, causando negação de serviço pontual.",
+      "sinal": "Conexões caindo com 'connection reset by peer' sem motivo na aplicação",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "SYN cookies",
+      "como_funciona": "Sob ataque, o servidor deixa de guardar estado da meia-conexão: codifica os parâmetros (MSS, timestamp, hash secreto) dentro do próprio ISN enviado no SYN-ACK. Quando o ACK final chega (ack = cookie + 1), reconstrói o estado a partir dele.",
+      "cobre": "SYN flood - elimina o esgotamento de memória por meia-conexões",
+      "limite": "Perde opções TCP que não cabem no cookie; ativado só quando o backlog satura"
+    },
+    {
+      "nome": "ISN aleatório (RFC 6528)",
+      "como_funciona": "O número de sequência inicial passa a ser timer + hash criptográfico de (segredo, IPs, portas), tornando o próximo ISN imprevisível para quem está fora do caminho.",
+      "cobre": "Previsão de sequência e spoofing cego de conexões",
+      "limite": "Não protege contra atacante on-path, que simplesmente lê os números reais"
+    },
+    {
+      "nome": "Challenge ACK (RFC 5961)",
+      "como_funciona": "Ao receber RST dentro da janela mas fora da posição exata esperada, ou SYN em qualquer número de sequência, em vez de agir o receptor envia um ACK de desafio; só um remetente que vê o tráfego consegue responder com o seq correto.",
+      "cobre": "Injeção cega de RST e SYN em conexões existentes",
+      "limite": "O rate limit do desafio virou canal lateral explorado (CVE-2016-5696), exigindo ajuste"
+    },
+    {
+      "nome": "Rate limit de SYN + backlog e timeouts",
+      "como_funciona": "Firewall e kernel limitam SYN por origem, ampliam a fila de backlog e encurtam o timeout de meia-conexão para reciclar entradas SYN_RECV mais rápido.",
+      "cobre": "Mitigação parcial de SYN flood de baixo volume",
+      "limite": "Não distingue tráfego legítimo em pico e não resiste a flood distribuído grande"
+    },
+    {
+      "nome": "TLS/SSH por cima do TCP",
+      "como_funciona": "Como o 3-way só prova alcançabilidade, cifrar e autenticar em camada superior (certificado TLS, host key SSH) faz com que dados injetados não sejam decifráveis nem forjáveis com sentido.",
+      "cobre": "Sequestro de sessão e leitura de dados após a abertura",
+      "limite": "Não impede o DoS do próprio handshake TCP nem o RST que derruba a conexão"
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ver o 3-way ao vivo com tcpdump + nc",
+      "cenario": "Subir um ouvinte local e capturar exatamente os três segmentos SYN / SYN-ACK / ACK.",
+      "comandos": "# terminal 1 - ouvinte na porta 9000 (netcat-openbsd, padrão no Debian/Ubuntu)\nnc -l 9000\n# se for netcat-traditional/GNU, use: nc -l -p 9000\n\n# terminal 2 - captura o handshake (Linux, interface loopback)\nsudo tcpdump -i lo -nn 'tcp port 9000'\n\n# terminal 3 - conecta e dispara o aperto de mãos\nnc 127.0.0.1 9000",
+      "explicacao": "No tcpdump os flags aparecem entre colchetes: [S] é o SYN, [S.] é o SYN-ACK (S de SYN, ponto de ACK) e [.] é o ACK final. Você vê seq e ack numerados e confirma o +1 em cada resposta. No Windows, o equivalente é capturar com Wireshark filtrando 'tcp.port == 9000'."
+    },
+    {
+      "titulo": "DNS acontece antes do handshake TCP",
+      "cenario": "Mostrar que resolver o nome (DNS) é etapa separada e anterior à abertura da conexão TCP.",
+      "comandos": "dig +short example.com A\ndig +trace example.com",
+      "explicacao": "O dig devolve o IP; só depois de ter o IP o cliente começa o 3-way TCP naquele endereço. O DNS clássico roda sobre UDP e não tem handshake de conexão - por isso a resolução é rápida e sem estado, ao contrário do TCP."
+    },
+    {
+      "titulo": "Mapear os estados TCP reais",
+      "cenario": "Observar conexões em LISTEN, SYN_SENT, ESTABLISHED e TIME_WAIT na máquina.",
+      "comandos": "# todas as conexões TCP e seus estados\nss -tan\n\n# só as que estão no meio do handshake\nss -tan state syn-sent state syn-recv\n\n# equivalente clássico\nnetstat -tan | grep -E 'SYN|ESTAB|TIME_WAIT'",
+      "explicacao": "A coluna de estado casa diretamente com a tabela de estados TCP. Muitas linhas em TIME_WAIT são normais em clientes que abrem muitas conexões curtas; muitas em SYN_RECV, por outro lado, são sinal de SYN flood."
+    },
+    {
+      "titulo": "Handshake TLS por cima do TCP com openssl",
+      "cenario": "Ver o aperto de mãos TLS negociando versão, cifra e certificado depois que o TCP já abriu.",
+      "comandos": "openssl s_client -connect example.com:443 -tls1_3 -brief",
+      "explicacao": "O openssl primeiro completa o 3-way TCP na porta 443 e só então inicia ClientHello/ServerHello. A saída mostra a versão TLS negociada, a cifra escolhida e a cadeia de certificados - o segundo handshake, o que traz sigilo e identidade."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "'Connection refused' imediato ao conectar",
+      "causa_provavel": "Não há ninguém escutando na porta: o servidor responde RST no lugar de SYN-ACK",
+      "comando": "nc -vz host 443 ; ss -ltn | grep :443",
+      "leitura": "RST na captura e ausência de processo em LISTEN confirmam porta fechada, não bloqueio de rede"
+    },
+    {
+      "sintoma": "'Connection timed out' ao conectar",
+      "causa_provavel": "O SYN sai mas nada volta: firewall descartando em silêncio (DROP) ou host inalcançável",
+      "comando": "sudo tcpdump -nn 'tcp port 443' ; nc -vz -w3 host 443",
+      "leitura": "SYN retransmitido várias vezes sem qualquer SYN-ACK indica pacote engolido no caminho"
+    },
+    {
+      "sintoma": "Muitas conexões presas em SYN_RECV no servidor",
+      "causa_provavel": "SYN flood ou clientes que somem após enviar o SYN",
+      "comando": "ss -tan state syn-recv | wc -l ; dmesg | grep -i 'SYN flooding'",
+      "leitura": "Contagem alta e o log 'possible SYN flooding, sending cookies' confirmam ataque e a defesa por SYN cookies ligada"
+    },
+    {
+      "sintoma": "Milhares de conexões em TIME_WAIT",
+      "causa_provavel": "Comportamento normal de quem fecha ativo muitas conexões curtas (ex.: cliente HTTP)",
+      "comando": "ss -tan state time-wait | wc -l",
+      "leitura": "TIME_WAIT dura ~2x MSL (cerca de 60s no Linux) e depois some sozinho - é limpeza, não erro"
+    },
+    {
+      "sintoma": "'Connection reset by peer' no meio da sessão",
+      "causa_provavel": "Chegou um RST: a aplicação do outro lado fechou abruptamente ou houve injeção de RST",
+      "comando": "sudo tcpdump -nn 'tcp[tcpflags] & tcp-rst != 0'",
+      "leitura": "Segmento marcado [R] com seq dentro da janela; se vier de origem inesperada, suspeitar de ataque"
+    }
+  ]
+}

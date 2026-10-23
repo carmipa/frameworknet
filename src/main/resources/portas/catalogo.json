@@ -1,0 +1,302 @@
+[
+  {
+    "porta": "20/21",
+    "protocolo_transporte": "TCP",
+    "servico": "FTP",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Atenção (credenciais em texto claro)",
+    "recomendacao": "Substituir por SFTP ou FTPS",
+    "badge": "🟡 Atenção",
+    "badge_color": "warning"
+  },
+  {
+    "porta": "22",
+    "protocolo_transporte": "TCP",
+    "servico": "SSH",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Baixo (se bem configurado)",
+    "recomendacao": "Usar chaves RSA/Ed25519, desativar root login",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
+    "porta": "23",
+    "protocolo_transporte": "TCP",
+    "servico": "Telnet",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Alto (sem criptografia)",
+    "recomendacao": "Desabilitar e substituir por SSH",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "25",
+    "protocolo_transporte": "TCP",
+    "servico": "SMTP",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Atenção (spam/relay)",
+    "recomendacao": "Usar STARTTLS ou porta 587 para submissão",
+    "badge": "🟡 Atenção",
+    "badge_color": "warning"
+  },
+  {
+    "porta": "53",
+    "protocolo_transporte": "UDP/TCP",
+    "servico": "DNS",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Atenção (amplificação DDoS)",
+    "recomendacao": "Restringir recursão para IPs externos",
+    "badge": "🔵 Didático",
+    "badge_color": "info"
+  },
+  {
+    "porta": "67/68",
+    "protocolo_transporte": "UDP",
+    "servico": "DHCP",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Baixo (rede local)",
+    "recomendacao": "Implementar DHCP Snooping na rede",
+    "badge": "🔵 Didático",
+    "badge_color": "info"
+  },
+  {
+    "porta": "69",
+    "protocolo_transporte": "UDP",
+    "servico": "TFTP",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Alto (sem autenticação)",
+    "recomendacao": "Uso restrito para boot de dispositivos",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "80",
+    "protocolo_transporte": "TCP",
+    "servico": "HTTP",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Alto (sem criptografia)",
+    "recomendacao": "Redirecionar para HTTPS (443)",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "110",
+    "protocolo_transporte": "TCP",
+    "servico": "POP3",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Alto (texto claro)",
+    "recomendacao": "Substituir por POP3S (995) ou IMAPS",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "123",
+    "protocolo_transporte": "UDP",
+    "servico": "NTP",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Atenção (amplificação DDoS)",
+    "recomendacao": "Usar versão atualizada, restringir consultas",
+    "badge": "🟡 Atenção",
+    "badge_color": "warning"
+  },
+  {
+    "porta": "139",
+    "protocolo_transporte": "TCP",
+    "servico": "NetBIOS",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Alto se exposto à internet",
+    "recomendacao": "Bloquear no firewall de borda",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "143",
+    "protocolo_transporte": "TCP",
+    "servico": "IMAP",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Alto (texto claro)",
+    "recomendacao": "Substituir por IMAPS (993)",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "389",
+    "protocolo_transporte": "TCP/UDP",
+    "servico": "LDAP",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Atenção (texto claro)",
+    "recomendacao": "Substituir por LDAPS (636)",
+    "badge": "🟡 Atenção",
+    "badge_color": "warning"
+  },
+  {
+    "porta": "443",
+    "protocolo_transporte": "TCP",
+    "servico": "HTTPS",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Baixo",
+    "recomendacao": "Manter certificados válidos e TLS 1.2/1.3",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
+    "porta": "445",
+    "protocolo_transporte": "TCP",
+    "servico": "SMB",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Alto se exposto (Ransomware)",
+    "recomendacao": "Bloquear no firewall, usar VPN para acesso",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "465",
+    "protocolo_transporte": "TCP",
+    "servico": "SMTPS",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Baixo",
+    "recomendacao": "Submissão com TLS implícito; a RFC 8314 a prefere à 587 com STARTTLS. Exija autenticação",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
+    "porta": "587",
+    "protocolo_transporte": "TCP",
+    "servico": "Submission",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Baixo",
+    "recomendacao": "Exigir STARTTLS para submissão",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
+    "porta": "993",
+    "protocolo_transporte": "TCP",
+    "servico": "IMAPS",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Baixo",
+    "recomendacao": "Padrão seguro para leitura de e-mails",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
+    "porta": "995",
+    "protocolo_transporte": "TCP",
+    "servico": "POP3S",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Baixo",
+    "recomendacao": "Padrão seguro para download de e-mails",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
+    "porta": "1433",
+    "protocolo_transporte": "TCP",
+    "servico": "SQL Server",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Alto se exposta à internet",
+    "recomendacao": "Acesso via VPN ou restrição por IP",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "1521",
+    "protocolo_transporte": "TCP",
+    "servico": "Oracle",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Alto se exposta à internet",
+    "recomendacao": "Restringir acesso e exigir criptografia",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "3306",
+    "protocolo_transporte": "TCP",
+    "servico": "MySQL",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Alto se exposta à internet",
+    "recomendacao": "Acesso local ou via VPN/bastion",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "3389",
+    "protocolo_transporte": "TCP/UDP",
+    "servico": "RDP",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Alto se exposta à internet",
+    "recomendacao": "Restringir por VPN/firewall, exigir MFA",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "5432",
+    "protocolo_transporte": "TCP",
+    "servico": "PostgreSQL",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Alto se exposta à internet",
+    "recomendacao": "Acesso local ou restrito via IP e SSL",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "5900",
+    "protocolo_transporte": "TCP",
+    "servico": "VNC",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Alto (frequentemente sem criptografia)",
+    "recomendacao": "Encapsular por túnel SSH",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "6379",
+    "protocolo_transporte": "TCP",
+    "servico": "Redis",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Alto (sem auth por padrão)",
+    "recomendacao": "Vincular ao localhost, habilitar senha",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "8080",
+    "protocolo_transporte": "TCP",
+    "servico": "HTTP Alternativo",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Atenção (sem criptografia)",
+    "recomendacao": "Usar proxy reverso com HTTPS",
+    "badge": "🟡 Atenção",
+    "badge_color": "warning"
+  },
+  {
+    "porta": "8443",
+    "protocolo_transporte": "TCP",
+    "servico": "HTTPS Alternativo",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Baixo",
+    "recomendacao": "Garantir certificados válidos",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
+    "porta": "9200",
+    "protocolo_transporte": "TCP",
+    "servico": "Elasticsearch",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Alto se exposta sem auth",
+    "recomendacao": "Habilitar segurança, não expor à internet",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "27017",
+    "protocolo_transporte": "TCP",
+    "servico": "MongoDB",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Alto se exposta sem auth",
+    "recomendacao": "Habilitar auth, vincular ao localhost",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  }
+]

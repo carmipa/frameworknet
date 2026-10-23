@@ -1,0 +1,66 @@
+<div class="aed-card card-tech loc-nota mb-4" role="note">
+    <span class="material-symbols-outlined" aria-hidden="true" translate="no">warning</span>
+    <div>
+        <strong>Anomalias TCP — simulação didática.</strong>
+        Visualize dois abusos clássicos do TCP passo a passo: o <strong>SYN flood</strong> esgotando o
+        backlog de conexões meio-abertas, e o <strong>sequestro de sessão</strong> por previsão de número
+        de sequência. É uma reconstrução determinística para ensino — <em>nenhum pacote é enviado</em> e
+        nada é medido de um servidor real (captura ao vivo exigiria agente nativo com privilégio).
+    </div>
+</div>
+
+<form id="form-anom" class="anom-form" autocomplete="off" onsubmit="return false;">
+    <div class="aed-mode-grid mb-3" role="tablist" aria-label="Cenário de anomalia">
+        <button type="button" class="aed-mode-btn anom-cenario active" data-anom="syn-flood" role="tab"
+                title="SYN flood: inunda o servidor com SYNs forjados e enche a fila de conexões meio-abertas">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">waves</span><span>SYN Flood</span>
+        </button>
+        <button type="button" class="aed-mode-btn anom-cenario" data-anom="sequence-hijack" role="tab"
+                title="Sequestro: prevê o número de sequência e injeta RST ou dados forjando uma das pontas">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">shuffle</span><span>Previsão de sequência</span>
+        </button>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <button type="button" id="anom-play" class="aed-btn aed-btn-teal"
+                title="Executar a animação contínua dos passos do cenário selecionado">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">play_arrow</span> Animar
+        </button>
+        <button type="button" id="anom-passo" class="aed-btn aed-btn-neutral"
+                title="Avançar um passo por vez no cenário">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_next</span> Passo a passo
+        </button>
+        <button type="button" id="anom-reiniciar" class="aed-btn aed-btn-danger"
+                title="Reiniciar a simulação para o estado inicial">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">restart_alt</span> Reiniciar
+        </button>
+    </div>
+</form>
+
+<h2 id="anom-titulo" class="h3 anom-titulo mt-4"></h2>
+<p id="anom-resumo" class="small text-secondary"></p>
+
+<div id="anom-kpis" class="anom-kpis" aria-live="polite"></div>
+
+<div id="anom-passos" class="anom-passos" aria-live="polite"></div>
+
+<div class="anom-rodape">
+    <div class="anom-bloco">
+        <h3 class="h4 anom-bloco-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</h3>
+        <ul id="anom-mitigacoes" class="anom-mitigacoes"></ul>
+    </div>
+    <div id="anom-licao" class="anom-licao" role="note"></div>
+</div>
+
+<details class="anom-glossario mt-3">
+    <summary>Glossário: estados e termos do TCP que aparecem nos passos</summary>
+    <dl class="anom-termos">
+        <div><dt>backlog</dt><dd>Fila de conexões em <code translate="no">SYN_RECV</code> (meio-abertas) que o servidor guarda entre o SYN e o ACK final. Cheia, novos SYNs são descartados.</dd></div>
+        <div><dt>meio-aberta (half-open)</dt><dd>Conexão que recebeu SYN e mandou SYN-ACK, mas ainda não recebeu o ACK. Consome um slot do backlog.</dd></div>
+        <div><dt>ISN</dt><dd>Initial Sequence Number: o número de sequência de partida de cada lado. Se for previsível, a sessão vira sequestrável.</dd></div>
+        <div><dt>SYN_RECV / ESTABLISHED</dt><dd>Estados da máquina TCP: <code translate="no">SYN_RECV</code> = meio-aberta aguardando ACK; <code translate="no">ESTABLISHED</code> = handshake completo.</dd></div>
+        <div><dt>RST</dt><dd>Flag de reset: encerra a conexão abruptamente. Um RST forjado aceito na janela derruba a sessão (DoS).</dd></div>
+        <div><dt>SYN cookies</dt><dd>Defesa que não guarda estado no SYN: codifica o estado no ISN do SYN-ACK e só materializa a conexão quando o ACK volta válido.</dd></div>
+        <div><dt>challenge ACK (RFC 5961)</dt><dd>Resposta a um RST/SYN suspeito: só derruba a sessão se a outra ponta confirmar o número exato — fecha o palpite cego.</dd></div>
+    </dl>
+</details>

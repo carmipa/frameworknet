@@ -1,0 +1,196 @@
+{
+  "resumo": "As ferramentas dig, nslookup e host consultam o sistema de nomes (DNS), traduzindo nomes legíveis (exemplo.com.br) em endereços IP e vice-versa. O dig é a ferramenta preferida por engenheiros: mostra a resposta completa, cada seção do pacote DNS, permite escolher o servidor consultado, rastrear a delegação desde a raiz (+trace) e fazer resolução reversa (-x). O nslookup é interativo e onipresente (inclusive no Windows), bom para checagens rápidas. O host é o mais enxuto, ideal para scripts. Este aprofundamento complementa o estudo teórico do DNS visto em Protocolos: lá você entende a hierarquia raiz, TLD e autoritativo; aqui você aprende a interrogá-la na prática e a diagnosticar SERVFAIL, NXDOMAIN e ausência de resposta.",
+  "ficha": [
+    {
+      "rotulo": "Porta padrão",
+      "valor": "53 (UDP e TCP)",
+      "dica": "UDP para consultas pequenas; TCP para respostas grandes, DNSSEC e transferência de zona (AXFR)."
+    },
+    {
+      "rotulo": "Pacote das ferramentas",
+      "valor": "bind-utils / dnsutils",
+      "dica": "dig e host vêm do BIND. Instale com apt install dnsutils ou dnf install bind-utils."
+    },
+    {
+      "rotulo": "Resolvedores públicos",
+      "valor": "8.8.8.8, 1.1.1.1, 9.9.9.9",
+      "dica": "Google, Cloudflare e Quad9. Úteis para comparar com o resolvedor local."
+    },
+    {
+      "rotulo": "Config do resolvedor",
+      "valor": "/etc/resolv.conf",
+      "dica": "Lista os nameservers usados quando você não especifica @servidor."
+    },
+    {
+      "rotulo": "TTL",
+      "valor": "Time To Live (segundos)",
+      "dica": "Quanto tempo o registro pode ficar em cache antes de nova consulta."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Recursivo x Autoritativo",
+      "icone": "account_tree",
+      "texto": "O resolvedor recursivo (8.8.8.8, seu roteador) faz o trabalho de perguntar aos vários servidores e devolve a resposta final. O servidor autoritativo é quem realmente detém a zona e responde com autoridade sobre aquele domínio.",
+      "destaque": "dig fala com o recursivo por padrão; +trace simula o caminho até o autoritativo."
+    },
+    {
+      "titulo": "Anatomia da resposta do dig",
+      "icone": "segment",
+      "texto": "A saída do dig é dividida em seções: HEADER (status, flags, contadores), QUESTION (o que foi perguntado), ANSWER (a resposta), AUTHORITY (quem é autoritativo) e ADDITIONAL (dados extras, como IPs dos NS).",
+      "destaque": "O campo status no HEADER é onde mora o diagnóstico: NOERROR, NXDOMAIN, SERVFAIL."
+    },
+    {
+      "titulo": "Cache e TTL",
+      "icone": "timer",
+      "texto": "Respostas ficam guardadas em cache pelo tempo do TTL. Por isso uma mudança de DNS pode demorar a propagar: os resolvedores ainda servem o valor antigo até o TTL expirar.",
+      "destaque": "Consulte direto o autoritativo (@ns) para ver o valor real, ignorando cache intermediário."
+    },
+    {
+      "titulo": "Resolução reversa (PTR)",
+      "icone": "swap_horiz",
+      "texto": "Além de nome para IP, o DNS faz IP para nome via registros PTR na zona in-addr.arpa (IPv4) ou ip6.arpa (IPv6). Muito usado por servidores de e-mail para checar reputação.",
+      "destaque": "dig -x 8.8.8.8 monta a consulta reversa automaticamente."
+    },
+    {
+      "titulo": "Ponto final (FQDN)",
+      "icone": "public",
+      "texto": "Um nome terminado em ponto (example.com.) é um FQDN absoluto. Sem o ponto, as ferramentas podem anexar domínios de busca do resolv.conf, alterando o resultado.",
+      "destaque": "Use +short e o ponto final quando quiser precisão e evitar surpresas de search domain."
+    },
+    {
+      "titulo": "Relação com Protocolos",
+      "icone": "menu_book",
+      "texto": "Este aprofundamento prático se apoia no capítulo de DNS do módulo Protocolos, onde a hierarquia (raiz, TLD, autoritativo), os tipos de registro e o transporte em UDP/TCP 53 são explicados em profundidade teórica.",
+      "destaque": "Teoria em Protocolos; interrogação e diagnóstico aqui em Ferramentas."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Caminho de uma consulta com dig +trace (raiz até autoritativo)",
+    "definicao": "sequenceDiagram\n    participant C as dig +trace\n    participant R as Servidor Raiz\n    participant T as Servidor TLD (.br)\n    participant A as Autoritativo (exemplo.com.br)\n    C->>R: Quem responde por .br?\n    R-->>C: Delegação NS para os servidores .br\n    C->>T: Quem responde por exemplo.com.br?\n    T-->>C: Delegação NS para o autoritativo\n    C->>A: Qual o registro A de www.exemplo.com.br?\n    A-->>C: Resposta autoritativa 203.0.113.10\n    Note over C,A: +trace consulta cada nível diretamente, sem cache do recursivo",
+    "legenda": "Com +trace, o dig começa na raiz e segue cada delegação NS até o servidor autoritativo, mostrando explicitamente a cadeia raiz -> TLD -> autoritativo. Isso revela onde a delegação quebra quando há problema."
+  },
+  "tabelas": [
+    {
+      "titulo": "dig x nslookup x host: quando usar cada um",
+      "colunas": [
+        "Ferramenta",
+        "Ponto forte",
+        "Uso típico"
+      ],
+      "linhas": [
+        [
+          "dig",
+          "Saída completa e detalhada; controle fino (@servidor, +trace, -x, +short)",
+          "Diagnóstico profundo, ver todas as seções, rastrear delegação"
+        ],
+        [
+          "nslookup",
+          "Interativo, presente até no Windows por padrão",
+          "Checagem rápida, ambientes sem bind-utils, uso em Windows"
+        ],
+        [
+          "host",
+          "Saída enxuta e direta, sem ruído",
+          "Scripts, verificação rápida de A/MX/PTR em uma linha"
+        ]
+      ]
+    },
+    {
+      "titulo": "Tipos de registro DNS comuns",
+      "colunas": [
+        "Tipo",
+        "Significado",
+        "Exemplo de conteúdo"
+      ],
+      "linhas": [
+        [
+          "A",
+          "Nome para endereço IPv4",
+          "203.0.113.10"
+        ],
+        [
+          "AAAA",
+          "Nome para endereço IPv6",
+          "2001:db8::1"
+        ],
+        [
+          "MX",
+          "Servidor de e-mail do domínio (com prioridade)",
+          "10 mail.exemplo.com.br."
+        ],
+        [
+          "NS",
+          "Servidores autoritativos da zona",
+          "ns1.exemplo.com.br."
+        ],
+        [
+          "TXT",
+          "Texto livre (SPF, DKIM, verificações)",
+          "v=spf1 include:_spf.google.com ~all"
+        ],
+        [
+          "CNAME",
+          "Apelido que aponta para outro nome",
+          "www -> exemplo.com.br."
+        ],
+        [
+          "SOA",
+          "Start of Authority: dados da zona (serial, TTLs)",
+          "ns1.exemplo.com.br. admin.exemplo.com.br. 2026090701 ..."
+        ],
+        [
+          "PTR",
+          "Endereço IP para nome (reverso)",
+          "dns.google."
+        ]
+      ]
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Consultas básicas: A, MX e formato curto",
+      "cenario": "Descobrir o IP de um site, seus servidores de e-mail e obter respostas limpas para copiar em scripts.",
+      "comandos": "dig exemplo.com.br A\ndig exemplo.com.br MX\ndig +short exemplo.com.br A\ndig +short exemplo.com.br MX",
+      "explicacao": "O primeiro comando mostra a resposta completa com todas as seções (HEADER, QUESTION, ANSWER). +short reduz a saída apenas ao valor final: o IP no caso do A e prioridade+servidor no MX. Ideal quando você só quer o dado."
+    },
+    {
+      "titulo": "Escolher o servidor e rastrear a delegação",
+      "cenario": "Comparar o que o resolvedor da Google responde com a cadeia real de delegação desde a raiz, útil para investigar propagação e problemas de delegação.",
+      "comandos": "dig @8.8.8.8 exemplo.com.br A\ndig +trace exemplo.com.br A\ndig +trace +nodnssec exemplo.com.br A",
+      "explicacao": "@8.8.8.8 força a consulta a um resolvedor específico, ignorando o /etc/resolv.conf. +trace percorre raiz -> TLD -> autoritativo mostrando cada delegação NS, revelando exatamente onde a resolução falha se houver problema."
+    },
+    {
+      "titulo": "Resolução reversa (PTR)",
+      "cenario": "Descobrir qual nome está associado a um endereço IP, checagem comum para reputação de servidores de e-mail.",
+      "comandos": "dig -x 8.8.8.8\ndig -x 8.8.8.8 +short\nhost 8.8.8.8",
+      "explicacao": "-x monta automaticamente a consulta PTR na zona in-addr.arpa. A resposta esperada aqui é dns.google. O host faz o mesmo de forma ainda mais enxuta, detectando sozinho que o argumento é um IP."
+    },
+    {
+      "titulo": "nslookup interativo e por tipo",
+      "cenario": "Fazer verificações rápidas em uma máquina Windows ou sem bind-utils, inclusive escolhendo o servidor no modo interativo.",
+      "comandos": "nslookup exemplo.com.br\nnslookup -type=MX exemplo.com.br\nnslookup -type=NS exemplo.com.br 1.1.1.1",
+      "explicacao": "Sem argumentos extras o nslookup resolve os endereços (A e AAAA). Com -type você pede registros específicos (MX, NS, TXT). O último argumento (1.1.1.1) define o servidor a consultar, equivalente ao @servidor do dig."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "status: SERVFAIL",
+      "causa_provavel": "O servidor consultado não conseguiu completar a resolução: falha do autoritativo, erro de configuração da zona, DNSSEC inválido ou timeout na cadeia.",
+      "leitura": "Não é culpa do nome não existir. Compare consultando outro resolvedor (dig @1.1.1.1) e rode dig +trace para ver em que nível a cadeia quebra. Se só falha com DNSSEC, teste com +cd (checking disabled).",
+      "comando": "dig +trace exemplo.com.br && dig @1.1.1.1 exemplo.com.br"
+    },
+    {
+      "sintoma": "status: NXDOMAIN",
+      "causa_provavel": "O nome consultado realmente não existe na zona autoritativa (domínio não registrado, subdomínio inexistente ou erro de digitação).",
+      "leitura": "Diferente de SERVFAIL: aqui a resolução funcionou e a resposta oficial é que o nome não existe. Confira a grafia, o FQDN (ponto final) e se o registro foi de fato criado na zona.",
+      "comando": "dig www.exmplo-errado.com.br"
+    },
+    {
+      "sintoma": "Sem resposta / connection timed out",
+      "causa_provavel": "O servidor DNS está inalcançável: firewall bloqueando a porta 53, resolvedor fora do ar ou rota de rede quebrada.",
+      "leitura": "A ferramenta nem recebe pacote de volta (;; connection timed out; no servers could be reached). Teste um resolvedor público e verifique conectividade na porta 53; respostas grandes podem exigir TCP.",
+      "comando": "dig @8.8.8.8 exemplo.com.br +tcp"
+    }
+  ]
+}

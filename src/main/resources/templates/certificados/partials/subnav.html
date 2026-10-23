@@ -1,0 +1,45 @@
+{! Sub-menu do módulo Certificados, em DOIS níveis (grupo → página), no mesmo
+    padrão de Protocolos. Nível 1: Geral + grupos (Fundamentos · Formatos · Ciclo
+    de vida · Usos & ataques). Nível 2: as páginas do grupo ativo. Tudo vem de
+    CertificadoAprofundamento.agrupadoPorGrupo(). Reutiliza as classes de
+    protocolos/css/subnav.css. Variáveis: grupos, grupoAtivo, aprofundamentoAtivo. !}
+<nav class="protocolo-subnav" aria-label="Grupos e aprofundamentos de certificados">
+    <div class="protocolo-subnav-camadas" role="tablist" aria-label="Grupos">
+        <a href="/certificados"
+           class="protocolo-subnav-item {#if grupoAtivo == 'geral'}is-active{/if}"
+           {#if grupoAtivo == 'geral'}aria-current="page"{/if}
+           title="Catálogo: formatos, campos do X.509 e tipos de certificado">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_rows</span>
+            <span>Geral</span>
+        </a>
+        {#for g in grupos}
+        <a href="{g.itens.get(0).rota}"
+           class="protocolo-subnav-item protocolo-subnav-camada {#if grupoAtivo == g.nome}is-active{/if}"
+           {#if grupoAtivo == g.nome}aria-current="page"{/if}
+           title="{g.nome}">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">folder</span>
+            <span>{g.nome}</span>
+        </a>
+        {/for}
+        <span class="protocolo-subnav-hint">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
+            Aprofundamento por grupo
+        </span>
+    </div>
+
+    {#for g in grupos}
+    {#if grupoAtivo == g.nome}
+    <div class="protocolo-subnav-protos" role="tablist" aria-label="Aprofundamentos do grupo {g.nome}">
+        {#for item in g.itens}
+        <a href="{item.rota}"
+           class="protocolo-subproto {#if aprofundamentoAtivo == item.slug}is-active{/if}"
+           {#if aprofundamentoAtivo == item.slug}aria-current="page"{/if}
+           title="{item.chamada}">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">{item.icone}</span>
+            <span>{item.rotuloMenu}</span>
+        </a>
+        {/for}
+    </div>
+    {/if}
+    {/for}
+</nav>

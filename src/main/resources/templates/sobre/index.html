@@ -1,0 +1,109 @@
+{#include shared/base.html}
+{#title}Sobre | Framework de Redes A&D{/title}
+{#description}Sobre o Framework de Redes — Análise Didática Avançada: o objetivo do projeto, o autor e as tecnologias usadas, entre elas Java 25, Quarkus, Qute e Docker.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/sobre/css/sobre.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='sobre' /}
+
+    <div class="text-center mb-4">
+        <span class="aed-eyebrow aed-eyebrow-teal">Sobre</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Sobre o projeto e o autor</h1>
+        <p class="text-secondary small mx-auto aed-medida-leitura">
+            Framework didático de redes — migração da versão Python/Flask para Java 25 + Quarkus, com módulos de
+            análise IPv4/IPv6, VLSM, portas/protocolos, GeoIP, tráfego, diagnóstico, ACL e telemetria.
+        </p>
+    </div>
+
+    <!-- Autor -->
+    <div class="aed-card card-tech p-4 shadow mb-4 sobre-hero">
+        <div class="sobre-photo">
+            <img src="/sobre/img/paulo.jpg"
+                 alt="Paulo André Carminati" width="200" height="200" loading="lazy">
+        </div>
+        <div class="sobre-info">
+            <span class="aed-eyebrow aed-eyebrow-amber">Autor</span>
+            <h2 class="h3 sobre-nome">Paulo André Carminati</h2>
+            <ul class="sobre-formacao">
+                <li><span class="material-symbols-outlined" translate="no" aria-hidden="true">code</span> Java, Python, redes e segurança</li>
+            </ul>
+            <div class="sobre-contact">
+                <a class="aed-btn aed-btn-teal" href="https://carminati.dev.br/" target="_blank" rel="noopener noreferrer"
+                   title="Abre o site pessoal do autor, com os outros sistemas e projetos dele, numa aba nova">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">language</span> Site pessoal
+                </a>
+                <a class="aed-btn aed-btn-neutral" href="https://github.com/carmipa" target="_blank" rel="noopener noreferrer"
+                   title="Visitar o perfil do autor no GitHub">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">code</span> GitHub
+                </a>
+                <a class="aed-btn aed-btn-teal" href="https://www.linkedin.com/in/paulo-andr%C3%A9-carminati-47712340/" target="_blank" rel="noopener noreferrer"
+                   title="Conectar com o autor no LinkedIn">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">person</span> LinkedIn
+                </a>
+                <a class="aed-btn aed-btn-amber" href="https://github.com/carmipa/frameworknet" target="_blank" rel="noopener noreferrer"
+                   title="Ver o código-fonte oficial do projeto no GitHub">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">deployed_code</span> Repositório do projeto
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tecnologias -->
+    <div class="text-center mb-3">
+        <span class="aed-eyebrow aed-eyebrow-indigo">Stack</span>
+        <h2 class="h4 mb-0" style="font-family:var(--aed-font-display);">Tecnologias usadas no projeto</h2>
+    </div>
+
+    <div class="sobre-tech-grid">
+        <div class="aed-card card-tech p-3 sobre-tech-cat">
+            <h3 class="h6 sobre-cat-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span> Backend</h3>
+            <div class="sobre-chips">
+                <span class="sobre-chip">Java 25</span>
+                <span class="sobre-chip">Quarkus 3.37</span>
+                <span class="sobre-chip">Gradle</span>
+                <span class="sobre-chip">Qute Templates</span>
+                <span class="sobre-chip">RESTEasy Reactive</span>
+                <span class="sobre-chip">ipaddress (seancfoley)</span>
+                <span class="sobre-chip">MaxMind GeoIP2</span>
+                <span class="sobre-chip">Jackson</span>
+            </div>
+        </div>
+
+        <div class="aed-card card-tech p-3 sobre-tech-cat">
+            <h3 class="h6 sobre-cat-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">web</span> Frontend</h3>
+            <div class="sobre-chips">
+                <span class="sobre-chip">HTML5 · CSS3 · JS (ES)</span>
+                <span class="sobre-chip">Bootstrap 5</span>
+                <span class="sobre-chip">Chart.js</span>
+                <span class="sobre-chip">Leaflet · OpenStreetMap</span>
+                <span class="sobre-chip">Globe.gl · Three.js (WebGL)</span>
+                <span class="sobre-chip">WebRTC</span>
+                <span class="sobre-chip">Material Symbols</span>
+                <span class="sobre-chip">Google Translate (i18n)</span>
+            </div>
+        </div>
+
+        <div class="aed-card card-tech p-3 sobre-tech-cat">
+            <h3 class="h6 sobre-cat-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">deployed_code</span> Infra &amp; DevOps</h3>
+            <div class="sobre-chips">
+                <span class="sobre-chip">Docker · Compose</span>
+                <span class="sobre-chip">Nginx Proxy Manager</span>
+                <span class="sobre-chip">VPS Linux</span>
+                <span class="sobre-chip">Git · GitHub</span>
+            </div>
+        </div>
+
+        <div class="aed-card card-tech p-3 sobre-tech-cat">
+            <h3 class="h6 sobre-cat-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">verified</span> Qualidade</h3>
+            <div class="sobre-chips">
+                <span class="sobre-chip">JUnit 5</span>
+                <span class="sobre-chip">REST Assured</span>
+                <span class="sobre-chip">Playwright</span>
+            </div>
+        </div>
+    </div>
+</div>
+{/content}
+{/include}

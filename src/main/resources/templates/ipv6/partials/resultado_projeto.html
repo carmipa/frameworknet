@@ -1,0 +1,108 @@
+<div class="calc-resultado card-tech shadow">
+    <div class="calc-resumo-head">
+        <span class="aed-eyebrow">Plano de rede IPv6</span>
+        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">architecture</span> {p.baseCidr} · {p.topologia}</h3>
+    </div>
+
+    <div class="calc-kpis">
+        <div class="calc-kpi calc-kpi-destaque">
+            <span class="calc-kpi-label">Localidades (LANs /{p.prefixoLan})</span>
+            <strong class="calc-kpi-valor">{p.totalLocais}</strong>
+            <span class="calc-kpi-nota">de {p.capacidadeLan} possíveis</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Enlaces WAN /{p.prefixoWan}</span>
+            <strong class="calc-kpi-valor">{p.totalLinks}</strong>
+            <span class="calc-kpi-nota">topologia {p.topologia}</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Endereços por LAN</span>
+            <strong class="calc-kpi-valor">2^(128−{p.prefixoLan})</strong>
+            <span class="calc-kpi-nota">sem broadcast</span>
+        </div>
+    </div>
+
+    <div class="aed-action-row action-buttons mt-2 mb-1">
+        <button type="button" class="aed-btn aed-btn-json" data-baixar-plano
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Baixar o plano completo (LANs, WANs, rotas, CLI) em .txt">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> Baixar plano (.txt)
+        </button>
+        <button type="button" class="aed-btn aed-btn-neutral" data-copiar-plano
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Copiar o plano completo para a área de transferência">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar plano
+        </button>
+    </div>
+    <textarea id="ipv6-plano-texto" class="d-none" readonly>{p.planoTexto}</textarea>
+
+    <h4 class="h6 calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> LANs (uma por localidade)</h4>
+    <div class="table-responsive calc-tabela-scroll">
+        <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
+            <thead><tr>
+                <th>#</th><th>Localidade</th><th>Rede</th><th>Gateway</th><th>Primeiro</th><th>Último</th>
+            </tr></thead>
+            <tbody>
+            {#for l in p.lans}
+                <tr>
+                    <td class="text-secondary">{l.indice}</td>
+                    <td class="fw-bold">{l.nome}</td>
+                    <td class="font-monospace fw-bold">{l.rede}{l.prefixoStr}</td>
+                    <td class="font-monospace text-success">{l.gateway}</td>
+                    <td class="font-monospace">{l.primeiro}</td>
+                    <td class="font-monospace text-secondary">{l.ultimo}</td>
+                </tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+
+    {#if p.wans.size > 0}
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cable</span> Enlaces WAN (/{p.prefixoWan}, RFC 6164)</h4>
+    <div class="table-responsive calc-tabela-scroll">
+        <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
+            <thead><tr><th>#</th><th>Enlace</th><th>Rede</th><th>Lado A</th><th>Lado B</th></tr></thead>
+            <tbody>
+            {#for w in p.wans}
+                <tr>
+                    <td class="text-secondary">{w.indice}</td>
+                    <td>{w.nome}</td>
+                    <td class="font-monospace fw-bold">{w.rede}{w.prefixoStr}</td>
+                    <td class="font-monospace">{w.roteadorA}: {w.ipA}</td>
+                    <td class="font-monospace">{w.roteadorB}: {w.ipB}</td>
+                </tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+    {/if}
+
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Rotas estáticas (alternativa)</h4>
+    <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{#for r in p.rotasEstaticas}{r}
+{/for}</pre>
+
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama de arquitetura ({p.topologia})</h4>
+    <div class="ipv6-diagrama card-tech p-3 mb-2">
+        <pre class="mermaid mb-0" translate="no">{p.topologyMermaid}</pre>
+    </div>
+    <div class="small text-secondary mb-2">Roteadores (um por localidade) e os enlaces WAN /{p.prefixoWan} da topologia {p.topologia}. Cada nó mostra a LAN /{p.prefixoLan}.</div>
+
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> CLI Cisco por roteador (OSPFv3 + EIGRP IPv6)</h4>
+    <div class="row g-3">
+        {#for rt in p.roteadores}
+        <div class="col-12 col-lg-6">
+            <div class="card-tech p-3 h-100">
+                <div class="fw-bold text-warning mb-2"><span class="material-symbols-outlined align-middle" aria-hidden="true" translate="no">router</span> {rt.nome} · {rt.local}</div>
+                <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{rt.cli}</pre>
+            </div>
+        </div>
+        {/for}
+    </div>
+
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Passo a passo</h4>
+    <ul class="small text-secondary mb-0">
+        {#for passo in p.passos}<li>{passo}</li>{/for}
+    </ul>
+
+    <p class="calc-explicacao mt-3">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> {p.enunciado}
+    </p>
+</div>

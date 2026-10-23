@@ -1,0 +1,74 @@
+{
+  "resumo": "O modelo em camadas organiza a comunicação em rede: cada camada resolve um problema e serve a de cima. Abaixo, as 7 camadas OSI mapeadas nas 4 do TCP/IP, com a unidade de dados (PDU), exemplos de protocolo e os dispositivos que operam em cada nível.",
+  "tabelas": [
+    {
+      "titulo": "As camadas — OSI × TCP/IP",
+      "colunas": [
+        "#",
+        "OSI",
+        "TCP/IP",
+        "PDU",
+        "Protocolos",
+        "Dispositivos"
+      ],
+      "linhas": [
+        [
+          "7",
+          "Aplicação",
+          "Aplicação",
+          "Dados",
+          "HTTP, HTTPS, FTP, SMTP, DNS, DHCP, POP3, IMAP",
+          "Gateway de aplicação, firewall de camada 7 (proxy/WAF)"
+        ],
+        [
+          "6",
+          "Apresentação",
+          "Aplicação",
+          "Dados",
+          "SSL/TLS, JPEG, PNG, GIF, MPEG, ASCII, MIME",
+          "Gateway de aplicação (tradução/criptografia)"
+        ],
+        [
+          "5",
+          "Sessão",
+          "Aplicação",
+          "Dados",
+          "NetBIOS, RPC, PPTP, SOCKS, SIP",
+          "Gateway de aplicação"
+        ],
+        [
+          "4",
+          "Transporte",
+          "Transporte",
+          "Segmento (TCP) / Datagrama (UDP)",
+          "TCP, UDP, SCTP",
+          "Firewall com estado, balanceador de carga (camada 4)"
+        ],
+        [
+          "3",
+          "Rede",
+          "Internet",
+          "Pacote",
+          "IP (IPv4/IPv6), ICMP, IPsec, OSPF, BGP",
+          "Roteador, switch de camada 3"
+        ],
+        [
+          "2",
+          "Enlace de Dados",
+          "Acesso à Rede",
+          "Quadro",
+          "Ethernet, PPP, ARP, STP, VLAN (802.1Q), Wi-Fi (802.11)",
+          "Switch, bridge, ponto de acesso, placa de rede"
+        ],
+        [
+          "1",
+          "Física",
+          "Acesso à Rede",
+          "Bits",
+          "Ethernet físico (100BASE-T), RS-232, DSL, USB, Bluetooth físico",
+          "Hub, repetidor, cabos, conectores, transceptores"
+        ]
+      ]
+    }
+  ]
+}

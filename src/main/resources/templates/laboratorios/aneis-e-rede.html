@@ -1,0 +1,96 @@
+{! Simulacao local: aplicacao, kernel e NIC. Conteudo didatico estatico + simulador client-side. !}
+{#include shared/base.html}
+{#title}Aplicação, Kernel e Rede — Laboratórios Interativos | Framework de Redes A&D{/title}
+{#description}Laboratório interativo sobre anéis de privilégio (Protection Rings), syscalls, sockets, capabilities e o caminho de um pacote no Linux — do Ring 3 ao Ring 0 e à placa de rede.{/description}
+{#extraHead}<link rel="stylesheet" href="/laboratorios/css/laboratorios.css?v=20261023">{/extraHead}
+{#content}
+<div class="container py-5 lab-page rings-page">
+{#include shared/main_menu.html activeMainMenu='laboratorios' /}{#include laboratorios/partials/subnav.html labAtivo='aneis-rede' /}
+
+<header>
+    <span class="aed-eyebrow aed-eyebrow-teal">Laboratório · Sistemas operacionais e redes</span>
+    <h1 class="aed-title"><span class="material-symbols-outlined aed-title-icon" translate="no" aria-hidden="true">memory</span> Da aplicação até a placa de rede</h1>
+    <p class="aed-subtitle">Todo pacote que sai do seu computador nasce numa aplicação sem privilégio e só chega à rede depois de cruzar a fronteira mais vigiada do sistema: a passagem do <strong>Ring 3</strong> (aplicação) para o <strong>Ring 0</strong> (kernel). Aqui você entende essa fronteira e simula o percurso.</p>
+</header>
+
+<aside class="rings-simulacao"><span class="material-symbols-outlined" translate="no" aria-hidden="true">science</span><strong>Simulação didática:</strong> esta página explica e anima o conceito — ela <strong>não</strong> cria sockets, não envia nem captura pacotes e não altera esta máquina.</aside>
+
+{! ---------- 1. Conceito: o que sao aneis de privilegio ---------- !}
+<h2 class="lab-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">donut_large</span> 1. O que são anéis de privilégio</h2>
+<p class="rings-prosa">A CPU x86 não confia igualmente em todo código que executa. Ela separa a execução em <strong>níveis concêntricos de privilégio</strong> — os <em>Protection Rings</em>. Quanto mais interno o anel, mais a CPU permite: acessar memória física, falar com o hardware, mascarar interrupções. Quanto mais externo, mais a CPU <em>barra</em>. É essa barreira, gravada em silício, que impede uma aba do navegador de reprogramar sua placa de rede ou ler a memória de outro processo.</p>
+
+<div class="rings-mapa" role="table" aria-label="Anéis de privilégio x86 e o papel de cada um">
+    <div class="rings-anel is-user" role="row">
+        <span class="rings-anel-badge" aria-hidden="true">Ring&nbsp;3</span>
+        <div>
+            <strong><span class="material-symbols-outlined" translate="no" aria-hidden="true">web</span> User Mode — menor privilégio</strong>
+            <p>Onde roda <em>tudo</em> que você usa: navegador, <code translate="no">curl</code>, o backend deste site. Cria sockets pela API POSIX/libc (<code translate="no">socket()</code>, <code translate="no">connect()</code>, <code translate="no">send()</code>), mas <strong>não toca a NIC</strong> — precisa pedir ao kernel.</p>
+        </div>
+    </div>
+    <div class="rings-anel is-unused" role="row">
+        <span class="rings-anel-badge" aria-hidden="true">Ring&nbsp;1·2</span>
+        <div>
+            <strong><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Intermediários — quase sem uso hoje</strong>
+            <p>Pensados para drivers e sistemas como o OS/2. Na prática caíram em desuso; o exemplo real foi a virtualização <strong>Xen paravirtual (PV)</strong>, que rodava o kernel convidado no Ring 1 no x86 de 32 bits. Em <strong>x86-64 (long mode)</strong> a segmentação que os sustentava é desativada — sobram, de fato, só o Ring 0 e o Ring 3.</p>
+        </div>
+    </div>
+    <div class="rings-anel is-kernel" role="row">
+        <span class="rings-anel-badge" aria-hidden="true">Ring&nbsp;0</span>
+        <div>
+            <strong><span class="material-symbols-outlined" translate="no" aria-hidden="true">settings</span> Kernel Mode — máximo privilégio</strong>
+            <p>O kernel do sistema operacional: escalonador, memória física, drivers. É aqui que vive a <strong>pilha TCP/IP real</strong> — tratamento da interrupção da NIC, montagem do <code translate="no">sk_buff</code> (Linux), Netfilter, filas de saída (qdisc).</p>
+        </div>
+    </div>
+</div>
+
+<div class="rings-nota"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lightbulb</span><p><strong>O “aha” moderno:</strong> os quatro anéis são história de projeto. O hardware atual usa, na prática, <strong>apenas dois</strong> — Ring 0 e Ring 3. Toda a segurança do dia a dia mora na fronteira entre esses dois.</p></div>
+
+{! ---------- 2. Por que a rede cruza a fronteira ---------- !}
+<h2 class="lab-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_vert</span> 2. Por que a rede cruza a fronteira</h2>
+<p class="rings-prosa">Quando a aplicação chama <code translate="no">send()</code>, ela executa uma instrução <strong>syscall</strong> que transfere o controle para o kernel, num endereço fixo apontado pelo registrador especial <code translate="no">MSR&nbsp;LSTAR</code>. A CPU sobe para o Ring 0, o kernel <strong>valida</strong> o pedido e só então age. Detalhe que quase todo material erra: cruzar a fronteira de syscall é uma <strong>troca de modo</strong> (privilégio), <em>não</em> necessariamente uma <strong>troca de contexto</strong> completa do escalonador (troca de processo) — são coisas diferentes.</p>
+
+<div class="rings-saber">
+    <div class="rings-saber-card">
+        <strong><span class="material-symbols-outlined" translate="no" aria-hidden="true">shield_person</span> Portas &lt; 1024 são privilegiadas</strong>
+        <p>Associar uma porta baixa (ex.: 80, 443) exige a capability <code translate="no">CAP_NET_BIND_SERVICE</code>. Não é lei física: é <strong>política do kernel</strong> — o sysctl <code translate="no">net.ipv4.ip_unprivileged_port_start</code> pode até baixar esse limite.</p>
+    </div>
+    <div class="rings-saber-card">
+        <strong><span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span> Raw sockets exigem poder</strong>
+        <p>Para forjar um pacote inteiro (cabeçalho IP/ICMP à mão — scanners, geradores de tráfego, ferramentas didáticas de captura) o Ring 3 precisa de <code translate="no">CAP_NET_RAW</code> (ou root). É por isso que o Ring 0 barra isso por padrão.</p>
+    </div>
+    <div class="rings-saber-card">
+        <strong><span class="material-symbols-outlined" translate="no" aria-hidden="true">bolt</span> syscall × int 0x80</strong>
+        <p>O Linux x86-64 moderno entra no kernel pela instrução <code translate="no">syscall</code> (rápida, via <code translate="no">LSTAR</code>). A interrupção <code translate="no">int 0x80</code> é o caminho legado de 32 bits, mais lento — mesmo destino, época diferente.</p>
+    </div>
+    <div class="rings-saber-card">
+        <strong><span class="material-symbols-outlined" translate="no" aria-hidden="true">verified_user</span> O kernel não confia no usuário</strong>
+        <p>Ponteiros e bytes vindos do Ring 3 passam por <code translate="no">copy_from_user</code> e por barreiras de hardware como o <strong>SMAP</strong> — o kernel nunca acessa memória do usuário por acidente.</p>
+    </div>
+</div>
+
+{! ---------- 3. Simulador interativo (nucleo do GPT, preservado) ---------- !}
+<h2 class="lab-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">ads_click</span> 3. Escolha a intenção</h2>
+<div class="rings-acoes" role="radiogroup"><button class="rings-acao is-active" data-acao="tcp" role="radio" aria-checked="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">language</span><strong>Abrir conexão HTTPS</strong><small>TCP comum</small></button><button class="rings-acao" data-acao="porta" role="radio"><span class="material-symbols-outlined" translate="no" aria-hidden="true">admin_panel_settings</span><strong>Associar porta 80</strong><small>porta privilegiada</small></button><button class="rings-acao" data-acao="raw" role="radio"><span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span><strong>Raw socket ICMP</strong><small>baixo nível</small></button><button class="rings-acao" data-acao="xdp" role="radio"><span class="material-symbols-outlined" translate="no" aria-hidden="true">bolt</span><strong>XDP/eBPF</strong><small>caminho rápido</small></button></div>
+<section class="rings-fluxo"><div class="rings-fluxo-cab"><div><h2 class="lab-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">account_tree</span> 4. Siga a fronteira</h2><p class="text-secondary small">Clique em uma etapa. As quatro passagens têm significado e mudam com a intenção.</p></div><button id="rings-executar" class="aed-btn aed-btn-teal"><span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Simular percurso</button></div>
+<div class="rings-diagrama"><button class="rings-etapa is-selected" data-etapa="app"><b>RING 3</b><span class="material-symbols-outlined" translate="no" aria-hidden="true">web</span><strong>Aplicação</strong><small>browser, curl, backend</small></button><div class="rings-seta"><span class="material-symbols-outlined" translate="no" aria-hidden="true">south</span><small id="rings-seta-0"></small></div><button class="rings-etapa" data-etapa="syscall"><b>FRONTEIRA</b><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_vert</span><strong>Entrada no kernel</strong><small>parâmetros e credenciais</small></button><div class="rings-seta"><span class="material-symbols-outlined" translate="no" aria-hidden="true">south</span><small id="rings-seta-1"></small></div><button class="rings-etapa" data-etapa="kernel"><b>RING 0</b><span class="material-symbols-outlined" translate="no" aria-hidden="true">settings</span><strong>Pilha TCP/IP</strong><small>socket, rota, firewall, fila</small></button><div class="rings-seta"><span class="material-symbols-outlined" translate="no" aria-hidden="true">south</span><small id="rings-seta-2"></small></div><button class="rings-etapa" data-etapa="driver"><b>RING 0</b><span class="material-symbols-outlined" translate="no" aria-hidden="true">developer_board</span><strong>Driver e DMA</strong><small>descritores para a NIC</small></button><div class="rings-seta"><span class="material-symbols-outlined" translate="no" aria-hidden="true">south</span><small id="rings-seta-3"></small></div><button class="rings-etapa" data-etapa="nic"><b>HARDWARE</b><span class="material-symbols-outlined" translate="no" aria-hidden="true">router</span><strong>Placa de rede</strong><small>quadro e sinal</small></button></div>
+<div class="rings-explica" aria-live="polite"><span id="rings-contexto" class="lab-explica-tag"></span><h3 id="rings-titulo"></h3><p id="rings-texto"></p><div class="rings-dados-reais" aria-label="Dados que entram e saem da etapa selecionada"><div><h4>Entra</h4><p id="rings-entra"></p></div><div><h4>Processa</h4><p id="rings-processa"></p></div><div><h4>Sai</h4><p id="rings-sai"></p></div><div><h4>Proteção</h4><p id="rings-protecao"></p></div></div></div>
+</section>
+<details class="rings-inspecao"><summary><span class="material-symbols-outlined" translate="no" aria-hidden="true">biotech</span> Inspeção de baixo nível: CPU, kernel e segurança</summary><p id="rings-interno"></p><pre translate="no"><code id="rings-codigo" translate="no"></code></pre><p class="text-secondary small">Linux x86-64 é referência didática: ABI, CPU, driver e mitigação variam por sistema.</p></details>
+
+{! ---------- 5. O caminho de volta (RX) ---------- !}
+<h2 class="lab-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">u_turn_left</span> 5. O caminho de volta (recepção)</h2>
+<p class="rings-prosa">Na chegada, o percurso se inverte — e mostra por que é o <strong>Ring 0</strong> quem atende o hardware. A NIC recebe o quadro e dispara uma <strong>interrupção</strong>; o kernel responde e, sob tráfego intenso, ativa o <strong>NAPI</strong> (troca interrupção por <em>polling</em> em <em>softirq</em>) para não afogar a CPU. Os bytes sobem a pilha como <code translate="no">sk_buff</code>, passam por Netfilter e roteamento, chegam ao buffer do socket — e só então a aplicação no Ring 3 os lê com <code translate="no">recv()</code>/<code translate="no">read()</code>. A aplicação nunca “pega” o pacote do fio: ela recebe uma cópia que o kernel já validou.</p>
+
+{! ---------- 6. Alem dos aneis classicos ---------- !}
+<h2 class="lab-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span> 6. Além dos anéis clássicos</h2>
+<p class="rings-prosa">A comunidade de segurança fala em “anéis negativos”. Cuidado: <strong>não são anéis x86 formais</strong> — são contextos de privilégio <em>adicionais</em>, apelidados assim por ficarem “abaixo” do kernel.</p>
+<div class="rings-mapa">
+    <div class="rings-anel is-neg" role="row"><span class="rings-anel-badge" aria-hidden="true">Ring&nbsp;−1</span><div><strong><span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span> Hipervisor (VMX root)</strong><p>Onde rodam KVM, ESXi, Hyper-V. Controla os kernels convidados “acima” dele.</p></div></div>
+    <div class="rings-anel is-neg" role="row"><span class="rings-anel-badge" aria-hidden="true">Ring&nbsp;−2</span><div><strong><span class="material-symbols-outlined" translate="no" aria-hidden="true">memory_alt</span> SMM — System Management Mode</strong><p>Firmware da placa-mãe (UEFI), entrado por uma SMI, em SMRAM. Opaco até para o kernel.</p></div></div>
+    <div class="rings-anel is-neg" role="row"><span class="rings-anel-badge" aria-hidden="true">Ring&nbsp;−3</span><div><strong><span class="material-symbols-outlined" translate="no" aria-hidden="true">developer_board</span> Intel ME / AMD PSP</strong><p>Um <strong>processador independente</strong> da CPU principal, com seu próprio firmware. Nem é “um anel da CPU” — é outro hardware.</p></div></div>
+</div>
+
+<div class="rings-nota"><span class="material-symbols-outlined" translate="no" aria-hidden="true">rocket_launch</span><p><strong>E o “kernel bypass” (DPDK / eBPF / AF_XDP)?</strong> Ele reduz o custo de cruzar a fronteira, mas <strong>não elimina o Ring 0</strong>: ainda depende do kernel (VFIO/IOMMU, hugepages, root) para mapear a NIC. O que muda é que parte da pilha de rede passa a rodar no <strong>Ring 3</strong> (DPDK) ou como código verificado dentro do kernel (<strong>eBPF</strong>). A regra dos anéis não é burlada — é reorganizada.</p></div>
+
+<section class="lab-relacionado mt-4"><a href="/camadas" class="aed-btn aed-btn-neutral btn-sm"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span> Camadas OSI/TCP-IP</a><a href="/trafego" class="aed-btn aed-btn-neutral btn-sm"><span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Tráfego</a><a href="/seguranca" class="aed-btn aed-btn-neutral btn-sm"><span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> Segurança ACL</a></section>
+</div>{/content}{#extraScripts}<script src="/laboratorios/js/aneis-e-rede.js?v=20260915b"></script>{/extraScripts}{/include}

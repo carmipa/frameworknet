@@ -1,0 +1,232 @@
+/* Estilos do módulo Tráfego (decodificador de pacotes). Só em templates/trafego/index.html. */
+
+.loc-nota {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    padding: 1rem 1.2rem;
+    border-left: 3px solid var(--aed-teal, #2dd4bf);
+}
+
+.loc-nota .material-symbols-outlined {
+    color: var(--aed-teal, #2dd4bf);
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+.loc-nota strong {
+    color: var(--aed-text, #eef2f8);
+}
+
+/* ---- Tráfego ao vivo ---- */
+.trafego-live {
+    padding: clamp(1rem, 3%, 1.6rem);
+}
+
+.trafego-live-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.trafego-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+}
+
+.trafego-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.07));
+    border-radius: 0.7rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.trafego-kpi .k {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--aed-text-faint, #5b6679);
+}
+
+.trafego-kpi .v {
+    font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
+    font-size: 1.5rem;
+    color: var(--aed-text, #eef2f8);
+}
+
+.trafego-kpi-alerta.ativo {
+    border-color: var(--aed-risk-critical, #f43f5e);
+    background: rgba(244, 63, 94, 0.1);
+}
+
+.trafego-kpi-alerta.ativo .v {
+    color: var(--aed-risk-critical, #f43f5e);
+}
+
+.trafego-charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.trafego-chart-card {
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.07));
+    border-radius: 0.8rem;
+    background: linear-gradient(180deg, #0f1622, #0a0e16);
+    min-width: 0;
+}
+
+/* O Chart.js mede o cartão ao criar o gráfico; criado com a aba escondida, o canvas
+   nascia com os 300 px padrão e passava do cartão em telas de 320-360 px. */
+.trafego-chart-card canvas {
+    max-width: 100%;
+}
+
+.trafego-redes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.trafego-rede-card {
+    min-width: 0;
+}
+
+.trafego-badge {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border-radius: 62.4375rem;
+    font-size: .75rem;
+    white-space: nowrap;
+}
+
+.trafego-badge.risco {
+    color: var(--aed-risk-critical, #f43f5e);
+    border: 1px solid var(--aed-risk-critical, #f43f5e);
+    background: rgba(244, 63, 94, 0.1);
+}
+
+.trafego-badge.ok {
+    color: var(--aed-risk-safe, #34d399);
+    border: 1px solid rgba(52, 211, 153, 0.5);
+    background: rgba(52, 211, 153, 0.08);
+}
+
+.trafego-pacotes td {
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    font-size: 0.78rem;
+}
+
+.trafego-form {
+    padding: 4% 5%;
+    margin-bottom: 4%;
+}
+
+.trafego-hex {
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    font-size: 0.85rem;
+    resize: vertical;
+    letter-spacing: 0.02em;
+}
+
+.trafego-resultado {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.trafego-erro {
+    color: var(--aed-risk-critical, #f43f5e);
+    padding: 1rem 1.2rem;
+}
+
+.trafego-camada {
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.trafego-camada-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.8rem 1.2rem;
+    background: rgba(45, 212, 191, 0.08);
+    border-bottom: 1px solid var(--aed-border, rgba(255, 255, 255, 0.07));
+}
+
+.trafego-camada-nome {
+    font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
+    font-size: 1.05rem;
+    color: var(--aed-teal, #2dd4bf);
+    margin: 0;
+}
+
+.trafego-camada-resumo {
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    font-size: 0.82rem;
+    color: var(--aed-text-secondary, #8b97ad);
+}
+
+.trafego-campos {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.trafego-campos tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.trafego-campos td {
+    padding: 0.5rem 1.2rem;
+    vertical-align: top;
+    border-bottom: 1px solid var(--aed-border, rgba(255, 255, 255, 0.05));
+}
+
+.trafego-campo-nome {
+    color: var(--aed-text-secondary, #8b97ad);
+    white-space: nowrap;
+    width: 26%;
+}
+
+.trafego-campo-valor {
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    color: var(--aed-text, #eef2f8);
+    word-break: break-word;
+    width: 34%;
+}
+
+.trafego-campo-desc {
+    color: var(--aed-text-faint, #5b6679);
+    font-size: 0.82rem;
+}
+
+@media (max-width: 48em) {
+    .trafego-campos,
+    .trafego-campos tbody,
+    .trafego-campos tr,
+    .trafego-campos td {
+        display: block;
+        width: 100%;
+    }
+
+    .trafego-campo-nome {
+        padding-bottom: 0;
+    }
+
+    .trafego-campo-valor {
+        padding-top: 0.15rem;
+    }
+}
+
+/* A ajuda de exemplo dos campos usa a classe compartilhada .aed-ajuda (app.css). */

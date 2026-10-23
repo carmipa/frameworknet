@@ -1,0 +1,89 @@
+{! Aba "Projetar": form em largura total; plano 100% abaixo (regra global de layout IPv6). !}
+<div class="calc-form-card mb-3">
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">architecture</span> Projetar rede IPv6</h2>
+    <p class="calc-hint">Informe o bloco base, os prefixos de LAN/WAN, a topologia e as localidades (uma por linha). Gera plano de endereçamento, enlaces, gateways, rotas e CLI Cisco (OSPFv3/EIGRP).</p>
+    <form id="formProjetar" hx-post="/ipv6/api/projetar" hx-target="#saidaProjetar" hx-swap="innerHTML"
+          hx-disabled-elt="find button[type='submit']">
+        <div class="row g-3">
+            <div class="col-lg-4 col-md-6">
+                <label for="projBase" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Bloco base (CIDR)</label>
+                <input type="text" class="aed-input form-control" id="projBase" name="base"
+                       placeholder="2001:db8::/48" value="2001:db8::/48" autocomplete="off" spellcheck="false" required>
+            </div>
+            <div class="col-lg-2 col-md-3 col-6">
+                <label for="projLan" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo LAN</label>
+                <input type="text" class="aed-input form-control input-cidr" id="projLan" name="prefixoLan"
+                       inputmode="numeric" maxlength="3" placeholder="64" value="64" required>
+            </div>
+            <div class="col-lg-2 col-md-3 col-6">
+                <label for="projWan" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cable</span> Prefixo WAN</label>
+                <input type="text" class="aed-input form-control input-cidr" id="projWan" name="prefixoWan"
+                       inputmode="numeric" maxlength="3" placeholder="127" value="127" required>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <label for="projTopo" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Topologia</label>
+                <select id="projTopo" name="topologia" class="aed-input form-select">
+                    <option value="estrela">Estrela — hub = 1ª localidade (N-1 enlaces)</option>
+                    <option value="estrela-estendida">Estrela estendida — núcleo + distribuição + acesso (N-1)</option>
+                    <option value="malha">Malha completa (N·(N-1)/2)</option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <label for="projOspf" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Processo OSPFv3</label>
+                <input type="text" class="aed-input form-control input-numeric" id="projOspf" name="ospfProc"
+                       inputmode="numeric" maxlength="5" placeholder="1" value="1">
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <label for="projEigrp" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span> AS EIGRP</label>
+                <input type="text" class="aed-input form-control input-numeric" id="projEigrp" name="eigrpAs"
+                       inputmode="numeric" maxlength="5" placeholder="100" value="100">
+            </div>
+            <div class="col-12">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                    <label class="form-label text-secondary mb-0"><span class="material-symbols-outlined" aria-hidden="true" translate="no">apartment</span> Localidades / departamentos / VLANs (adicione quantas quiser)</label>
+                    <button type="button" class="aed-btn aed-btn-indigo btn-sm" id="proj-add-local"
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Adicionar uma nova localidade">
+                        <span class="material-symbols-outlined" translate="no" aria-hidden="true">add</span> Adicionar localidade
+                    </button>
+                </div>
+                <div id="proj-locais-container">
+                    {! As linhas iniciais; o usuário adiciona/remove livremente via JS. !}
+                    <div class="row g-2 align-items-end proj-local-row mb-2">
+                        <div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" value="Matriz" placeholder="Nome da localidade / VLAN" autocomplete="off" required></div>
+                        <div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" title="Remover esta localidade"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
+                    </div>
+                    <div class="row g-2 align-items-end proj-local-row mb-2">
+                        <div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" value="Filial-SP" placeholder="Nome da localidade / VLAN" autocomplete="off" required></div>
+                        <div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" title="Remover esta localidade"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
+                    </div>
+                    <div class="row g-2 align-items-end proj-local-row mb-2">
+                        <div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" value="Data Center" placeholder="Nome da localidade / VLAN" autocomplete="off" required></div>
+                        <div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" title="Remover esta localidade"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
+                    </div>
+                    <div class="row g-2 align-items-end proj-local-row mb-2">
+                        <div class="col-lg-10 col-9"><input type="text" name="local" class="aed-input form-control" value="Wi-Fi" placeholder="Nome da localidade / VLAN" autocomplete="off" required></div>
+                        <div class="col-lg-2 col-3 d-grid"><button type="button" class="aed-btn aed-btn-danger btn-sm proj-remove-local" title="Remover esta localidade"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete</span></button></div>
+                    </div>
+                </div>
+                <div class="form-text text-muted">Cada localidade recebe uma LAN contígua no prefixo alvo. Em estrela, a 1ª é o hub.</div>
+            </div>
+        </div>
+        <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="aed-btn aed-btn-execute" title="Gerar o plano de endereçamento IPv6">
+                <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Projetar
+            </button>
+            <button type="button" class="aed-btn aed-btn-neutral" data-limpar title="Esvaziar e recomeçar">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+            </button>
+        </div>
+    </form>
+</div>
+
+<div id="saidaProjetar" class="calc-saida ipv6-saida-full">
+    <div class="calc-placeholder">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">architecture</span>
+        <p class="mb-0">Informe os requisitos para ver o plano completo: LANs /64 com gateway, enlaces WAN /127,
+            topologia, rotas estáticas, OSPFv3/EIGRP e o CLI Cisco por roteador.</p>
+    </div>
+</div>

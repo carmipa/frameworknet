@@ -1,0 +1,42 @@
+<div class="calc-resultado card-tech shadow">
+    <div class="calc-resumo-head">
+        <span class="aed-eyebrow">Nibbles · RFC 5952</span>
+        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">expand</span> {n.comprimido}</h3>
+    </div>
+
+    <div class="calc-kpis">
+        <div class="calc-kpi calc-kpi-destaque">
+            <span class="calc-kpi-label">Comprimido (RFC 5952)</span>
+            <strong class="calc-kpi-valor calc-kpi-mono">{n.comprimido}</strong>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Expandido (RFC 4291)</span>
+            <strong class="calc-kpi-valor calc-kpi-mono">{n.expandido}</strong>
+            <span class="calc-kpi-nota">8 hextetos × 4 nibbles</span>
+        </div>
+    </div>
+
+    <h4 class="h6 calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_view</span> 32 nibbles (4 bits cada)</h4>
+    <div class="table-responsive calc-tabela-scroll">
+        <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
+            <thead><tr><th>#</th><th>Hexteto</th><th>Hex</th><th>Binário (4 bits)</th></tr></thead>
+            <tbody>
+            {#for nb in n.nibbles}
+                <tr>
+                    <td class="text-secondary">{nb.indice}</td>
+                    <td>{nb.hexteto}</td>
+                    <td class="font-monospace fw-bold text-warning">{nb.hex}</td>
+                    <td class="font-monospace"><span class="ipv6-bit-rede">{nb.bin}</span></td>
+                </tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_vert</span> Reverso ip6.arpa</h4>
+    <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" style="white-space:pre-wrap;word-break:break-all;" translate="no">{n.reversePtr}</pre>
+
+    <p class="calc-explicacao mt-3">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> {n.explicacao}
+    </p>
+</div>

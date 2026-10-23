@@ -1,0 +1,60 @@
+{#include shared/base.html}
+{#title}Resolução de Problemas | Framework de Redes A&D{/title}
+{#description}Resolução de problemas de endereçamento: VLSM para várias localidades, topologia WAN, prefixo configurável, EIGRP e OSPF, com exportação de laboratório Packet Tracer.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/resolucaoProblemas/css/resolucao-page.css?v=20261022">
+<link rel="stylesheet" href="/resolucaoProblemas/css/engenharia-reversa.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5 problem-shell">
+    {#include shared/main_menu.html activeMainMenu='resolucao' /}
+    <div class="mb-4">
+        <span class="aed-eyebrow aed-eyebrow-indigo">VLSM + WAN</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Resolução de Problemas de Redes</h1>
+    </div>
+
+    {! As duas abas são o mesmo problema nos dois sentidos: uma vai do requisito ao
+        projeto, a outra vai da configuração pronta de volta ao projeto. São links de
+        verdade (e não abas de JavaScript) porque cada aba tem o próprio formulário
+        POST e o resultado precisa voltar na aba certa, além de permitir link direto. !}
+    <nav class="reversa-abas" role="tablist" aria-label="Modos da Resolução de Problemas">
+        <a href="/resolucao-problemas"
+           class="reversa-aba {#if abaAtiva == 'projetar'}is-active{/if}"
+           {#if abaAtiva == 'projetar'}aria-current="page"{/if}
+           title="Dos requisitos (localidades e hosts) ao plano VLSM, WAN e roteamento">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>
+            <span class="reversa-aba-texto">
+                <strong>Projetar</strong>
+                <small>dos requisitos ao plano</small>
+            </span>
+        </a>
+        <a href="/resolucao-problemas?aba=reversa"
+           class="reversa-aba {#if abaAtiva == 'reversa'}is-active{/if}"
+           {#if abaAtiva == 'reversa'}aria-current="page"{/if}
+           title="Da configuração Cisco pronta de volta ao desenho, às tabelas e aos erros">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span>
+            <span class="reversa-aba-texto">
+                <strong>Engenharia reversa</strong>
+                <small>do script ao desenho</small>
+            </span>
+        </a>
+    </nav>
+
+    {#if abaAtiva == 'reversa'}
+    {#include resolucaoProblemas/partials/tab_engenharia_reversa.html /}
+    {#else}
+    {#include resolucaoProblemas/partials/tab_projetar.html /}
+    {/if}
+</div>
+{/content}
+{#extraScripts}
+<script src="/web/vendor/mermaid-11.17.2/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script src="/web/js/html-escape.js?v=20261002"></script>
+<script id="topology-details-json" type="application/json">{topologyDetailsJson.raw}</script>
+<script>
+window.__topologyDetails = JSON.parse(document.getElementById("topology-details-json")?.textContent || "{}");
+</script>
+<script src="/resolucaoProblemas/js/resolucao.js?v=20261022"></script>
+<script src="/resolucaoProblemas/js/engenharia-reversa.js?v=20261022"></script>
+{/extraScripts}
+{/include}

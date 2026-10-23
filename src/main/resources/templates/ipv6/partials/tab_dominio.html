@@ -1,0 +1,21 @@
+{! Aba "Domínio": resolve o registro AAAA (IPv6) e mostra a análise rica completa em largura total. !}
+<div class="calc-form-card mb-3">
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">language</span> Domínio → IPv6 (AAAA)</h2>
+    <p class="calc-hint">O registro <code translate="no">AAAA</code> é o "A record" do IPv6: mapeia um nome ao endereço de 128 bits. A resolução acontece no servidor; endereços internos/privados são recusados.</p>
+    <form id="formDom" class="row g-2 align-items-end" hx-post="/ipv6/api/dominio" hx-target="#saidaDom" hx-swap="innerHTML"
+          hx-disabled-elt="find button[type='submit']">
+        <div class="col-lg-8">
+            <label for="ipv6Dominio" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio / hostname</label>
+            <input type="text" class="aed-input form-control" id="ipv6Dominio" name="dominio"
+                   placeholder="google.com" value="google.com" autocomplete="off" spellcheck="false" required>
+        </div>
+        <div class="col-lg-4 d-flex gap-2">
+            <button type="submit" class="aed-btn aed-btn-execute flex-fill" title="Resolver o registro AAAA (IPv6) do domínio"><span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span><span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Resolver AAAA</button>
+            <button type="button" class="aed-btn aed-btn-neutral" data-limpar title="Esvaziar o campo e apagar o resultado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+        </div>
+    </form>
+</div>
+
+<div id="saidaDom" class="calc-saida ipv6-saida-full">
+    <div class="calc-placeholder"><span class="material-symbols-outlined" aria-hidden="true" translate="no">language</span><p class="mb-0">Informe um domínio para resolver o registro AAAA (IPv6) e ver a análise completa: tipo, decomposição dos 128 bits, aplicação do prefixo, capacidade, GRC e mais.</p></div>
+</div>

@@ -1,0 +1,297 @@
+{
+  "resumo": "Toda rede Wi-Fi vive dentro de faixas de radiofrequência divididas em canais. Escolher bem o canal e a largura dele é o que separa uma rede rápida e estável de uma rede lenta e instável, mesmo com sinal cheio. Existem três bandas em uso: 2.4 GHz (longo alcance, poucos canais e muita concorrência), 5 GHz (muitos canais, mais velocidade, mas parte deles depende de DFS por causa de radares) e 6 GHz (Wi-Fi 6E/7, espectro amplo e limpo). No 2.4 GHz cada canal ocupa cerca de 20-22 MHz, mas os centros ficam a apenas 5 MHz de distância, então os canais se sobrepõem; por isso, dos 13 canais, só três por vez não interferem entre si (1, 6 e 11 é o trio padrão; 2/7/12 e 3/8/13 também servem). Canais mais largos (40/80/160 MHz) somam mais velocidade porque juntam mais espectro, mas também capturam mais ruído e reduzem quantos canais independentes cabem na banda. O planejador de canais do site cruza a banda escolhida, a largura e a ocupação dos vizinhos para sugerir o canal com menor sobreposição.",
+  "ficha": [
+    {
+      "rotulo": "Banda 2.4 GHz",
+      "valor": "2400-2483,5 MHz",
+      "dica": "13 canais no Brasil (11 nos EUA; o 14 só no Japão, em DSSS). Em 20 MHz não se sobrepõem 1, 6 e 11 — e, onde há 13 canais, também 2, 7, 12 ou 3, 8, 13."
+    },
+    {
+      "rotulo": "Banda 5 GHz",
+      "valor": "5150-5875 MHz",
+      "dica": "Até ~25 canais de 20 MHz; a maioria (52-144) exige DFS por causa de radares."
+    },
+    {
+      "rotulo": "Banda 6 GHz",
+      "valor": "5925-7125 MHz",
+      "dica": "Wi-Fi 6E/7. Até 59 canais de 20 MHz ou 7 de 160 MHz, espectro novo e limpo."
+    },
+    {
+      "rotulo": "Espaçamento no 2.4 GHz",
+      "valor": "5 MHz entre centros",
+      "dica": "Canal ocupa ~20-22 MHz, por isso vizinhos se sobrepõem. 1/6/11 ficam a 25 MHz um do outro."
+    },
+    {
+      "rotulo": "Larguras de canal",
+      "valor": "20 / 40 / 80 / 160 / 320 MHz (320 só no 6 GHz, Wi-Fi 7)",
+      "dica": "Dobrar a largura dobra a taxa teórica, mas reduz à metade o número de canais independentes."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Sobreposição no 2.4 GHz",
+      "icone": "graphic_eq",
+      "texto": "No 2.4 GHz os canais têm centros separados por apenas 5 MHz, mas cada transmissão ocupa cerca de 20-22 MHz. Isso significa que o canal 2 invade o espaço do 1, do 3 e até do 4. Redes em canais parcialmente sobrepostos não conseguem se coordenar (não se escutam para revezar o meio), então colidem e retransmitem, o que derruba a taxa útil de todos.",
+      "destaque": "Canais adjacentes se sobrepõem: usar canal 2 ou 3 interfere no 1 e no 6."
+    },
+    {
+      "titulo": "Por que 1, 6 e 11",
+      "icone": "wifi",
+      "texto": "Para dois canais de 20 MHz não se sobreporem, seus centros precisam estar a pelo menos 20-25 MHz de distância. No plano de 2.4 GHz, três canais a 25 MHz um do outro não se sobrepõem: 1 (2412), 6 (2437) e 11 (2462). Onde há 13 canais, como no Brasil, 2/7/12 e 3/8/13 também servem; o 1/6/11 é o padrão porque cabe também nos 11 canais dos EUA e todo equipamento o reconhece — e misturar trios na mesma vizinhança volta a sobrepor.",
+      "destaque": "1, 6 e 11 é o trio sem sobreposição que vale em qualquer país; com 13 canais, 2/7/12 e 3/8/13 também."
+    },
+    {
+      "titulo": "DFS no 5 GHz",
+      "icone": "radar",
+      "texto": "Boa parte dos canais de 5 GHz (tipicamente 52 a 144) é compartilhada com radares meteorológicos e militares. Nesses canais o access point precisa usar DFS (Dynamic Frequency Selection): fica ouvindo por pulsos de radar e, se detectar um, precisa desocupar o canal em até 10 segundos e migrar para outro (e não volta a ele por 30 minutos). Isso libera muito espectro extra, mas pode causar quedas rápidas e uma espera de 60 segundos ao ligar o AP ou ao entrar num canal DFS (CAC, escuta obrigatória antes de transmitir — Anatel, Ato 14448, item 11.6).",
+      "destaque": "DFS = mais canais, mas o AP pode ser obrigado a trocar de canal se um radar aparecer."
+    },
+    {
+      "titulo": "Canais largos: mais velocidade, mais interferência",
+      "icone": "speed",
+      "texto": "Juntar canais (40, 80 ou 160 MHz) aumenta a taxa máxima porque há mais espectro por transmissão. O custo é duplo: canais largos capturam todo o ruído e todas as redes que ocupam qualquer pedaço daquela faixa, e sobram menos canais independentes. Em ambiente lotado, um canal de 80 MHz costuma render menos que um de 20 ou 40 MHz limpo. No 2.4 GHz, um canal de 40 MHz ocupa quase metade da banda (40 de cerca de 83 MHz), deixa só um canal de 20 MHz limpo e não deve ser usado.",
+      "destaque": "Largura maior só ajuda em espectro limpo; em ambiente cheio, canal estreito é mais estável."
+    },
+    {
+      "titulo": "Interferência co-canal x canal adjacente",
+      "icone": "leak_add",
+      "texto": "Duas redes no mesmo canal (co-canal) pelo menos se escutam e revezam o meio via CSMA/CA: fica lento, mas ordenado. Já duas redes em canais parcialmente sobrepostos (adjacentes) não se escutam direito e transmitem por cima uma da outra, gerando colisões e retransmissões. Contra a intuição, colocar tudo no mesmo canal 1/6/11 costuma ser melhor do que espalhar em canais 3, 4, 8.",
+      "destaque": "Co-canal é lento porém coordenado; sobreposição parcial é caos não coordenado."
+    },
+    {
+      "titulo": "6 GHz: espectro novo e limpo",
+      "icone": "cell_tower",
+      "texto": "A banda de 6 GHz (Wi-Fi 6E e Wi-Fi 7) adiciona até 1200 MHz de espectro, cabendo 59 canais de 20 MHz ou 7 de 160 MHz. Por ser recente, há pouca ocupação e nenhum equipamento legado, o que a torna ideal para canais largos de alta velocidade. Só dispositivos 6E/7 acessam, e o alcance é um pouco menor que o do 5 GHz.",
+      "destaque": "6 GHz oferece dezenas de canais limpos, ideal para 160 MHz sem interferência."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Sobreposição no 2.4 GHz e os canais 1 / 6 / 11",
+    "definicao": "flowchart LR\n    C1[\"Canal 1 - 2412 MHz\"]:::ok\n    C3[\"Canal 3 - 2422 MHz\"]:::bad\n    C6[\"Canal 6 - 2437 MHz\"]:::ok\n    C9[\"Canal 9 - 2452 MHz\"]:::bad\n    C11[\"Canal 11 - 2462 MHz\"]:::ok\n    C1 -->|\"sobrepõe\"| C3\n    C3 -->|\"sobrepõe\"| C6\n    C6 -->|\"sobrepõe\"| C9\n    C9 -->|\"sobrepõe\"| C11\n    C1 -.->|\"não sobrepõe\"| C6\n    C6 -.->|\"não sobrepõe\"| C11\n    classDef ok fill:#1a7f37,color:#ffffff,stroke:#0f5323,stroke-width:2px;\n    classDef bad fill:#b35900,color:#ffffff,stroke:#7a3d00,stroke-width:1px;",
+    "legenda": "Em verde, o trio ortogonal padrão (1, 6 e 11), separados por 25 MHz cada. As setas cheias mostram que qualquer canal intermediário (3, 9, etc.) invade os vizinhos; as setas tracejadas mostram os saltos sem sobreposição. Com 11 canais, 1, 6 e 11 é a única forma de ter três redes independentes no 2.4 GHz; com os 13 canais do Brasil, 2/7/12 e 3/8/13 também servem."
+  },
+  "tabelas": [
+    {
+      "titulo": "Banda 2.4 GHz - canais e sobreposição (20 MHz)",
+      "colunas": [
+        "Canal",
+        "Frequência central",
+        "Não sobrepõe com",
+        "Observação"
+      ],
+      "linhas": [
+        [
+          "1",
+          "2412 MHz",
+          "6 e 11",
+          "Recomendado. Extremo inferior da banda."
+        ],
+        [
+          "2",
+          "2417 MHz",
+          "(nenhum útil)",
+          "Sobrepõe 1, 3, 4, 5, 6. Evitar."
+        ],
+        [
+          "3",
+          "2422 MHz",
+          "(nenhum útil)",
+          "Sobrepõe 1 e 6. Evitar."
+        ],
+        [
+          "6",
+          "2437 MHz",
+          "1 e 11",
+          "Recomendado. Canal central."
+        ],
+        [
+          "9",
+          "2452 MHz",
+          "(nenhum útil)",
+          "Sobrepõe 6 e 11. Evitar."
+        ],
+        [
+          "11",
+          "2462 MHz",
+          "1 e 6",
+          "Recomendado. Último canal seguro em vários países."
+        ],
+        [
+          "12-13",
+          "2467-2472 MHz",
+          "-",
+          "Restritos ou proibidos em alguns países (ex.: EUA vão só até 11)."
+        ]
+      ]
+    },
+    {
+      "titulo": "Comparação entre bandas",
+      "colunas": [
+        "Característica",
+        "2.4 GHz",
+        "5 GHz",
+        "6 GHz"
+      ],
+      "linhas": [
+        [
+          "Faixa",
+          "2400-2483,5 MHz",
+          "5150-5875 MHz",
+          "5925-7125 MHz"
+        ],
+        [
+          "Canais de 20 MHz",
+          "13 (trios sem sobreposição: 1/6/11, 2/7/12, 3/8/13)",
+          "até ~25",
+          "até 59"
+        ],
+        [
+          "Não sobrepostos (20 MHz)",
+          "3",
+          "~25",
+          "59"
+        ],
+        [
+          "DFS (radar)",
+          "Não",
+          "Sim (canais 52-144)",
+          "Não"
+        ],
+        [
+          "Alcance",
+          "Maior",
+          "Médio",
+          "Menor"
+        ],
+        [
+          "Interferência típica",
+          "Alta (Bluetooth, micro-ondas, vizinhos)",
+          "Média",
+          "Baixa (espectro novo)"
+        ],
+        [
+          "Wi-Fi que usa",
+          "b/g/n/ax/be",
+          "a/n/ac/ax/be",
+          "6E (ax) e 7 (be)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Largura de canal x quantos canais independentes cabem",
+      "colunas": [
+        "Largura",
+        "2.4 GHz",
+        "5 GHz",
+        "6 GHz",
+        "Efeito prático"
+      ],
+      "linhas": [
+        [
+          "20 MHz",
+          "3 (ex.: 1/6/11)",
+          "~25",
+          "59",
+          "Mais estável em ambiente lotado"
+        ],
+        [
+          "40 MHz",
+          "1 (não recomendado)",
+          "~12",
+          "29",
+          "Bom equilíbrio no 5/6 GHz"
+        ],
+        [
+          "80 MHz",
+          "0",
+          "~6",
+          "14",
+          "Alta velocidade, exige espectro limpo"
+        ],
+        [
+          "160 MHz",
+          "0",
+          "~2",
+          "7",
+          "Máxima taxa, só viável no 6 GHz sem interferência"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Jamming / interferência intencional de RF",
+      "como_funciona": "Um atacante satura um canal com ruído contínuo ou pacotes, ou usa um jammer de banda larga, impedindo que clientes e AP transmitam. Como o meio é compartilhado e o Wi-Fi usa CSMA/CA (espera o meio ficar livre), basta manter o canal sempre ocupado para negar serviço a todos naquele canal.",
+      "sinal": "Queda geral de throughput em um canal específico, retransmissões altíssimas e taxa de erro elevada mesmo com bom nível de sinal (RSSI).",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Rogue AP no mesmo canal / canal adjacente",
+      "como_funciona": "Um ponto de acesso não autorizado sobe no mesmo canal (ou num canal parcialmente sobreposto) da rede legítima, seja para capturar clientes (evil twin) seja apenas por descuido. Além do risco de sequestro de sessão, ele consome tempo de ar e degrada a rede legítima por co-canal ou sobreposição.",
+      "sinal": "SSID duplicado ou BSSID desconhecido forte no mesmo canal; clientes reclamando de lentidão após surgir uma rede nova nas proximidades.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Planejamento de canais 1/6/11 e seleção automática",
+      "como_funciona": "No 2.4 GHz, fixar cada AP em 1, 6 ou 11 e, no 5/6 GHz, deixar a seleção automática de canal (ACS) escolher a faixa menos ocupada. O planejador de canais do site (2.4 GHz) mostra a sobreposição entre os canais que você marca e aplica o trio 1/6/11.",
+      "cobre": "Interferência co-canal e por sobreposição entre APs próprios e de vizinhos.",
+      "limite": "Não resolve jamming deliberado nem ruído de fontes não Wi-Fi (micro-ondas, câmeras analógicas)."
+    },
+    {
+      "nome": "DFS e uso do 5/6 GHz",
+      "como_funciona": "Migrar tráfego pesado para 5 GHz (inclusive canais DFS, que são menos usados) ou 6 GHz, onde há muito mais canais independentes. O DFS ainda libera os canais 52-144 quando não há radar por perto.",
+      "cobre": "Congestionamento do 2.4 GHz e falta de canais limpos para clientes modernos.",
+      "limite": "Canais DFS podem forçar troca de canal ao detectar radar; 6 GHz só atende dispositivos 6E/7 e tem alcance menor."
+    },
+    {
+      "nome": "Largura de canal adaptada ao ambiente",
+      "como_funciona": "Usar 20 MHz no 2.4 GHz e em ambientes densos, reservando 80/160 MHz para 6 GHz ou locais com espectro comprovadamente limpo. Menos largura significa mais canais independentes e menos ruído capturado.",
+      "cobre": "Perda de desempenho por canais largos disputando espectro sujo.",
+      "limite": "Reduz a taxa máxima teórica; não ajuda se o problema for cobertura (sinal fraco) e não interferência."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Sinal cheio (RSSI alto) mas navegação lenta e travando",
+      "causa_provavel": "Interferência co-canal ou por sobreposição: muitos APs disputando o mesmo canal 2.4 GHz.",
+      "comando": "nmcli -f SSID,CHAN,SIGNAL dev wifi list --rescan yes | sort -k2 -n",
+      "leitura": "Se várias redes fortes compartilham o mesmo canal (ou canais 2,3,4,8,9 sobrepondo 1/6/11), o meio está saturado. Mover o AP para 1, 6 ou 11 menos ocupado, usando o planejador de canais do site."
+    },
+    {
+      "sintoma": "Queda breve e reconexão em rede 5 GHz, com poucos segundos de indisponibilidade",
+      "causa_provavel": "Evento DFS: o AP detectou (ou suspeitou de) radar e teve de desocupar o canal.",
+      "comando": "iwlist wlan0 scan | grep -E 'Channel|Frequency'",
+      "leitura": "Se o AP está num canal DFS (52-144) e os logs mostram troca de canal, é comportamento normal do DFS. Fixar um canal não-DFS (36-48 ou 149-165) elimina as quedas ao custo de menos espectro."
+    },
+    {
+      "sintoma": "Velocidade muito abaixo do contratado mesmo perto do roteador em ambiente cheio de redes",
+      "causa_provavel": "Canal largo (80/160 MHz) capturando ruído de muitas redes vizinhas.",
+      "comando": "iw dev wlan0 link",
+      "leitura": "Se a largura reportada é 80 ou 160 MHz e há muitas redes na faixa, reduzir para 40 ou 20 MHz costuma estabilizar e até aumentar a taxa útil. Confirmar a ocupação com a varredura (nmcli dev wifi list) antes de trocar."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Escanear redes e canais com iwlist",
+      "cenario": "Ver todas as redes ao redor, seus canais e frequências para identificar sobreposição no 2.4 GHz e ocupação no 5 GHz.",
+      "comandos": "sudo iwlist wlan0 scan | grep -E 'ESSID|Channel|Frequency|Quality'",
+      "explicacao": "O iwlist scan (pacote wireless-tools) lista ESSID, canal, frequência e qualidade de cada BSS visível. Contando quantas redes caem em cada canal é possível decidir entre 1, 6 e 11 no 2.4 GHz. Precisa de root e de uma interface que suporte varredura."
+    },
+    {
+      "titulo": "Listar redes e canais com nmcli",
+      "cenario": "Alternativa moderna ao iwlist, já presente em sistemas com NetworkManager, mostrando canal e sinal de forma tabular.",
+      "comandos": "nmcli dev wifi rescan\nnmcli -f SSID,BSSID,CHAN,FREQ,SIGNAL,SECURITY dev wifi list",
+      "explicacao": "O nmcli dev wifi list exibe canal (CHAN), frequência (FREQ) e sinal (SIGNAL) de cada rede. Ordenar por canal revela onde há congestionamento. É o caminho recomendado em distros atuais, pois não exige o wireless-tools legado."
+    },
+    {
+      "titulo": "Confirmar canal e largura da própria conexão",
+      "cenario": "Descobrir em qual canal e com que largura o cliente está realmente conectado, para validar mudanças de planejamento.",
+      "comandos": "iw dev wlan0 link\niw dev wlan0 info",
+      "explicacao": "O iw dev link mostra a frequência do canal primário e a taxa negociada da associação atual (com a largura, ex.: '80MHz', dentro do tx bitrate); a frequência central (center1) e a largura do canal saem no iw dev info. Serve para confirmar se o AP aplicou o canal e a largura desejados e comparar com o que o planejador de canais do site recomendou."
+    }
+  ]
+}

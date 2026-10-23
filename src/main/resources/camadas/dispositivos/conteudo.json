@@ -1,0 +1,286 @@
+{
+  "resumo": "Cada equipamento de rede toma decisões apenas com base na camada em que opera, e entender isso é a chave do módulo. O hub trabalha na camada 1 (física): ele não decide nada, só repete os bits elétricos para todas as portas. O switch trabalha na camada 2 (enlace): ele lê o endereço MAC de destino do quadro e encaminha só pela porta certa, usando uma tabela aprendida (CAM). O roteador trabalha na camada 3 (rede): ele olha o endereço IP de destino, escolhe a rota, separa domínios de broadcast e liga redes diferentes (dentro do switch, quem separa broadcast é a VLAN). O firewall atua entre as camadas 3 e 4 (IP, porta e estado da conexão) e, quando é do tipo aplicação (proxy), chega até a camada 7, inspecionando o conteúdo. Balanceadores e proxies vivem nas camadas 4 a 7, distribuindo e terminando conexões. Repetidores e access points reforçam e estendem o alcance nas camadas 1 e 2. A regra prática: quanto mais alta a camada, mais o dispositivo entende sobre o tráfego e mais lentas e caras tendem a ser as decisões. Dois erros de projeto nascem de confundir isso: achar que switch roteia (ele não cruza sub-redes) e achar que o domínio de broadcast some sozinho (só o roteador o divide). Na camada 2 moram também os ataques clássicos: MAC flooding e ARP spoofing, contidos com port security e segmentação.",
+  "ficha": [
+    {
+      "rotulo": "Regra de ouro",
+      "valor": "Cada dispositivo decide pela camada em que opera",
+      "dica": "Hub lê bits (1), switch lê MAC (2), roteador lê IP (3), firewall lê porta e estado (3-4/7)"
+    },
+    {
+      "rotulo": "PDU por camada",
+      "valor": "Quadro (2), Pacote (3), Segmento (4)",
+      "dica": "O mesmo dado troca de nome conforme desce a pilha; é o encapsulamento"
+    },
+    {
+      "rotulo": "Domínio de broadcast",
+      "valor": "Roteador ou VLAN separam",
+      "dica": "O switch propaga broadcast por toda a VLAN; VLAN divide broadcast sem trocar de equipamento"
+    },
+    {
+      "rotulo": "Camada do firewall",
+      "valor": "3-4 (rede/transporte) ou até 7 (aplicação)",
+      "dica": "Stateful decide por IP + porta + estado; proxy/WAF chega ao conteúdo HTTP"
+    },
+    {
+      "rotulo": "Ataques de camada 2",
+      "valor": "MAC flooding e ARP spoofing",
+      "dica": "Mitigados com port security, DHCP snooping + Dynamic ARP Inspection e segmentação"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Domínio de colisão x domínio de broadcast",
+      "icone": "device_hub",
+      "texto": "Domínio de colisão é o conjunto de portas que disputam o mesmo meio: se dois falam juntos, há colisão. O hub deixa tudo em um único domínio de colisão; o switch cria um por porta (por isso opera em full-duplex, sem colisões). Domínio de broadcast é até onde chega um quadro enviado para todos (FF:FF:FF:FF:FF:FF). O switch encaminha broadcast por todas as portas da mesma LAN, então switch não reduz broadcast. Quem quebra o domínio de broadcast é o roteador (ou uma VLAN, que faz isso logicamente).",
+      "destaque": "Switch corta colisão; só roteador e VLAN cortam broadcast."
+    },
+    {
+      "titulo": "Por que o switch não roteia",
+      "icone": "swap_horiz",
+      "texto": "O switch só entende endereço MAC (camada 2), que é local do segmento de rede. Ele não lê o endereço IP nem sabe o que é uma sub-rede ou uma tabela de rotas. Para sair de uma rede 192.168.1.0/24 para 10.0.0.0/24 é preciso decidir por IP e reescrever o próximo salto, tarefa de camada 3. Por isso o quadro para hosts de outra rede vai para o gateway (o roteador), nunca direto pelo switch. Switches L3 existem, mas aí eles ganham um módulo de roteamento, ou seja, passam a agir como roteador na camada 3.",
+      "destaque": "Sem entender IP, não há como escolher rota entre sub-redes."
+    },
+    {
+      "titulo": "Encapsulamento e as PDUs",
+      "icone": "layers",
+      "texto": "Quando um dado desce a pilha, cada camada adiciona seu cabeçalho e muda o nome da unidade (PDU). A aplicação gera dados; o transporte vira segmento e acrescenta portas; a rede vira pacote e acrescenta IPs; o enlace vira quadro e acrescenta MACs mais um verificador de erros. Cada dispositivo desencapsula até a camada que precisa: o switch abre só até o MAC, o roteador até o IP, o firewall de aplicação até o conteúdo. Isso explica por que o hub é mais rápido e cego, e o proxy é mais lento e esperto.",
+      "destaque": "Ler mais fundo custa mais processamento."
+    },
+    {
+      "titulo": "Como o switch aprende (tabela CAM)",
+      "icone": "memory",
+      "texto": "O switch monta sozinho a tabela CAM (Content Addressable Memory) que associa MAC de origem a porta. Ao receber um quadro, ele registra o MAC de origem na porta de entrada. Se já conhece o MAC de destino, encaminha só por aquela porta (unicast); se não conhece, faz flooding (envia para todas, menos a de origem) até aprender. Essa tabela tem tamanho finito, detalhe que o ataque de MAC flooding explora para transformar o switch em um hub.",
+      "destaque": "A CAM é finita: enchê-la degrada o switch a comportamento de hub."
+    },
+    {
+      "titulo": "Firewall com estado (stateful)",
+      "icone": "security",
+      "texto": "Um firewall stateful não olha pacote a pacote de forma isolada: ele mantém uma tabela de conexões (IP origem, IP destino, portas e estado do handshake TCP). Assim ele libera a resposta de uma conexão que você iniciou sem precisar de regra manual, e bloqueia pacotes que chegam fora de qualquer sessão válida. Isso é camada 3-4. Se for firewall de aplicação (WAF/proxy), ele sobe para a camada 7 e inspeciona o conteúdo, como uma URL ou um cabeçalho HTTP malicioso.",
+      "destaque": "Stateful decide pelo contexto da conexão, não só pelo pacote."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Caminho de um pacote: switch, roteador e firewall",
+    "definicao": "sequenceDiagram\n    participant PC as Notebook (origem)\n    participant SW as Switch (L2)\n    participant RT as Roteador (L3)\n    participant FW as Firewall (L3-L7)\n    participant SRV as Servidor (destino)\n    PC->>SW: Quadro Ethernet (lê MAC de destino)\n    SW->>RT: Encaminha pela porta do gateway\n    RT->>FW: Escolhe a rota pelo IP de destino\n    FW-->>RT: Checa porta e estado. Se negado, descarta\n    FW->>SRV: Libera o pacote permitido\n    SRV-->>PC: Resposta volta pelo caminho inverso",
+    "legenda": "A seta sólida (->>) é o pacote seguindo adiante; a seta tracejada (-->>) é a verificação/retorno. O switch decide por MAC, o roteador por IP e o firewall por porta e estado da conexão. Se a política negar, o pacote é descartado no firewall e nunca chega ao servidor."
+  },
+  "tabelas": [
+    {
+      "titulo": "Dispositivo x camada x o que decide",
+      "colunas": [
+        "Dispositivo",
+        "Camada OSI",
+        "O que examina e decide",
+        "Efeito nos domínios"
+      ],
+      "linhas": [
+        [
+          "Hub",
+          "1 - Física",
+          "Nada; repete os bits para todas as portas",
+          "1 domínio de colisão e 1 de broadcast (tudo compartilhado)"
+        ],
+        [
+          "Repetidor",
+          "1 - Física",
+          "Regenera o sinal para estender a distância",
+          "Mesmo domínio; não segmenta nada"
+        ],
+        [
+          "Switch",
+          "2 - Enlace",
+          "Endereço MAC via tabela CAM",
+          "1 colisão por porta; 1 broadcast em toda a LAN"
+        ],
+        [
+          "Access Point",
+          "2 - Enlace",
+          "MAC; associa clientes Wi-Fi ao meio",
+          "Ponte sem fio; mesmo domínio de broadcast"
+        ],
+        [
+          "Roteador",
+          "3 - Rede",
+          "Endereço IP via tabela de rotas",
+          "Separa domínios de broadcast; liga sub-redes"
+        ],
+        [
+          "Firewall",
+          "3-4 (ou 7)",
+          "IP, porta, estado da conexão e conteúdo",
+          "Aplica política de segurança; permite ou descarta"
+        ],
+        [
+          "Balanceador / Proxy",
+          "4-7",
+          "Porta, sessão, cabeçalho HTTP, URL",
+          "Distribui carga e/ou termina conexões"
+        ]
+      ]
+    },
+    {
+      "titulo": "Camadas TCP/IP x OSI x unidade de dados",
+      "colunas": [
+        "Camada TCP/IP",
+        "Equivale no OSI",
+        "PDU (unidade)",
+        "Endereço usado"
+      ],
+      "linhas": [
+        [
+          "Acesso à Rede",
+          "Física + Enlace (1-2)",
+          "Quadro (frame)",
+          "MAC"
+        ],
+        [
+          "Internet",
+          "Rede (3)",
+          "Pacote",
+          "IP"
+        ],
+        [
+          "Transporte",
+          "Transporte (4)",
+          "Segmento / Datagrama",
+          "Porta (TCP/UDP)"
+        ],
+        [
+          "Aplicação",
+          "Sessão + Apresentação + Aplicação (5-7)",
+          "Dados / Mensagem",
+          "Nome, URL"
+        ]
+      ]
+    },
+    {
+      "titulo": "Hub x Switch x Roteador lado a lado",
+      "colunas": [
+        "Critério",
+        "Hub",
+        "Switch",
+        "Roteador"
+      ],
+      "linhas": [
+        [
+          "Camada",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "Base da decisão",
+          "Nenhuma (repete tudo)",
+          "Endereço MAC",
+          "Endereço IP"
+        ],
+        [
+          "Domínios de colisão",
+          "1 (todos disputam)",
+          "1 por porta",
+          "1 por porta"
+        ],
+        [
+          "Domínios de broadcast",
+          "1",
+          "1 (toda a LAN/VLAN)",
+          "1 por interface (separa)"
+        ],
+        [
+          "Duplex típico",
+          "Half-duplex",
+          "Full-duplex",
+          "Full-duplex"
+        ],
+        [
+          "Liga sub-redes diferentes",
+          "Não",
+          "Não",
+          "Sim"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "MAC flooding (estouro da tabela CAM)",
+      "como_funciona": "O atacante gera uma enxurrada de quadros com endereços MAC de origem falsos e diferentes. A tabela CAM do switch, que é finita, enche. Sem espaço para aprender, o switch passa a fazer flooding de todo tráfego para todas as portas, virando na prática um hub. Assim o atacante consegue farejar (sniffing) tráfego que não era destinado a ele.",
+      "sinal": "Tráfego que deveria ser unicast aparece em todas as portas; queda de desempenho; tabela MAC cheia de endereços aleatórios em uma única porta.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "ARP spoofing (envenenamento de ARP)",
+      "como_funciona": "O ARP não tem autenticação. O atacante envia respostas ARP falsas dizendo que o MAC dele corresponde ao IP do gateway (ou de uma vítima). Os hosts atualizam a tabela ARP e passam a enviar o tráfego para o atacante, que faz man-in-the-middle: lê, altera ou apenas repassa os pacotes. Serve de base para roubo de credenciais e sequestro de sessão.",
+      "sinal": "Dois IPs apontando para o mesmo MAC na tabela ARP, ou o MAC do gateway mudando de repente; latência extra e conexões caindo.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Port security no switch",
+      "como_funciona": "Limita quantos endereços MAC cada porta aceita e pode fixar (sticky) o MAC aprendido. Se aparecer MAC além do limite ou diferente do esperado, a porta é desligada ou o quadro é descartado. Isso corta o MAC flooding na origem, pois impede que uma única porta injete milhares de MACs falsos.",
+      "cobre": "MAC flooding e conexão de equipamentos não autorizados na porta.",
+      "limite": "Não protege contra ARP spoofing feito com um único MAC válido; exige manutenção quando há troca legítima de equipamentos."
+    },
+    {
+      "nome": "Segmentação com VLANs",
+      "como_funciona": "Divide a rede física em várias redes lógicas (VLANs). Cada VLAN é um domínio de broadcast separado, então um ataque de camada 2 fica contido dentro da VLAN e não alcança as demais. Reduz a superfície de ataque e o alcance de broadcast e sniffing.",
+      "cobre": "Propagação de MAC flooding e ARP spoofing entre setores; contém o raio do incidente.",
+      "limite": "Tráfego entre VLANs passa por roteador/L3 e precisa de ACLs; VLAN mal configurada (VLAN hopping) pode ser burlada."
+    },
+    {
+      "nome": "DHCP snooping + Dynamic ARP Inspection (DAI)",
+      "como_funciona": "O DHCP snooping constrói uma tabela confiável de IP-MAC-porta a partir das concessões legítimas de DHCP. O DAI usa essa tabela para inspecionar cada resposta ARP e descartar as que não batem, bloqueando os pares IP-MAC forjados do ataque.",
+      "cobre": "ARP spoofing e servidores DHCP falsos (rogue DHCP).",
+      "limite": "Depende de DHCP; hosts com IP estático exigem entradas manuais (ARP ACL); precisa de switch que suporte o recurso."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ver a tabela MAC (CAM) e o mapa da camada 2",
+      "cenario": "Você quer descobrir por qual porta o switch conhece um host e detectar se há muitos MACs em uma única porta (indício de flooding).",
+      "comandos": "# No switch Cisco (modo enable)\nshow mac address-table\nshow mac address-table count\nshow mac address-table interface GigabitEthernet0/1\n\n# No host, ver o próprio MAC\n# Windows\nipconfig /all\ngetmac /v\n# Linux\nip link show",
+      "explicacao": "A tabela mostra MAC, VLAN e porta. Se uma porta só exibir dezenas ou centenas de MACs aleatórios, é sinal de MAC flooding em andamento; a contagem (count) revela se a CAM está perto do limite."
+    },
+    {
+      "titulo": "Inspecionar a tabela ARP e caçar spoofing",
+      "cenario": "Suspeita de man-in-the-middle: verifique se dois IPs apontam para o mesmo MAC ou se o MAC do gateway mudou.",
+      "comandos": "# Windows\narp -a\n# Linux\nip neigh show\narp -n\n\n# Comparar o MAC do gateway com o valor conhecido\n# Windows\nipconfig | findstr Gateway",
+      "explicacao": "Na tabela ARP, procure endereços duplicados: se o IP do gateway e o IP de outra máquina compartilham o mesmo MAC, há forte indício de ARP spoofing. Anote o MAC legítimo do gateway para comparar em incidentes."
+    },
+    {
+      "titulo": "Seguir o pacote pela camada 3 (rota e saltos)",
+      "cenario": "Confirmar que o tráfego para outra sub-rede realmente passa pelo roteador e ver cada salto.",
+      "comandos": "# Windows\ntracert 8.8.8.8\nroute print\n# Linux\ntraceroute 8.8.8.8\nip route show",
+      "explicacao": "O primeiro salto do traceroute deve ser o gateway (roteador): prova que quem cruza sub-redes é a camada 3. A tabela de rotas mostra qual interface/gateway o host usa para cada destino."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Rede lenta e tráfego de outros hosts aparecendo na sua placa",
+      "causa_provavel": "Presença de hub, ou switch degradado por MAC flooding (agindo como hub)",
+      "comando": "show mac address-table count",
+      "leitura": "Se a CAM está cheia de MACs aleatórios em uma porta, é flooding; troque hub por switch e ative port security para conter."
+    },
+    {
+      "sintoma": "Dois hosts com o mesmo IP, ou o MAC do gateway mudou de repente",
+      "causa_provavel": "ARP spoofing (envenenamento de ARP) ou IP duplicado por engano",
+      "comando": "arp -a",
+      "leitura": "IPs distintos apontando para o mesmo MAC indicam spoofing; ative DHCP snooping + DAI e valide o MAC real do gateway."
+    },
+    {
+      "sintoma": "Host acessa a própria LAN mas não alcança outra sub-rede",
+      "causa_provavel": "Gateway ausente ou errado, ou tentativa de rotear sem roteador (só switch)",
+      "comando": "ipconfig  (Windows)  /  ip route show  (Linux)",
+      "leitura": "Sem gateway configurado não há camada 3 para cruzar sub-redes; o switch nunca faz esse salto. Configure o gateway correto."
+    },
+    {
+      "sintoma": "Broadcast excessivo lentificando toda a rede plana",
+      "causa_provavel": "Domínio de broadcast único e grande demais (sem VLANs nem roteador segmentando)",
+      "comando": "show interfaces counters broadcast",
+      "leitura": "Contadores de broadcast altos em todas as portas pedem segmentação por VLAN para dividir o domínio de broadcast."
+    }
+  ]
+}

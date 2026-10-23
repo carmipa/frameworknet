@@ -1,0 +1,86 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-rest'
+    implementation 'io.quarkus:quarkus-rest-jackson'
+    implementation 'io.quarkus:quarkus-rest-qute'
+    implementation 'io.quarkus:quarkus-qute'
+    implementation 'io.quarkus:quarkus-cache'
+    implementation 'io.quarkus:quarkus-redis-client'
+    implementation 'io.quarkus:quarkus-vertx-http'
+    implementation 'com.github.seancfoley:ipaddress:5.5.1'
+    implementation 'com.maxmind.geoip2:geoip2:4.2.0'
+    // Consulta DNS real (registro AAAA) da aba "Domínio -> IPv6". Java puro, lê os resolvers do
+    // sistema e faz a query DNS diretamente — sem passar pelo getaddrinfo/AI_ADDRCONFIG, que omite
+    // AAAA quando o host (o container em producao) nao tem IPv6 global, e sem depender de JNDI, que
+    // o Quarkus desabilita por endurecimento. Vetorada por egress DNS, com guarda SSRF sobre o
+    // endereco retornado.
+    implementation 'dnsjava:dnsjava:3.6.3'
+    testImplementation 'io.quarkus:quarkus-junit'
+    testImplementation 'io.rest-assured:rest-assured'
+}
+
+group = 'org.framework.net'
+version = '1.0.0-SNAPSHOT'
+
+// Piso de versao do Quarkus (guarda de build, falha fechada). As CVE-2026-50559 (CVSS 7.5) e
+// CVE-2026-39852 (CVSS 8.2) sao bypass de autorizacao por caminho HTTP no quarkus-vertx-http,
+// atingindo exatamente a superficie protegida por caminho deste projeto (/export e /telemetria);
+// foram corrigidas no Quarkus 3.37.0. Regredir abaixo disso reabre o bypass EM SILENCIO — o build
+// continuaria verde. Esta guarda quebra o build no lugar do silencio.
+def _qvParts = quarkusPlatformVersion.split('[-+]')[0].tokenize('.').collect { it.toInteger() }
+if (_qvParts[0] < 3 || (_qvParts[0] == 3 && _qvParts[1] < 37)) {
+    throw new GradleException(
+            "Quarkus ${quarkusPlatformVersion} e anterior a 3.37.0 e reabre o auth-bypass das " +
+            "CVE-2026-50559/CVE-2026-39852 em /export e /telemetria. Piso minimo: 3.37.0.")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+// A suíte sobe o Quarkus várias vezes (um boot por perfil de teste) na mesma JVM de testes; com o
+// teto padrão do Gradle (512 MB) ela chegou a terminar os 921 testes e morrer por heap no encerramento.
+test {
+    maxHeapSize = '1g'
+}
+
+quarkusDev {
+    jvmArgs = ['-Djava.awt.headless=false']
+    dependsOn 'purgeStaleDevConfig'
+}
+
+tasks.register('purgeStaleDevConfig') {
+    group = 'quarkus'
+    description = 'Remove artefatos de config obsoletos que quebram o hot-reload do Quarkus dev.'
+    doLast {
+        delete file('build/resources/main/application-dev.properties')
+    }
+}
+
+tasks.register('dev') {
+    group = 'application'
+    description = 'Inicia o Quarkus em modo dev (abre o navegador automaticamente).'
+    dependsOn tasks.named('quarkusDev')
+}
+

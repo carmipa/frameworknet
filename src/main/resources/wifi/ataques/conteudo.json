@@ -1,0 +1,217 @@
+{
+  "resumo": "Redes Wi-Fi (IEEE 802.11) carregam fragilidades históricas na camada de enlace: quadros de gerenciamento (beacon, probe, deauthentication) trafegam sem autenticação no WPA/WPA2 tradicional, e a autenticação PSK expõe um handshake capturável. Este material didático-defensivo detalha os ataques clássicos — Evil Twin, inundação de deauth, força bruta de WPS e captura de handshake com ataque de dicionário — explicando o mecanismo de cada um e as defesas efetivas. O eixo das mitigações modernas é o WPA3 (SAE, resistente a dicionário offline) e o 802.11w (PMF), que protege os quadros de deauthentication, disassociation e action — não os beacons nem os probes — e neutraliza a deauth forjada. Todo o conteúdo pressupõe uso autorizado, em laboratório próprio ou em pentest contratado.",
+  "ficha": [
+    {
+      "rotulo": "Camada alvo",
+      "valor": "Enlace (MAC 802.11) e associação",
+      "dica": "Quadros de gerenciamento e o 4-way handshake são os pontos fracos clássicos"
+    },
+    {
+      "rotulo": "Bandas afetadas",
+      "valor": "2,4 GHz e 5 GHz (e 6 GHz no Wi-Fi 6E)",
+      "dica": "2,4 GHz tem 3 canais não sobrepostos (1, 6, 11); 5 GHz tem dezenas de canais de 20 MHz"
+    },
+    {
+      "rotulo": "Defesa central",
+      "valor": "WPA3-SAE + 802.11w (PMF) obrigatório",
+      "dica": "SAE mata o dicionário offline; PMF protege deauth, disassoc e action (beacon e probe continuam abertos)"
+    },
+    {
+      "rotulo": "Vetor mais comum",
+      "valor": "Evil Twin + deauth para forçar reconexão",
+      "dica": "O ataque de negação (deauth) é usado como isca para o AP falso"
+    },
+    {
+      "rotulo": "Contexto de uso",
+      "valor": "Estritamente autorizado / defensivo",
+      "dica": "Captura e injeção de quadros só em rede própria ou pentest contratado por escrito"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Evil Twin / Rogue AP",
+      "icone": "wifi_tethering",
+      "texto": "Ponto de acesso falso que clona o SSID (e às vezes o BSSID/MAC) de uma rede legítima, muitas vezes com sinal mais forte, para atrair clientes. Uma vez associado, o atacante fica no meio do tráfego (MITM) e pode servir portais falsos. Rogue AP é o termo amplo para qualquer AP não autorizado na rede.",
+      "destaque": "Clona o SSID e vence pelo sinal mais forte"
+    },
+    {
+      "titulo": "Deauthentication attack",
+      "icone": "link_off",
+      "texto": "Explora que o quadro de deauthentication (subtipo de gerenciamento 802.11) não é autenticado no WPA2. O atacante forja quadros com o BSSID do AP e derruba o cliente, forçando reconexão. Serve como isca para Evil Twin e como janela para capturar o handshake. O 802.11w (PMF) elimina esse vetor.",
+      "destaque": "802.11w (PMF) protege deauth, disassoc e action; beacon e probe seguem abertos"
+    },
+    {
+      "titulo": "Captura de handshake",
+      "icone": "handshake",
+      "texto": "No WPA2-PSK, o 4-way handshake (troca EAPOL) ocorre na associação. Capturando esses quadros, o atacante obtém o material (ANonce, SNonce, MIC) para testar senhas offline. Não há limite de tentativas porque o teste é feito localmente, sem tocar o AP.",
+      "destaque": "Basta 1 handshake completo para atacar offline"
+    },
+    {
+      "titulo": "WPS PIN fraco",
+      "icone": "pin",
+      "texto": "O Wi-Fi Protected Setup com PIN de 8 dígitos é validado em duas metades independentes (4 + 3 dígitos, o último é checksum), reduzindo o espaço a ~11.000 tentativas. Ataques como Reaver e o Pixie Dust (offline, explorando nonces fracos) recuperam o PIN e, com ele, a PSK.",
+      "destaque": "8 dígitos viram ~11.000 tentativas, não 100 milhões"
+    },
+    {
+      "titulo": "Karma / probe response",
+      "icone": "quiz",
+      "texto": "Clientes emitem probe requests procurando redes conhecidas da sua lista de preferência (PNL). O ataque Karma responde 'sim, sou eu' a qualquer SSID solicitado, fazendo o dispositivo se associar automaticamente a redes abertas antes memorizadas. Variantes modernas: MANA e KARMA aprimorado.",
+      "destaque": "Responde a qualquer SSID que o cliente procurar"
+    },
+    {
+      "titulo": "WPA3-SAE (Dragonfly)",
+      "icone": "shield_lock",
+      "texto": "Substitui o PSK por Simultaneous Authentication of Equals, um handshake com troca de chaves autenticada por senha. Cada tentativa exige interação com o AP, o que inviabiliza o ataque de dicionário offline e adiciona forward secrecy. Torna a mera captura de handshake inútil.",
+      "destaque": "Elimina o ataque de dicionário offline"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Evil Twin com MITM",
+    "definicao": "sequenceDiagram\n    participant C as Cliente (STA)\n    participant AP as AP legítimo\n    participant ET as Evil Twin (AP falso)\n    participant I as Internet\n    Note over ET: Atacante clona SSID e usa sinal mais forte\n    C->>AP: Associado à rede legítima\n    ET->>C: Deauth forjada (derruba o cliente)\n    Note over C: Cliente perde conexão e procura o SSID\n    C->>ET: Probe request / tenta reconectar\n    ET->>C: Probe response (mesmo SSID, sinal forte)\n    C->>ET: Associação concluída\n    Note over C,ET: Cliente agora fala com o AP falso\n    C->>ET: Tráfego do usuário (HTTP, DNS)\n    ET->>I: Repassa o tráfego (MITM)\n    I->>ET: Resposta\n    ET->>C: Resposta (possivelmente adulterada)",
+    "legenda": "O atacante usa a deauth como isca: derruba o cliente do AP legítimo, então o AP falso vence a reassociação pelo sinal mais forte e passa a intermediar todo o tráfego (MITM). Com 802.11w (PMF), a deauth forjada é rejeitada e a isca falha."
+  },
+  "tabelas": [
+    {
+      "titulo": "Ataque, como funciona e defesa",
+      "colunas": [
+        "Ataque",
+        "Como funciona",
+        "Defesa principal"
+      ],
+      "linhas": [
+        [
+          "Evil Twin",
+          "AP falso clona o SSID e atrai o cliente com sinal mais forte para MITM",
+          "802.11w (PMF), 802.1X/EAP-TLS com validação do certificado do servidor, WIDS/WIPS"
+        ],
+        [
+          "Deauth flood",
+          "Forja quadros de deauthentication com o BSSID do AP e derruba clientes",
+          "802.11w (PMF): deauth e disassoc passam a ser autenticados e o forjado é descartado"
+        ],
+        [
+          "WPS PIN brute force",
+          "Testa o PIN em duas metades (Reaver) ou o recupera offline (Pixie Dust)",
+          "Desativar o WPS por completo no roteador"
+        ],
+        [
+          "Handshake + dicionário",
+          "Captura o 4-way handshake EAPOL e testa senhas offline sem limite",
+          "WPA3-SAE e senha PSK longa e aleatória"
+        ],
+        [
+          "Karma / MANA",
+          "Responde a qualquer SSID da lista de redes conhecidas do cliente",
+          "Remover redes abertas salvas, desativar auto-join, usar 802.1X"
+        ]
+      ]
+    },
+    {
+      "titulo": "Bandas e canais 802.11 (contexto)",
+      "colunas": [
+        "Banda",
+        "Canais úteis",
+        "Observação de segurança"
+      ],
+      "linhas": [
+        [
+          "2,4 GHz",
+          "1, 6, 11 (não sobrepostos, 20 MHz)",
+          "Alcance maior facilita Evil Twin e deauth à distância"
+        ],
+        [
+          "5 GHz",
+          "36 a 165 (vários de 20/40/80 MHz)",
+          "Menor alcance reduz a superfície, mas não elimina o risco"
+        ],
+        [
+          "6 GHz (Wi-Fi 6E)",
+          "1 a 233 (até 1200 MHz de espectro)",
+          "Exige WPA3 e PMF por norma; deauth forjada não se aplica"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Evil Twin",
+      "como_funciona": "O atacante sobe um AP com o mesmo SSID (e, muitas vezes, o mesmo BSSID) da rede legítima, geralmente com potência maior. Usa deauth para expulsar o cliente do AP verdadeiro; na reassociação, o dispositivo escolhe o sinal mais forte e cai no AP falso. Segue-se MITM, DNS spoofing e portais de captura falsos para roubar credenciais.",
+      "sinal": "SSID duplicado aparecendo com dois BSSIDs distintos, ou o mesmo BSSID em outro canal; portal de login inesperado em rede já conhecida.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Deauth flood",
+      "como_funciona": "Injeta um fluxo contínuo de quadros de deauthentication (subtipo de gerenciamento) forjados com o endereço do AP, derrubando um cliente específico ou todos (broadcast). No WPA2 sem PMF esses quadros não são autenticados, então o cliente os aceita. Serve como negação de serviço e como isca para Evil Twin e captura de handshake.",
+      "sinal": "Quedas de conexão frequentes e simultâneas em vários dispositivos; pico de quadros de deauth no monitor de espectro.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "WPS PIN brute force",
+      "como_funciona": "O PIN de 8 dígitos é validado em duas metades independentes (4 + 3 + checksum), reduzindo o espaço de busca de 10^8 para cerca de 11.000 tentativas (Reaver). O Pixie Dust vai além: explora nonces (E-S1/E-S2) mal gerados por certos chipsets para recuperar o PIN offline em segundos. Com o PIN, obtém-se a PSK completa.",
+      "sinal": "Muitas tentativas de autenticação WPS nos logs do roteador; associações repetidas de um mesmo cliente desconhecido.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Handshake + dicionário",
+      "como_funciona": "O atacante captura o 4-way handshake EAPOL (frequentemente forçando reconexão via deauth) e roda um ataque de dicionário ou força bruta offline (aircrack-ng, hashcat), sem interagir mais com o AP. Como o teste é local, não há bloqueio por tentativas. Senhas curtas ou previsíveis caem rápido.",
+      "sinal": "Não há sinal direto no lado do AP (ataque offline); indício indireto é a rajada de deauth que precede a captura.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "WPA3-SAE",
+      "como_funciona": "Substitui o PSK do WPA2 pelo handshake SAE (Dragonfly), no qual cada tentativa de senha exige interação com o AP e gera chaves com forward secrecy. Isso torna inútil a captura de handshake para ataque offline.",
+      "cobre": "Handshake + dicionário, reuso de chave",
+      "limite": "Exige clientes e AP compatíveis; modo de transição WPA2/WPA3 pode reintroduzir o vetor antigo"
+    },
+    {
+      "nome": "802.11w (PMF)",
+      "como_funciona": "Protected Management Frames adiciona integridade e autenticação aos quadros de gerenciamento robustos — deauthentication, disassociation e action —, rejeitando os forjados. Beacon, probe, authentication e association continuam sem proteção. É obrigatório no WPA3 e no Wi-Fi 6E.",
+      "cobre": "Deauth flood e a isca do Evil Twin",
+      "limite": "Não impede um AP falso que atrai clientes sem usar deauth (ex.: Karma)"
+    },
+    {
+      "nome": "Desativar WPS",
+      "como_funciona": "Remove por completo a função de PIN/push-button do roteador, eliminando o espaço de busca reduzido do PIN e o vetor Pixie Dust.",
+      "cobre": "WPS PIN brute force e Pixie Dust",
+      "limite": "Alguns firmwares mantêm o WPS ativo internamente mesmo com a opção desmarcada; verificar com scanner"
+    },
+    {
+      "nome": "802.1X/EAP-TLS com validação do certificado",
+      "como_funciona": "Usa WPA2/WPA3-Enterprise com EAP-TLS e validação de certificado do servidor pelo cliente, de modo que um AP falso sem o certificado correto é recusado na autenticação.",
+      "cobre": "Evil Twin, Karma, roubo de credencial",
+      "limite": "Cliente precisa validar o certificado do servidor; configuração permissiva anula a proteção"
+    },
+    {
+      "nome": "WIDS/WIPS",
+      "como_funciona": "Sistema de detecção/prevenção de intrusão sem fio monitora o espectro em busca de SSID/BSSID duplicados, rajadas de deauth e APs não autorizados, alertando ou bloqueando ativamente.",
+      "cobre": "Evil Twin, Rogue AP, deauth flood",
+      "limite": "Detecção, não prevenção total; exige sensores e ajuste para evitar falsos positivos"
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Quedas de conexão frequentes e simultâneas em vários dispositivos",
+      "causa_provavel": "Ataque de deauth flood (quadros de deauthentication forjados) ou interferência severa no canal",
+      "leitura": "Rajadas de quadros de deauth com o BSSID do AP indicam ataque; se for só um canal congestionado, os quadros de deauth não aparecem. Ativar 802.11w (PMF) é o teste definitivo.",
+      "comando": "sudo airodump-ng --band bg wlan0mon"
+    },
+    {
+      "sintoma": "SSID duplicado com dois BSSIDs, ou mesmo BSSID em outro canal",
+      "causa_provavel": "Evil Twin / Rogue AP clonando a rede legítima",
+      "leitura": "Dois APs anunciando o mesmo SSID com MAC ou canal diferentes, um deles com sinal anormalmente forte, apontam para AP falso. Confirmar o BSSID legítimo na etiqueta do roteador.",
+      "comando": "sudo airodump-ng --essid \"NOME_DA_REDE\" wlan0mon"
+    },
+    {
+      "sintoma": "Portal de login aparece em rede já conhecida que não pedia autenticação",
+      "causa_provavel": "Evil Twin com portal de captura falso tentando coletar credenciais",
+      "leitura": "Rede antes aberta/salva passando a exigir login é forte indício de MITM; verificar validade do certificado TLS e não inserir credenciais. Um WIDS confirmaria o AP não autorizado.",
+      "comando": "nmcli device wifi list --rescan yes"
+    }
+  ]
+}

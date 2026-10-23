@@ -1,0 +1,75 @@
+<div class="calc-resultado">
+    <div class="calc-resumo-head">
+        <h3 class="h5 mb-1">
+            <span class="material-symbols-outlined {#if resultado.conflito}text-warning{#else}text-success{/if}"
+                  aria-hidden="true" translate="no">
+                {#if resultado.conflito}warning{#else}check_circle{/if}
+            </span>
+            {resultado.rotulo}
+        </h3>
+        <span class="calc-badge {#if resultado.conflito}calc-badge-atencao{#else}calc-badge-ok{/if}">
+            {resultado.tipo}
+        </span>
+    </div>
+
+    <p class="calc-explicacao">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span>
+        {resultado.explicacao}
+    </p>
+
+    <div class="calc-kpis">
+        <div class="calc-kpi {#if resultado.conflito}calc-kpi-alerta{/if}">
+            <span class="calc-kpi-label">Endereços em comum</span>
+            <strong class="calc-kpi-valor">{resultado.enderecosCompartilhados}</strong>
+            <span class="calc-kpi-nota">
+                {#if resultado.conflito}faixa disputada pelos dois blocos{#else}nenhum endereço compartilhado{/if}
+            </span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Bloco A</span>
+            <strong class="calc-kpi-valor calc-kpi-mono calc-kpi-pequeno">{resultado.blocoA.cidr}</strong>
+            <span class="calc-kpi-nota">{resultado.blocoA.totalIps} endereços</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Bloco B</span>
+            <strong class="calc-kpi-valor calc-kpi-mono calc-kpi-pequeno">{resultado.blocoB.cidr}</strong>
+            <span class="calc-kpi-nota">{resultado.blocoB.totalIps} endereços</span>
+        </div>
+    </div>
+
+    <div class="table-responsive calc-tabela-scroll">
+        <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
+            <thead>
+            <tr>
+                <th title="Qual dos dois blocos comparados (A ou B)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">square</span>Bloco</th>
+                <th title="Endereço de rede do bloco"><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span>Rede</th>
+                <th title="Máscara de sub-rede em decimal"><span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_view</span>Máscara</th>
+                <th title="Máscara curinga (inverso da máscara) — usada em ACL/OSPF"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flip</span>Wildcard</th>
+                <th title="Primeiro endereço utilizável"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span>Primeiro host</th>
+                <th title="Último endereço utilizável"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span>Último host</th>
+                <th title="Endereço de broadcast"><span class="material-symbols-outlined" aria-hidden="true" translate="no">campaign</span>Broadcast</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="fw-bold">A</td>
+                <td class="font-monospace fw-bold">{resultado.blocoA.cidr}</td>
+                <td class="font-monospace text-secondary">{resultado.blocoA.mascara}</td>
+                <td class="font-monospace text-secondary">{resultado.blocoA.wildcard}</td>
+                <td class="font-monospace">{resultado.blocoA.primeiroHost}</td>
+                <td class="font-monospace">{resultado.blocoA.ultimoHost}</td>
+                <td class="font-monospace text-secondary">{resultado.blocoA.broadcast}</td>
+            </tr>
+            <tr>
+                <td class="fw-bold">B</td>
+                <td class="font-monospace fw-bold">{resultado.blocoB.cidr}</td>
+                <td class="font-monospace text-secondary">{resultado.blocoB.mascara}</td>
+                <td class="font-monospace text-secondary">{resultado.blocoB.wildcard}</td>
+                <td class="font-monospace">{resultado.blocoB.primeiroHost}</td>
+                <td class="font-monospace">{resultado.blocoB.ultimoHost}</td>
+                <td class="font-monospace text-secondary">{resultado.blocoB.broadcast}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,268 @@
+{
+  "resumo": "A criptografia assimétrica usa um par de chaves matematicamente ligadas: uma pública, que pode ser distribuída livremente, e uma privada, que jamais sai das mãos do dono. No RSA, o que a chave pública cifra só a privada decifra; em ECC (ECDSA/Ed25519) o par serve para assinar e, com ECDH, para combinar chaves. Isso resolve dois problemas que a criptografia simétrica sozinha não resolve: trocar uma chave secreta por um canal inseguro e provar autoria (assinatura digital). RSA baseia-se na dificuldade de fatorar números grandes; ECC (curvas elípticas, com ECDSA e Ed25519) baseia-se no problema do logaritmo discreto em curvas, entregando a mesma segurança com chaves muito menores. Na prática ela é lenta e usada só para pouca coisa: cifrar uma chave de sessão (que depois trabalha com AES) e assinar. Não confunda com hash: hash é mão única e não tem chave; assimétrica cifra e assina com chaves e é reversível pelo par correto.",
+  "ficha": [
+    {
+      "rotulo": "Tipo de esquema",
+      "valor": "Chave pública / chave privada (par assimétrico)",
+      "dica": "A pública é distribuída; a privada nunca sai do dono."
+    },
+    {
+      "rotulo": "Algoritmos comuns",
+      "valor": "RSA, ECDSA, EdDSA (Ed25519), ECDH",
+      "dica": "RSA cifra e assina; ECDSA/Ed25519 assinam; ECDH troca chave."
+    },
+    {
+      "rotulo": "Tamanho seguro",
+      "valor": "RSA >= 2048 bits (3072 preferível); ECC >= 256 bits",
+      "dica": "RSA 3072 tem força equivalente a ECC 256 (~128 bits de segurança)."
+    },
+    {
+      "rotulo": "Uso principal",
+      "valor": "Cifrar chave de sessão e assinar; nunca cifrar arquivos grandes",
+      "dica": "É lenta: cifra pouca coisa e delega o volume ao AES."
+    },
+    {
+      "rotulo": "Confiança na chave pública",
+      "valor": "Certificados X.509 assinados por uma CA (PKI)",
+      "dica": "O certificado liga a chave pública a uma identidade verificada."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Par de chaves ligado",
+      "icone": "vpn_key",
+      "texto": "As duas chaves nascem juntas por uma operação matemática. O que a pública cifra, só a privada decifra; o que a privada assina, qualquer um verifica com a pública. Deduzir a privada a partir da pública é computacionalmente inviável.",
+      "destaque": "Pública cifra, privada decifra"
+    },
+    {
+      "titulo": "É lenta: use para pouca coisa",
+      "icone": "hourglass_bottom",
+      "texto": "Operações assimétricas custam ordens de magnitude mais que as simétricas. Por isso nunca se cifra um arquivo inteiro com RSA. O padrão é cifrar apenas uma chave de sessão AES (cifra híbrida) ou assinar apenas o hash do documento.",
+      "destaque": "Só chave de sessão e assinatura"
+    },
+    {
+      "titulo": "ECC entrega mais com menos",
+      "icone": "compress",
+      "texto": "Curvas elípticas alcançam a mesma segurança do RSA com chaves muito menores: ECC 256 bits equivale a RSA 3072. Chaves e assinaturas menores significam menos banda, menos armazenamento e operações mais rápidas, ideal para mobile e IoT.",
+      "destaque": "ECC 256 ~ RSA 3072"
+    },
+    {
+      "titulo": "Cifrar não é assinar",
+      "icone": "swap_horiz",
+      "texto": "Para sigilo, cifra-se com a chave pública do destinatário (só ele decifra). Para autoria, assina-se com a própria chave privada (todos verificam com a pública). São usos inversos do mesmo par, com objetivos distintos: confidencialidade versus autenticidade.",
+      "destaque": "Pública para sigilo, privada para assinar"
+    },
+    {
+      "titulo": "Assimétrica não é hash",
+      "icone": "difference",
+      "texto": "Hash é função de mão única, sem chave e irreversível, para integridade. Criptografia assimétrica usa chaves e é reversível pelo par correto. Assinatura combina os dois: calcula-se o hash e assina-se esse hash com a privada.",
+      "destaque": "Hash = sem chave; assimétrica = com chave"
+    },
+    {
+      "titulo": "Certificados dão confiança",
+      "icone": "verified_user",
+      "texto": "Uma chave pública solta não prova de quem é. O certificado X.509 liga a chave a uma identidade e é assinado por uma Autoridade Certificadora (CA). É o que sustenta HTTPS/TLS e evita ataques de troca de chave.",
+      "destaque": "PKI é a cadeia de confiança"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Cifra e assinatura: usos inversos do mesmo par",
+    "definicao": "sequenceDiagram\n    participant A as Alice (remetente)\n    participant B as Bob (destinatário)\n    Note over A,B: Sigilo: cifra com a chave PÚBLICA de Bob\n    A->>A: Gera chave de sessão AES\n    A->>A: Cifra a chave AES com a PÚBLICA de Bob\n    A->>B: Envia chave de sessão cifrada + dados em AES\n    B->>B: Decifra a chave AES com sua PRIVADA\n    B->>B: Abre os dados com a chave AES\n    Note over A,B: Autoria: assina com a chave PRIVADA de Alice\n    A->>A: Calcula hash da mensagem\n    A->>A: Assina o hash com sua PRIVADA\n    A->>B: Envia mensagem + assinatura\n    B->>B: Verifica a assinatura com a PÚBLICA de Alice",
+    "legenda": "No sigilo, cifra-se com a pública do destinatário e só a privada dele decifra. Na assinatura é o inverso: assina-se com a própria privada e qualquer um verifica com a pública. Repare que cifra-se apenas a chave de sessão e assina-se apenas o hash, nunca o volume de dados."
+  },
+  "tabelas": [
+    {
+      "titulo": "RSA versus ECC (ECDSA / Ed25519)",
+      "colunas": [
+        "Aspecto",
+        "RSA",
+        "ECC (ECDSA / Ed25519)"
+      ],
+      "linhas": [
+        [
+          "Base matemática",
+          "Fatoração de inteiros grandes",
+          "Logaritmo discreto em curva elíptica"
+        ],
+        [
+          "Tamanho de chave típico",
+          "2048 / 3072 / 4096 bits",
+          "256 / 384 / 521 bits"
+        ],
+        [
+          "Cifrar dados",
+          "Sim (RSA-OAEP, só chave de sessão)",
+          "Não diretamente; usa ECIES/ECDH para trocar chave"
+        ],
+        [
+          "Assinar",
+          "Sim (RSA-PSS)",
+          "Sim (ECDSA, Ed25519)"
+        ],
+        [
+          "Velocidade de assinatura",
+          "Mais lenta",
+          "Mais rápida"
+        ],
+        [
+          "Uso típico",
+          "TLS legado, certificados, PGP",
+          "TLS moderno, SSH, mobile, IoT, blockchain"
+        ]
+      ]
+    },
+    {
+      "titulo": "Força equivalente: tamanhos comparáveis",
+      "colunas": [
+        "Segurança (bits)",
+        "RSA",
+        "ECC",
+        "Equivale a simétrico"
+      ],
+      "linhas": [
+        [
+          "~112 bits",
+          "2048",
+          "224",
+          "3DES de 3 chaves (112 bits)"
+        ],
+        [
+          "~128 bits",
+          "3072",
+          "256",
+          "AES-128"
+        ],
+        [
+          "~192 bits",
+          "7680",
+          "384",
+          "AES-192"
+        ],
+        [
+          "~256 bits",
+          "15360",
+          "521",
+          "AES-256"
+        ]
+      ]
+    },
+    {
+      "titulo": "Qual chave usar em cada objetivo",
+      "colunas": [
+        "Objetivo",
+        "Quem cifra/assina",
+        "Com qual chave",
+        "Quem lê/verifica"
+      ],
+      "linhas": [
+        [
+          "Confidencialidade (trocar chave de sessão)",
+          "Remetente",
+          "Pública do destinatário",
+          "Destinatário, com a própria privada"
+        ],
+        [
+          "Autenticidade / integridade (assinar)",
+          "Autor",
+          "Privada do autor",
+          "Qualquer um, com a pública do autor"
+        ],
+        [
+          "Acordo de chave (ECDH)",
+          "Ambos os lados",
+          "Privada própria + pública do outro",
+          "Ambos chegam ao mesmo segredo"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "RSA com chave curta ou fraca",
+      "como_funciona": "Chaves RSA de 512 ou 1024 bits já foram fatoradas na prática. Fatorar o módulo revela a chave privada, quebrando sigilo e permitindo forjar assinaturas.",
+      "sinal": "Certificados ou chaves com 1024 bits ou menos; algoritmo RSA-1024 em auditoria TLS.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Expoente público pequeno sem padding",
+      "como_funciona": "Usar e=3 com RSA sem padding (livro-texto) permite ataques de raiz cúbica e o ataque de Coppersmith/Hastad quando a mesma mensagem vai a vários destinatários, recuperando o texto claro sem a chave privada.",
+      "sinal": "RSA sem OAEP/PSS, e=3, mesma mensagem cifrada para muitos destinatários.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Curvas não confiáveis ou parâmetros manipulados",
+      "como_funciona": "Curvas de origem obscura podem ter fraquezas embutidas (backdoor) ou propriedades ruins. O caso Dual_EC_DRBG mostrou parâmetros suspeitos de manipulação, permitindo previsão de chaves.",
+      "sinal": "Curvas customizadas, não padronizadas, ou o gerador Dual_EC_DRBG.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Reúso ou aleatoriedade fraca no nonce do ECDSA",
+      "como_funciona": "ECDSA exige um nonce k único e imprevisível por assinatura. Repetir k, ou geração previsível, permite recuperar a chave privada com álgebra simples a partir de duas assinaturas (falha clássica do PS3 e de carteiras Bitcoin).",
+      "sinal": "Duas assinaturas ECDSA com o mesmo valor de r; RNG fraco no assinador.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Ataques de canal lateral (timing/padding)",
+      "como_funciona": "Medir tempo de resposta ou explorar oráculos de padding (Bleichenbacher no RSA PKCS#1 v1.5) permite decifrar ou assinar consultando o servidor repetidamente, sem quebrar a matemática diretamente.",
+      "sinal": "RSA PKCS#1 v1.5 em TLS, mensagens de erro que distinguem padding válido de inválido.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "RSA de no mínimo 2048 bits (3072 preferível)",
+      "como_funciona": "Dimensionar a chave para que a fatoração seja inviável com o poder computacional atual e da próxima década. 2048 é o piso aceito; 3072 alinha com 128 bits de segurança.",
+      "cobre": "Chave curta, fatoração do módulo.",
+      "limite": "Não protege contra padding fraco, e=3 sem OAEP nem canal lateral; é vulnerável a computadores quânticos futuros."
+    },
+    {
+      "nome": "Curvas padronizadas e revisadas",
+      "como_funciona": "Usar apenas curvas amplamente auditadas como P-256/P-384 (NIST), Curve25519 (Ed25519/X25519) ou brainpool, evitando parâmetros de origem duvidosa.",
+      "cobre": "Curvas não confiáveis, parâmetros manipulados.",
+      "limite": "Não corrige implementação ruim de nonce nem RNG fraco; a curva certa com código ruim ainda vaza chave."
+    },
+    {
+      "nome": "Padding e esquemas modernos (OAEP e PSS)",
+      "como_funciona": "Cifrar com RSA-OAEP e assinar com RSA-PSS adiciona aleatoriedade e estrutura que anulam ataques de livro-texto, e=3 e oráculos de padding do PKCS#1 v1.5.",
+      "cobre": "Expoente pequeno, Bleichenbacher, texto-claro dedutível.",
+      "limite": "Exige que ambos os lados suportem o esquema; não reduz o custo da chave curta."
+    },
+    {
+      "nome": "Nonce determinístico ou EdDSA",
+      "como_funciona": "A RFC 6979 deriva o nonce k do hash da mensagem e da chave, eliminando dependência de RNG. Ed25519 já é determinístico por design, imune a reúso de nonce.",
+      "cobre": "Reúso e previsibilidade de nonce no ECDSA.",
+      "limite": "Não ajuda RSA; requer biblioteca que implemente a RFC 6979 ou adotar Ed25519."
+    },
+    {
+      "nome": "Certificados via CA e cifra híbrida",
+      "como_funciona": "Amarrar a chave pública a uma identidade por certificado X.509 assinado por uma CA (PKI) impede troca de chave, e usar assimétrica só para trocar a chave de sessão AES limita a exposição e o custo.",
+      "cobre": "Chave pública não autenticada (man-in-the-middle), lentidão ao cifrar volume.",
+      "limite": "Depende da confiança na CA; CA comprometida ou certificado mal validado quebra a cadeia."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Gerar par RSA 3072 e extrair a chave pública",
+      "cenario": "Criar uma chave privada RSA robusta e derivar a pública para distribuir.",
+      "comandos": "# Chave privada RSA 3072 bits (API moderna genpkey)\nopenssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out rsa_priv.pem\n\n# Alternativa clássica equivalente\nopenssl genrsa -out rsa_priv_legacy.pem 3072\n\n# Extrair a chave pública do par\nopenssl rsa -in rsa_priv.pem -pubout -out rsa_pub.pem\n\n# Inspecionar detalhes da chave\nopenssl pkey -in rsa_priv.pem -text -noout",
+      "explicacao": "genpkey é a interface recomendada. 3072 bits alinha com 128 bits de segurança. A pública (rsa_pub.pem) é distribuível; a privada permanece secreta. Repare que aqui só criamos chaves, sem cifrar volume."
+    },
+    {
+      "titulo": "Gerar chave ECC (P-256 e Ed25519) e comparar tamanho",
+      "cenario": "Mostrar na prática que ECC entrega a mesma força do RSA 3072 com chaves muito menores.",
+      "comandos": "# Curva P-256 (equivale em força a RSA 3072)\nopenssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out ec_priv.pem\nopenssl ec -in ec_priv.pem -pubout -out ec_pub.pem\n\n# Ed25519: assinatura moderna e determinística\nopenssl genpkey -algorithm ED25519 -out ed_priv.pem\nopenssl pkey -in ed_priv.pem -pubout -out ed_pub.pem\n\n# Comparar o tamanho dos arquivos de chave pública\nls -l rsa_pub.pem ec_pub.pem ed_pub.pem",
+      "explicacao": "A chave EC P-256 e o par Ed25519 são drasticamente menores que o RSA 3072 para segurança equivalente. Ed25519 é determinístico por design, imune a reúso de nonce."
+    },
+    {
+      "titulo": "Assinar, verificar e emitir um certificado",
+      "cenario": "Assinar um documento com a privada, verificar com a pública e ligar a chave a uma identidade via certificado.",
+      "comandos": "# Assinar o hash do documento com a chave PRIVADA\nopenssl dgst -sha256 -sign rsa_priv.pem -out doc.sig doc.txt\n\n# Verificar a assinatura com a chave PÚBLICA\nopenssl dgst -sha256 -verify rsa_pub.pem -signature doc.sig doc.txt\n\n# Certificado X.509 autoassinado ligando a chave a uma identidade\nopenssl req -new -x509 -key rsa_priv.pem -sha256 -days 365 \\\n  -subj \"/CN=exemplo.com.br/O=Estudo\" -out cert.pem\n\n# Inspecionar o certificado emitido\nopenssl x509 -in cert.pem -text -noout",
+      "explicacao": "Assina-se o hash (não o arquivo inteiro) com a privada; a verificação usa a pública. O certificado amarra a chave pública a uma identidade. Em produção ele seria assinado por uma CA (PKI), não autoassinado."
+    }
+  ]
+}

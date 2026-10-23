@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{#insert title}Framework de Redes A&D{/insert}</title>
+    {! ---------------------------------------------------------------------
+       SEO do <head>. Três peças, cada uma resolvendo um problema MEDIDO neste
+       site em 08/09/2026 — não boas práticas genéricas:
+
+       description  não existia em nenhuma página. Sem ela o buscador monta o
+                    resumo do resultado sozinho, e num site cheio de jargão ele
+                    costuma pegar a primeira frase da tela — aqui, rótulo de
+                    menu. O bloco tem PADRÃO: página que não declarar o seu
+                    continua com uma descrição correta, nunca sem nenhuma.
+
+       canonical    http:// e https:// deste domínio respondem 200 com o MESMO
+                    corpo (MD5 idêntico, medido), e o HSTS da resposta é
+                    ignorado quando ela chega fora de TLS. Sem canonical, quem
+                    escolhe qual URL indexar é o buscador. O SeoPagina só
+                    devolve valor para rota que está na lista branca das
+                    páginas públicas — por isso o {#if}: página de erro, login
+                    e rota privada NÃO recebem a tag, e nenhum caminho vindo do
+                    cliente chega a virar atributo.
+
+       Open Graph   é o cartão que WhatsApp, LinkedIn e Discord mostram quando
+                    alguém cola o link. Sem ele o link aparece cru.
+       --------------------------------------------------------------------- !}
+    <meta name="description" content="{#insert description}Framework didático de redes e cibersegurança: análise de IPv4/IPv6, CIDR, VLSM, portas, protocolos, certificados e criptografia, com o cálculo binário explicado passo a passo.{/insert}">
+    {#if cdi:seo.canonical}
+    <link rel="canonical" href="{cdi:seo.canonical}">
+    <meta property="og:url" content="{cdi:seo.canonical}">
+    {/if}
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:site_name" content="Framework de Redes A&amp;D">
+    <meta property="og:title" content="{#insert title}Framework de Redes A&amp;D{/insert}">
+    <meta property="og:description" content="{#insert description}Framework didático de redes e cibersegurança: análise de IPv4/IPv6, CIDR, VLSM, portas, protocolos, certificados e criptografia, com o cálculo binário explicado passo a passo.{/insert}">
+    {! og:image aponta para uma versao PROPRIA, e nao para o /icone.png do site.
+       Medido em 08/09/2026: o icone.png tem 1376x768 e 1,42 MB. O WhatsApp — que
+       e por onde estes links mais circulam — costuma desistir do preview acima de
+       ~300 KB, entao o cartao simplesmente nao aparecia. A versao dedicada tem
+       1200x670 (a largura que o Open Graph recomenda, com a MESMA proporcao: um
+       crop cego decaparia a arte) e 168 KB.
+       As dimensoes declaradas poupam o rastreador de baixar a imagem so para
+       descobrir o tamanho, e evitam o cartao "pulando" enquanto carrega. !}
+    {#if cdi:seo.urlBase}
+    <meta property="og:image" content="{cdi:seo.urlBase}/og-imagem.jpg?v=20260908">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="670">
+    <meta property="og:image:alt" content="Framework de Redes — Análise Didática Avançada">
+    {/if}
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa/icone-192.png?v=20260804">
+    <!-- PWA: o manifest é o que faz o Chrome oferecer "Instalar" na barra de
+         endereço e permite criar o atalho na área de trabalho. O apple-touch-icon
+         precisa ser QUADRADO (o icone.png do projeto é um banner 1376x768). -->
+    <link rel="manifest" href="/manifest.webmanifest?v=20260804">
+    <link rel="apple-touch-icon" href="/pwa/icone-192.png?v=20260804">
+    <meta name="theme-color" content="#080b14">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Framework Net">
+    <link rel="stylesheet" href="/web/css/material-symbols.css?v=20261022">
+    <!-- integrity: se o CDN for comprometido, o browser recusa o arquivo alterado
+         em vez de executá-lo com acesso ao cookie e ao token CSRF desta página. -->
+    <link href="/web/vendor/bootstrap-5.3.0/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="/web/css/app.css?v=20261023b">
+    <link rel="stylesheet" href="/web/css/aed-command-center.css?v=20261022">
+    <link rel="stylesheet" href="/web/css/dica-camada.css?v=20261022">
+    {#insert extraHead}{/insert}
+</head>
+
+<body class="aed-app">
+    {! FRONT-16: link de pular e região principal — quem navega por teclado ou leitor de tela atravessava o
+       menu inteiro (13 itens e dois suspensos) em toda página antes de chegar ao conteúdo. !}
+    <a class="visually-hidden-focusable aed-pular" href="#inicio-do-conteudo">Pular para o conteúdo</a>
+    <main id="conteudo" tabindex="-1">
+    {#insert content}{/insert}
+    </main>
+    {#include shared/site_footer.html /}
+    <script src="/web/vendor/bootstrap-5.3.0/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+    <script src="/web/js/csrf-client.js?v=20260925"></script>
+    <script src="/web/js/htmx.min.js?v=20260722"></script>
+    <script src="/web/js/htmx-setup.js?v=20261001"></script>
+    <script src="/web/js/html-escape.js?v=20261002"></script>
+    <script src="/web/js/form-inputs.js?v=20261002"></script>
+    <script src="/web/js/input-history.js?v=20260925"></script>
+    <script src="/web/js/search-cache.js?v=20260703"></script>
+    <script src="/web/js/dica.js?v=20261022" defer></script>
+    <script src="/web/js/field-tooltips.js?v=20261022"></script>
+    <script src="/web/js/aed-shell.js?v=20261002b"></script>
+    <script src="/web/js/limpar-form.js?v=20260909b"></script>
+    <script src="/web/js/pwa.js?v=20260804"></script>
+    {#insert extraScripts}{/insert}
+
+    <div id="google_translate_element" style="display:none;"></div>
+    <script type="text/javascript" src="/web/js/i18n-translate.js?v=20261002"></script>
+    {! async: script de terceiro síncrono no fim do <body> segura o DOMContentLoaded — medido em
+       01/10/2026, com o Google sem responder nenhum dos 34 scripts do site que esperam esse evento
+       rodava (abas, formulários, carimbo de tradução). A ordem continua garantida: o i18n-translate.js
+       acima é síncrono e já definiu o callback quando o element.js chegar. !}
+    <script type="text/javascript" async
+        src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+
+</html>

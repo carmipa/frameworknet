@@ -1,0 +1,383 @@
+{! Aba "Engenharia reversa": da configuração Cisco pronta de volta ao projeto.
+    É a inversão da aba "Projetar" — mesmo material de saída, entrada invertida. !}
+<p class="small text-secondary mb-2">
+    Cole aqui a configuração dos roteadores — <strong class="text-light">todas as que você tiver</strong>,
+    uma embaixo da outra. A ferramenta lê o texto, confere a coerência entre os scripts,
+    <strong class="text-warning">aponta e corrige os erros com a evidência que sustenta cada correção</strong>,
+    e reconstrói LANs, enlaces, tabelas por roteador e o desenho da topologia.
+</p>
+<p class="small mb-3 py-2 px-3 rounded aed-card card-tech border border-info border-opacity-50">
+    <span class="material-symbols-outlined text-info align-middle" style="font-size:1rem;" translate="no" aria-hidden="true">lightbulb</span>
+    <strong class="text-info">Como a correção é derivada:</strong>
+    cada roteador declara onde o <em>outro</em> está (<code translate="no">neighbor &lt;ip&gt; remote-as &lt;as&gt;</code>).
+    Isso forma um sistema de conferência cruzada: se A diz que B mora em <code translate="no">.2</code>, então B tem
+    de possuir <code translate="no">.2</code>. Quando não possui, o erro fica localizado e a correção sai do próprio
+    texto — nunca de convenção. Sem evidência suficiente, a ferramenta aponta e para.
+    <a href="/resolucao-problemas?aba=reversa&amp;demo=bgp" class="link-warning text-decoration-none">
+        Carregar cenário de exemplo (3 AS em eBGP, com erros)</a>.
+</p>
+
+<form method="post" action="/resolucao-problemas" class="aed-card card-tech problem-box p-3 mb-3">
+    <input type="hidden" name="aba" value="reversa">
+    <span class="aed-eyebrow">Entrada</span>
+    <h2 class="h5 text-light mb-3 problem-title d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_paste</span><span>Configuração Cisco</span>
+    </h2>
+    <label for="config_paste" class="form-label small text-secondary">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> Scripts dos roteadores (separe-os com uma linha de traços, se quiser)
+    </label>
+    <textarea id="config_paste" name="config_paste" rows="14" spellcheck="false"
+              class="form-control bg-dark text-light border-secondary reversa-entrada"
+              placeholder="hostname SP&#10;int g0/0&#10;ip address 172.19.0.1 255.255.240.0&#10;no shut&#10;router bgp 37510&#10;neighbor 200.200.200.2 remote-as 48880">{configPaste}</textarea>
+    <div class="d-flex flex-wrap gap-2 align-items-center mt-3">
+        <button type="submit" name="action_type" value="reverse" class="aed-btn aed-btn-execute"
+                data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Lê o texto, audita a coerência entre os scripts e reconstrói o projeto.">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Executar
+        </button>
+        <button type="submit" name="action_type" value="reverse_limpar" class="aed-btn aed-btn-danger"
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Esvazia a área de texto.">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+        </button>
+        <span class="small text-secondary">
+            O seu texto não é sobrescrito: o script corrigido sai ao lado, como material novo.
+        </span>
+    </div>
+</form>
+
+{#if erro}
+<div class="alert alert-danger bg-dark border-danger text-danger" role="alert">{erro}</div>
+{/if}
+
+{#if cenario}
+{#if cenario.vazio}
+<div class="aed-card card-tech problem-box p-3 mb-3 border border-warning border-opacity-50">
+    <span class="material-symbols-outlined text-warning align-middle" translate="no" aria-hidden="true">report</span>
+    <strong class="text-warning">Nada reconhecido no texto colado.</strong>
+    <span class="small text-secondary">
+        O interpretador procura por <code translate="no">hostname</code>, <code translate="no">interface</code> e
+        <code translate="no">router</code>. Confira se o conteúdo colado é mesmo uma configuração Cisco.
+    </span>
+</div>
+{#else}
+
+<div class="reversa-resumo mb-3">
+    <div class="reversa-kpi">
+        <span class="reversa-kpi-valor">{cenario.resumo.roteadores}</span>
+        <span class="reversa-kpi-rotulo">roteadores lidos</span>
+    </div>
+    <div class="reversa-kpi">
+        <span class="reversa-kpi-valor">{cenario.resumo.enlaces}</span>
+        <span class="reversa-kpi-rotulo">enlaces</span>
+    </div>
+    <div class="reversa-kpi">
+        <span class="reversa-kpi-valor">{cenario.resumo.lans}</span>
+        <span class="reversa-kpi-rotulo">LANs</span>
+    </div>
+    <div class="reversa-kpi is-fix">
+        <span class="reversa-kpi-valor">{cenario.resumo.errosCorrigidos}</span>
+        <span class="reversa-kpi-rotulo">erros corrigidos</span>
+    </div>
+    <div class="reversa-kpi {#if cenario.resumo.errosSemCorrecao > 0}is-erro{/if}">
+        <span class="reversa-kpi-valor">{cenario.resumo.errosSemCorrecao}</span>
+        <span class="reversa-kpi-rotulo">sem correção automática</span>
+    </div>
+    <div class="reversa-kpi">
+        <span class="reversa-kpi-valor">{cenario.resumo.avisos}</span>
+        <span class="reversa-kpi-rotulo">avisos</span>
+    </div>
+    <div class="reversa-kpi {#if cenario.resumo.cenarioConsistente}is-ok{#else}is-erro{/if}">
+        <span class="reversa-kpi-valor">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">{#if cenario.resumo.cenarioConsistente}check_circle{#else}pending{/if}</span>
+        </span>
+        <span class="reversa-kpi-rotulo">{#if cenario.resumo.cenarioConsistente}cenário fecha{#else}cenário incompleto{/if}</span>
+    </div>
+</div>
+
+{#if cenario.achados.size > 0}
+<div class="aed-card card-tech problem-box p-3 mb-3">
+    <h2 class="h5 text-warning mb-2 problem-title">
+        <span class="material-symbols-outlined" translate="no" aria-hidden="true">fact_check</span><span>Auditoria da configuração</span>
+    </h2>
+    <p class="small text-secondary mb-3">
+        Erro corrigido traz sempre a evidência que sustenta a correção. Erro sem correção
+        automática é apontado e não é consertado — escolher sem evidência seria adivinhar.
+    </p>
+    <div class="table-responsive border border-secondary border-opacity-25 rounded">
+        <table class="table table-dark table-sm align-middle mb-0 reversa-tabela">
+            <thead>
+                <tr>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">priority_high</span>Grau</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">place</span>Onde</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">error</span>O que está errado</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">sync_alt</span>Antes → depois</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">fact_check</span>Evidência</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#for achado in cenario.achados}
+                <tr>
+                    <td class="text-nowrap">
+                        <span class="badge bg-dark border border-{achado.corSeveridade} text-{achado.corSeveridade}">
+                            <span class="material-symbols-outlined reversa-badge-icone" translate="no" aria-hidden="true">{achado.iconeSeveridade}</span>
+                            {achado.rotuloSeveridade}
+                        </span>
+                    </td>
+                    <td class="small text-nowrap">
+                        <strong class="text-info">{achado.roteador}</strong>
+                        {#if achado.linha > 0}<span class="text-secondary d-block">linha {achado.linha}</span>{/if}
+                        <span class="text-secondary d-block">{achado.categoria}</span>
+                    </td>
+                    <td class="small text-light">{achado.descricao}</td>
+                    <td class="small">
+                        {#if achado.temCorrecao}
+                        <code class="reversa-antes" translate="no">{achado.original}</code>
+                        <span class="reversa-seta">→</span>
+                        <code class="reversa-depois" translate="no">{achado.corrigido}</code>
+                        {#else}
+                        {#if achado.original.isEmpty()}<span class="text-secondary">—</span>
+                        {#else}<code class="reversa-antes" translate="no">{achado.original}</code>{/if}
+                        {/if}
+                    </td>
+                    <td class="small text-secondary">{achado.evidencia}</td>
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+    </div>
+</div>
+{/if}
+
+{#if cenario.pendencias.size > 0}
+<div class="aed-card card-tech problem-box p-3 mb-3 border border-info border-opacity-50">
+    <h2 class="h5 text-info mb-2 problem-title">
+        <span class="material-symbols-outlined" translate="no" aria-hidden="true">help</span><span>O que falta para fechar o cenário</span>
+    </h2>
+    <p class="small text-secondary mb-2">
+        A ferramenta não completa isto por conta própria — preencher a lacuna com convenção
+        seria inventar dado que não estava no texto.
+    </p>
+    <ul class="small mb-0">
+        {#for pendencia in cenario.pendencias}
+        <li class="mb-1">
+            <span class="text-light">{pendencia.descricao}</span>
+            <span class="text-info d-block">{pendencia.comoResolver}</span>
+        </li>
+        {/for}
+    </ul>
+</div>
+{/if}
+
+{#if cenario.lans.size > 0}
+<div class="aed-card card-tech problem-box p-3 mb-3">
+    <h2 class="h5 text-info mb-3 problem-title">
+        <span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span><span>LANs reconstruídas</span>
+    </h2>
+    <div class="table-responsive border border-secondary border-opacity-25 rounded">
+        <table class="table table-dark table-sm align-middle mb-0 reversa-tabela">
+            <thead>
+                <tr>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">router</span>Roteador</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_input_component</span>Interface</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">hub</span>Rede</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">grid_view</span>Máscara</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">flip</span>Wildcard</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">router</span>Gateway</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">linear_scale</span>Faixa útil</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">campaign</span>Broadcast</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">group</span>Hosts</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">publish</span>Anunciada</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#for lan in cenario.lans}
+                <tr>
+                    <td class="fw-bold text-info">{lan.roteador}</td>
+                    <td class="small">{lan.nomeInterface}</td>
+                    <td class="text-nowrap">{lan.cidr}</td>
+                    <td class="small text-nowrap">{lan.mascara}</td>
+                    <td class="small text-nowrap text-secondary">{lan.wildcard}</td>
+                    <td class="small text-nowrap">{lan.gateway}</td>
+                    <td class="small text-nowrap">{lan.primeiroHost} – {lan.ultimoHost}</td>
+                    <td class="small text-nowrap text-secondary">{lan.broadcast}</td>
+                    <td class="small">{lan.hostsUtilizaveis}</td>
+                    <td class="small">
+                        {#if lan.anunciadaNoRoteamento}<span class="text-success">sim</span>
+                        {#else}<span class="text-warning">não</span>{/if}
+                    </td>
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+    </div>
+</div>
+{/if}
+
+{#if cenario.enlaces.size > 0}
+<div class="aed-card card-tech problem-box p-3 mb-3">
+    <h2 class="h5 text-warning mb-3 problem-title">
+        <span class="material-symbols-outlined" translate="no" aria-hidden="true">link</span><span>Enlaces ponto a ponto</span>
+    </h2>
+    <div class="table-responsive border border-secondary border-opacity-25 rounded">
+        <table class="table table-dark table-sm align-middle mb-0 reversa-tabela">
+            <thead>
+                <tr>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">cable</span>Enlace</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">hub</span>Rede</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">grid_view</span>Máscara</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_ethernet</span>Ponta A</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_ethernet</span>Ponta B</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">schedule</span>DCE (clock rate)</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">info</span>Situação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#for enlace in cenario.enlaces}
+                <tr>
+                    <td class="fw-bold text-info text-nowrap">{enlace.nome}</td>
+                    <td class="text-nowrap">{enlace.cidr}</td>
+                    <td class="small text-nowrap text-secondary">{enlace.mascara}</td>
+                    <td class="small text-nowrap">{enlace.roteadorA} {enlace.nomeInterfaceA}<br>{enlace.ipA}</td>
+                    <td class="small text-nowrap">
+                        {#if enlace.completo}{enlace.roteadorB} {enlace.nomeInterfaceB}<br>{enlace.ipB}
+                        {#else}<span class="text-warning">{enlace.ipB}</span>{/if}
+                    </td>
+                    <td class="small text-nowrap">{enlace.ladoDce}</td>
+                    <td class="small">
+                        {#if enlace.completo}<span class="text-success">fechado</span>
+                        {#else}<span class="text-warning">falta a outra ponta</span>{/if}
+                    </td>
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+    </div>
+</div>
+{/if}
+
+{#if cenario.tabelas.size > 0}
+<div class="aed-card card-tech problem-box p-3 mb-3">
+    <h2 class="h5 text-success mb-3 problem-title">
+        <span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span><span>Tabelas por roteador</span>
+    </h2>
+    <div class="row g-3">
+        {#for tabela in cenario.tabelas}
+        <div class="col-12 col-xl-6">
+            <div class="border border-secondary border-opacity-25 rounded p-2 h-100">
+                <div class="small fw-bold text-info mb-2">
+                    {tabela.roteador}{#if tabela.asBgp > 0} · AS {tabela.asBgp}{/if}
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-dark table-sm align-middle mb-0 reversa-tabela">
+                        <thead>
+                            <tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_input_component</span>Interface</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">language</span>IP</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">grid_view</span>Máscara</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>CIDR</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">badge</span>Papel</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Nota</th></tr>
+                        </thead>
+                        <tbody>
+                            {#for linha in tabela.linhas}
+                            <tr>
+                                <td class="small text-nowrap">{linha.nomeInterface}</td>
+                                <td class="small text-nowrap">{linha.ip}</td>
+                                <td class="small text-nowrap text-secondary">{linha.mascara}</td>
+                                <td class="small text-nowrap">{linha.cidr}</td>
+                                <td class="small">{linha.papel}</td>
+                                <td class="small text-secondary">{linha.observacao}</td>
+                            </tr>
+                            {/for}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {/for}
+    </div>
+</div>
+{/if}
+
+{#if cenario.mermaid.isEmpty()}
+{#else}
+<div class="aed-card card-tech problem-box p-3 mb-3">
+    <h2 class="h5 text-warning mb-2 problem-title">
+        <span class="material-symbols-outlined" translate="no" aria-hidden="true">map</span><span>Desenho reconstruído</span>
+    </h2>
+    <div class="topology-wrap">
+        <pre class="mermaid mb-0" translate="no">{cenario.mermaid}</pre>
+    </div>
+</div>
+{/if}
+
+{#if cenario.scripts.size > 0}
+<div class="aed-card card-tech problem-box p-3 mb-3">
+    <h2 class="h5 text-success mb-2 problem-title">
+        <span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span><span>Scripts corrigidos</span>
+    </h2>
+    <p class="small text-secondary mb-3">
+        Cada linha alterada vem precedida de <code translate="no">! CORRIGIDO:</code> com o valor original e o
+        motivo — script corrigido sem marca vira configuração aplicada às cegas.
+    </p>
+    <div class="row g-3">
+        {#for script in cenario.scripts}
+        <div class="col-12 col-xl-6">
+            <div class="border border-secondary border-opacity-25 rounded p-2 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-bold text-info">{script.roteador}</span>
+                    <span class="small {#if script.alterado}text-warning{#else}text-secondary{/if}">
+                        {#if script.alterado}{script.correcoes} correção(ões){#else}sem alteração{/if}
+                    </span>
+                </div>
+                <pre class="reversa-codigo" id="reversa-script-{script_count}" translate="no">{script.conteudo}</pre>
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="aed-btn aed-btn-neutral btn-sm"
+                            data-copiar-reversa="reversa-script-{script_count}">
+                        <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar
+                    </button>
+                </div>
+            </div>
+        </div>
+        {/for}
+    </div>
+</div>
+{/if}
+
+{#if cenario.linhasNaoInterpretadas.size > 0}
+<div class="aed-card card-tech problem-box p-3 mb-3">
+    <h2 class="h5 text-secondary mb-2 problem-title">
+        <span class="material-symbols-outlined" translate="no" aria-hidden="true">rule</span><span>Linhas que o interpretador não usou</span>
+    </h2>
+    <p class="small text-secondary mb-2">
+        Listadas de propósito: interpretador que ignora linha em silêncio desenha errado com
+        cara de certo.
+    </p>
+    <div class="table-responsive border border-secondary border-opacity-25 rounded">
+        <table class="table table-dark table-sm align-middle mb-0 reversa-tabela">
+            <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Linha</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">article</span>Conteúdo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">help</span>Motivo</th></tr></thead>
+            <tbody>
+                {#for linha in cenario.linhasNaoInterpretadas}
+                <tr>
+                    <td class="small text-secondary">{linha.numero}</td>
+                    <td class="small"><code translate="no">{linha.conteudo}</code></td>
+                    <td class="small text-secondary">{linha.motivo}</td>
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+    </div>
+</div>
+{/if}
+
+<div class="aed-card card-tech problem-box p-3 mb-3 reversa-exportacao">
+    <h2 class="h5 text-success mb-2 problem-title">
+        <span class="material-symbols-outlined" translate="no" aria-hidden="true">inventory_2</span><span>Exportação e impressão</span>
+    </h2>
+    <form method="post" action="/resolucao-problemas" class="d-flex flex-wrap gap-2 align-items-center">
+        <input type="hidden" name="aba" value="reversa">
+        <input type="hidden" name="config_paste" value="{configPaste}">
+        <button type="submit" name="action_type" value="reverse_export_scripts" class="aed-btn aed-btn-execute"
+                data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Baixa um .txt com os scripts corrigidos de todos os roteadores.">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> Scripts corrigidos (.txt)
+        </button>
+        <button type="submit" name="action_type" value="reverse_export_relatorio" class="aed-btn aed-btn-amber"
+                data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Baixa um .txt com a auditoria, as LANs, os enlaces, as tabelas e a topologia.">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">description</span> Relatório (.txt)
+        </button>
+        <button type="button" class="aed-btn aed-btn-indigo" data-imprimir-reversa
+                data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Abre a janela de impressão do navegador com o resultado desta aba.">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">print</span> Imprimir
+        </button>
+        <span class="section-chip chip-success export-status-chip" role="status">
+            Pronto para colar no CLI dos roteadores
+        </span>
+    </form>
+</div>
+{/if}
+{/if}

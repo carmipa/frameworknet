@@ -1,0 +1,443 @@
+{
+  "resumo": "O IPv4 (Internet Protocol versão 4) é o protocolo da camada de Rede que dá a cada máquina um endereço de 32 bits e empacota os dados em datagramas capazes de atravessar redes diferentes até o destino. Ele é não confiável e sem conexão: entrega no melhor esforço (best-effort), sem garantir ordem, entrega nem ausência de duplicatas — quem cuida disso é o TCP, na camada acima dele. Cada pacote carrega um cabeçalho de 20 bytes (sem opções) com endereço de origem, endereço de destino, TTL e o número do protocolo de transporte. Com apenas cerca de 4,3 bilhões de endereços, o IPv4 chegou ao esgotamento, o que popularizou o NAT, o CIDR e as faixas privadas — e, no longo prazo, motivou a migração para o IPv6.",
+  "ficha": [
+    {
+      "rotulo": "RFC principal",
+      "valor": "RFC 791 (1981)",
+      "dica": "Complementada por RFC 1122 (hosts), RFC 1918 (endereços privados) e RFC 4632 (CIDR)."
+    },
+    {
+      "rotulo": "Camada (modelo OSI / TCP-IP)",
+      "valor": "Camada 3 - Rede (Internet)",
+      "dica": "Endereçamento lógico e roteamento entre redes distintas."
+    },
+    {
+      "rotulo": "Encapsulamento",
+      "valor": "Transporta TCP, UDP, ICMP e outros",
+      "dica": "O campo Protocolo (8 bits) identifica o que vem no payload."
+    },
+    {
+      "rotulo": "Tamanho do endereço",
+      "valor": "32 bits (~4,29 bilhões)",
+      "dica": "Escrito em notação decimal pontuada, ex.: 192.168.0.1."
+    },
+    {
+      "rotulo": "Tamanho do cabeçalho",
+      "valor": "20 bytes (160 bits) sem opções",
+      "dica": "Até 60 bytes com opções; o campo IHL informa o tamanho real."
+    },
+    {
+      "rotulo": "Modelo de entrega",
+      "valor": "Não confiável e sem conexão (best-effort)",
+      "dica": "Pode perder, duplicar ou reordenar; a confiabilidade fica com o TCP."
+    },
+    {
+      "rotulo": "Segurança nativa",
+      "valor": "Nenhuma (sem autenticação nem cifra)",
+      "dica": "A origem é forjável; IPsec e TLS foram adicionados por cima."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Endereço de 32 bits e o esgotamento",
+      "icone": "lan",
+      "texto": "Um endereço IPv4 tem 32 bits, o que dá cerca de 4,29 bilhões de combinações. Parecia infinito em 1981, mas a explosão de dispositivos consumiu tudo. A IANA distribuiu o último bloco livre em 2011, empurrando o mundo para o NAT, o CIDR e, no longo prazo, o IPv6.",
+      "destaque": "2^32 ≈ 4,29 bilhões de endereços"
+    },
+    {
+      "titulo": "TTL e a prevenção de loops",
+      "icone": "router",
+      "texto": "O campo TTL (Time To Live) começa em um valor como 64 ou 128 e cada roteador o decrementa em 1. Se chegar a zero, o pacote é descartado e um ICMP Time Exceeded volta à origem. Isso impede que um pacote preso em um loop de roteamento circule para sempre pela Internet.",
+      "destaque": "TTL = 0 -> pacote descartado"
+    },
+    {
+      "titulo": "Fragmentação e MTU",
+      "icone": "content_cut",
+      "texto": "Cada enlace tem um MTU (o maior pacote IP que ele carrega dentro de um quadro: 1500 bytes na Ethernet, cujo quadro em si chega a 1518 com cabeçalho e FCS). Se um pacote é maior que o MTU do próximo salto, o IPv4 o divide em fragmentos que o destino remonta usando os campos Identificação, Flags e Deslocamento. Se o bit DF estiver ligado, em vez de fragmentar, o roteador descarta o pacote e avisa por ICMP.",
+      "destaque": "MTU Ethernet típico = 1500 bytes"
+    },
+    {
+      "titulo": "Checksum só do cabeçalho",
+      "icone": "fact_check",
+      "texto": "O checksum de 16 bits protege apenas o cabeçalho, não os dados. Como o TTL muda a cada salto, cada roteador precisa recalcular o checksum. A integridade do payload fica por conta das camadas superiores (checksum de TCP/UDP). No IPv6 esse campo foi removido.",
+      "destaque": "Cobre o cabeçalho (20 a 60 bytes), não o payload"
+    },
+    {
+      "titulo": "NAT: a resposta ao esgotamento",
+      "icone": "swap_horiz",
+      "texto": "O NAT (Network Address Translation) permite que muitos dispositivos com endereços privados compartilhem um único IP público, reescrevendo endereços e portas na borda da rede. Foi a técnica que esticou a vida do IPv4 por décadas, ao custo de quebrar a conectividade fim a fim.",
+      "destaque": "Muitos IPs privados -> 1 IP público"
+    },
+    {
+      "titulo": "Sub-redes e CIDR",
+      "icone": "account_tree",
+      "texto": "O CIDR substituiu as classes rígidas por um prefixo flexível (ex.: /24), separando a parte de rede da parte de host. Isso permite dividir e agregar blocos com precisão e evita desperdício. Para calcular faixas, máscaras e hosts disponíveis, use a Calculadora de Sub-redes do framework.",
+      "destaque": "192.168.0.0/24 = 256 endereços, 254 hosts úteis"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Roteamento salto a salto com decremento do TTL",
+    "definicao": "sequenceDiagram\n    participant O as Origem TTL=64\n    participant R1 as Roteador 1\n    participant R2 as Roteador 2\n    participant R3 as Roteador 3\n    participant D as Destino\n    O->>R1: Pacote com TTL=64\n    Note over R1: Decrementa TTL -> 63\n    R1->>R2: Encaminha com TTL=63\n    Note over R2: Decrementa TTL -> 62\n    R2->>R3: Encaminha com TTL=62\n    Note over R3: Decrementa TTL -> 61\n    R3->>D: Entrega com TTL=61\n    D-->>O: Resposta chega à origem\n    Note over R2,R3: Se o TTL chegar a 0 no meio do caminho\n    R2-->>O: ICMP Time Exceeded quando TTL=0",
+    "legenda": "Cada roteador subtrai 1 do TTL antes de encaminhar. Se o TTL zera no meio do caminho, o pacote é descartado e um ICMP Time Exceeded volta à origem — mecanismo que o traceroute explora para mapear a rota."
+  },
+  "cabecalho": {
+    "titulo": "Cabeçalho IPv4 completo (campo a campo)",
+    "nota": "Somando os campos fixos: 4+4+6+2+16+16+3+13+8+8+16+32+32 = 160 bits = 20 bytes. Esse é o cabeçalho mínimo, sem opções. O campo Opções é variável e, quando presente, é preenchido (padding) até um múltiplo de 32 bits, podendo levar o cabeçalho a até 60 bytes. O campo IHL informa o tamanho real em palavras de 32 bits.",
+    "campos": [
+      {
+        "nome": "Versão",
+        "bits": 4,
+        "descricao": "Versão do protocolo IP. Sempre 4 (binário 0100) para IPv4.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "IHL",
+        "bits": 4,
+        "descricao": "Internet Header Length: tamanho do cabeçalho em palavras de 32 bits. Valor mínimo 5 (= 20 bytes) e máximo 15 (= 60 bytes).",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "DSCP",
+        "bits": 6,
+        "descricao": "Differentiated Services Code Point: marca a prioridade/QoS do pacote (ex.: voz, vídeo, dados).",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "ECN",
+        "bits": 2,
+        "descricao": "Explicit Congestion Notification: sinaliza congestionamento na rede sem descartar o pacote.",
+        "cor": "#059669"
+      },
+      {
+        "nome": "Comprimento total",
+        "bits": 16,
+        "descricao": "Tamanho total do datagrama (cabeçalho + dados) em bytes. Máximo teórico de 65.535 bytes.",
+        "cor": "#d97706"
+      },
+      {
+        "nome": "Identificação",
+        "bits": 16,
+        "descricao": "Identifica de forma única cada pacote original, para reagrupar seus fragmentos no destino.",
+        "cor": "#dc2626"
+      },
+      {
+        "nome": "Flags",
+        "bits": 3,
+        "descricao": "Três bits de controle de fragmentação: bit 0 reservado (0), DF (Don't Fragment) e MF (More Fragments).",
+        "cor": "#4f46e5"
+      },
+      {
+        "nome": "Deslocamento do fragmento",
+        "bits": 13,
+        "descricao": "Posição deste fragmento no pacote original, medida em blocos de 8 bytes. Usado na remontagem.",
+        "cor": "#0d9488"
+      },
+      {
+        "nome": "TTL",
+        "bits": 8,
+        "descricao": "Time To Live: contador de saltos. Cada roteador decrementa 1; ao chegar a 0, o pacote é descartado.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Protocolo",
+        "bits": 8,
+        "descricao": "Identifica o protocolo do payload: 1=ICMP, 6=TCP, 17=UDP, entre outros.",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "Checksum do cabeçalho",
+        "bits": 16,
+        "descricao": "Verificação de integridade apenas do cabeçalho. Recalculado a cada salto (porque o TTL muda).",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "Endereço de origem",
+        "bits": 32,
+        "descricao": "Endereço IPv4 de quem enviou o pacote. Facilmente forjável (base do IP spoofing).",
+        "cor": "#059669"
+      },
+      {
+        "nome": "Endereço de destino",
+        "bits": 32,
+        "descricao": "Endereço IPv4 de quem deve receber o pacote. Base para todas as decisões de roteamento.",
+        "cor": "#d97706"
+      },
+      {
+        "nome": "Opções",
+        "bits": 0,
+        "descricao": "Campo variável e raramente usado (ex.: registro de rota, timestamp). Aumenta o cabeçalho além dos 20 bytes e exige padding até múltiplo de 32 bits.",
+        "cor": "#dc2626"
+      }
+    ]
+  },
+  "tabelas": [
+    {
+      "titulo": "Classes históricas de endereçamento (pré-CIDR)",
+      "colunas": [
+        "Classe",
+        "Faixa do 1º octeto",
+        "Bits de rede",
+        "Uso típico"
+      ],
+      "linhas": [
+        [
+          "A",
+          "0 - 127",
+          "8",
+          "Redes muito grandes (~16 milhões de hosts)"
+        ],
+        [
+          "B",
+          "128 - 191",
+          "16",
+          "Redes médias (~65 mil hosts)"
+        ],
+        [
+          "C",
+          "192 - 223",
+          "24",
+          "Redes pequenas (254 hosts)"
+        ],
+        [
+          "D",
+          "224 - 239",
+          "n/a",
+          "Multicast"
+        ],
+        [
+          "E",
+          "240 - 255",
+          "n/a",
+          "Reservada / experimental"
+        ]
+      ]
+    },
+    {
+      "titulo": "Faixas especiais: privadas (RFC 1918), loopback e APIPA",
+      "colunas": [
+        "Faixa",
+        "Prefixo CIDR",
+        "Finalidade"
+      ],
+      "linhas": [
+        [
+          "10.0.0.0 - 10.255.255.255",
+          "10.0.0.0/8",
+          "Privada (grandes redes internas)"
+        ],
+        [
+          "172.16.0.0 - 172.31.255.255",
+          "172.16.0.0/12",
+          "Privada (redes médias)"
+        ],
+        [
+          "192.168.0.0 - 192.168.255.255",
+          "192.168.0.0/16",
+          "Privada (redes domésticas / SOHO)"
+        ],
+        [
+          "127.0.0.0 - 127.255.255.255",
+          "127.0.0.0/8",
+          "Loopback (a própria máquina, localhost)"
+        ],
+        [
+          "169.254.0.0 - 169.254.255.255",
+          "169.254.0.0/16",
+          "APIPA / link-local (autoconfiguração sem DHCP)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Números de protocolo comuns (campo Protocolo)",
+      "colunas": [
+        "Número",
+        "Protocolo",
+        "Camada / função"
+      ],
+      "linhas": [
+        [
+          "1",
+          "ICMP",
+          "Controle e diagnóstico (ping, traceroute)"
+        ],
+        [
+          "2",
+          "IGMP",
+          "Gerência de grupos multicast"
+        ],
+        [
+          "6",
+          "TCP",
+          "Transporte confiável e orientado a conexão"
+        ],
+        [
+          "17",
+          "UDP",
+          "Transporte leve, sem conexão"
+        ],
+        [
+          "50",
+          "ESP",
+          "IPsec (payload cifrado)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Campo Flags e fragmentação",
+      "colunas": [
+        "Bit / campo",
+        "Nome",
+        "Significado quando ligado"
+      ],
+      "linhas": [
+        [
+          "Bit 0",
+          "Reservado",
+          "Sempre 0"
+        ],
+        [
+          "Bit 1",
+          "DF (Don't Fragment)",
+          "Proíbe fragmentar; se o pacote for grande demais, o roteador descarta e avisa por ICMP"
+        ],
+        [
+          "Bit 2",
+          "MF (More Fragments)",
+          "Há mais fragmentos após este; o último fragmento tem MF=0"
+        ],
+        [
+          "13 bits",
+          "Deslocamento do fragmento",
+          "Posição do fragmento no original, em blocos de 8 bytes"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "IP spoofing (falsificação de origem)",
+      "como_funciona": "O atacante forja o campo Endereço de origem do cabeçalho, fazendo o pacote parecer vir de outra máquina. Serve para esconder a identidade, driblar filtros baseados em IP ou refletir respostas para uma vítima. O IPv4 não autentica a origem, então nada impede a mentira.",
+      "sinal": "Tráfego chegando por uma interface com IP de origem que, segundo a tabela de rotas, não deveria vir dali.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Teardrop (fragmentos sobrepostos)",
+      "como_funciona": "O atacante envia fragmentos com valores de Deslocamento inválidos ou sobrepostos. Pilhas TCP/IP antigas travavam ou reiniciavam ao tentar remontar o pacote impossível. É um ataque clássico de negação de serviço que explora a lógica de remontagem.",
+      "sinal": "Fragmentos com offsets que se sobrepõem ou deixam buracos; picos de reset/crash em hosts ao remontar.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Evasão de IDS via fragmentação e TTL",
+      "como_funciona": "O atacante fatia o payload malicioso em muitos fragmentos, ou ajusta o TTL para que o pacote expire depois do IDS mas antes do alvo (ou vice-versa). Se o IDS remonta o tráfego de forma diferente do host final, a assinatura maliciosa passa despercebida.",
+      "sinal": "Fragmentação excessiva e desnecessária; TTLs incomuns ou inconsistentes vindos da mesma origem.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Smurf (amplificação por broadcast)",
+      "como_funciona": "O atacante envia ICMP echo request com origem forjada (a da vítima) para o endereço de broadcast de uma rede. Cada host da rede responde à vítima, amplificando o tráfego e causando DDoS. Depende de redes que encaminham broadcast dirigido.",
+      "sinal": "Enxurrada de ICMP echo reply chegando à vítima sem que ela tenha enviado pings.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Ping da morte (pacote superdimensionado)",
+      "como_funciona": "Fragmentos são montados de forma que o pacote remontado ultrapasse os 65.535 bytes do campo Comprimento total, estourando buffers de pilhas antigas e travando o host. É um caso extremo de abuso da remontagem de fragmentos.",
+      "sinal": "Tentativas de remontagem que excedem o tamanho máximo legal de datagrama IPv4.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "uRPF / BCP 38 (anti-spoofing)",
+      "como_funciona": "O Unicast Reverse Path Forwarding faz o roteador verificar se o IP de origem de um pacote seria alcançável pela mesma interface por onde ele chegou. Se não for, descarta. O BCP 38 (RFC 2827) recomenda essa validação na borda dos provedores.",
+      "cobre": "IP spoofing e ataques de reflexão/amplificação (smurf).",
+      "limite": "Só é eficaz se amplamente adotado nas bordas; pode falhar em topologias com rotas assimétricas."
+    },
+    {
+      "nome": "Egress filtering (filtragem de saída)",
+      "como_funciona": "A rede bloqueia a saída de pacotes cujo IP de origem não pertence ao próprio bloco de endereços. Impede que máquinas internas comprometidas participem de ataques com origem forjada.",
+      "cobre": "Spoofing partindo de dentro da própria rede; participação em DDoS refletido.",
+      "limite": "Protege terceiros, não a própria rede; exige configuração disciplinada em todas as saídas."
+    },
+    {
+      "nome": "Remontagem e normalização no firewall",
+      "como_funciona": "O firewall/IPS remonta os fragmentos e inspeciona o pacote completo antes de repassá-lo, descartando sobreposições, offsets inválidos e pacotes superdimensionados. Normaliza o tráfego para que host e IDS enxerguem a mesma coisa.",
+      "cobre": "Teardrop, ping da morte, fragmentos sobrepostos e evasão de IDS por fragmentação.",
+      "limite": "Consome memória e CPU; pode virar alvo de DoS por excesso de fragmentos incompletos."
+    },
+    {
+      "nome": "Desligar broadcast dirigido",
+      "como_funciona": "Configurar os roteadores para não encaminhar pacotes destinados ao endereço de broadcast de outra rede (no ip directed-broadcast). Isso remove os refletores de que o smurf precisa.",
+      "cobre": "Ataques de amplificação tipo smurf.",
+      "limite": "Não impede outras formas de amplificação (DNS, NTP); é apenas uma das camadas."
+    },
+    {
+      "nome": "Limitar taxa de ICMP e fragmentos",
+      "como_funciona": "Aplicar rate limiting a mensagens ICMP e a fragmentos incompletos, reduzindo o impacto de floods e do esgotamento da tabela de remontagem.",
+      "cobre": "Floods de ICMP (smurf) e DoS por acúmulo de fragmentos.",
+      "limite": "Pode atrasar diagnósticos legítimos (ping/traceroute) se calibrado de forma agressiva."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Inspecionar endereços e interfaces",
+      "cenario": "Ver quais endereços IPv4 estão atribuídos a cada interface da máquina, incluindo o prefixo CIDR.",
+      "comandos": "ip addr show\n# ou apenas IPv4:\nip -4 addr\n# equivalente antigo:\nifconfig -a",
+      "explicacao": "O comando lista cada interface com seu IP e máscara (ex.: inet 192.168.0.10/24). O /24 indica os bits de rede — a mesma notação usada na Calculadora de Sub-redes."
+    },
+    {
+      "titulo": "Ler a tabela de roteamento",
+      "cenario": "Descobrir por onde a máquina envia pacotes para cada destino e qual é o gateway padrão.",
+      "comandos": "ip route show\n# testar a rota de um destino específico:\nip route get 8.8.8.8",
+      "explicacao": "A linha 'default via ...' mostra o gateway padrão. O 'ip route get' revela exatamente qual rota e interface seriam usadas para um destino, útil para diagnosticar spoofing e rotas assimétricas."
+    },
+    {
+      "titulo": "Descobrir o MTU do caminho (Path MTU)",
+      "cenario": "Achar o maior pacote que atravessa o caminho sem fragmentar, ligando o bit DF e variando o tamanho.",
+      "comandos": "# Linux: -M do liga o Don't Fragment, -s define o payload\nping -M do -s 1472 8.8.8.8\n# se falhar, reduza o -s até passar (1472 + 28 = 1500 MTU típico)\nping -M do -s 1500 8.8.8.8   # deve falhar num link de MTU 1500",
+      "explicacao": "Payload de 1472 bytes + 20 (IP) + 8 (ICMP) = 1500. Se o ping com DF falha com 'fragmentation needed', o MTU do caminho é menor que o testado. Diminua o -s até obter resposta."
+    },
+    {
+      "titulo": "Traçar a rota salto a salto",
+      "cenario": "Mapear os roteadores no caminho até um destino, explorando o decremento do TTL.",
+      "comandos": "traceroute 8.8.8.8\n# no Windows:\ntracert 8.8.8.8\n# forcando ICMP no Linux:\ntraceroute -I 8.8.8.8",
+      "explicacao": "O traceroute envia pacotes com TTL crescente (1, 2, 3...). Cada roteador que zera o TTL responde com ICMP Time Exceeded, revelando seu endereço — é o TTL do cabeçalho IPv4 usado como ferramenta de diagnóstico."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "TTL expirado no trânsito (Time Exceeded)",
+      "causa_provavel": "Loop de roteamento, rota mal configurada, ou simplesmente TTL inicial baixo demais para um destino muito distante.",
+      "comando": "traceroute -n <destino>",
+      "leitura": "Se o traceroute nunca chega ao destino e fica repetindo os mesmos saltos, há um loop. Um ICMP Type 11 (Time Exceeded) é o sinal de que o TTL zerou antes de chegar."
+    },
+    {
+      "sintoma": "Fragmentação necessária, mas com DF setado",
+      "causa_provavel": "Um enlace no caminho tem MTU menor que o pacote, e o bit DF impede fragmentar — comum em túneis (VPN, PPPoE) que reduzem o MTU.",
+      "comando": "ping -M do -s 1472 <destino>",
+      "leitura": "Se volta 'frag needed and DF set' (ICMP tipo 3, código 4), o PMTUD está funcionando: um roteador avisou o MTU menor. O black hole é o contrário — esse ICMP é filtrado no caminho, o ping grande some sem resposta e o pequeno passa. Libere o ICMP 3/4 ou ajuste o MTU/MSS (ex.: ip tcp adjust-mss) no túnel."
+    },
+    {
+      "sintoma": "Destino inalcançável (host / rede)",
+      "causa_provavel": "Sem rota para o destino, gateway errado, host desligado ou firewall descartando na borda.",
+      "comando": "ip route get <destino>; ping <destino>",
+      "leitura": "ICMP Type 3 (Destination Unreachable), com Code 0 (rede), 1 (host) ou 3 (porta). Cheque primeiro se existe rota e se o gateway padrão responde."
+    },
+    {
+      "sintoma": "Pacotes chegando com IP de origem suspeito",
+      "causa_provavel": "Possível IP spoofing: origem que não bate com a interface de entrada segundo a tabela de rotas.",
+      "comando": "ip route get <ip_origem>",
+      "leitura": "Se a rota de retorno para o IP de origem aponta para outra interface (rota assimétrica não intencional), é candidato a spoofing — ative uRPF/BCP 38 na borda."
+    },
+    {
+      "sintoma": "Excesso de fragmentos incompletos",
+      "causa_provavel": "Ataque de fragmentação (teardrop / ping da morte) ou aplicação gerando fragmentação exagerada, esgotando a tabela de remontagem.",
+      "comando": "netstat -s | grep -i reasm",
+      "leitura": "Contadores altos de 'reassembly failed' ou 'fragments dropped' indicam remontagens que falham — inspecione offsets sobrepostos e limite a taxa de fragmentos."
+    }
+  ]
+}

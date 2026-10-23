@@ -1,0 +1,28 @@
+{! Aba "EUI-64": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
+<div class="calc-form-card mb-3">
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">badge</span> EUI-64 (MAC → SLAAC)</h2>
+    <p class="calc-hint">Como um host deriva o endereço IPv6 sozinho a partir do MAC (flip do bit U/L + FF:FE).</p>
+    <form id="formEui64" hx-post="/ipv6/api/eui64" hx-target="#saidaEui64" hx-swap="innerHTML"
+          hx-disabled-elt="find button[type='submit']">
+        <div class="row g-3 align-items-start">
+            <div class="col-lg-6 col-md-6">
+                <label for="ipv6Pref64" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Prefixo /64</label>
+                <input type="text" class="aed-input form-control" id="ipv6Pref64" name="prefixo"
+                       placeholder="2001:db8:0:1::/64" value="2001:db8:0:1::/64" autocomplete="off" spellcheck="false" required>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <label for="ipv6Mac" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> Endereço MAC</label>
+                <input type="text" class="aed-input form-control" id="ipv6Mac" name="mac"
+                       placeholder="00:1a:2b:3c:4d:5e" value="00:1a:2b:3c:4d:5e" autocomplete="off" spellcheck="false" required>
+            </div>
+        </div>
+        <div class="d-flex gap-2 mt-2">
+            <button type="submit" class="aed-btn aed-btn-execute" title="Derivar o Interface ID EUI-64 e o endereço SLAAC"><span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span><span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Derivar</button>
+            <button type="button" class="aed-btn aed-btn-neutral" data-limpar title="Esvaziar os campos e apagar o resultado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+        </div>
+    </form>
+</div>
+
+<div id="saidaEui64" class="calc-saida ipv6-saida-full">
+    <div class="calc-placeholder"><span class="material-symbols-outlined" aria-hidden="true" translate="no">badge</span><p class="mb-0">Informe o prefixo /64 e o MAC para ver o Interface ID EUI-64, o endereço SLAAC e a grade de 64 bits do IID (flip U/L + FF:FE), passo a passo.</p></div>
+</div>

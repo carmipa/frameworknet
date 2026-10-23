@@ -1,0 +1,41 @@
+{! Aba "Engenharia reversa": form em largura total; diagnóstico 100% abaixo (regra global de layout IPv6). !}
+<div class="calc-form-card mb-3">
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">manage_search</span> Engenharia reversa (Cisco IPv6)</h2>
+    <p class="calc-hint">Cole uma configuração Cisco IPv6. Lê interfaces, endereços, rotas estáticas e OSPFv3/EIGRP, reconstrói o desenho e aponta achados.</p>
+    <form id="formEng" hx-post="/ipv6/api/engenharia" hx-target="#saidaEng" hx-swap="innerHTML"
+          hx-disabled-elt="find button[type='submit']">
+        <div class="mb-3">
+            <label for="engConfig" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> Configuração Cisco IPv6</label>
+            <textarea class="aed-input form-control font-monospace" id="engConfig" name="config" rows="12"
+                      spellcheck="false" placeholder="hostname R1&#10;ipv6 unicast-routing&#10;interface GigabitEthernet0/0&#10; ipv6 address 2001:db8:0:1::1/64&#10;interface Serial0/0/0&#10; ipv6 address 2001:db8:0:ffff::/127&#10;ipv6 route ::/0 2001:db8:0:ffff::1&#10;ipv6 router ospf 1" required>hostname R1
+ipv6 unicast-routing
+interface GigabitEthernet0/0
+ description LAN Matriz
+ ipv6 address 2001:db8:0:1::1/64
+ ipv6 ospf 1 area 0
+interface Serial0/0/0
+ description WAN para Filial
+ ipv6 address 2001:db8:0:ffff::/127
+ ipv6 ospf 1 area 0
+ipv6 route 2001:db8:0:2::/64 2001:db8:0:ffff::1
+ipv6 router ospf 1</textarea>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="aed-btn aed-btn-execute" title="Analisar a configuração Cisco IPv6 colada">
+                <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Analisar config
+            </button>
+            <button type="button" class="aed-btn aed-btn-neutral" data-limpar title="Esvaziar e recomeçar">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+            </button>
+        </div>
+    </form>
+</div>
+
+<div id="saidaEng" class="calc-saida ipv6-saida-full">
+    <div class="calc-placeholder">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">manage_search</span>
+        <p class="mb-0">Cole a configuração para ver as interfaces, os endereços (com tipo IANA), as rotas, o
+            processo de roteamento e os achados/recomendações reconstruídos.</p>
+    </div>
+</div>

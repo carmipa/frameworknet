@@ -1,0 +1,29 @@
+{! Aba "Sub-redes": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
+<div class="calc-form-card mb-3">
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_on</span> Dividir prefixo em sub-redes</h2>
+    <p class="calc-hint">Ex.: um <code translate="no">/48</code> em <code translate="no">/64</code> dá <strong>65.536</strong> LANs. Contagem 2^n exata.</p>
+    <form id="formDiv" hx-post="/ipv6/api/dividir" hx-target="#saidaDiv" hx-swap="innerHTML"
+          hx-disabled-elt="find button[type='submit']">
+        <div class="row g-3 align-items-start">
+            <div class="col-lg-8 col-md-7">
+                <label for="ipv6Bloco" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Rede base (CIDR)</label>
+                <input type="text" class="aed-input form-control" id="ipv6Bloco" name="bloco"
+                       placeholder="2001:db8::/32" value="2001:db8::/32" autocomplete="off" spellcheck="false" required>
+            </div>
+            <div class="col-lg-4 col-md-5">
+                <label for="ipv6Alvo" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo alvo</label>
+                <input type="text" class="aed-input form-control input-cidr" id="ipv6Alvo" name="prefixoAlvo"
+                       inputmode="numeric" maxlength="3" placeholder="48" value="48" required>
+                <div class="form-text text-muted">0 a 128. <code translate="no">/64</code> é a LAN padrão (SLAAC).</div>
+            </div>
+        </div>
+        <div class="d-flex gap-2 mt-2">
+            <button type="submit" class="aed-btn aed-btn-execute" title="Dividir a rede base no prefixo alvo informado"><span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span><span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Dividir</button>
+            <button type="button" class="aed-btn aed-btn-neutral" data-limpar title="Esvaziar os campos e apagar o resultado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+        </div>
+    </form>
+</div>
+
+<div id="saidaDiv" class="calc-saida ipv6-saida-full">
+    <div class="calc-placeholder"><span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span><p class="mb-0">Informe a rede base e o prefixo alvo para ver quantas sub-redes cabem (contagem exata, mesmo em 2^n gigante) e as primeiras delas.</p></div>
+</div>

@@ -1,0 +1,53 @@
+<div class="calc-resultado card-tech shadow">
+    <div class="calc-resumo-head">
+        <span class="aed-eyebrow">Faixa → CIDR</span>
+        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-warning" aria-hidden="true" translate="no">linear_scale</span> {f.inicio} → {f.fim}</h3>
+    </div>
+
+    <div class="calc-kpis">
+        <div class="calc-kpi calc-kpi-destaque">
+            <span class="calc-kpi-label">Blocos CIDR</span>
+            <strong class="calc-kpi-valor">{f.quantidadeBlocos}</strong>
+            <span class="calc-kpi-nota">conjunto mínimo que cobre a faixa</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Início</span>
+            <strong class="calc-kpi-valor calc-kpi-mono">{f.inicio}</strong>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Fim</span>
+            <strong class="calc-kpi-valor calc-kpi-mono">{f.fim}</strong>
+        </div>
+    </div>
+
+    <h4 class="h6 calc-secao-titulo mt-3">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span>
+        Prefixos gerados <span class="calc-contador">{f.blocos.size}</span>
+    </h4>
+    <div class="table-responsive calc-tabela-scroll">
+        <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
+            <thead>
+                <tr>
+                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span>Bloco CIDR</th>
+                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span>Primeiro</th>
+                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span>Último</th>
+                    <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span>Endereços</th>
+                </tr>
+            </thead>
+            <tbody>
+            {#for b in f.blocos}
+                <tr>
+                    <td class="font-monospace fw-bold">{b.cidr}</td>
+                    <td class="font-monospace">{b.primeiro}</td>
+                    <td class="font-monospace text-secondary">{b.ultimo}</td>
+                    <td>{b.enderecos}</td>
+                </tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+
+    <p class="calc-explicacao mt-3">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> {f.explicacao}
+    </p>
+</div>

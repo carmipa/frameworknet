@@ -1,0 +1,23 @@
+{! Aba "ULA": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
+<div class="calc-form-card mb-3">
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">vpn_lock</span> Gerador de ULA (RFC 4193)</h2>
+    <p class="calc-hint">O "IP privado do IPv6": um prefixo fd00::/8 único para uso interno.</p>
+    <form id="formUla" hx-post="/ipv6/api/ula" hx-target="#saidaUla" hx-swap="innerHTML"
+          hx-disabled-elt="find button[type='submit']">
+        <div class="row g-3 align-items-start">
+            <div class="col-lg-6 col-md-6">
+                <label for="ipv6Sid" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Subnet ID <span class="text-muted">(opcional, 0–65535)</span></label>
+                <input type="text" class="aed-input form-control input-numeric" id="ipv6Sid" name="subnetId"
+                       inputmode="numeric" placeholder="0" value="0" autocomplete="off" spellcheck="false">
+            </div>
+        </div>
+        <div class="d-flex gap-2 mt-2">
+            <button type="submit" class="aed-btn aed-btn-execute" title="Gerar um prefixo ULA pseudo-aleatório"><span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span><span class="material-symbols-outlined" translate="no" aria-hidden="true">casino</span> Gerar ULA</button>
+            <button type="button" class="aed-btn aed-btn-neutral" data-limpar title="Esvaziar o campo e apagar o resultado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+        </div>
+    </form>
+</div>
+
+<div id="saidaUla" class="calc-saida ipv6-saida-full">
+    <div class="calc-placeholder"><span class="material-symbols-outlined" aria-hidden="true" translate="no">vpn_lock</span><p class="mb-0">Gere um prefixo ULA pseudo-aleatório (fd00::/8) com Global ID de 40 bits e um Subnet ID.</p></div>
+</div>

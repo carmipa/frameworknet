@@ -1,0 +1,86 @@
+<div class="calc-resultado">
+    <div class="calc-resumo-head">
+        <h3 class="h5 mb-1">
+            <span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">merge</span>
+            Rota resumo: {resultado.resumo}/{resultado.prefixoResumo}
+        </h3>
+        <span class="calc-badge {#if resultado.exata}calc-badge-ok{#else}calc-badge-atencao{/if}">
+            {#if resultado.exata}Agregação exata{#else}Cobre espaço extra{/if}
+        </span>
+    </div>
+
+    <div class="calc-kpis">
+        <div class="calc-kpi calc-kpi-destaque">
+            <span class="calc-kpi-label">Prefixo resumo</span>
+            <strong class="calc-kpi-valor">/{resultado.prefixoResumo}</strong>
+            <span class="calc-kpi-nota calc-kpi-mono">{resultado.mascaraResumo}</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Endereços no resumo</span>
+            <strong class="calc-kpi-valor">{resultado.totalEnderecosResumo}</strong>
+            <span class="calc-kpi-nota">{resultado.primeiroEndereco} – {resultado.ultimoEndereco}</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Cobertos pelas redes</span>
+            <strong class="calc-kpi-valor">{resultado.enderecosCobertos}</strong>
+            <span class="calc-kpi-nota">soma sem duplicar sobreposição</span>
+        </div>
+        <div class="calc-kpi {#if !resultado.exata}calc-kpi-alerta{/if}">
+            <span class="calc-kpi-label">Espaço extra arrastado</span>
+            <strong class="calc-kpi-valor">{resultado.enderecosExtras}</strong>
+            <span class="calc-kpi-nota">não pertence a nenhuma rede informada</span>
+        </div>
+    </div>
+
+    <p class="calc-explicacao">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span>
+        {#if resultado.exata}
+        As redes informadas preenchem o bloco resumo por completo: anunciar
+        <strong>{resultado.resumo}/{resultado.prefixoResumo}</strong> equivale exatamente a anunciar todas elas.
+        {#else}
+        O resumo cobre <strong>{resultado.enderecosExtras}</strong> endereço(s) além do que foi informado.
+        Isso é normal em agregação, mas significa que o roteador atrai tráfego para faixas que talvez não
+        existam — verifique se esse espaço não pertence a outro site.
+        {/if}
+    </p>
+
+    <h4 class="h6 calc-secao-titulo">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span>
+        Redes agregadas
+        <span class="calc-contador">{resultado.entradas.size()}</span>
+    </h4>
+    <div class="table-responsive calc-tabela-scroll">
+        <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
+            <thead>
+            <tr>
+                <th title="Ordem da rede informada"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span>#</th>
+                <th title="Endereço de rede informado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span>Rede</th>
+                <th title="Máscara de sub-rede em decimal"><span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_view</span>Máscara</th>
+                <th title="Faixa de endereços que a rede cobre"><span class="material-symbols-outlined" aria-hidden="true" translate="no">linear_scale</span>Faixa</th>
+                <th title="Quantidade de endereços da rede"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span>Endereços</th>
+            </tr>
+            </thead>
+            <tbody>
+            {#for entrada in resultado.entradas}
+            <tr>
+                <td class="text-secondary">{entrada.indice}</td>
+                <td class="font-monospace fw-bold">{entrada.cidr}</td>
+                <td class="font-monospace text-secondary">{entrada.mascara}</td>
+                <td class="font-monospace">{entrada.rede} – {entrada.broadcast}</td>
+                <td>{entrada.totalIps}</td>
+            </tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="h6 calc-secao-titulo mt-4">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span>
+        Como anunciar
+        <button type="button" class="aed-btn aed-btn-neutral btn-sm calc-copiar" data-alvo="cliResumo">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar
+        </button>
+    </h4>
+    <pre class="calc-cli" id="cliResumo" translate="no">{#for linha in resultado.comandosCisco}{linha}
+{/for}</pre>
+</div>

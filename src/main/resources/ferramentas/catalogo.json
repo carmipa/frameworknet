@@ -1,0 +1,124 @@
+{
+  "resumo": "As ferramentas de linha de comando são o instrumento do analista de redes. Abaixo, um catálogo por categoria — o que cada uma faz e um exemplo de uso; os aprofundamentos no submenu detalham cada família e como ler a saída.",
+  "tabelas": [
+    {
+      "titulo": "Ferramentas de rede (CLI)",
+      "colunas": [
+        "Ferramenta",
+        "Categoria",
+        "Para que serve",
+        "Exemplo"
+      ],
+      "linhas": [
+        [
+          "ping",
+          "Conectividade",
+          "Testa a alcançabilidade de um host via ICMP echo e mede a latência de ida e volta.",
+          "ping -c 4 8.8.8.8"
+        ],
+        [
+          "traceroute",
+          "Conectividade",
+          "Descobre o caminho salto a salto até o destino, revelando os roteadores intermediários.",
+          "traceroute -n 1.1.1.1"
+        ],
+        [
+          "mtr",
+          "Conectividade",
+          "Combina ping e traceroute em tempo real, mostrando perda e latência por salto continuamente.",
+          "mtr -rwzbc 100 google.com"
+        ],
+        [
+          "dig",
+          "DNS",
+          "Consulta servidores DNS e exibe registros detalhados com diagnóstico completo da resposta.",
+          "dig +short A example.com @8.8.8.8"
+        ],
+        [
+          "nslookup",
+          "DNS",
+          "Resolve nomes e endereços consultando o DNS de forma interativa ou direta.",
+          "nslookup example.com 1.1.1.1"
+        ],
+        [
+          "host",
+          "DNS",
+          "Faz resolução de DNS simples e rápida para nomes, IPs e registros MX.",
+          "host -t MX example.com"
+        ],
+        [
+          "tcpdump",
+          "Captura",
+          "Captura e filtra pacotes na interface de rede diretamente no terminal.",
+          "tcpdump -i eth0 -nn port 443 -c 50"
+        ],
+        [
+          "tshark",
+          "Captura",
+          "Versão em linha de comando do Wireshark para capturar e dissecar pacotes com filtros de exibição.",
+          "tshark -i eth0 -f \"tcp port 80\" -Y http.request"
+        ],
+        [
+          "wireshark",
+          "Captura",
+          "Analisador gráfico de protocolos para inspeção profunda de capturas de pacotes.",
+          "wireshark -k -i eth0"
+        ],
+        [
+          "nmap",
+          "Varredura",
+          "Descobre hosts, portas abertas, serviços e versões, além de rodar scripts de auditoria.",
+          "nmap -sS -sV -p 1-1000 192.168.0.0/24"
+        ],
+        [
+          "ss",
+          "Sockets",
+          "Lista sockets, conexões e portas em escuta de forma rápida e detalhada.",
+          "ss -tulpn"
+        ],
+        [
+          "netstat",
+          "Sockets",
+          "Exibe conexões de rede, tabelas de roteamento e estatísticas de interface (ferramenta legada).",
+          "netstat -tunap"
+        ],
+        [
+          "ip",
+          "Conectividade",
+          "Gerencia interfaces, endereços, rotas e ARP no Linux (substitui ifconfig e route).",
+          "ip addr show; ip route get 8.8.8.8"
+        ],
+        [
+          "curl",
+          "HTTP-TLS",
+          "Faz requisições HTTP e HTTPS pela linha de comando, inspecionando cabeçalhos, corpo e handshake TLS.",
+          "curl -v -I https://example.com"
+        ],
+        [
+          "openssl",
+          "HTTP-TLS",
+          "Inspeciona certificados, testa handshakes TLS e opera criptografia e chaves.",
+          "openssl s_client -connect example.com:443 -servername example.com"
+        ],
+        [
+          "nc (netcat)",
+          "Sockets",
+          "Abre e testa conexões TCP e UDP arbitrárias, servindo como canivete suíço de rede.",
+          "nc -vz example.com 22"
+        ],
+        [
+          "iperf3",
+          "Transferência",
+          "Mede a largura de banda entre dois pontos em TCP ou UDP com estatísticas de vazão.",
+          "iperf3 -c 192.168.0.10 -t 20"
+        ],
+        [
+          "arp/arping",
+          "Conectividade",
+          "Consulta e testa a camada de enlace, resolvendo o MAC por IP e verificando a presença na LAN.",
+          "arping -c 3 192.168.0.1"
+        ]
+      ]
+    }
+  ]
+}

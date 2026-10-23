@@ -1,0 +1,41 @@
+{#if sim.ok}
+<div class="aed-card mt-3">
+    <div class="card-body">
+        <h2 class="h5 d-flex flex-wrap align-items-center gap-2 text-white mb-2">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">construction</span>
+            Pacote {sim.protocolo} &middot; {sim.totalBytes} bytes
+            {#if sim.checksumValido}
+            <span class="badge bg-success">checksum válido</span>
+            {#else}
+            <span class="badge bg-danger">checksum inválido (didático)</span>
+            {/if}
+        </h2>
+        <ul class="small text-secondary mb-3">
+            {#for c in sim.camadas}<li>{c}</li>{/for}
+        </ul>
+
+        <label class="form-label small text-secondary" for="construtor-hex"><span class="material-symbols-outlined" aria-hidden="true" translate="no">data_object</span> Bytes do pacote (hex)</label>
+        <textarea id="construtor-hex" readonly rows="3"
+                  class="form-control bg-dark text-light border-secondary trafego-hex">{sim.hex}</textarea>
+
+        <div class="d-flex flex-wrap gap-2 mt-3">
+            <button type="button" class="aed-btn aed-btn-teal"
+                    hx-post="/trafego/api/decodificar"
+                    hx-vals='{"hex": "{sim.hex}", "camada": "ethernet"}'
+                    hx-target="#construtor-decodificado"
+                    hx-swap="innerHTML"
+                    title="Decodificar de volta os bytes recém-montados (a ida e a volta)">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span>
+                Decodificar estes bytes
+            </button>
+        </div>
+
+        <div id="construtor-decodificado" class="mt-3" aria-live="polite"></div>
+    </div>
+</div>
+{#else}
+<div class="alert alert-danger mt-3" role="alert">
+    <span class="material-symbols-outlined align-middle" aria-hidden="true" translate="no">error</span>
+    {sim.erro}
+</div>
+{/if}

@@ -1,0 +1,346 @@
+{
+  "resumo": "O ICMP (Internet Control Message Protocol) é o mensageiro da camada de Rede: em vez de transportar dados de aplicações, ele carrega mensagens de controle e de erro que informam quando algo deu errado no caminho de um pacote IP. É ele quem sustenta ferramentas de diagnóstico como o ping e o traceroute, e quem avisa quando um destino está inalcançável ou quando um pacote viveu tempo demais na rede. No IPv6, o ICMPv6 é ainda mais essencial: além do diagnóstico, ele executa o NDP (Neighbor Discovery Protocol), que substitui o ARP e ajuda a configurar endereços — sem ICMPv6, a rede IPv6 simplesmente não funciona.",
+  "conceitos": [
+    {
+      "titulo": "ICMP é controle, não dados",
+      "icone": "swap_horiz",
+      "texto": "O ICMP não existe para transportar conteúdo de aplicações como HTTP ou e-mail. Ele é a rede falando sobre si mesma: 'não consegui entregar', 'o pacote expirou', 'use outra rota'. Cada mensagem ICMP é uma sinalização de controle ou de erro sobre o transporte de outros pacotes IP.",
+      "destaque": "O ICMP não tem número de porta porque não é feito para aplicações — é feito para a própria infraestrutura."
+    },
+    {
+      "titulo": "Como o ping mede o RTT",
+      "icone": "network_ping",
+      "texto": "O ping envia um Echo Request (tipo 8) e cronometra até chegar o Echo Reply (tipo 0). A diferença de tempo entre o envio e a resposta é o RTT (Round-Trip Time), o tempo de ida e volta. O campo Identificador casa a resposta com o processo certo, e o Número de sequência ordena os pacotes para detectar perdas.",
+      "destaque": "RTT = instante da resposta menos instante do envio. É latência de ida e volta, não só de ida."
+    },
+    {
+      "titulo": "Como o traceroute usa o TTL",
+      "icone": "account_tree",
+      "texto": "Cada pacote IP tem um TTL (Time To Live) que cada roteador decrementa em 1. Quando o TTL chega a zero, o roteador descarta o pacote e devolve um Time Exceeded (tipo 11). O traceroute explora isso: envia pacotes com TTL=1, depois 2, depois 3... e cada salto se revela ao devolver o erro, mapeando a rota inteira.",
+      "destaque": "O TTL não é um relógio — conta saltos, não segundos. Cada roteador subtrai 1."
+    },
+    {
+      "titulo": "PMTUD: descobrindo o MTU do caminho",
+      "icone": "straighten",
+      "texto": "O Path MTU Discovery envia pacotes grandes com o bit DF (Don't Fragment) ligado. Se algum enlace no caminho tem MTU menor, o roteador devolve um ICMP tipo 3 código 4 ('fragmentação necessária') informando o tamanho máximo. O emissor então reduz o pacote. Se esse ICMP for bloqueado, o pacote some silenciosamente e a conexão trava.",
+      "destaque": "Bloquear todo ICMP quebra o PMTUD: sites carregam pela metade ou travam sem erro visível."
+    },
+    {
+      "titulo": "ICMPv6 é obrigatório",
+      "icone": "lan",
+      "texto": "No IPv6 não existe ARP nem broadcast. Quem descobre o endereço físico do vizinho, encontra o roteador, autoconfigura endereço e detecta duplicatas é o NDP, que roda inteiramente sobre ICMPv6 (tipos 133 a 137). Filtrar ICMPv6 de forma cega derruba a conectividade IPv6 na origem.",
+      "destaque": "Sem ICMPv6, o IPv6 não sobe: NDP, SLAAC e descoberta de vizinho param."
+    },
+    {
+      "titulo": "Por que bloquear ICMP quebra a rede",
+      "icone": "block",
+      "texto": "Muitos administradores bloqueiam ICMP inteiro achando que aumentam a segurança. O efeito colateral é grave: mata o diagnóstico (ping/traceroute), quebra o PMTUD (conexões travam) e, no IPv6, derruba o NDP. A regra correta é limitar taxa e filtrar tipos perigosos, nunca bloquear tudo.",
+      "destaque": "Segurança não é bloquear ICMP inteiro; é filtrar com critério e limitar a taxa."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Ping e Traceroute em ação: Echo e Time Exceeded",
+    "definicao": "sequenceDiagram\n    participant O as Origem (seu PC)\n    participant R1 as Roteador salto 1\n    participant R2 as Roteador salto 2\n    participant D as Destino\n\n    Note over O,D: PING (mede o RTT)\n    O->>D: Echo Request (tipo 8, id + seq)\n    D-->>O: Echo Reply (tipo 0, mesmo id + seq)\n    Note over O: RTT = resposta menos envio\n\n    Note over O,D: TRACEROUTE (TTL crescente)\n    O->>R1: Pacote com TTL = 1\n    R1-->>O: Time Exceeded (tipo 11)\n    O->>R2: Pacote com TTL = 2\n    R2-->>O: Time Exceeded (tipo 11)\n    O->>D: Pacote com TTL = 3\n    D-->>O: Resposta final (destino alcançado)",
+    "legenda": "No ping, o par Echo Request/Echo Reply mede o tempo de ida e volta. No traceroute, cada roteador que zera o TTL delata a si mesmo com um Time Exceeded, revelando a rota salto a salto até o destino responder diretamente."
+  },
+  "cabecalho": {
+    "titulo": "O cabeçalho ICMP: só 4 campos fixos (8 bytes)",
+    "campos": [
+      {
+        "nome": "Tipo",
+        "bits": 8,
+        "descricao": "Identifica a categoria da mensagem (ex.: 8 = Echo Request, 0 = Echo Reply, 3 = Destino inalcançável, 11 = Tempo excedido). É o campo que define o significado de tudo o que vem depois.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Código",
+        "bits": 8,
+        "descricao": "Refina o Tipo com um subtipo. No Tipo 3, por exemplo, o Código diz se foi rede, host, porta ou fragmentação necessária que causou a falha.",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "Checksum",
+        "bits": 16,
+        "descricao": "Soma de verificação que cobre todo o cabeçalho e os dados ICMP, permitindo detectar corrupção. No ICMPv6 o cálculo inclui um pseudo-cabeçalho IPv6.",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "Resto do cabeçalho",
+        "bits": 32,
+        "descricao": "Campo de conteúdo variável conforme o Tipo. No Echo (tipos 8/0) carrega Identificador (16 bits) + Número de sequência (16 bits); no tipo 3 código 4 carrega o MTU do próximo salto; em muitos erros vai zerado.",
+        "cor": "#059669"
+      }
+    ],
+    "nota": "São apenas 8 bytes fixos: Tipo (8 bits) + Código (8 bits) + Checksum (16 bits) + Resto do cabeçalho (32 bits) = 64 bits. O significado do 'Resto do cabeçalho' MUDA conforme o Tipo — no Echo são Identificador e Número de sequência, no 'fragmentação necessária' é o MTU do próximo salto. O ICMP não é um protocolo de transporte independente: ele viaja DENTRO de um pacote IP, no campo Protocolo = 1 para ICMPv4 e no Next Header = 58 para ICMPv6. Em mensagens de erro, os dados ICMP normalmente incluem o cabeçalho IP + os primeiros bytes do pacote que causou o erro, para o emissor saber qual conexão falhou."
+  },
+  "tabelas": [
+    {
+      "titulo": "Principais tipos ICMPv4",
+      "colunas": [
+        "Tipo",
+        "Nome",
+        "Para que serve"
+      ],
+      "linhas": [
+        [
+          "0",
+          "Echo Reply",
+          "Resposta ao ping — confirma que o host está vivo e alcançável"
+        ],
+        [
+          "3",
+          "Destination Unreachable",
+          "Não foi possível entregar; o Código detalha o motivo (ver tabela de códigos)"
+        ],
+        [
+          "5",
+          "Redirect",
+          "Um roteador avisa que existe rota melhor — útil, mas explorável em ataques"
+        ],
+        [
+          "8",
+          "Echo Request",
+          "A pergunta do ping — 'você está aí?'"
+        ],
+        [
+          "11",
+          "Time Exceeded",
+          "TTL zerou (código 0) ou timeout de remontagem de fragmentos (código 1); base do traceroute"
+        ]
+      ]
+    },
+    {
+      "titulo": "Principais tipos ICMPv6",
+      "colunas": [
+        "Tipo",
+        "Nome",
+        "Função"
+      ],
+      "linhas": [
+        [
+          "128",
+          "Echo Request",
+          "Ping em IPv6 — a pergunta"
+        ],
+        [
+          "129",
+          "Echo Reply",
+          "Ping em IPv6 — a resposta"
+        ],
+        [
+          "133",
+          "Router Solicitation (RS)",
+          "Host pede que roteadores se anunciem"
+        ],
+        [
+          "134",
+          "Router Advertisement (RA)",
+          "Roteador anuncia prefixo e parâmetros (base do SLAAC)"
+        ],
+        [
+          "135",
+          "Neighbor Solicitation (NS)",
+          "Descobre o endereço de enlace do vizinho (equivale ao ARP request)"
+        ],
+        [
+          "136",
+          "Neighbor Advertisement (NA)",
+          "Responde à NS informando o endereço de enlace"
+        ],
+        [
+          "137",
+          "Redirect",
+          "Indica um roteador melhor para determinado destino"
+        ]
+      ]
+    },
+    {
+      "titulo": "Códigos do Tipo 3 (Destination Unreachable)",
+      "colunas": [
+        "Código",
+        "Significado",
+        "Quando aparece"
+      ],
+      "linhas": [
+        [
+          "0",
+          "Rede inalcançável",
+          "Não há rota para a rede de destino"
+        ],
+        [
+          "1",
+          "Host inalcançável",
+          "A rede foi alcançada, mas o host específico não respondeu"
+        ],
+        [
+          "3",
+          "Porta inalcançável",
+          "O host existe, mas nenhum serviço escuta naquela porta UDP"
+        ],
+        [
+          "4",
+          "Fragmentação necessária e DF ligado",
+          "Pacote grande demais para o enlace, com Don't Fragment ativo — sinaliza o PMTUD (carrega o MTU permitido)"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "ICMP Flood / Ping Flood",
+      "como_funciona": "O atacante dispara um volume enorme de Echo Requests contra o alvo, forçando-o a gastar CPU e banda respondendo. Em escala (botnet), vira negação de serviço (DoS/DDoS) que satura o enlace da vítima.",
+      "sinal": "Pico anormal de tráfego ICMP tipo 8, milhares de requests por segundo vindos de muitas origens.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Smurf (amplificação por broadcast)",
+      "como_funciona": "O atacante envia Echo Requests com endereço de origem forjado (o da vítima) para o endereço de broadcast de uma rede. Todos os hosts respondem à vítima ao mesmo tempo, amplificando o tráfego dezenas ou centenas de vezes.",
+      "sinal": "A vítima recebe enxurrada de Echo Replies que nunca solicitou, vindos de uma rede inteira.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "ICMP Tunneling (exfiltração)",
+      "como_funciona": "Dados são escondidos dentro do payload de pacotes Echo Request/Reply para atravessar firewalls que liberam ICMP sem inspecionar. Vira um canal encoberto para exfiltrar dados ou controlar malware (C2).",
+      "sinal": "Pacotes ICMP com payload grande, incomum ou de tamanho variável, e volume de ping desproporcional.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "ICMP Redirect malicioso",
+      "como_funciona": "O atacante injeta mensagens Redirect (tipo 5 no IPv4, tipo 137 no IPv6) forjadas para reescrever a tabela de rotas da vítima, desviando o tráfego por um gateway sob seu controle — habilitando man-in-the-middle.",
+      "sinal": "Mudanças inesperadas de rota; Redirects vindos de origens que não são o gateway legítimo.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Ping of Death (histórico)",
+      "como_funciona": "Envio de um pacote ICMP maior que o limite de 65.535 bytes, fragmentado de forma que, ao remontar, estourava o buffer de sistemas antigos e travava a máquina. Corrigido há décadas, mas é o clássico do abuso de fragmentação.",
+      "sinal": "Fragmentos ICMP cujo total remontado excede o máximo permitido; hoje raro em sistemas atualizados.",
+      "gravidade": "Baixo",
+      "gravidade_cor": "info"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Rate limiting de ICMP",
+      "como_funciona": "Limita a quantidade de mensagens ICMP por segundo que o host ou roteador aceita e responde, absorvendo floods sem derrubar o serviço. O Linux já limita por padrão as mensagens de erro (destino inalcançável, tempo excedido); limitar as respostas a Echo exige configuração (icmp_ratemask ou regra de firewall).",
+      "cobre": "ICMP Flood, Ping Flood e o reflexo do Smurf",
+      "limite": "Reduz o impacto, mas não impede DDoS volumétrico que satura o enlace antes de chegar ao host."
+    },
+    {
+      "nome": "Filtrar com critério, nunca bloquear tudo",
+      "como_funciona": "Em vez de derrubar todo o ICMP, bloqueia apenas tipos perigosos (ex.: Redirect não solicitado) e MANTÉM liberados os essenciais: 'fragmentação necessária' (tipo 3 código 4) para o PMTUD no IPv4; no IPv6, o Packet Too Big (tipo 2, sem ele o PMTUD do IPv6 quebra), Destination Unreachable (1), Time Exceeded (3/0), Parameter Problem (4) e os tipos 133 a 136 do NDP (RFC 4890).",
+      "cobre": "Redirect malicioso, sem quebrar PMTUD nem NDP",
+      "limite": "Exige entender quais tipos são essenciais; filtro cego reintroduz os problemas de conectividade."
+    },
+    {
+      "nome": "Ingress filtering (anti-spoofing)",
+      "como_funciona": "O provedor/borda descarta pacotes cuja origem não pertence à rede de onde vieram (BCP 38). Isso impede o forjamento de endereço que o Smurf e a reflexão precisam.",
+      "cobre": "Smurf, ataques de reflexão/amplificação e DDoS com origem forjada",
+      "limite": "Depende de o provedor implementar; não protege se aplicado só na própria rede."
+    },
+    {
+      "nome": "Desabilitar broadcast direcionado",
+      "como_funciona": "Configurar roteadores para não encaminhar ICMP endereçado a endereços de broadcast (no directed-broadcast). Sem isso, a rede não pode ser usada como amplificadora.",
+      "cobre": "Smurf (elimina o refletor)",
+      "limite": "Protege a rede de virar amplificadora; não protege quem já é a vítima final."
+    },
+    {
+      "nome": "IDS/IPS para detectar túnel",
+      "como_funciona": "Sistemas de detecção inspecionam payload e padrões de ICMP para sinalizar tunelamento: pings com payload anômalo, tamanho variável ou volume incompatível com diagnóstico legítimo.",
+      "cobre": "ICMP Tunneling, canais encobertos e C2",
+      "limite": "Detecta padrões conhecidos; túneis bem disfarçados ou cifrados podem escapar."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ping básico e ajuste de tamanho",
+      "cenario": "Confirmar se um host responde, medir o RTT e observar a perda de pacotes. Variar o tamanho do payload ajuda a testar comportamento de MTU e fragmentação.",
+      "comandos": "ping google.com\n\n# Enviar 5 pacotes e parar (Linux/macOS)\nping -c 5 8.8.8.8\n\n# Definir o tamanho do payload em bytes (-s no Linux, -l no Windows)\nping -s 1472 8.8.8.8          # Linux/macOS\nping -l 1472 8.8.8.8          # Windows\n\n# Testar PMTUD: pacote grande sem fragmentar\nping -M do -s 1472 8.8.8.8    # Linux: -M do liga o bit DF",
+      "explicacao": "A saída mostra o RTT de cada resposta (time=) e o resumo de perda ao final. Com -s você controla o payload: 1472 bytes + 28 de cabeçalhos (20 IP + 8 ICMP) = 1500, o MTU típico da Ethernet. Se o pacote com DF ligado exceder o MTU do caminho, você recebe 'fragmentation needed' — o sinal clássico de problema de MTU."
+    },
+    {
+      "titulo": "Traceroute e mtr (rota e latência por salto)",
+      "cenario": "Mapear o caminho até um destino e identificar em qual salto a latência dispara ou o pacote se perde.",
+      "comandos": "traceroute google.com          # Linux/macOS\ntracert google.com             # Windows\n\n# Forçar ICMP em vez de UDP no traceroute (Linux)\nsudo traceroute -I google.com\n\n# mtr combina ping + traceroute contínuo\nmtr google.com\nmtr -r -c 10 google.com        # relatório de 10 ciclos",
+      "explicacao": "Cada linha é um salto, revelado pelo Time Exceeded (tipo 11) que aquele roteador devolve. Asteriscos (* * *) significam que o salto não respondeu — pode ser filtro de ICMP naquele roteador, não necessariamente falha. O mtr atualiza em tempo real e é ideal para flagrar perda intermitente e o salto exato onde a latência sobe."
+    },
+    {
+      "titulo": "Capturar ICMP com tcpdump",
+      "cenario": "Ver exatamente quais mensagens ICMP entram e saem — essencial para diagnosticar bloqueios, suspeitar de túnel ou entender falhas de PMTUD.",
+      "comandos": "# Capturar somente ICMP na interface\nsudo tcpdump -n -i any icmp\n\n# ICMPv6 (NDP, Echo v6)\nsudo tcpdump -n -i any icmp6\n\n# Ver o payload em hex/ASCII (útil para suspeita de túnel)\nsudo tcpdump -n -X icmp\n\n# Filtrar só por tipo 3 (destino inalcançável)\nsudo tcpdump -n 'icmp[icmptype] == 3'",
+      "explicacao": "O tcpdump mostra o Tipo e o Código de cada mensagem (ex.: 'ICMP echo request', 'ICMP host unreachable'). Se você faz ping e vê o request sair mas nenhum reply voltar, o problema está no caminho ou no filtro do destino. Payloads grandes e repetitivos em Echo são um forte indício de tunelamento."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "100% de perda no ping, mas o host claramente está no ar (site abre, SSH conecta)",
+      "causa_provavel": "O host ou um firewall no caminho está bloqueando ICMP Echo (tipos 8/0). O serviço funciona; só o ping foi filtrado.",
+      "leitura": "Ping não é prova de que o host caiu — muitos ambientes bloqueiam Echo por política. Teste a porta real do serviço em vez de confiar só no ping.",
+      "comando": "ping -c 4 host.example.com; nc -zv host.example.com 443"
+    },
+    {
+      "sintoma": "Traceroute mostra asteriscos (* * *) em um ou mais saltos",
+      "causa_provavel": "Aquele roteador não gera ou tem rate limit de Time Exceeded, ou filtra ICMP. Não significa necessariamente que a rota está quebrada.",
+      "leitura": "Asteriscos no meio com saltos posteriores respondendo = salto silencioso, rota OK. Asteriscos até o fim = o caminho realmente não completa após aquele ponto.",
+      "comando": "mtr -r -c 10 host.example.com"
+    },
+    {
+      "sintoma": "Conexões travam ao transferir arquivos grandes, mas o ping simples funciona",
+      "causa_provavel": "PMTUD quebrado: um enlace tem MTU menor e o ICMP tipo 3 código 4 ('fragmentation needed') está sendo bloqueado. Pacotes grandes somem sem aviso (buraco negro de MTU).",
+      "leitura": "Handshake e pacotes pequenos passam; pacotes grandes com DF são descartados silenciosamente. O ICMP essencial precisa ser liberado.",
+      "comando": "ping -M do -s 1472 host.example.com   # reduza o tamanho até parar de falhar"
+    },
+    {
+      "sintoma": "tcpdump mostra 'ICMP host unreachable' ou 'port unreachable' chegando",
+      "causa_provavel": "Tipo 3 código 1 (host) indica que a rede foi alcançada mas o host não respondeu; código 3 (porta) indica que nenhum serviço UDP escuta naquela porta.",
+      "leitura": "O código do tipo 3 diz exatamente onde a entrega falhou. 'port unreachable' após um UDP é normal (é assim que o traceroute detecta o destino final).",
+      "comando": "sudo tcpdump -n 'icmp[icmptype] == 3'"
+    },
+    {
+      "sintoma": "IPv6 não conecta e o vizinho/roteador não é descoberto",
+      "causa_provavel": "ICMPv6 filtrado indevidamente: sem NS/NA (tipos 135/136) e RS/RA (tipos 133/134), o NDP não resolve endereços nem aprende o gateway.",
+      "leitura": "No IPv6, filtrar ICMPv6 de forma cega derruba a conectividade na origem — os tipos do NDP são obrigatórios, não opcionais.",
+      "comando": "sudo tcpdump -n -i any icmp6"
+    }
+  ],
+  "ficha": [
+    {
+      "rotulo": "RFCs principais",
+      "valor": "RFC 792 (ICMPv4), RFC 4443 (ICMPv6), RFC 4861 (NDP)",
+      "dica": "O ICMPv6 foi reescrito do zero e integra o Neighbor Discovery."
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Rede (camada 3 do OSI / Internet do TCP-IP)",
+      "dica": "Opera junto ao IP, não acima dele como TCP/UDP."
+    },
+    {
+      "rotulo": "Encapsulamento",
+      "valor": "Dentro do IP — Protocolo = 1 (ICMPv4), Next Header = 58 (ICMPv6)",
+      "dica": "Não usa portas; não é protocolo de transporte."
+    },
+    {
+      "rotulo": "Tamanho do cabeçalho",
+      "valor": "8 bytes fixos (Tipo 8b + Código 8b + Checksum 16b + Resto 32b)",
+      "dica": "O 'Resto do cabeçalho' muda de função conforme o Tipo."
+    },
+    {
+      "rotulo": "Confiabilidade",
+      "valor": "Sem entrega garantida, sem conexão, sem retransmissão",
+      "dica": "Mensagens de erro podem ser perdidas ou limitadas por taxa."
+    },
+    {
+      "rotulo": "Ferramentas clássicas",
+      "valor": "ping, traceroute/tracert, mtr, tcpdump",
+      "dica": "O ping depende de Echo (8/0); traceroute/tracert e mtr, de Time Exceeded (11) (o traceroute do Linux usa UDP e termina em Port Unreachable, 3/3); o tcpdump só captura."
+    },
+    {
+      "rotulo": "Segurança",
+      "valor": "Alvo de flood/Smurf/túnel; jamais bloquear inteiro",
+      "dica": "Limitar taxa e filtrar por tipo; manter PMTUD e NDP vivos."
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{! Aprofundamento do módulo. Reaproveita o corpo compartilhado, o CSS e o Mermaid. Variáveis: item, conteudo, aprofundamentos, aprofundamentoAtivo. !}
+{#include shared/base.html}
+{#title}{item.titulo} | Framework de Redes A&D{/title}
+{#description}{item.titulo} — {item.chamada}{/description}
+{#extraHead}
+<link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
+<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='criptografia' /}
+    {#include criptografia/partials/subnav.html /}
+    <header class="text-center mb-4">
+        <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">{item.icone}</span></div>
+        <span class="aed-eyebrow aed-eyebrow-teal">Aprofundamento · Criptografia</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">{item.titulo}</h1>
+        <p class="text-secondary small mx-auto aed-medida-leitura">{conteudo.resumo}</p>
+        {#if conteudo.ficha}
+        <div class="aprof-ficha" role="list">
+            {#for f in conteudo.ficha}
+            <span class="aprof-ficha-item" role="listitem" {#if f.dica}title="{f.dica}"{/if}>
+                <span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">{#if f.rotulo.contains('RFC')}menu_book{#else if f.rotulo.contains('Chave')}key{#else if f.rotulo.contains('Banda') || f.rotulo.contains('Frequ')}cell_tower{#else if f.rotulo.contains('Protocolo')}lan{#else}label{/if}</span>
+                <strong>{f.rotulo}</strong> {f.valor}
+            </span>
+            {/for}
+        </div>
+        {/if}
+    </header>
+    {#include protocolos/partials/corpo_aprofundamento.html /}
+    <div class="text-center mt-4">
+        <a href="/criptografia" class="aed-btn aed-btn-neutral" title="Voltar ao catálogo">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_back</span> Voltar
+        </a>
+    </div>
+</div>
+{/content}
+{#extraScripts}
+<script src="/protocolos/js/aprofundamento.js?v=20261022"></script>
+<script src="/web/vendor/mermaid-11.17.2/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script src="/protocolos/aprofundamento/js/aprofundamento-diagrama.js?v=20261022"></script>
+{/extraScripts}
+{/include}

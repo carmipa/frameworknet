@@ -1,0 +1,469 @@
+/*
+ * Calculadora de Sub-redes e VLANs — estilos exclusivos do módulo.
+ *
+ * Segue a regra de RWD do projeto: rem/clamp para fonte e espaçamento,
+ * % e fr para largura, em nos breakpoints, px apenas em borda e sombra.
+ * Nada de "border: 0.1%" — largura de borda em porcentagem é inválida
+ * e faz a borda sumir.
+ */
+
+.calc-wrap {
+    display: block;
+}
+
+/* ---------- Abas internas ---------- */
+
+.calc-tab-panel {
+    display: none;
+}
+
+.calc-tab-panel.is-active {
+    display: block;
+    animation: calc-fade-in 0.18s ease-out;
+}
+
+@keyframes calc-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(0.4rem);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* ---------- Formulários ---------- */
+
+.calc-form-card {
+    background: var(--aed-input-bg);
+    border: 1px solid var(--aed-border);
+    border-radius: var(--aed-radius-card);
+    padding: clamp(1rem, 4%, 1.6rem);
+}
+
+.calc-form-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--aed-text);
+    font-family: var(--aed-font-display);
+    font-size: 1rem;
+}
+
+.calc-hint {
+    color: var(--aed-text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.calc-hint code,
+.calc-form-card code {
+    color: var(--aed-teal);
+    background: rgba(0, 0, 0, 0.35);
+    padding: 0.05rem 0.3rem;
+    border-radius: 0.25rem;
+}
+
+.calc-textarea {
+    font-family: var(--aed-font-mono);
+    font-size: 0.85rem;
+    resize: vertical;
+    min-height: 8rem;
+}
+
+.calc-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.calc-radio {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--aed-border-input);
+    border-radius: var(--aed-radius-input);
+    color: var(--aed-text-secondary);
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.calc-radio:hover {
+    border-color: var(--aed-teal-dim);
+    color: var(--aed-text);
+}
+
+.calc-radio input {
+    accent-color: var(--aed-teal);
+    cursor: pointer;
+}
+
+.calc-radio:has(input:checked) {
+    border-color: var(--aed-teal);
+    color: var(--aed-text);
+    background: rgba(0, 0, 0, 0.25);
+}
+
+/* ---------- Painel de saída ---------- */
+
+.calc-saida {
+    min-height: 12rem;
+}
+
+.calc-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 16rem;
+    padding: clamp(1rem, 5%, 2rem);
+    border: 1px dashed var(--aed-border);
+    border-radius: var(--aed-radius-card);
+    color: var(--aed-text-faint);
+    text-align: center;
+}
+
+.calc-placeholder .material-symbols-outlined {
+    font-size: 2.5rem;
+    opacity: 0.5;
+}
+
+.calc-resultado {
+    animation: calc-fade-in 0.2s ease-out;
+}
+
+.calc-resumo-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.calc-resumo-head :is(h5, .h5) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--aed-text);
+    font-family: var(--aed-font-display);
+    font-size: 1.05rem;
+}
+
+/* ---------- KPIs ---------- */
+
+.calc-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.calc-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.8rem 0.9rem;
+    background: linear-gradient(180deg, var(--aed-card-top), var(--aed-card-bottom));
+    border: 1px solid var(--aed-border);
+    border-left: 3px solid var(--aed-teal-dim);
+    border-radius: var(--aed-radius-input);
+}
+
+.calc-kpi-destaque {
+    border-left-color: var(--aed-risk-attention);
+}
+
+.calc-kpi-alerta {
+    border-left-color: var(--aed-risk-critical);
+}
+
+.calc-kpi-label {
+    color: var(--aed-text-faint);
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.calc-kpi-valor {
+    color: var(--aed-text);
+    font-family: var(--aed-font-display);
+    font-size: 1.5rem;
+    line-height: 1.15;
+    word-break: break-word;
+}
+
+.calc-kpi-pequeno {
+    font-size: 1rem;
+}
+
+.calc-kpi-mono {
+    font-family: var(--aed-font-mono);
+}
+
+.calc-kpi-nota {
+    color: var(--aed-text-secondary);
+    font-size: .75rem;
+}
+
+/* ---------- Blocos de texto ---------- */
+
+/* Bloco, não flex: com flex, cada trecho de texto e cada <strong> soltos viravam uma COLUNA, e a aba Conceitos do
+   IPv6 rolava 499 px numa tela de 320 (auditoria de responsividade, 22/10/2026). O ícone flutua à esquerda e o
+   texto corre ao lado dele. */
+.calc-explicacao {
+    display: block;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1.25rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--aed-border);
+    border-left: 3px solid var(--aed-risk-didactic);
+    border-radius: var(--aed-radius-input);
+    color: var(--aed-text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+
+.calc-explicacao .material-symbols-outlined {
+    color: var(--aed-risk-didactic);
+    font-size: 1.2rem;
+    float: left;
+    margin-right: 0.6rem;
+    line-height: 1.4;
+}
+
+.calc-explicacao::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.calc-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.7rem 0.9rem;
+    margin-bottom: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--aed-risk-attention);
+    border-radius: var(--aed-radius-input);
+    color: var(--aed-text-secondary);
+    font-size: 0.84rem;
+    line-height: 1.55;
+}
+
+.calc-aviso .material-symbols-outlined {
+    color: var(--aed-risk-attention);
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+.calc-erro {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 1rem 1.1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--aed-risk-critical);
+    border-radius: var(--aed-radius-card);
+    line-height: 1.6;
+}
+
+.calc-erro .material-symbols-outlined {
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+/* ---------- Seções e tabelas ---------- */
+
+.calc-secao-titulo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+    color: var(--aed-teal);
+    font-family: var(--aed-font-display);
+    font-size: 0.92rem;
+}
+
+.calc-secao-titulo .material-symbols-outlined {
+    font-size: 1.1rem;
+}
+
+.calc-contador {
+    margin-left: auto;
+    color: var(--aed-text-faint);
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+.calc-tabela-scroll {
+    max-height: 28rem;
+    overflow: auto;
+    border: 1px solid var(--aed-border);
+    border-radius: var(--aed-radius-input);
+}
+
+.calc-tabela {
+    font-size: 0.82rem;
+    margin: 0;
+}
+
+.calc-tabela thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--aed-nav-bg);
+    color: var(--aed-text-faint);
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+/* Ícone dentro do cabeçalho da coluna: pequeno, discreto e alinhado ao texto. */
+.calc-tabela thead th .material-symbols-outlined {
+    font-size: 0.95rem;
+    vertical-align: middle;
+    opacity: 0.6;
+    margin-right: 0.2rem;
+    text-transform: none;
+}
+
+/* Coluna com explicação no hover ganha o cursor de ajuda. */
+.calc-tabela thead th[title] {
+    cursor: help;
+    text-decoration: underline dotted rgba(255, 255, 255, 0.25);
+    text-underline-offset: .1875rem;
+}
+
+/* Ícone dentro do label de campo do formulário: pequeno e discreto. */
+.form-label .material-symbols-outlined {
+    font-size: 0.95rem;
+    vertical-align: middle;
+    opacity: 0.6;
+    margin-right: 0.15rem;
+}
+
+.calc-linha-destaque td {
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--aed-risk-attention);
+    font-weight: 700;
+}
+
+/* ---------- Badges e pareceres ---------- */
+
+.calc-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--aed-border-input);
+    border-radius: 1rem;
+    color: var(--aed-text-secondary);
+    font-size: .75rem;
+    white-space: nowrap;
+}
+
+.calc-badge-ok {
+    border-color: var(--aed-risk-safe);
+    color: var(--aed-risk-safe);
+}
+
+.calc-badge-atencao {
+    border-color: var(--aed-risk-attention);
+    color: var(--aed-risk-attention);
+}
+
+.calc-parecer {
+    margin-top: 0.9rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--aed-border);
+    border-radius: var(--aed-radius-input);
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.calc-parecer-ok {
+    border-left: 3px solid var(--aed-risk-safe);
+}
+
+.calc-parecer-bloqueado {
+    border-left: 3px solid var(--aed-risk-critical);
+}
+
+.calc-parecer-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    color: var(--aed-text);
+}
+
+.calc-parecer-ok .calc-parecer-head .material-symbols-outlined {
+    color: var(--aed-risk-safe);
+}
+
+.calc-parecer-bloqueado .calc-parecer-head .material-symbols-outlined {
+    color: var(--aed-risk-critical);
+}
+
+.calc-parecer-texto {
+    margin: 0;
+    color: var(--aed-text-secondary);
+    font-size: 0.84rem;
+    line-height: 1.6;
+}
+
+/* ---------- Saída CLI ---------- */
+
+.calc-cli {
+    max-height: 26rem;
+    overflow: auto;
+    padding: 1rem;
+    background: #04060c;
+    border: 1px solid var(--aed-border);
+    border-radius: var(--aed-radius-input);
+    color: var(--aed-teal);
+    font-family: var(--aed-font-mono);
+    font-size: 0.78rem;
+    line-height: 1.6;
+    white-space: pre;
+    margin: 0;
+}
+
+.calc-copiar {
+    margin-left: auto;
+}
+
+/* ---------- Responsivo ---------- */
+
+@media (max-width: 62em) {
+    .calc-tabela-scroll {
+        max-height: 22rem;
+    }
+
+    .calc-kpi-valor {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 36em) {
+    .calc-kpis {
+        grid-template-columns: 1fr;
+    }
+
+    .calc-contador {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .calc-copiar {
+        margin-left: 0;
+    }
+}

@@ -1,0 +1,115 @@
+/* Sub-menu do módulo Protocolos, em DOIS níveis: camadas (nível 1) e os
+   protocolos da camada ativa (nível 2). Carregado em todas as páginas do módulo. */
+
+.protocolo-subnav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--aed-border);
+    border-radius: var(--aed-radius-card);
+    background: linear-gradient(180deg, var(--aed-card-top), var(--aed-card-bottom));
+}
+
+/* --- Nível 1: camadas --- */
+.protocolo-subnav-camadas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.protocolo-subnav-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--aed-border);
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--aed-text-secondary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.protocolo-subnav-item .material-symbols-outlined {
+    font-size: 1.15rem;
+}
+
+.protocolo-subnav-item:hover,
+.protocolo-subnav-item:focus-visible {
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--aed-text);
+}
+
+.protocolo-subnav-item.is-active {
+    background: var(--aed-teal-dim);
+    border-color: rgba(45, 212, 191, 0.45);
+    color: var(--aed-teal);
+    box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.2);
+}
+
+/* --- Nível 2: protocolos da camada ativa --- */
+.protocolo-subnav-protos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--aed-border);
+}
+
+.protocolo-subproto {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid transparent;
+    border-radius: 999rem;
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--aed-text-secondary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.protocolo-subproto .material-symbols-outlined {
+    font-size: 1rem;
+}
+
+.protocolo-subproto:hover,
+.protocolo-subproto:focus-visible {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--aed-text);
+}
+
+.protocolo-subproto.is-active {
+    background: rgba(56, 189, 248, 0.16);
+    border-color: rgba(56, 189, 248, 0.45);
+    color: #7dd3fc;
+}
+
+/* Legenda some no celular, onde o espaço é do menu. */
+.protocolo-subnav-hint {
+    margin-left: auto;
+    display: none;
+    align-items: center;
+    gap: 0.35rem;
+    padding-right: 0.5rem;
+    color: var(--aed-text-faint);
+    font-size: 0.75rem;
+}
+
+.protocolo-subnav-hint .material-symbols-outlined {
+    font-size: 1rem;
+}
+
+@media (min-width: 48em) {
+    .protocolo-subnav-hint {
+        display: inline-flex;
+    }
+}

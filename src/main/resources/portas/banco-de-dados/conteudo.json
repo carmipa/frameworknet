@@ -1,0 +1,305 @@
+{
+  "resumo": "Bancos de dados guardam o ativo mais valioso de um sistema: os próprios dados. Por isso vale uma regra de ouro sem exceção: banco de dados NUNCA fica exposto direto na internet. As portas 3306 (MySQL), 5432 (PostgreSQL), 1433 (SQL Server), 1521 (Oracle), 27017 (MongoDB), 6379 (Redis) e 9200 (Elasticsearch) devem escutar apenas em 127.0.0.1 ou numa rede privada, atrás de firewall default-deny e com autenticação forte. Os vazamentos em massa de MongoDB, Redis e Elasticsearch dos últimos anos aconteceram quase sempre pelo mesmo erro banal: um banco ligado ao mundo inteiro, sem senha nenhuma.",
+  "ficha": [
+    {
+      "rotulo": "Portas da família",
+      "valor": "3306, 5432, 1433, 1521, 27017, 6379, 9200",
+      "dica": "MySQL, PostgreSQL, SQL Server, Oracle, MongoDB, Redis e Elasticsearch, respectivamente."
+    },
+    {
+      "rotulo": "Transporte",
+      "valor": "TCP (todas)",
+      "dica": "Conexões persistentes e orientadas a sessão; nenhuma delas usa UDP no fluxo principal. O SQL Server tem um serviço auxiliar de descoberta em UDP 1434, mas o dado trafega em TCP 1433."
+    },
+    {
+      "rotulo": "Onde deve escutar",
+      "valor": "127.0.0.1 ou rede privada",
+      "dica": "Bind em 0.0.0.0 (todas as interfaces) é a origem da maioria dos vazamentos."
+    },
+    {
+      "rotulo": "Risco típico",
+      "valor": "Exposição pública sem autenticação",
+      "dica": "Leva a dump, exclusão e ransomware de banco em minutos após ficar visível."
+    },
+    {
+      "rotulo": "Autenticação padrão",
+      "valor": "Historicamente fraca ou ausente",
+      "dica": "Mongo e Elastic antigos subiam SEM senha; o Redis só pede senha se você configurar."
+    },
+    {
+      "rotulo": "Faixa das portas",
+      "valor": "Todas registradas (1024-49151)",
+      "dica": "Ficam fora da faixa de sistema (0-1023) e da faixa dinâmica/efêmera (49152-65535)."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "A regra de ouro",
+      "icone": "shield",
+      "texto": "Banco de dados não conversa com a internet, conversa com a sua aplicação. A aplicação (o backend) é o único cliente legítimo do banco, e ela quase sempre roda na mesma máquina ou na mesma rede privada. Não existe motivo bom para um navegador ou um celular abrir uma porta 5432 direto.",
+      "destaque": "O banco fala com o app, nunca com o mundo."
+    },
+    {
+      "titulo": "Bind: em qual interface o banco escuta",
+      "icone": "lan",
+      "texto": "Bind é o endereço em que o serviço aceita conexões. Bind em 127.0.0.1 (loopback) só aceita conexão da própria máquina. Bind em 0.0.0.0 aceita de qualquer lugar, inclusive da internet. Trocar esse único valor no arquivo de configuração é a diferença entre um banco protegido e um banco vazado.",
+      "destaque": "127.0.0.1 = só local. 0.0.0.0 = o planeta inteiro."
+    },
+    {
+      "titulo": "Firewall default-deny",
+      "icone": "security",
+      "texto": "A postura correta é negar tudo por padrão e liberar só o necessário. Mesmo que o banco escute na rede privada, o firewall (do sistema ou do provedor de nuvem) deve bloquear as portas de banco para qualquer origem que não seja o servidor de aplicação autorizado.",
+      "destaque": "Feche tudo primeiro; abra só o buraco exato que precisa."
+    },
+    {
+      "titulo": "Autenticação não é opcional",
+      "icone": "lock",
+      "texto": "Cada banco precisa de usuário e senha forte, com o mínimo de privilégio. Nada de conta admin para a aplicação do dia a dia. O Redis exige a diretiva requirepass; o MongoDB precisa de --auth; o Elasticsearch moderno já vem com segurança ligada, mas versões antigas não pediam nada.",
+      "destaque": "Sem senha forte, a porta aberta é uma porta escancarada."
+    },
+    {
+      "titulo": "Injection chega até a porta",
+      "icone": "warning",
+      "texto": "SQL injection e NoSQL injection não atacam a porta diretamente: eles abusam da aplicação para mandar comandos maliciosos ao banco por dentro da conexão legítima. Fechar a porta ajuda, mas não substitui consultas parametrizadas e validação de entrada no código.",
+      "destaque": "O firewall protege a porta; o código seguro protege a consulta."
+    },
+    {
+      "titulo": "Túnel para administrar",
+      "icone": "terminal",
+      "texto": "Precisa acessar o banco de fora para manutenção? Não abra a porta: use um túnel SSH ou uma VPN. O tráfego do banco viaja dentro do túnel cifrado, e a porta continua fechada para o resto do mundo. Há um aprofundamento dedicado sobre SSH no site.",
+      "destaque": "Administração remota entra pelo túnel, nunca pela porta aberta."
+    }
+  ],
+  "diagrama": {
+    "titulo": "O caminho certo e o caminho que vaza",
+    "definicao": "flowchart TD\n    subgraph CERTO[Modo correto - banco protegido]\n        direction LR\n        A1[Aplicação backend] -->|127.0.0.1 ou rede privada| B1[(Banco de dados)]\n        FW1[Firewall default-deny] -.protege.-> B1\n        AUTH1[Usuário e senha forte] -.exige.-> B1\n    end\n    subgraph ERRADO[Modo errado - banco exposto]\n        direction LR\n        B2[(MongoDB 27017 ou Redis 6379 em bind 0.0.0.0 sem senha)] -->|porta aberta na internet| ATK[Atacante ou scanner automático]\n        ATK -->|dump e exclusão| RANS[Ransomware de banco]\n    end\n    CERTO -.escolha isto.-> FIM[Dados seguros]\n    ERRADO -.leva a isto.-> VAZ[Vazamento e resgate]",
+    "legenda": "À esquerda, a aplicação fala com o banco por loopback ou rede privada, com firewall e senha. À direita, o banco escuta em 0.0.0.0 sem senha e é encontrado por scanners automáticos que copiam, apagam e cobram resgate pelos dados."
+  },
+  "tabelas": [
+    {
+      "titulo": "Porta, banco e o default perigoso",
+      "colunas": [
+        "Porta",
+        "Banco de dados",
+        "Default historicamente perigoso"
+      ],
+      "linhas": [
+        [
+          "3306",
+          "MySQL / MariaDB",
+          "Contas com host % (qualquer origem) e senhas fracas de root"
+        ],
+        [
+          "5432",
+          "PostgreSQL",
+          "pg_hba.conf mal configurado liberando trust ou md5 para a rede toda"
+        ],
+        [
+          "1433",
+          "SQL Server",
+          "Conta sa habilitada com senha fraca e serviço browser em UDP 1434 exposto"
+        ],
+        [
+          "1521",
+          "Oracle",
+          "TNS Listener sem senha permitindo enumeração de serviços"
+        ],
+        [
+          "27017",
+          "MongoDB",
+          "Versões antigas subiam SEM autenticação e em bind 0.0.0.0"
+        ],
+        [
+          "6379",
+          "Redis",
+          "Sem senha por padrão; comandos CONFIG e SAVE abertos a qualquer um"
+        ],
+        [
+          "9200",
+          "Elasticsearch",
+          "Segurança desligada por padrão até a 7.x; API REST inteira aberta na porta"
+        ]
+      ]
+    },
+    {
+      "titulo": "Exposto na internet x bind local: o que muda",
+      "colunas": [
+        "Aspecto",
+        "Exposto (bind 0.0.0.0, sem firewall)",
+        "Protegido (bind 127.0.0.1 ou rede privada)"
+      ],
+      "linhas": [
+        [
+          "Quem alcança a porta",
+          "Qualquer máquina da internet",
+          "Apenas a própria máquina ou o app autorizado"
+        ],
+        [
+          "Tempo até ser achado",
+          "Minutos, por scanners automáticos",
+          "Não aparece em varreduras externas"
+        ],
+        [
+          "Se faltar senha",
+          "Comprometimento total imediato",
+          "Superfície interna, muito mais difícil de abusar"
+        ],
+        [
+          "Risco de ransomware",
+          "Alto: copiam, apagam e cobram resgate",
+          "Praticamente eliminado do lado externo"
+        ],
+        [
+          "Acesso do administrador",
+          "Tentador abrir a porta (errado)",
+          "Via túnel SSH ou VPN (correto)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Como cada banco liga a autenticação",
+      "colunas": [
+        "Banco",
+        "Como exigir senha",
+        "Observação"
+      ],
+      "linhas": [
+        [
+          "MongoDB",
+          "Iniciar com --auth e criar usuários",
+          "Sem --auth, qualquer conexão vira admin"
+        ],
+        [
+          "Redis",
+          "Diretiva requirepass ou ACL (Redis 6+)",
+          "Antes disso, aceita comandos sem autenticar"
+        ],
+        [
+          "Elasticsearch",
+          "xpack.security.enabled: true",
+          "Já é padrão nas versões 8.x"
+        ],
+        [
+          "PostgreSQL",
+          "Método scram-sha-256 no pg_hba.conf",
+          "Evite trust em qualquer linha de rede"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Banco NoSQL exposto sem autenticação (ransomware de banco)",
+      "como_funciona": "Scanners varrem a internet buscando as portas 27017, 6379 e 9200 abertas. Achando um banco sem senha, o atacante conecta, faz o dump dos dados, apaga tudo e deixa uma tabela ou chave exigindo pagamento em criptomoeda para devolver. Foi o padrão de dezenas de milhares de incidentes com MongoDB, Redis e Elasticsearch.",
+      "sinal": "Coleções/chaves substituídas por uma mensagem de resgate; conexões de IPs desconhecidos nos logs; uso de disco caindo de repente.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Abuso de comandos administrativos do Redis",
+      "como_funciona": "Um Redis sem senha aceita CONFIG SET e SAVE de qualquer cliente. O atacante reconfigura o diretório de trabalho e o nome do arquivo de dump para gravar um arquivo malicioso no sistema (por exemplo uma chave SSH autorizada ou um cron job), transformando um cache exposto em execução remota de comando no servidor.",
+      "sinal": "Chaves SSH ou tarefas cron que você não criou; alterações em dir e dbfilename na configuração do Redis.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Brute force de credenciais",
+      "como_funciona": "Com a porta alcançável, o atacante testa milhares de combinações de usuário e senha (root, sa, admin, postgres com senhas comuns). Bancos raramente têm bloqueio de tentativas por padrão, então a porta exposta vira um alvo de tentativa infinita até acertar uma senha fraca.",
+      "sinal": "Enxurrada de logins falhos nos logs do banco vindos do mesmo IP; picos de conexão fora do horário normal.",
+      "gravidade": "Alta",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "SQL / NoSQL injection chegando até a porta",
+      "como_funciona": "O atacante não precisa abrir a porta: ele manda entradas maliciosas por um formulário ou API da aplicação, e o código mal escrito repassa esses comandos ao banco por dentro da conexão legítima. Fechar a porta não impede injection, porque o dano viaja pelo caminho autorizado app-banco.",
+      "sinal": "Consultas anômalas nos logs (UNION SELECT, OR 1=1, operadores como $where); respostas com dados que não deveriam aparecer.",
+      "gravidade": "Alta",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Exfiltração pela API REST do Elasticsearch",
+      "como_funciona": "Com a 9200 aberta e sem segurança, a API REST inteira fica pública. Um simples GET no endereço do cluster lista índices e devolve documentos. O atacante baixa o conteúdo com requisições HTTP comuns, sem precisar de nenhuma ferramenta especial.",
+      "sinal": "Requisições GET a _cat/indices e _search vindas de IPs externos nos logs de acesso.",
+      "gravidade": "Alta",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Bind em loopback ou rede privada",
+      "como_funciona": "Configure o banco para escutar só em 127.0.0.1 quando app e banco estão na mesma máquina, ou no IP da rede privada quando estão em máquinas diferentes da mesma VPC/rede interna. Nunca deixe bind 0.0.0.0 em produção.",
+      "cobre": "Elimina o alcance externo, que é a causa raiz da maioria dos vazamentos.",
+      "limite": "Não protege de ataques vindos de dentro da rede privada nem de injection pela aplicação."
+    },
+    {
+      "nome": "Firewall default-deny",
+      "como_funciona": "No firewall do sistema e no grupo de segurança do provedor de nuvem, bloqueie tudo por padrão e libere as portas de banco apenas para o IP do servidor de aplicação. Feche 3306, 5432, 1433, 1521, 27017, 6379 e 9200 para a internet.",
+      "cobre": "Segunda camada caso o bind seja alterado por engano; barra scanners e brute force externo.",
+      "limite": "Regra ampla demais (liberar uma faixa grande) reabre o risco; precisa de revisão periódica."
+    },
+    {
+      "nome": "Autenticação obrigatória e mínimo privilégio",
+      "como_funciona": "Ative senha forte em todo banco (--auth no Mongo, requirepass/ACL no Redis, xpack.security no Elastic, scram-sha-256 no Postgres). Crie um usuário exclusivo para a aplicação com só as permissões necessárias, nunca a conta de administrador.",
+      "cobre": "Reduz drasticamente o dano de brute force e de qualquer conexão não autorizada.",
+      "limite": "Senha fraca ou reutilizada anula a proteção; conta de app com privilégio demais amplia o estrago de uma injection."
+    },
+    {
+      "nome": "TLS na conexão com o banco",
+      "como_funciona": "Habilite criptografia TLS entre a aplicação e o banco, principalmente quando o tráfego cruza uma rede. Isso impede que alguém no caminho leia credenciais e dados em texto claro. Há um aprofundamento dedicado sobre TLS no site.",
+      "cobre": "Protege contra interceptação e captura de senhas em trânsito.",
+      "limite": "Não substitui firewall nem autenticação; um banco com TLS mas sem senha continua exposto."
+    },
+    {
+      "nome": "Túnel SSH ou VPN para administração",
+      "como_funciona": "Para acessar o banco de fora (backup, manutenção, consultas), nunca abra a porta: crie um túnel SSH encaminhando a porta local para o banco, ou entre pela VPN da rede privada. A porta do banco permanece fechada para a internet. Há um aprofundamento dedicado sobre SSH no site.",
+      "cobre": "Permite acesso administrativo remoto sem expor a porta a ninguém.",
+      "limite": "Depende de proteger bem o próprio SSH/VPN (chaves fortes, sem senha fraca)."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Descobrir em qual interface seu banco escuta",
+      "cenario": "Você quer confirmar se o banco está em 127.0.0.1 (seguro) ou em 0.0.0.0 (exposto). Este é o primeiro teste de qualquer auditoria de porta de banco.",
+      "comandos": "# Linux: listar portas de banco em escuta e o endereço de bind\nsudo ss -tlnp | grep -E '3306|5432|1433|1521|27017|6379|9200'\n\n# Leitura: 127.0.0.1:5432 = seguro (só local)\n#          0.0.0.0:5432   = PERIGO (todas as interfaces)\n\n# Windows (PowerShell):\nGet-NetTCPConnection -State Listen | Where-Object LocalPort -in 3306,5432,1433,1521,27017,6379,9200 | Select-Object LocalAddress,LocalPort,OwningProcess",
+      "explicacao": "Se aparecer 0.0.0.0 ou o IP público ao lado da porta, o banco está acessível de fora. Corrija o bind no arquivo de configuração (bind-address no MySQL, listen_addresses no PostgreSQL, bindIp no MongoDB, bind no Redis) para 127.0.0.1 ou o IP da rede privada e reinicie o serviço."
+    },
+    {
+      "titulo": "Testar se a porta responde do lado de fora",
+      "cenario": "Do seu computador (fora do servidor), você quer verificar se a porta do banco está alcançável pela internet. Do lado de fora, o correto é a conexão ser recusada ou dar timeout.",
+      "comandos": "# Substitua SERVIDOR pelo IP público do seu servidor\n# Testar a porta do PostgreSQL a partir de uma máquina externa\nnc -zv SERVIDOR 5432\n\n# Testar Redis exposto sem senha (só faça isto no SEU próprio servidor de teste)\nredis-cli -h SERVIDOR -p 6379 PING\n# Resposta PONG sem pedir senha = Redis exposto e sem auth\n\n# Testar API do Elasticsearch exposta\ncurl -s http://SERVIDOR:9200/_cat/indices",
+      "explicacao": "O resultado desejado é connection refused ou timeout, provando que firewall e bind estão fazendo o trabalho. Se o nc conectar, o Redis responder PONG sem senha, ou o Elastic listar índices, você tem um banco exposto e precisa fechar a porta imediatamente. Faça este teste apenas contra servidores que são seus."
+    },
+    {
+      "titulo": "Administrar com segurança via túnel SSH",
+      "cenario": "O banco está em 127.0.0.1 no servidor (fechado para a internet) e você precisa rodar consultas de manutenção a partir da sua máquina, sem abrir a porta.",
+      "comandos": "# Cria um tunel: porta 5432 local -> 127.0.0.1:5432 no servidor, por dentro do SSH\nssh -L 5432:127.0.0.1:5432 usuario@SERVIDOR -N\n\n# Em outro terminal, conecte como se o banco fosse local\npsql -h 127.0.0.1 -p 5432 -U app_usuario -d minha_base\n\n# Para Redis, mesma ideia:\n# ssh -L 6379:127.0.0.1:6379 usuario@SERVIDOR -N\n# redis-cli -h 127.0.0.1 -p 6379",
+      "explicacao": "O túnel encaminha a porta local para o banco através da conexão SSH cifrada. Para o resto do mundo a porta do banco continua fechada; só quem tem acesso SSH ao servidor consegue chegar ao banco. Essa é a forma correta de acesso administrativo remoto, sem nunca expor a porta 5432 ou 6379 na internet."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Banco escutando em 0.0.0.0 e alcançável de fora",
+      "causa_provavel": "Bind configurado para todas as interfaces e firewall sem regra de bloqueio.",
+      "comando": "sudo ss -tlnp | grep -E '5432|27017|6379|9200'",
+      "leitura": "Endereço 0.0.0.0 ou IP público ao lado da porta confirma exposição. Troque o bind para 127.0.0.1 ou rede privada e adicione regra de firewall default-deny."
+    },
+    {
+      "sintoma": "Redis responde PONG sem pedir senha",
+      "causa_provavel": "Falta a diretiva requirepass ou ACL; a instância subiu com a configuração padrão aberta.",
+      "comando": "redis-cli -h 127.0.0.1 -p 6379 CONFIG GET requirepass",
+      "leitura": "Valor vazio significa Redis sem autenticação. Defina requirepass com senha forte (ou configure ACL no Redis 6+) e reinicie o serviço."
+    },
+    {
+      "sintoma": "Coleções ou chaves sumiram e apareceu pedido de resgate",
+      "causa_provavel": "Banco NoSQL exposto sem auth foi apagado por ransomware automatizado.",
+      "comando": "mongosh --host 127.0.0.1 --eval 'db.adminCommand({listDatabases:1})'",
+      "leitura": "Bases faltando ou uma coleção com mensagem de cobrança confirmam o incidente. Não pague; restaure do backup, feche a porta, ative --auth e investigue os logs de acesso."
+    },
+    {
+      "sintoma": "Muitos logins falhos de um mesmo IP externo",
+      "causa_provavel": "Brute force de credenciais contra a porta exposta.",
+      "comando": "sudo grep -i 'password authentication failed' /var/log/postgresql/*.log | tail",
+      "leitura": "Sequência de falhas do mesmo IP indica ataque em andamento. Feche a porta no firewall, force senhas fortes e considere bloquear o IP de origem."
+    }
+  ]
+}

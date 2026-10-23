@@ -1,0 +1,43 @@
+{! Aba Geral do módulo Wi-Fi: tabela de padrões 802.11 + planejador de canais
+    2.4 GHz (client-side). Variáveis: conteudo (resumo + tabelas), aprofundamentos,
+    aprofundamentoAtivo. !}
+{#include shared/base.html}
+{#title}Wi-Fi (802.11) | Framework de Redes A&D{/title}
+{#description}Wi-Fi 802.11 na prática: padrões e velocidades, canais de 2,4 GHz e 5 GHz, segurança WPA, WPA2 e WPA3, e planejador de canais para evitar sobreposição.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
+<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261022">
+<link rel="stylesheet" href="/wifi/css/wifi.css?v=20260907">
+{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='wifi' /}
+    {#include wifi/partials/subnav.html /}
+
+    <header class="text-center mb-4">
+        <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">wifi</span></div>
+        <span class="aed-eyebrow aed-eyebrow-teal">Wi-Fi</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Wi-Fi — padrões 802.11</h1>
+        <p class="text-secondary small mx-auto aed-medida-leitura">{conteudo.resumo}</p>
+    </header>
+
+    <section class="aprof-secao">
+        <h2 class="h3 aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cell_tower</span> Planejador de canais (2.4 GHz)</h2>
+        <p class="small text-secondary">Marque os canais em uso na sua vizinhança e veja a sobreposição. Na banda de 2.4 GHz, cada canal ocupa ~22 MHz e os centros ficam a 5 MHz — por isso só três canais cabem sem se sobrepor: <strong>1, 6 e 11</strong> é o trio padrão (com 13 canais, 2/7/12 e 3/8/13 também).</p>
+        <div class="card-tech p-3">
+            <div id="wifi-canais" class="wifi-canais" role="group" aria-label="Canais 2.4 GHz de 1 a 13"></div>
+            <div id="wifi-resultado" class="mt-3 small"></div>
+            <div class="mt-2">
+                <button type="button" id="wifi-recomendar" class="aed-btn aed-btn-teal btn-sm" title="Selecionar o trio padrão sem sobreposição (1, 6 e 11)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">auto_fix_high</span> Usar 1 · 6 · 11</button>
+                <button type="button" id="wifi-limpar" class="aed-btn aed-btn-neutral btn-sm" title="Limpar seleção"><span class="material-symbols-outlined" aria-hidden="true" translate="no">delete_sweep</span> Limpar</button>
+            </div>
+        </div>
+    </section>
+
+    {#include protocolos/partials/tabelas.html tabelas=conteudo.tabelas /}
+</div>
+{/content}
+{#extraScripts}
+<script src="/wifi/js/wifi.js?v=20261001"></script>
+{/extraScripts}
+{/include}

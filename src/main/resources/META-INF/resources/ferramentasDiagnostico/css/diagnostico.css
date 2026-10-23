@@ -1,0 +1,241 @@
+/* Diagnóstico CSS */
+
+
+
+.terminal {
+    background-color: #1e1e1e;
+    border-radius: 0.5rem;
+    padding: 3%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+    max-height: 40vh;
+    overflow-y: auto;
+}
+
+.terminal pre {
+    margin: 0;
+}
+
+.terminal code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9rem;
+    color: var(--aed-risk-safe); /* Verde padrão do sistema */
+}
+
+/* ===== Resultado dissecado (didático, no nível da Calculadora) ===== */
+.diag-resultado { text-align: left; }
+
+.diag-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.diag-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-family: var(--aed-font-display);
+    color: var(--aed-text);
+}
+
+.diag-cmd {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 100%;
+    gap: 0.4rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--aed-border);
+    border-radius: 0.4rem;
+    background: #04060c;
+}
+
+.diag-cmd-rotulo {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--aed-text-faint);
+}
+
+.diag-cmd code {
+    font-family: var(--aed-font-mono);
+    font-size: 0.78rem;
+    color: #7dd3fc;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    min-width: 0;
+}
+
+.diag-resumo {
+    font-size: 0.85rem;
+    color: var(--aed-text-secondary);
+    margin-bottom: 1rem;
+}
+
+.diag-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+}
+
+.diag-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--aed-border);
+    border-left-width: 3px;
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.diag-kpi-valor { font-family: var(--aed-font-mono); font-size: 1.15rem; font-weight: 700; color: var(--aed-text); }
+.diag-kpi-label { font-size: 0.75rem; font-weight: 600; color: var(--aed-text); }
+.diag-kpi-nota { font-size: .75rem; color: var(--aed-text-secondary); }
+
+.diag-kpi-info { border-left-color: #38bdf8; }
+.diag-kpi-info .diag-kpi-valor { color: #7dd3fc; }
+.diag-kpi-success { border-left-color: #34d399; }
+.diag-kpi-success .diag-kpi-valor { color: #6ee7b7; }
+.diag-kpi-warning { border-left-color: #f59e0b; }
+.diag-kpi-warning .diag-kpi-valor { color: #fcd34d; }
+.diag-kpi-danger { border-left-color: #f43f5e; }
+.diag-kpi-danger .diag-kpi-valor { color: #fda4af; }
+
+.diag-secao {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 1.25rem 0 0.6rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--aed-border);
+    font-family: var(--aed-font-display);
+    font-size: 1rem;
+    color: var(--aed-teal);
+}
+
+.diag-tabela thead th {
+    background: #0d1622;
+    color: #7dd3fc;
+    border-color: #1e3346;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: .75rem;
+}
+
+.diag-tabela td { border-color: rgba(255, 255, 255, 0.06); font-size: 0.8rem; }
+
+.diag-linha-success td:nth-child(2) { color: #6ee7b7; font-weight: 700; }
+.diag-linha-warning td:nth-child(2) { color: #fcd34d; font-weight: 700; }
+.diag-linha-danger td:nth-child(2) { color: #fda4af; font-weight: 700; }
+
+.diag-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.diag-bloco {
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--aed-border);
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.diag-bloco-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--aed-text);
+    margin-bottom: 0.5rem;
+}
+
+.diag-passos, .diag-observar {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--aed-text-secondary);
+}
+
+.diag-legenda {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.diag-legenda-item {
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--aed-border);
+    border-left: 3px solid rgba(56, 189, 248, 0.5);
+    border-radius: 0.5rem;
+}
+
+.diag-legenda-item dt {
+    font-family: var(--aed-font-mono);
+    font-size: 0.78rem;
+    color: #7dd3fc;
+    margin-bottom: 0.15rem;
+}
+
+.diag-legenda-item dd {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--aed-text-secondary);
+}
+
+.diag-bruta {
+    margin-top: 1.25rem;
+}
+
+.diag-bruta > summary {
+    cursor: pointer;
+    font-size: 0.78rem;
+    color: var(--aed-text-faint);
+    user-select: none;
+}
+
+.diag-nota {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 0.5rem;
+    background: rgba(56, 189, 248, 0.06);
+    color: var(--aed-text-secondary);
+    font-size: 0.78rem;
+}
+
+.diag-nota .material-symbols-outlined { font-size: 1.1rem; flex: 0 0 auto; }
+
+/* ===== Intro por aba e ajuda de exemplo nos campos ===== */
+.diag-intro {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.1rem;
+    border: 1px solid var(--aed-border);
+    border-left: 3px solid var(--aed-teal);
+    border-radius: 0.6rem;
+    background: rgba(45, 212, 191, 0.06);
+    font-size: 0.85rem;
+    color: var(--aed-text-secondary);
+}
+
+.diag-intro strong { color: var(--aed-text); }
+.diag-intro .material-symbols-outlined { flex: 0 0 auto; color: var(--aed-teal); }
+
+/* A ajuda de exemplo dos campos usa a classe compartilhada .aed-ajuda (app.css). */

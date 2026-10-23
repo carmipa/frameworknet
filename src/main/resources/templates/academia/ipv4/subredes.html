@@ -1,0 +1,183 @@
+{! Lição IPv4 · Sub-redes. Ver (um /24 dividido em 4), Mexer (rede, prefixo e quantas sub-redes
+   ou quantos hosts, com a lista ao vivo) e Provar (prefixo, quantidade e a K-ésima sub-rede, com a
+   correção nomeando o engano). Contas no navegador (R10). Variáveis: nivel, licao, proxima, activeMainMenu. !}
+{#include shared/base.html}
+{#title}Sub-redes — Academia | Framework de Redes A&D{/title}
+{#description}Lição de sub-redes da Academia: divida um bloco IPv4 em partes iguais, descubra o novo prefixo, quantos hosts cabem em cada uma e o endereço de cada sub-rede.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/academia/core/css/academia.css?v=20261022">
+<link rel="stylesheet" href="/academia/ipv4/css/ipv4.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5 acad-pagina" data-acad-licao="{licao.id}">
+    {#include shared/main_menu.html activeMainMenu='academia' /}
+    {#include academia/core/cabecalho-licao.html /}
+
+    <div class="acad-etapas">
+        <section class="acad-etapa acad-etapa-larga acad-leitura" id="ler" aria-labelledby="ler-titulo">
+            <h2 class="acad-etapa-titulo" id="ler-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
+                Entenda
+            </h2>
+            <p class="acad-explica">Leia primeiro; depois veja um /24 virar quatro /26 e divida os seus próprios blocos.</p>
+            <div class="acad-leitura-texto">
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
+                    <p>Uma empresa raramente usa um bloco grande inteiro numa rede só. Dividir em <strong>sub-redes</strong> põe
+                    cada setor na sua rede, diminui o tráfego de broadcast e permite regras de segurança diferentes entre os
+                    setores. Quem planeja precisa responder: qual prefixo usar, quantas sub-redes cabem e onde cada uma começa.</p>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
+                    <p>Dividir é <strong>emprestar bits</strong> da parte de host para a parte de rede. Cada bit emprestado
+                    <strong>dobra</strong> a quantidade de sub-redes e corta o tamanho de cada uma pela metade.</p>
+                    <p>Por quantidade: para ter pelo menos <span class="acad-valor" translate="no">n</span> sub-redes, ache o menor número de bits <span class="acad-valor" translate="no">b</span> com
+                    <span class="acad-valor" translate="no">2^b ≥ n</span>; o novo prefixo é o antigo mais <span class="acad-valor" translate="no">b</span>. Exemplo: <span class="acad-valor" translate="no">192.168.1.0/24</span> em 5 sub-redes →
+                    <span class="acad-valor" translate="no">b = 3</span> (porque 2² = 4 não basta e 2³ = 8 basta) → <span class="acad-valor" translate="no">/27</span>: 8 sub-redes de 32 endereços (30 hosts
+                    cada).</p>
+                    <p>Onde cada uma começa: a primeira é a própria base, e as seguintes andam de um bloco em um bloco. A
+                    K-ésima começa em <span class="acad-valor" translate="no">base + (K − 1) × tamanho</span>: a 4ª é <span class="acad-valor" translate="no">192.168.1.0 + 3 × 32</span> = <span class="acad-valor" translate="no">192.168.1.96</span>.</p>
+                    <p>Por hosts: para 50 hosts em cada sub-rede, ache o menor bloco com <span class="acad-valor" translate="no">2^h − 2 ≥ 50</span>: <span class="acad-valor" translate="no">h = 6</span>
+                    dá 62 hosts, então o prefixo é <span class="acad-valor" translate="no">32 − 6 = /26</span>.</p>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
+                    <ul>
+                        <li>Somar a quantidade de sub-redes ao prefixo (<span class="acad-valor" translate="no">/24 + 5 = /29</span>): o que se soma são <strong>bits</strong>.</li>
+                        <li>Arredondar para baixo: 2 bits dão só 4 sub-redes, e não cabem 5.</li>
+                        <li>Pular a primeira sub-rede — ela começa no próprio endereço da base.</li>
+                    </ul>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
+                    <ul>
+                        <li>Sub-redes = <span class="acad-valor" translate="no">2^(bits emprestados)</span>; hosts por sub-rede = <span class="acad-valor" translate="no">2^(bits de host) − 2</span>.</li>
+                        <li>Tamanho do bloco = <span class="acad-valor" translate="no">2^(32 − prefixo)</span>; as sub-redes andam de bloco em bloco.</li>
+                    </ul>
+                </section>
+            </div>
+        </section>
+
+        <section class="acad-etapa" id="ver" aria-labelledby="ver-titulo">
+            <h2 class="acad-etapa-titulo" id="ver-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span>
+                Ver
+            </h2>
+            <p class="acad-explica">
+                Dividir é emprestar bits da parte de host para a parte de rede. Cada bit emprestado dobra o
+                número de sub-redes e corta pela metade o tamanho de cada uma:
+                <span class="acad-valor" translate="no">2</span> bits dão
+                <span class="acad-valor" translate="no">4</span> sub-redes,
+                <span class="acad-valor" translate="no">3</span> bits dão
+                <span class="acad-valor" translate="no">8</span>.
+            </p>
+            <div id="ver-animacao">
+                <p class="mb-1">
+                    Bloco: <span class="acad-valor" translate="no">192.168.1.0/24</span> · Novo prefixo:
+                    <span class="acad-valor" id="ver-prefixo" translate="no">—</span>
+                </p>
+                <ul class="acad-lista-subredes" id="ver-lista" aria-label="As sub-redes do exemplo"></ul>
+                {#include academia/core/controles-animacao.html /}
+            </div>
+        </section>
+
+        <section class="acad-etapa" id="mexer" aria-labelledby="mexer-titulo">
+            <h2 class="acad-etapa-titulo" id="mexer-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">touch_app</span>
+                Mexer
+            </h2>
+            <div class="row g-3">
+                <div class="col-12 col-md-7 acad-campo">
+                    <label for="mexer-ip">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span>
+                        Rede de partida
+                    </label>
+                    <input id="mexer-ip" aria-describedby="mexer-ip-eco" class="form-control" autocomplete="off" data-history="off" maxlength="32"
+                           value="192.168.1.0" title="Endereço do bloco que será dividido">
+                    <span class="acad-eco" id="mexer-ip-eco"></span>
+                </div>
+                <div class="col-12 col-md-5 acad-campo">
+                    <label for="mexer-prefixo">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span>
+                        Prefixo do bloco
+                    </label>
+                    <input id="mexer-prefixo" aria-describedby="mexer-prefixo-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="8" value="/24" title="De /0 a /32; com ou sem a barra">
+                    <span class="acad-eco" id="mexer-prefixo-eco"></span>
+                </div>
+                <div class="col-12 col-md-7 acad-campo">
+                    <label for="mexer-modo">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">tune</span>
+                        Dividir por
+                    </label>
+                    <select id="mexer-modo" class="form-select" title="Escolha se você sabe quantas sub-redes quer ou quantos hosts cada uma precisa">
+                        <option value="subredes" selected>quantidade de sub-redes</option>
+                        <option value="hosts">hosts em cada sub-rede</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-5 acad-campo">
+                    <label for="mexer-quantidade">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">pin</span>
+                        Quantidade
+                    </label>
+                    <input id="mexer-quantidade" aria-describedby="mexer-quantidade-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="12" value="4" title="Quantas sub-redes, ou quantos hosts por sub-rede">
+                    <span class="acad-eco" id="mexer-quantidade-eco"></span>
+                </div>
+            </div>
+            <dl class="acad-resultado">
+                <div><dt>Novo prefixo</dt><dd id="mexer-novo" translate="no">—</dd></div>
+                <div><dt>Máscara</dt><dd id="mexer-mascara" translate="no">—</dd></div>
+                <div><dt>Sub-redes</dt><dd id="mexer-total" translate="no">—</dd></div>
+                <div><dt>Hosts em cada</dt><dd id="mexer-hosts" translate="no">—</dd></div>
+            </dl>
+            <p class="acad-explica mt-2" id="mexer-aviso" aria-live="polite"></p>
+            <ul class="acad-lista-subredes" id="mexer-lista" aria-label="As sub-redes calculadas"></ul>
+        </section>
+
+        <section class="acad-etapa acad-etapa-larga" id="provar" aria-labelledby="provar-titulo">
+            <h2 class="acad-etapa-titulo" id="provar-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span>
+                Provar
+            </h2>
+            <p class="acad-pergunta" id="provar-pergunta"></p>
+            <form id="provar-form" class="row g-3 align-items-end" novalidate>
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="provar-resposta">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">edit</span>
+                        <span id="provar-rotulo">Sua resposta</span>
+                    </label>
+                    <input id="provar-resposta" aria-describedby="provar-eco" class="form-control" autocomplete="off" data-history="off"
+                           maxlength="32" title="Escreva a resposta; o formato aceito aparece logo abaixo">
+                </div>
+                <div class="col-12 col-md-6 d-flex flex-wrap gap-2 align-items-center">
+                    <button type="submit" class="aed-btn aed-btn-teal" title="Confere a sua resposta">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">check_circle</span>
+                        <span>Conferir</span>
+                    </button>
+                    <button type="button" class="aed-btn aed-btn-neutral" id="provar-outra"
+                            title="Troca por outra pergunta, sem contar tentativa">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">casino</span>
+                        <span>Outra pergunta</span>
+                    </button>
+                </div>
+            </form>
+            <span class="acad-eco d-block mt-1" id="provar-eco"></span>
+            <div class="acad-feedback" id="provar-feedback" aria-live="polite"></div>
+            <div class="acad-placar" id="provar-placar"></div>
+        </section>
+    </div>
+
+    {#include academia/core/rodape-licao.html /}
+</div>
+{/content}
+{#extraScripts}
+<script src="/academia/core/js/normalizador.js?v=20261002b"></script>
+<script src="/academia/core/js/motor.js?v=20261002b"></script>
+<script src="/academia/core/js/progresso.js?v=20261002b"></script>
+<script src="/academia/core/js/niveis.js?v=20261002b"></script>
+<script src="/academia/core/js/sinais.js?v=20261002b"></script>
+<script src="/academia/ipv4/js/contas-ipv4.js?v=20261002b"></script>
+<script src="/academia/ipv4/js/subredes.js?v=20261002b"></script>
+{/extraScripts}
+{/include}

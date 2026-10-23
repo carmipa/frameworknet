@@ -1,0 +1,185 @@
+{! Ferramentas > Rede: Windows x Linux. Comparacao por intencao. Variaveis:
+    activeMainMenu, aprofundamentos, aprofundamentoAtivo, categorias, comandos. !}
+{#include shared/base.html}
+{#title}Rede: Windows × Linux — Ferramentas | Framework de Redes A&D{/title}
+{#description}Comandos de rede comparados entre Windows e Linux, por intenção: ver IP, rotas, ARP, DNS, conectividade, portas e processos — com parâmetros explicados, saída de exemplo (simulada) e como interpretar.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
+<link rel="stylesheet" href="/ferramentas/css/rede.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5 rede-page">
+    {#include shared/main_menu.html activeMainMenu='ferramentas' /}
+    {#include ferramentas/partials/subnav.html aprofundamentos=aprofundamentos aprofundamentoAtivo='rede' /}
+
+    <header class="mb-3">
+        <span class="aed-eyebrow aed-eyebrow-teal">Ferramentas · Rede comparada</span>
+        <h1 class="aed-title" style="font-family:var(--aed-font-display);">
+            <span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">compare_arrows</span>
+            Rede: Windows × Linux
+        </h1>
+        <p class="aed-subtitle aed-medida-leitura">
+            Escolha <strong>o que você quer descobrir</strong> e veja o comando de cada sistema lado a lado — com os
+            parâmetros explicados, uma saída de exemplo e como lê-la. As saídas são
+            <strong class="rede-aviso-inline">simuladas</strong>: nada é executado no seu computador nem em servidores.
+        </p>
+    </header>
+
+    {! Barra de busca + filtros por categoria. !}
+    <div class="rede-toolbar">
+        <div class="rede-busca">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">search</span>
+            <input type="search" id="rede-busca" class="form-control bg-dark text-light border-secondary"
+                   placeholder="Busque por tarefa: ver meu ip, quem usa esta porta, o nome não resolve…"
+                   autocomplete="off" aria-label="Buscar tarefa ou comando">
+            <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="rede-limpar-busca" data-bs-trigger="hover" title="Limpar a busca">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">delete_sweep</span> Limpar
+            </button>
+        </div>
+        <div class="rede-chips" role="group" aria-label="Filtrar por categoria">
+            <button type="button" class="rede-chip is-active" data-cat="todas" aria-pressed="true">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">apps</span> Todas
+            </button>
+            {#for cat in categorias}
+            <button type="button" class="rede-chip rede-cat-{cat.id}" data-cat="{cat.id}" aria-pressed="false">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">{cat.icone}</span> {cat.rotulo}
+            </button>
+            {/for}
+        </div>
+        <p class="rede-contador"><strong id="rede-visiveis">{comandos.size}</strong> de {comandos.size} tarefas</p>
+    </div>
+
+    <p id="rede-vazio" class="rede-vazio" hidden>
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">search_off</span>
+        Nenhuma tarefa casou com a busca. <button type="button" class="rede-link" id="rede-vazio-limpar"><span class="material-symbols-outlined" translate="no" aria-hidden="true">filter_alt_off</span> Limpar filtros</button>.
+    </p>
+
+    {! Cartões comparativos — um por INTENÇÃO. !}
+    <div class="rede-lista" id="rede-lista">
+        {#for c in comandos}
+        <article class="rede-cmd rede-cat-borda-{c.categoria}" data-categoria="{c.categoria}"
+                 data-termos="{c.intencao} {c.pergunta} {c.termos.toString} {c.windows.comando} {c.linux.comando}">
+            <header class="rede-cmd-cab">
+                <span class="rede-cmd-cat rede-cat-{c.categoria}" aria-hidden="true">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">{#for cat in categorias}{#if cat.id == c.categoria}{cat.icone}{/if}{/for}</span>
+                </span>
+                <div>
+                    <h2 class="rede-cmd-titulo">{c.intencao}</h2>
+                    <p class="rede-cmd-pergunta">{c.pergunta}</p>
+                </div>
+            </header>
+
+            <div class="rede-cols">
+                {#for plat in c.plataformas}
+                <div class="rede-col rede-col-{plat.classe}">
+                    <div class="rede-col-cab">
+                        <span class="rede-os {plat.classe}"><span class="material-symbols-outlined" aria-hidden="true" translate="no">{plat.icone}</span> {plat.rotulo}</span>
+                        <span class="rede-shell">{plat.shell}</span>
+                        {#if plat.admin}<span class="rede-badge rede-badge-admin" title="Precisa de privilégio elevado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield_person</span> admin/root</span>{/if}
+                    </div>
+                    <div class="rede-cmd-linha">
+                        <code class="rede-code" translate="no">{plat.comando}</code>
+                        <button type="button" class="rede-copiar" data-copiar="{plat.comando}" data-bs-trigger="hover"
+                                title="Copiar o comando" aria-label="Copiar: {plat.comando}">
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">content_copy</span>
+                        </button>
+                    </div>
+                    <p class="rede-disp"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">inventory_2</span> {plat.disponibilidade}</p>
+                    <ul class="rede-params">
+                        {#for p in plat.params}
+                        <li><code translate="no">{p.flag}</code> — {p.explica}</li>
+                        {/for}
+                    </ul>
+                </div>
+                {/for}
+            </div>
+
+            <details class="rede-saida">
+                <summary><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> Ver saída de exemplo (simulada) e campos</summary>
+                <div class="rede-saida-corpo">
+                    {#for plat in c.plataformas}
+                    <div class="rede-saida-bloco">
+                        <div class="rede-saida-cab"><span class="rede-os {plat.classe}"><span class="material-symbols-outlined" aria-hidden="true" translate="no">{plat.icone}</span> {plat.rotulo}</span> <span class="rede-simulado">saída simulada</span></div>
+                        <pre class="rede-pre" translate="no">{plat.saida}</pre>
+                        <div class="rede-campos">
+                            {#for campo in plat.campos}
+                            <button type="button" class="rede-campo" data-sig="{campo.significado}">
+                                <span class="rede-campo-rot">{campo.rotulo}</span>
+                            </button>
+                            {/for}
+                        </div>
+                    </div>
+                    {/for}
+                    <p class="rede-campo-explica" id="rede-campo-explica-{c.id}" role="status" aria-live="polite" hidden></p>
+                </div>
+            </details>
+
+            <div class="rede-notas">
+                <p class="rede-nota rede-nota-limite"><span class="material-symbols-outlined" aria-hidden="true" translate="no">warning</span> <strong>O que NÃO prova:</strong> {c.limite}</p>
+                <p class="rede-nota rede-nota-proximo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_forward</span> <strong>Próximo passo:</strong> {c.proximoPasso}</p>
+                {#if c.diferenca}<p class="rede-nota rede-nota-dif"><span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span> <strong>Não é equivalência exata:</strong> {c.diferenca}</p>{/if}
+                <p class="rede-fonte"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">menu_book</span> Fonte: {c.fonte}</p>
+            </div>
+        </article>
+        {/for}
+    </div>
+
+    {! Investigacoes guiadas. !}
+    <section class="rede-guias" aria-labelledby="rede-guias-tit">
+        <h2 id="rede-guias-tit" class="rede-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">troubleshoot</span> Investigações guiadas</h2>
+        <p class="text-secondary small mb-3">Roteiros de raciocínio — sugerem comandos e explicam a decisão. O framework não executa nada nem conhece a sua máquina.</p>
+        <div class="rede-guias-grid">
+            <details class="rede-guia">
+                <summary><span class="material-symbols-outlined" aria-hidden="true" translate="no">wifi_off</span> "Estou sem acesso à internet"</summary>
+                <ol class="rede-guia-passos">
+                    <li><strong>Tenho IP e gateway?</strong> Windows <code translate="no">ipconfig /all</code> · Linux <code translate="no">ip a</code> + <code translate="no">ip route</code>. Sem IP válido ou sem rota padrão, o problema é local (DHCP/config).</li>
+                    <li><strong>O gateway responde?</strong> <code translate="no">ping 192.168.1.1</code>. Se não responde, o problema está entre você e o gateway (cabo/Wi-Fi/switch).</li>
+                    <li><strong>Chego num IP externo?</strong> <code translate="no">ping 8.8.8.8</code>. Responde por IP mas não por nome → é DNS. Não responde por IP → roteamento/enlace.</li>
+                    <li><strong>O nome resolve?</strong> Windows <code translate="no">Resolve-DnsName example.com</code> · Linux <code translate="no">dig example.com</code>. Falha aqui confirma DNS.</li>
+                </ol>
+            </details>
+            <details class="rede-guia">
+                <summary><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> "O nome não resolve"</summary>
+                <ol class="rede-guia-passos">
+                    <li><strong>Qual resolvedor estou usando?</strong> Linux <code translate="no">dig example.com</code> mostra o SERVER que respondeu; Windows <code translate="no">ipconfig /all</code> lista os servidores DNS.</li>
+                    <li><strong>É o meu resolvedor ou o nome?</strong> Teste um resolvedor público explícito: <code translate="no">dig @8.8.8.8 example.com</code>. Resolve com ele mas não com o seu → problema no resolvedor local.</li>
+                    <li><strong>É cache?</strong> Compare com outro host; TTL alto pode manter resposta antiga por um tempo.</li>
+                </ol>
+            </details>
+            <details class="rede-guia">
+                <summary><span class="material-symbols-outlined" aria-hidden="true" translate="no">door_front</span> "Não consigo acessar uma porta"</summary>
+                <ol class="rede-guia-passos">
+                    <li><strong>O nome resolve?</strong> Se não, resolva o DNS primeiro (não adianta testar a porta de um nome que não vira IP).</li>
+                    <li><strong>O host responde?</strong> <code translate="no">ping</code> (lembrando: ICMP pode ser bloqueado — não responder não prova nada).</li>
+                    <li><strong>A porta abre daqui?</strong> Windows <code translate="no">Test-NetConnection host -Port 443</code> · Linux <code translate="no">nc -vz host 443</code>. Falha pode ser firewall, rota ou serviço parado — não conclua a causa só disso.</li>
+                    <li><strong>Onde está o serviço?</strong> No próprio host, veja se algo escuta a porta: <code translate="no">ss -tulpn</code> / <code translate="no">netstat -ano</code>.</li>
+                </ol>
+            </details>
+            <details class="rede-guia">
+                <summary><span class="material-symbols-outlined" aria-hidden="true" translate="no">hearing</span> "Quero descobrir qual processo está ouvindo"</summary>
+                <ol class="rede-guia-passos">
+                    <li><strong>Liste as portas em escuta com o PID.</strong> Windows <code translate="no">netstat -ano</code> · Linux <code translate="no">ss -tulpn</code>.</li>
+                    <li><strong>Ligue o PID ao programa.</strong> Windows <code translate="no">netstat -anob</code> (admin) ou <code translate="no">Get-Process -Id PID</code> · Linux <code translate="no">sudo ss -tulpn</code> / <code translate="no">sudo lsof -i</code>.</li>
+                    <li><strong>Confirme a legitimidade.</strong> O nome do processo pode ser forjado: verifique o caminho do binário, a origem e o hash antes de confiar.</li>
+                </ol>
+            </details>
+        </div>
+    </section>
+
+    {! Perguntas de interpretacao. !}
+    <section class="rede-quiz" aria-labelledby="rede-quiz-tit">
+        <h2 id="rede-quiz-tit" class="rede-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span> Teste sua interpretação</h2>
+        <div class="rede-quiz-grid" id="rede-quiz"></div>
+    </section>
+
+    <p class="rede-rodape-aviso">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">verified_user</span>
+        Todas as saídas desta página são <strong>exemplos simulados</strong> para estudo. O framework nunca executa
+        comandos no seu computador nem faz sondagens contra alvos reais.
+    </p>
+</div>
+{/content}
+{#extraScripts}
+<script src="/ferramentas/js/rede.js?v=20260909"></script>
+{/extraScripts}
+{/include}

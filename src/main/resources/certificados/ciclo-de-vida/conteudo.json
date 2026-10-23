@@ -1,0 +1,309 @@
+{
+  "resumo": "O ciclo de vida de um certificado X.509 vai do pedido até a aposentadoria da chave. Começa quando o titular gera um par de chaves (privada + pública) na sua própria máquina; monta um CSR (Certificate Signing Request) que carrega a chave pública e os dados de identidade, assinado pela chave privada como prova de posse; envia o CSR para a Autoridade Certificadora (CA), que valida a identidade e o domínio; a CA emite o certificado assinado; o titular instala o certificado no servidor; e, antes do vencimento, renova. A chave privada NUNCA acompanha o CSR nem sobe para a CA. Validades curtas (90 dias, padrão Let's Encrypt) empurram a operação para a automação via ACME, reduzindo a janela de comprometimento e o risco de esquecer a renovação. No próprio site você encontra o aprofundamento do protocolo TLS e o Inspetor TLS do site (simulação: você informa os dados e ele aplica as regras de validação).",
+  "ficha": [
+    {
+      "rotulo": "Sigla-chave",
+      "valor": "CSR (Certificate Signing Request)",
+      "dica": "Bloco PKCS#10 que leva a chave pública e os dados, assinado pela chave privada."
+    },
+    {
+      "rotulo": "O que a CA recebe",
+      "valor": "Somente a chave pública + identidade",
+      "dica": "A chave privada permanece no host que a gerou."
+    },
+    {
+      "rotulo": "Prova de posse",
+      "valor": "Assinatura do CSR pela chave privada",
+      "dica": "Demonstra que quem pede o certificado controla a chave privada correspondente."
+    },
+    {
+      "rotulo": "Validade típica",
+      "valor": "90 dias (Let's Encrypt) / até 200 dias (TLS público desde 15/03/2026; 47 dias em 2029)",
+      "dica": "Janela curta = menor exposição e renovação obrigatoriamente automatizada."
+    },
+    {
+      "rotulo": "Automação padrão",
+      "valor": "ACME (RFC 8555), ex.: certbot",
+      "dica": "Emite e renova sem intervenção humana."
+    },
+    {
+      "rotulo": "Renovar",
+      "valor": "Antes de expirar (folga de 1/3 da validade)",
+      "dica": "O certbot renova por volta de 30 dias antes do vencimento."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "A chave privada NUNCA sai com o CSR",
+      "icone": "key",
+      "texto": "Você gera o par de chaves localmente e envia para a CA apenas o CSR, que contém a chave pública e os dados de identidade. A chave privada fica no seu servidor, protegida por permissões de arquivo (ou por um HSM). Se a chave privada precisasse ir para a CA, um vazamento na CA comprometeria todos os titulares. Esse desacoplamento é o alicerce da confiança em PKI.",
+      "destaque": "Chave privada nunca viaja; só a pública vai no CSR."
+    },
+    {
+      "titulo": "O CSR carrega chave pública e prova de posse",
+      "icone": "description",
+      "texto": "O CSR é um bloco PKCS#10 com a chave pública, o Subject (CN, O, OU, etc.) e, opcionalmente, extensões como o SAN. O bloco inteiro é assinado pela chave privada correspondente. Ao verificar essa assinatura com a chave pública presente no próprio CSR, a CA confirma que o solicitante realmente controla a chave privada, sem jamais vê-la. Isso é a prova de posse (proof of possession).",
+      "destaque": "Um CSR é a chave pública + identidade, autoassinado como prova de posse."
+    },
+    {
+      "titulo": "Validação e emissão pela CA",
+      "icone": "verified_user",
+      "texto": "A CA valida antes de emitir. Para certificados DV (Domain Validation), prova-se controle do domínio (desafio HTTP-01 ou DNS-01 no ACME). Para OV/EV, valida-se a organização. Só depois a CA copia a chave pública do CSR para um certificado X.509, adiciona validade, serial, extensões e SAN, e assina com a chave privada da CA. O Subject vem do que a CA aceitou validar, não necessariamente do que o CSR pediu.",
+      "destaque": "A CA não confia cegamente no CSR: valida a identidade e só então assina."
+    },
+    {
+      "titulo": "Validade curta e automação (ACME)",
+      "icone": "autorenew",
+      "texto": "Validades de 90 dias reduzem o tempo em que uma chave comprometida ou um certificado emitido por engano permanecem úteis, e diminuem a dependência de listas de revogação. Como renovar a cada 90 dias na mão não escala, o ACME automatiza: o agente (certbot, acme.sh, Caddy) gera o par, monta o CSR, resolve o desafio, baixa e instala o certificado, e reexecuta tudo periodicamente.",
+      "destaque": "Validade curta só é viável porque o ACME automatiza a renovação."
+    },
+    {
+      "titulo": "Rotação de chaves",
+      "icone": "cached",
+      "texto": "Renovar não é obrigatoriamente reemitir com a MESMA chave. A boa prática é a rotação: gerar um novo par de chaves a cada renovação, de modo que uma chave privada vazada tenha valor por, no máximo, a validade de um certificado. Alguns fluxos ACME reutilizam a chave por padrão (reuse-key); prefira gerar chave nova salvo quando um pinning de chave pública (estilo HPKP, hoje via pinning em apps) exigir estabilidade planejada.",
+      "destaque": "Rotacionar a chave a cada renovação limita o dano de um vazamento."
+    },
+    {
+      "titulo": "Instalação e cadeia completa",
+      "icone": "account_tree",
+      "texto": "Instalar o certificado significa entregar ao servidor a chave privada, o certificado da entidade final e a cadeia de intermediárias (fullchain). Faltando um intermediário, muitos clientes recusam a conexão mesmo com o certificado válido. Para ver a cadeia efetivamente servida, use o openssl s_client -showcerts; no site, o aprofundamento do protocolo TLS explica o handshake e o Inspetor TLS simula a validação.",
+      "destaque": "Sirva sempre a fullchain: entidade final + intermediárias."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Ciclo de vida: do par de chaves à renovação automática",
+    "definicao": "sequenceDiagram\n    participant T as Titular / Servidor\n    participant K as Chave privada (local)\n    participant CA as Autoridade Certificadora\n    T->>K: 1. Gera par de chaves (privada + pública)\n    Note over K: A chave privada NUNCA sai daqui\n    T->>T: 2. Monta o CSR (chave pública + dados)\n    K-->>T: Assina o CSR (prova de posse)\n    T->>CA: 3. Envia o CSR (só a chave pública)\n    CA->>CA: 4. Valida identidade / controle do domínio\n    CA-->>T: 5. Emite o certificado X.509 assinado\n    T->>T: 6. Instala certificado + cadeia (fullchain)\n    Note over T,CA: Validade curta (ex.: 90 dias)\n    T->>CA: 7. Renova antes de expirar (ACME automatiza)\n    CA-->>T: Novo certificado (idealmente com chave nova)",
+    "legenda": "As setas cheias (->>) representam envios; as tracejadas (-->>) representam respostas/retornos. Repare que a chave privada só aparece do lado do titular: para a CA vai apenas a chave pública dentro do CSR. Com ACME (Let's Encrypt), os passos 3 a 7 rodam sozinhos, periodicamente."
+  },
+  "tabelas": [
+    {
+      "titulo": "Passos do ciclo de vida",
+      "colunas": [
+        "#",
+        "Etapa",
+        "O que acontece",
+        "Quem executa"
+      ],
+      "linhas": [
+        [
+          "1",
+          "Geração de chaves",
+          "Cria par de chaves (RSA 2048+/3072 ou ECDSA P-256) na própria máquina",
+          "Titular / servidor"
+        ],
+        [
+          "2",
+          "Criação do CSR",
+          "Monta PKCS#10 com chave pública + Subject + SAN; assina com a chave privada",
+          "Titular"
+        ],
+        [
+          "3",
+          "Submissão",
+          "Envia o CSR à CA (via ACME, portal ou API); a chave privada não vai junto",
+          "Titular"
+        ],
+        [
+          "4",
+          "Validação",
+          "CA prova controle do domínio (HTTP-01/DNS-01) ou valida a organização",
+          "CA"
+        ],
+        [
+          "5",
+          "Emissão",
+          "CA copia a chave pública para um X.509, define validade/serial/extensões e assina",
+          "CA"
+        ],
+        [
+          "6",
+          "Instalação",
+          "Servidor recebe chave privada + certificado + cadeia (fullchain) e recarrega o serviço",
+          "Titular / automação"
+        ],
+        [
+          "7",
+          "Renovação",
+          "Antes de expirar, repete 1-6; idealmente com chave nova (rotação)",
+          "ACME / operador"
+        ],
+        [
+          "8",
+          "Revogação (se preciso)",
+          "Chave comprometida => CA revoga (CRL/OCSP); não espera o vencimento",
+          "CA a pedido do titular"
+        ]
+      ]
+    },
+    {
+      "titulo": "O que vai no CSR x o que vai no certificado emitido",
+      "colunas": [
+        "Campo",
+        "No CSR (você pede)",
+        "No certificado (CA decide)"
+      ],
+      "linhas": [
+        [
+          "Chave pública",
+          "Sim (a sua)",
+          "Sim (copiada do CSR)"
+        ],
+        [
+          "Chave privada",
+          "NUNCA",
+          "NUNCA"
+        ],
+        [
+          "Subject (CN, O, OU)",
+          "Proposto pelo solicitante",
+          "Só o que a CA validou: o DV não leva O, e o OU é proibido nos certificados TLS públicos (CA/B Forum)"
+        ],
+        [
+          "SAN (domínios)",
+          "Proposto (recomendado)",
+          "Confirmado após validação de cada domínio"
+        ],
+        [
+          "Prova de posse",
+          "Assinatura do CSR pela chave privada",
+          "Não se aplica (já verificada)"
+        ],
+        [
+          "Validade (notBefore/notAfter)",
+          "Não (não é sua decisão)",
+          "Definida pela CA"
+        ],
+        [
+          "Número de série",
+          "Não",
+          "Gerado pela CA (único)"
+        ],
+        [
+          "Emissor (Issuer)",
+          "Não",
+          "Distinguished Name da CA"
+        ],
+        [
+          "Assinatura",
+          "Do solicitante (autoassinatura do CSR)",
+          "Da CA (chave privada da intermediária)"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "CSR com dados falsos numa CA que não valida",
+      "como_funciona": "O atacante monta um CSR pedindo um domínio ou organização que não controla. Se a CA emite sem provar controle do domínio (validação fraca ou furada), sai um certificado válido para um alvo que não é do solicitante, permitindo se passar por outra parte em TLS.",
+      "sinal": "Certificado legítimo em logs de Certificate Transparency para um domínio seu que você nunca solicitou.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Chave privada fraca ou reutilizada",
+      "como_funciona": "Gerar RSA de 1024 bits, usar geradores de números aleatórios previsíveis, ou reaproveitar a mesma chave em vários serviços e por muitos anos. Uma chave quebrada ou vazada compromete todos os certificados que a usam, sem que a CA perceba nada de errado no CSR.",
+      "sinal": "Chaves com tamanho abaixo do mínimo, módulos duplicados entre hosts, ou a mesma chave há anos em produção.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Esquecer de renovar (outage por expiração)",
+      "como_funciona": "Renovação manual dependente de memória humana. O certificado expira, os clientes passam a recusar a conexão (erro NET::ERR_CERT_DATE_INVALID) e o serviço cai. Não é um ataque externo, mas o resultado indisponibiliza o sistema tão bem quanto um DoS.",
+      "sinal": "notAfter no passado; alertas de monitoramento silenciados; picos de erro de handshake TLS.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Vazamento da chave privada na instalação",
+      "como_funciona": "Chave privada com permissões largas (0644), copiada em backups sem cifra, colada em pipelines de CI/CD ou em imagens de container públicas. Quem lê o arquivo pode se passar pelo servidor até a revogação.",
+      "sinal": "Arquivos .key legíveis por todos, presentes em repositórios ou artefatos de build.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Sequestro do desafio ACME",
+      "como_funciona": "O atacante que controla temporariamente o roteamento HTTP, um registro DNS ou o webroot do desafio consegue responder ao HTTP-01/DNS-01 e emitir um certificado válido para o domínio da vítima.",
+      "sinal": "Registros CAA ausentes; certificados inesperados em Certificate Transparency; alterações não planejadas em DNS.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Automação com ACME (certbot, acme.sh, Caddy)",
+      "como_funciona": "Um agente gera o par, monta o CSR, resolve o desafio, instala a fullchain e reexecuta em cron/timer. Remove o erro humano de renovação e viabiliza validades curtas.",
+      "cobre": "Esquecer de renovar; janela longa de exposição",
+      "limite": "Depende de acesso ao webroot/DNS; falha silenciosa se o timer não rodar ou o desafio quebrar. Monitore o resultado."
+    },
+    {
+      "nome": "Monitorar validade e Certificate Transparency",
+      "como_funciona": "Alertas que disparam com folga (ex.: 30 e 14 dias antes do notAfter) via probes externos, e vigilância dos logs de CT para detectar emissões não solicitadas para seus domínios.",
+      "cobre": "Outage por expiração; CSR com dados falsos / emissão indevida",
+      "limite": "Alerta avisa, não conserta; CT detecta após a emissão, não antes."
+    },
+    {
+      "nome": "Gerar chave forte e rotacionar",
+      "como_funciona": "RSA 3072+ ou ECDSA P-256, com CSPRNG do sistema operacional, e gerar chave NOVA a cada renovação. Registro CAA no DNS restringe quais CAs podem emitir.",
+      "cobre": "Chave fraca/reutilizada; emissão por CA não autorizada",
+      "limite": "Não protege chave já vazada; CAA depende de a CA respeitar o registro."
+    },
+    {
+      "nome": "HSM ou cofre para chaves críticas",
+      "como_funciona": "Chaves de CA, de assinatura de código e de raízes ficam em HSM (FIPS 140-2/3) ou em cofre gerenciado; a chave é usada sem nunca ser exportada em texto claro.",
+      "cobre": "Vazamento da chave privada; comprometimento de chave crítica",
+      "limite": "Custo e complexidade; exagero para um TLS de site comum, essencial para CA/assinatura."
+    },
+    {
+      "nome": "Permissões mínimas e segredos fora do repo",
+      "como_funciona": "Arquivo de chave privada em 0600, dono restrito, fora de imagens de container e de repositórios; injeção via cofre de segredos no deploy.",
+      "cobre": "Vazamento na instalação; chave em CI/CD e backups",
+      "limite": "Exige disciplina de pipeline; não substitui rotação após suspeita de vazamento."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Gerar par de chaves e CSR com OpenSSL",
+      "cenario": "Você vai pedir um certificado TLS para www.exemplo.com.br. Gera a chave privada localmente e monta o CSR com SAN. Repare que a chave privada (server.key) fica só na sua máquina; para a CA você enviaria apenas server.csr.",
+      "comandos": "# Gera chave privada + CSR de uma vez (RSA 2048), com SAN embutido\nopenssl req -new -newkey rsa:2048 -nodes \\\n  -keyout server.key \\\n  -out server.csr \\\n  -subj \"/C=BR/ST=SP/L=Sao Paulo/O=Exemplo Ltda/CN=www.exemplo.com.br\" \\\n  -addext \"subjectAltName=DNS:www.exemplo.com.br,DNS:exemplo.com.br\"\n\n# Alternativa com ECDSA (P-256): chave mais curta e segurança MAIOR (P-256 equivale a RSA 3072)\nopenssl ecparam -genkey -name prime256v1 -out server.key\nopenssl req -new -key server.key -out server.csr \\\n  -subj \"/CN=www.exemplo.com.br\" \\\n  -addext \"subjectAltName=DNS:www.exemplo.com.br\"\n\n# Lê e confere o conteúdo do CSR (Subject, chave pública, SAN)\nopenssl req -in server.csr -noout -text -verify",
+      "explicacao": "O -nodes deixa a chave sem senha (comum em servidores que reiniciam sozinhos). O -verify no último comando confirma a autoassinatura do CSR: é a prova de posse. Note que em nenhum momento a chave privada entra no CSR; o openssl req -in ... -text mostra apenas a chave PÚBLICA."
+    },
+    {
+      "titulo": "Emissão e renovação automáticas com certbot (ACME)",
+      "cenario": "Didático: usar o cliente ACME oficial do Let's Encrypt para emitir e renovar sem montar CSR na mão. Ideal começar em ambiente de teste com --staging para não gastar cota de emissão real.",
+      "comandos": "# Emissão via desafio HTTP-01 (webroot), ambiente de teste\ncertbot certonly --staging \\\n  --webroot -w /var/www/html \\\n  -d www.exemplo.com.br -d exemplo.com.br\n\n# Simula a renovação (não altera nada, só testa o fluxo)\ncertbot renew --dry-run\n\n# Ver certificados gerenciados e datas de expiração\ncertbot certificates\n\n# Gerar chave NOVA a cada renovação (rotação), em vez de reutilizar\ncertbot renew --no-reuse-key",
+      "explicacao": "O certbot faz internamente tudo do laboratório anterior: gera o par, monta o CSR, resolve o desafio e instala a fullchain em /etc/letsencrypt/live/.../. O timer do systemd (certbot.timer) reexecuta o renew duas vezes ao dia, renovando por volta de 30 dias antes do vencimento. Tire o --staging só quando o fluxo estiver validado."
+    },
+    {
+      "titulo": "Conferir se a chave corresponde ao certificado (modulus)",
+      "cenario": "Depois de instalar, você quer garantir que server.key e server.crt são do mesmo par. Se os hashes divergirem, o servidor recusa a chave e o TLS não sobe.",
+      "comandos": "# Para RSA: compara o módulo da chave e do certificado\nopenssl x509 -in server.crt -noout -modulus | openssl md5\nopenssl rsa  -in server.key -noout -modulus | openssl md5\n# Os dois md5 têm de ser IDÊNTICOS\n\n# Para ECDSA: compara a chave pública derivada dos dois lados\nopenssl x509 -in server.crt -noout -pubkey | openssl md5\nopenssl pkey -in server.key -pubout       | openssl md5\n\n# Ver a validade (notBefore / notAfter) do certificado instalado\nopenssl x509 -in server.crt -noout -dates",
+      "explicacao": "O módulo (RSA) ou a chave pública derivada (ECDSA) é um identificador do par: se os md5 batem, chave e certificado casam. Este é o teste que resolve o erro clássico 'key values mismatch' ao iniciar o servidor. Para inspecionar o que um servidor realmente serve numa conexão, use o openssl s_client; o Inspetor TLS do site é uma simulação das regras de validação."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Navegador acusa NET::ERR_CERT_DATE_INVALID e o serviço parece fora do ar",
+      "causa_provavel": "Certificado expirou (notAfter no passado); renovação automática falhou ou nunca foi configurada.",
+      "comando": "openssl x509 -in server.crt -noout -dates\n# ou, remoto:\nopenssl s_client -connect www.exemplo.com.br:443 -servername www.exemplo.com.br 2>/dev/null | openssl x509 -noout -dates",
+      "leitura": "Se o notAfter é anterior à data atual, o certificado está vencido: renove (certbot renew) e recarregue o serviço. Investigue por que o timer/cron não renovou antes."
+    },
+    {
+      "sintoma": "Servidor não inicia com erro 'key values mismatch' ou 'private key does not match certificate'",
+      "causa_provavel": "A chave privada instalada não corresponde ao certificado (arquivos trocados, chave de outra emissão).",
+      "comando": "openssl x509 -in server.crt -noout -pubkey | openssl md5\nopenssl pkey -in server.key -pubout       | openssl md5",
+      "leitura": "Os dois md5 precisam ser idênticos. Se diferem, o par está trocado: localize a chave gerada junto com o CSR daquele certificado ou reemita a partir de um novo par."
+    },
+    {
+      "sintoma": "Alguns clientes conectam, outros recusam com 'unable to get local issuer certificate'",
+      "causa_provavel": "Cadeia incompleta: o servidor serve só a entidade final, sem as intermediárias (falta a fullchain).",
+      "comando": "openssl s_client -connect www.exemplo.com.br:443 -servername www.exemplo.com.br -showcerts 2>/dev/null | grep -E \"s:|i:\"",
+      "leitura": "A saída deve encadear entidade final -> intermediária -> raiz. Se aparece só um certificado, configure o servidor com o fullchain.pem em vez do cert.pem isolado. O Inspetor TLS do site simula essa validação com os dados que você informa."
+    },
+    {
+      "sintoma": "Aparece em Certificate Transparency um certificado para seu domínio que você não pediu",
+      "causa_provavel": "Emissão indevida (CSR com dados falsos aceito por alguma CA) ou desafio ACME sequestrado.",
+      "comando": "openssl s_client -connect www.exemplo.com.br:443 -servername www.exemplo.com.br 2>/dev/null | openssl x509 -noout -issuer -serial -dates",
+      "leitura": "Confira o Issuer e o serial contra o que você emitiu. Se for de uma CA que você não usa, publique/ajuste o registro CAA no DNS e solicite revogação à CA emissora."
+    }
+  ]
+}

@@ -1,0 +1,202 @@
+/* Segurança CSS */
+
+
+
+.icon-animated {
+    font-size: 5rem;
+    animation: scale-up 0.5s ease-out;
+}
+
+@keyframes scale-up {
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.resultado-permit {
+    color: var(--aed-risk-safe);
+}
+
+.resultado-deny {
+    color: var(--aed-risk-critical);
+}
+
+.resultado-nomatch {
+    color: var(--aed-text-faint);
+}
+
+/* --- Inspetor TLS / Certificado (aba nova) --- */
+.tls-veredito {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--aed-border);
+    border-left-width: 3px;
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.02);
+    text-align: left;
+}
+
+.tls-veredito .material-symbols-outlined {
+    font-size: 2.4rem;
+    flex: 0 0 auto;
+}
+
+.tls-veredito-success { border-left-color: var(--aed-risk-safe); }
+.tls-veredito-warning { border-left-color: var(--aed-risk-attention); }
+.tls-veredito-danger { border-left-color: var(--aed-risk-critical); }
+
+.tls-checagens {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.tls-checagem {
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--aed-border);
+    border-left-width: 3px;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    text-align: left;
+}
+
+.tls-checagem-success { border-left-color: var(--aed-risk-safe); }
+.tls-checagem-warning { border-left-color: var(--aed-risk-attention); }
+.tls-checagem-danger { border-left-color: var(--aed-risk-critical); }
+
+.tls-check-icone {
+    font-size: 1.4rem;
+    flex: 0 0 auto;
+}
+
+.tls-check-corpo { flex: 1 1 auto; min-width: 0; }
+
+.tls-check-cabeca {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+}
+
+.tls-check-nome {
+    font-weight: 700;
+    color: var(--aed-text);
+}
+
+/* --- Painel de referência das 5 checagens --- */
+.tls-referencia {
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--aed-border);
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.tls-ref-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--aed-indigo);
+    margin-bottom: 0.5rem;
+}
+
+.tls-ref-lista {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    color: var(--aed-text-secondary);
+}
+
+.tls-ref-lista strong { color: var(--aed-text); }
+
+.tls-ref-nota {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.35rem;
+    margin: 0.6rem 0 0;
+    font-size: 0.76rem;
+    color: #fcd34d;
+}
+
+.tls-ref-nota .material-symbols-outlined { font-size: 1rem; flex: 0 0 auto; }
+
+/* A ajuda de exemplo dos campos usa a classe compartilhada .aed-ajuda (app.css). */
+
+/* -------------------------------------------------- Canvas de topologia (aba arrastar) */
+/* O canvas rola dentro da moldura em tela estreita: encolhido até caber, o texto dos equipamentos chegava a 3 px. */
+.topo-canvas-wrap { width: 100%; overflow-x: auto; }
+
+.topo-canvas {
+    width: 100%;
+    min-width: 56.25rem;
+    height: auto;
+    aspect-ratio: 900 / 460;
+    display: block;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: .75rem;
+    background-color: #0a0e16;
+    background-image:
+        linear-gradient(rgba(148, 163, 184, 0.10) .0625rem, transparent .0625rem),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.10) .0625rem, transparent .0625rem);
+    background-size: 1.875rem 1.875rem;
+    touch-action: none; /* pointer-drag também no touch, sem o scroll roubar o gesto */
+}
+
+.topo-node { cursor: grab; }
+.topo-node:active { cursor: grabbing; }
+
+.topo-node-box {
+    fill: #0f1622;
+    stroke-width: 2;
+    transition: filter 0.12s ease;
+}
+.topo-node.sel .topo-node-box {
+    stroke-width: 3;
+    filter: drop-shadow(0 0 6px rgba(45, 212, 191, 0.55));
+}
+.topo-node.connect-first .topo-node-box {
+    stroke-dasharray: 5 3;
+    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.7));
+}
+
+.topo-node-id {
+    fill: #eef2f8;
+    font-family: "Inter Tight", system-ui, sans-serif;
+    font-size: .9375rem;
+    font-weight: 700;
+}
+.topo-node-sub {
+    fill: #94a3b8;
+    font-family: "Inter Tight", system-ui, sans-serif;
+    font-size: .75rem;
+}
+
+.topo-edge {
+    stroke: #5b6679;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+}
+
+.topo-props {
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: .625rem;
+    padding: 0.75rem;
+    background: rgba(15, 22, 34, 0.6);
+}
+
+#canvas-ligar.active {
+    border-color: #2dd4bf;
+    color: #2dd4bf;
+    box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.5) inset;
+}

@@ -1,0 +1,186 @@
+{! Lição Transporte · Janela e retransmissão. Ver (Go-Back-N com janela 4 e o segmento 2 perdido),
+   Mexer (segmentos, janela, perda e modo, com o registro de envios ao vivo) e Provar (total de
+   transmissões e limite da janela, com a correção nomeando o engano). Contas no navegador (R10).
+   Variáveis: nivel, licao, proxima, activeMainMenu. !}
+{#include shared/base.html}
+{#title}Janela e retransmissão — Academia | Framework de Redes A&D{/title}
+{#description}Lição de janela deslizante da Academia: perca um segmento de propósito e compare quantas transmissões o Go-Back-N e a repetição seletiva fazem até entregar tudo.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/academia/core/css/academia.css?v=20261022">
+<link rel="stylesheet" href="/academia/transporte/css/transporte.css?v=20261001b">
+{/extraHead}
+{#content}
+<div class="container py-5 acad-pagina" data-acad-licao="{licao.id}">
+    {#include shared/main_menu.html activeMainMenu='academia' /}
+    {#include academia/core/cabecalho-licao.html /}
+
+    <div class="acad-etapas">
+        <section class="acad-etapa acad-etapa-larga acad-leitura" id="ler" aria-labelledby="ler-titulo">
+            <h2 class="acad-etapa-titulo" id="ler-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
+                Entenda
+            </h2>
+            <p class="acad-explica">Leia primeiro; depois veja a perda acontecer na animação e compare os dois modos no Mexer.</p>
+            <div class="acad-leitura-texto">
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
+                    <p>Se o emissor esperasse a confirmação de cada segmento antes de mandar o próximo (o "pare e espere"), a
+                    maior parte do tempo seria gasta esperando a ida e volta. A <strong>janela</strong> deixa vários segmentos
+                    no caminho ao mesmo tempo, sem confirmação. Quanto maior a janela, mais dados por segundo — no máximo
+                    <span class="acad-valor" translate="no">janela ÷ tempo de ida e volta</span>.</p>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
+                    <p>Com a janela de <span class="acad-valor" translate="no">W</span> segmentos começando no mais antigo ainda sem confirmação (a <strong>base</strong>),
+                    podem sair os segmentos de <span class="acad-valor" translate="no">base</span> até <span class="acad-valor" translate="no">base + W − 1</span>. Cada confirmação na ordem faz a janela andar.</p>
+                    <p>Quando um segmento se perde, há duas formas clássicas de recuperar:</p>
+                    <ul>
+                        <li><strong>Go-Back-N</strong>: o receptor só aceita na ordem e descarta o que chega depois do buraco.
+                            Quando o tempo do perdido estoura, o emissor reenvia ele e tudo o que já tinha saído depois.</li>
+                        <li><strong>Repetição seletiva</strong>: o receptor guarda o que chegou fora de ordem, e só o perdido é
+                            reenviado.</li>
+                    </ul>
+                    <p>Exemplo: 6 segmentos, janela 4, o segmento 2 se perde. No Go-Back-N voltam <span class="acad-valor" translate="no">2, 3, 4 e 5</span>:
+                    <span class="acad-valor" translate="no">10</span> transmissões. Na repetição seletiva volta só o <span class="acad-valor" translate="no">2</span>: <span class="acad-valor" translate="no">7</span> transmissões.</p>
+                    <p>Com uma perda só: Go-Back-N = <span class="acad-valor" translate="no">N + 1 + min(W − 1, segmentos depois do perdido)</span>; repetição
+                    seletiva = <span class="acad-valor" translate="no">N + 1</span>. O TCP de verdade mistura ideias dos dois (confirmação acumulada, SACK e
+                    retransmissão rápida); a lição usa os modelos de livro, com as confirmações sem perda.</p>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
+                    <ul>
+                        <li>Contar reenvio de segmento que não existe: depois do perdido só saem os que existem até o fim.</li>
+                        <li>Esquecer de contar o próprio segmento perdido no reenvio.</li>
+                        <li>Achar que a janela começa depois da base: ela <strong>inclui</strong> a base.</li>
+                    </ul>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
+                    <ul>
+                        <li>Último que pode sair = <span class="acad-valor" translate="no">base + W − 1</span>.</li>
+                        <li>Go-Back-N reenvia o perdido e os que já saíram depois dele; a seletiva, só o perdido.</li>
+                    </ul>
+                </section>
+            </div>
+        </section>
+
+        <section class="acad-etapa" id="ver" aria-labelledby="ver-titulo">
+            <h2 class="acad-etapa-titulo" id="ver-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span>
+                Ver
+            </h2>
+            <p class="acad-explica">
+                A janela é quantos segmentos podem estar no caminho sem confirmação. Aqui ela vale
+                <span class="acad-valor" translate="no">4</span> e o segmento
+                <span class="acad-valor" translate="no">2</span> se perde. No Go-Back-N o receptor só
+                aceita na ordem: o que chega depois do buraco é descartado e, quando o tempo do
+                <span class="acad-valor" translate="no">2</span> estoura, tudo volta a partir dele.
+                (Nas contas desta lição as confirmações não se perdem e só uma perda acontece.)
+            </p>
+            <div id="ver-animacao">
+                <ol class="acad-segmentos" id="ver-segmentos" aria-label="Os seis segmentos do exemplo"></ol>
+                <p class="acad-explica mb-1">
+                    Transmissões até agora: <span class="acad-valor" id="ver-total" translate="no">0</span>
+                </p>
+                {#include academia/core/controles-animacao.html /}
+            </div>
+        </section>
+
+        <section class="acad-etapa" id="mexer" aria-labelledby="mexer-titulo">
+            <h2 class="acad-etapa-titulo" id="mexer-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">touch_app</span>
+                Mexer
+            </h2>
+            <div class="row g-3">
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="mexer-segmentos">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">view_week</span>
+                        Segmentos (1 a 64)
+                    </label>
+                    <input id="mexer-segmentos" aria-describedby="mexer-segmentos-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="4" value="6" title="Quantos segmentos o emissor precisa entregar">
+                    <span class="acad-eco" id="mexer-segmentos-eco"></span>
+                </div>
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="mexer-janela">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">width</span>
+                        Janela (1 a 32)
+                    </label>
+                    <input id="mexer-janela" aria-describedby="mexer-janela-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="4" value="4" title="Quantos segmentos podem estar no caminho sem confirmação">
+                    <span class="acad-eco" id="mexer-janela-eco"></span>
+                </div>
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="mexer-perdido">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">block</span>
+                        Segmento perdido
+                    </label>
+                    <input id="mexer-perdido" aria-describedby="mexer-perdido-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="4" value="2" title="Qual segmento se perde na primeira vez; deixe vazio para nenhum">
+                    <span class="acad-eco" id="mexer-perdido-eco"></span>
+                </div>
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="mexer-modo">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">tune</span>
+                        Retransmissão
+                    </label>
+                    <select id="mexer-modo" class="form-select" title="Escolha como o protocolo recupera a perda">
+                        <option value="gbn" selected>Go-Back-N</option>
+                        <option value="seletiva">repetição seletiva</option>
+                    </select>
+                </div>
+            </div>
+            <dl class="acad-resultado">
+                <div><dt>Go-Back-N</dt><dd id="mexer-total-gbn" translate="no">—</dd></div>
+                <div><dt>Repetição seletiva</dt><dd id="mexer-total-seletiva" translate="no">—</dd></div>
+            </dl>
+            <p class="acad-explica mt-2" id="mexer-aviso" aria-live="polite"></p>
+            <ol class="acad-registro" id="mexer-registro" aria-label="Os envios na ordem"></ol>
+        </section>
+
+        <section class="acad-etapa acad-etapa-larga" id="provar" aria-labelledby="provar-titulo">
+            <h2 class="acad-etapa-titulo" id="provar-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span>
+                Provar
+            </h2>
+            <p class="acad-pergunta" id="provar-pergunta"></p>
+            <form id="provar-form" class="row g-3 align-items-end" novalidate>
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="provar-resposta">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">edit</span>
+                        <span id="provar-rotulo">Sua resposta</span>
+                    </label>
+                    <input id="provar-resposta" aria-describedby="provar-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="8" title="Escreva o número; só algarismos">
+                </div>
+                <div class="col-12 col-md-6 d-flex flex-wrap gap-2 align-items-center">
+                    <button type="submit" class="aed-btn aed-btn-teal" title="Confere a sua resposta">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">check_circle</span>
+                        <span>Conferir</span>
+                    </button>
+                    <button type="button" class="aed-btn aed-btn-neutral" id="provar-outra"
+                            title="Troca por outra pergunta, sem contar tentativa">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">casino</span>
+                        <span>Outra pergunta</span>
+                    </button>
+                </div>
+            </form>
+            <span class="acad-eco d-block mt-1" id="provar-eco"></span>
+            <div class="acad-feedback" id="provar-feedback" aria-live="polite"></div>
+            <div class="acad-placar" id="provar-placar"></div>
+        </section>
+    </div>
+
+    {#include academia/core/rodape-licao.html /}
+</div>
+{/content}
+{#extraScripts}
+<script src="/academia/core/js/normalizador.js?v=20261002b"></script>
+<script src="/academia/core/js/motor.js?v=20261002b"></script>
+<script src="/academia/core/js/progresso.js?v=20261002b"></script>
+<script src="/academia/core/js/niveis.js?v=20261002b"></script>
+<script src="/academia/core/js/sinais.js?v=20261002b"></script>
+<script src="/academia/transporte/js/contas-transporte.js?v=20261002b"></script>
+<script src="/academia/transporte/js/janela.js?v=20261002b"></script>
+{/extraScripts}
+{/include}

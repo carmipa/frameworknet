@@ -1,0 +1,111 @@
+/* Página Sobre — autor, formação e stack de tecnologias. */
+
+.sobre-hero {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.6rem;
+    align-items: center;
+}
+
+.sobre-photo {
+    flex-shrink: 0;
+    justify-self: center;
+}
+
+.sobre-photo img {
+    width: 12.5rem;
+    height: 12.5rem;
+    object-fit: cover;
+    border-radius: 1rem;
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.12));
+    box-shadow: 0 12px 40px rgba(45, 212, 191, 0.18);
+}
+
+.sobre-nome {
+    font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
+    margin: 0.2rem 0 0.1rem;
+    color: var(--aed-text, #eef2f8);
+}
+
+.sobre-role {
+    color: var(--aed-teal, #2dd4bf);
+    font-size: 0.95rem;
+    margin-bottom: 0.8rem;
+}
+
+.sobre-formacao {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.sobre-formacao li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--aed-text-secondary, #8b97ad);
+    font-size: 0.9rem;
+}
+
+.sobre-formacao .material-symbols-outlined {
+    font-size: 1.15rem;
+    color: var(--aed-text-faint, #5b6679);
+}
+
+.sobre-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.sobre-tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+}
+
+.sobre-cat-title {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.8rem;
+    color: var(--aed-text-secondary, #8b97ad);
+    margin: 0.2rem 0 0.8rem;
+}
+
+.sobre-cat-title .material-symbols-outlined {
+    font-size: 1.15rem;
+    color: var(--aed-teal, #2dd4bf);
+}
+
+.sobre-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.sobre-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.28rem 0.7rem;
+    border-radius: 62.4375rem;
+    font-size: 0.78rem;
+    color: var(--aed-text, #eef2f8);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.1));
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+}
+
+@media (max-width: 40em) {
+    .sobre-hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .sobre-formacao li { justify-content: center; }
+    .sobre-contact { justify-content: center; }
+}

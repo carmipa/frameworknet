@@ -1,0 +1,273 @@
+{
+  "resumo": "A segurança do Wi-Fi (IEEE 802.11) evoluiu por necessidade: cada geração nasceu para corrigir a quebra da anterior. O WEP (1997) usa RC4 com IV de 24 bits e está completamente quebrado (ataque FMS/PTW recupera a chave em minutos). O WPA (2003) foi um remendo de transição sobre o mesmo hardware, trocando WEP por TKIP com chave por pacote e MIC (Michael) - mais forte, porém ainda baseado em RC4 e hoje considerado inseguro. O WPA2 (2004, IEEE 802.11i) tornou obrigatório o AES em modo CCMP, o padrão dominante por mais de uma década; seu ponto fraco no modo pessoal (PSK) é o 4-way handshake, que pode ser capturado e submetido a brute force/dicionário offline, além da falha KRACK (2017) na reinstalação de chave. O WPA3 (2018) substitui o PSK pelo SAE (Simultaneous Authentication of Equals, Dragonfly), que faz troca de chave autenticada resistente a ataque de dicionário offline e garante Forward Secrecy. Em qualquer geração, o modo Pessoal usa senha compartilhada (PSK/SAE), enquanto o Empresarial usa 802.1X/EAP com servidor RADIUS e credenciais individuais.",
+  "ficha": [
+    {
+      "rotulo": "Padrão base",
+      "valor": "IEEE 802.11 (WEP) e 802.11i (base do WPA2); WPA, WPA2 e WPA3 são certificações da Wi-Fi Alliance",
+      "dica": "O WPA2 implementa o RSN definido no 802.11i, ratificado em 2004."
+    },
+    {
+      "rotulo": "Bandas de operação",
+      "valor": "2.4 GHz, 5 GHz e 6 GHz (Wi-Fi 6E/7)",
+      "dica": "O WPA3 é obrigatório para operar na banda de 6 GHz."
+    },
+    {
+      "rotulo": "Canais no 2.4 GHz",
+      "valor": "1, 6 e 11 (o trio padrão sem sobreposição)",
+      "dica": "Espaçados de 5 canais (cerca de 25 MHz), não se sobrepõem; com os 13 canais do Brasil, 2/7/12 e 3/8/13 também servem."
+    },
+    {
+      "rotulo": "Cifra dominante hoje",
+      "valor": "AES-CCMP (WPA2/WPA3) e AES-GCMP-256 (WPA3-Enterprise 192 bits; no Wi-Fi 7 também no Personal)",
+      "dica": "O CCMP usa AES de 128 bits em modo CCM (contador + CBC-MAC)."
+    },
+    {
+      "rotulo": "Alvo clássico de ataque",
+      "valor": "4-way handshake do WPA2-PSK",
+      "dica": "Basta capturar o handshake uma vez para atacar a senha offline, sem ficar perto do alvo."
+    },
+    {
+      "rotulo": "Defesa recomendada",
+      "valor": "WPA3-SAE + senha forte, ou 802.1X/RADIUS",
+      "dica": "O SAE impede o brute force offline a partir da captura do handshake, desde que a implementação esteja corrigida contra o Dragonblood (Vanhoef e Ronen, 2019); no modo de transição WPA2/WPA3 o ataque volta pelo WPA2."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "WEP está definitivamente quebrado",
+      "icone": "lock_open",
+      "texto": "O WEP usa RC4 com um vetor de inicialização (IV) de apenas 24 bits, que se repete rapidamente numa rede movimentada. Os ataques estatísticos (FMS, KoreK, PTW) exploram outra coisa: o key scheduling do RC4 vaza bits da chave quando ela é formada por IV conhecido + senha fixa (chaves relacionadas) — cada pacote ajuda, e com tráfego suficiente a chave sai em minutos. A repetição do IV ainda reusa keystream, o que é um segundo problema. Não há configuração que torne o WEP seguro: ele deve ser desativado em qualquer equipamento.",
+      "destaque": "IV de 24 bits + RC4 = chave recuperável em minutos."
+    },
+    {
+      "titulo": "WPA/TKIP foi só um remendo",
+      "icone": "build",
+      "texto": "O WPA introduziu o TKIP para rodar no mesmo hardware do WEP: chave por pacote, contador de sequência contra replay e o MIC Michael contra adulteração. Melhorou muito, mas continuou sobre RC4 e sofre ataques como Beck-Tews/Ohigashi-Morii. Hoje o TKIP é considerado obsoleto e não deve ser usado, nem mesmo em modo misto WPA/WPA2.",
+      "destaque": "Transição sobre RC4 - melhor que WEP, ainda inseguro."
+    },
+    {
+      "titulo": "WPA2-PSK e o 4-way handshake",
+      "icone": "vpn_key",
+      "texto": "No WPA2 Pessoal, cliente e ponto de acesso derivam a PMK a partir da senha (PBKDF2 sobre PSK+SSID) e trocam nonces no 4-way handshake para gerar a PTK, a chave de sessão. Esse handshake é o alvo: quem o captura pode testar milhões de senhas offline até reproduzir o MIC correto, sem precisar mais do sinal da rede.",
+      "destaque": "PMK derivada da senha; PTK negociada nos 4 quadros EAPOL."
+    },
+    {
+      "titulo": "Captura de handshake + brute force offline",
+      "icone": "password",
+      "texto": "O atacante não quebra o AES: ele captura os quadros EAPOL do handshake e, offline, testa palavras de dicionário ou combinações até encontrar a que gera o MIC observado. Ferramentas de GPU aceleram bilhões de tentativas. Por isso a força da senha é o único fator que protege uma rede WPA2-PSK contra esse ataque.",
+      "destaque": "O ataque roda offline; senha fraca cai em horas."
+    },
+    {
+      "titulo": "WPA3-SAE resiste a dicionário offline",
+      "icone": "encrypted",
+      "texto": "O WPA3 Pessoal substitui o PSK pelo SAE (handshake Dragonfly), uma troca de chave autenticada por senha baseada em curvas elípticas. Mesmo capturando a troca, o atacante não consegue testar senhas offline - cada tentativa exige uma nova interação ao vivo com a rede, o que permite detecção e bloqueio. O SAE ainda entrega Forward Secrecy: comprometer a senha não decifra o tráfego passado. Ressalva: o Dragonblood (Vanhoef e Ronen, 2019) mostrou que implementações que vazam informação por tempo ou cache permitem, sim, ataque de dicionário offline, e que o modo de transição WPA2/WPA3 deixa empurrar o cliente para o WPA2; por isso, firmware atualizado e, quando possível, WPA3 sem modo de transição.",
+      "destaque": "Cada palpite exige interação ao vivo - brute force offline inviável."
+    },
+    {
+      "titulo": "Pessoal (PSK/SAE) x Empresarial (802.1X)",
+      "icone": "corporate_fare",
+      "texto": "No modo Pessoal todos compartilham uma única senha (PSK no WPA2, SAE no WPA3). No modo Empresarial, o 802.1X/EAP autentica cada usuário individualmente contra um servidor RADIUS, gerando chaves por sessão e por usuário. Isso permite revogar um único acesso sem trocar a senha de todos e elimina a senha compartilhada como ponto único de falha.",
+      "destaque": "Empresarial = credencial individual via RADIUS, sem senha única."
+    }
+  ],
+  "diagrama": {
+    "titulo": "4-way handshake do WPA2 (derivação PMK -> PTK)",
+    "definicao": "sequenceDiagram\n    participant C as Cliente (Supplicant)\n    participant AP as Ponto de Acesso (Authenticator)\n    Note over C,AP: Ambos já conhecem a PMK (derivada da senha PSK + SSID)\n    AP->>C: Msg 1: ANonce (nonce do AP)\n    Note over C: Gera SNonce e calcula a PTK<br/>PTK = f(PMK, ANonce, SNonce, MACs)\n    C->>AP: Msg 2: SNonce + MIC\n    Note over AP: Calcula a mesma PTK e valida o MIC\n    AP->>C: Msg 3: GTK + MIC (instala chaves)\n    C->>AP: Msg 4: ACK (confirma instalação)\n    Note over C,AP: PTK instalada - tráfego cifrado com AES-CCMP",
+    "legenda": "A PMK é derivada offline da senha; o handshake apenas prova que ambos a possuem e negocia a PTK de sessão via nonces. Capturar as Msg 1 e 2 (ANonce, SNonce e MIC) basta para um ataque de brute force offline contra a senha no WPA2-PSK."
+  },
+  "tabelas": [
+    {
+      "titulo": "Evolução das gerações de segurança sem fio",
+      "colunas": [
+        "Padrão",
+        "Ano",
+        "Cifra / Mecanismo",
+        "Autenticação",
+        "Situação atual"
+      ],
+      "linhas": [
+        [
+          "WEP",
+          "1997",
+          "RC4 + IV de 24 bits",
+          "Chave estática compartilhada",
+          "Quebrado - chave recuperável em minutos"
+        ],
+        [
+          "WPA",
+          "2003",
+          "TKIP (RC4 + chave por pacote + MIC)",
+          "PSK ou 802.1X",
+          "Obsoleto - fraco, não usar"
+        ],
+        [
+          "WPA2",
+          "2004",
+          "AES-CCMP (128 bits)",
+          "PSK ou 802.1X",
+          "Ainda usado - vulnerável à captura de handshake e KRACK"
+        ],
+        [
+          "WPA3",
+          "2018",
+          "AES-CCMP/GCMP-256 + SAE (Dragonfly)",
+          "SAE ou 802.1X",
+          "Recomendado - resiste a dicionário offline, Forward Secrecy"
+        ]
+      ]
+    },
+    {
+      "titulo": "Modo Pessoal x Modo Empresarial",
+      "colunas": [
+        "Aspecto",
+        "Pessoal (PSK / SAE)",
+        "Empresarial (802.1X / EAP)"
+      ],
+      "linhas": [
+        [
+          "Autenticação",
+          "Senha única compartilhada",
+          "Credencial individual por usuário"
+        ],
+        [
+          "Infraestrutura",
+          "Nenhuma além do AP",
+          "Servidor RADIUS + base de identidades"
+        ],
+        [
+          "Chaves de sessão",
+          "Derivadas da senha comum",
+          "Únicas por usuário e por sessão"
+        ],
+        [
+          "Revogação de acesso",
+          "Trocar a senha de todos",
+          "Desativar um único usuário"
+        ],
+        [
+          "Uso típico",
+          "Residência, pequeno escritório",
+          "Empresas, campus, redes grandes"
+        ]
+      ]
+    },
+    {
+      "titulo": "Cifras e chaves por padrão",
+      "colunas": [
+        "Padrão",
+        "Algoritmo de cifra",
+        "Integridade",
+        "Troca de chave (Pessoal)"
+      ],
+      "linhas": [
+        [
+          "WEP",
+          "RC4",
+          "CRC-32 (falho)",
+          "Chave WEP estática"
+        ],
+        [
+          "WPA",
+          "RC4 (TKIP)",
+          "Michael (MIC)",
+          "PSK + 4-way handshake"
+        ],
+        [
+          "WPA2",
+          "AES em modo CCM (CCMP)",
+          "CBC-MAC (CCMP)",
+          "PSK + 4-way handshake"
+        ],
+        [
+          "WPA3",
+          "AES em modo GCM/CCM",
+          "GMAC / CBC-MAC",
+          "SAE (Dragonfly)"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Captura de handshake WPA2 + brute force offline",
+      "como_funciona": "O atacante coloca a placa em modo monitor e escuta os quadros EAPOL do 4-way handshake. Para acelerar, envia quadros de desautenticação (deauth) forçando um cliente legítimo a se reconectar e reemitir o handshake. Com ANonce, SNonce e o MIC capturados, testa offline senhas de dicionário ou por força bruta até reproduzir o MIC correto, revelando a senha PSK. Nada disso ataca o AES em si - ataca a senha.",
+      "sinal": "Rajadas de quadros de desautenticação (deauth) e reconexões repetidas de clientes; picos de EAPOL no ar.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "KRACK (Key Reinstallation Attack)",
+      "como_funciona": "Falha de protocolo divulgada em 2017 que afeta o próprio WPA2, não a senha. O atacante em posição de man-in-the-middle retém e reenvia a Msg 3 do 4-way handshake, forçando o cliente a reinstalar uma PTK já em uso e a zerar o contador de nonce. Com o nonce reutilizado, partes do fluxo de chaves ficam previsíveis, permitindo decifrar ou forjar pacotes. Corrigido por patch nos clientes e APs.",
+      "sinal": "Reenvio anômalo da Msg 3 do handshake e clientes desatualizados sem o patch de 2017.",
+      "gravidade": "Alta",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Ataques a WEP (FMS / PTW)",
+      "como_funciona": "Explora o key scheduling do RC4 com chaves relacionadas (IV conhecido de 24 bits + senha fixa): cada pacote vaza um pouco da chave. Coletando tráfego suficiente (às vezes acelerado por injeção de ARP replay), ela é recuperada por completo em minutos. Torna o WEP trivialmente decifrável.",
+      "sinal": "Alto volume de reinjeção de pacotes ARP e captura massiva de IVs numa rede que ainda use WEP.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Migrar para WPA3-SAE",
+      "como_funciona": "O SAE (Dragonfly) faz uma troca de chave autenticada por senha na qual cada tentativa de adivinhação exige uma nova interação ao vivo com a rede. Isso torna o brute force offline inviável mesmo se o handshake for capturado, e adiciona Forward Secrecy - comprometer a senha não decifra tráfego antigo.",
+      "cobre": "Captura de handshake + brute force offline; protege tráfego passado.",
+      "limite": "Exige AP e clientes compatíveis; o modo de transição WPA2/WPA3 misto reabre a superfície do WPA2 para clientes antigos."
+    },
+    {
+      "nome": "Senha forte e longa (PSK)",
+      "como_funciona": "Enquanto a rede for WPA2-PSK, a única defesa contra o brute force offline é a entropia da senha. Uma passphrase longa e aleatória (recomendável 20+ caracteres ou várias palavras não relacionadas) torna o custo de quebra proibitivo mesmo com GPUs.",
+      "cobre": "Brute force / dicionário offline após captura de handshake.",
+      "limite": "Não elimina o ataque, só o encarece; senha compartilhada continua ponto único de falha e não protege contra KRACK."
+    },
+    {
+      "nome": "802.1X / EAP com RADIUS (Empresarial)",
+      "como_funciona": "Substitui a senha compartilhada por autenticação individual contra um servidor RADIUS, gerando chaves por usuário e por sessão. Não existe PSK único para capturar e quebrar, e o acesso de um usuário pode ser revogado sem afetar os demais.",
+      "cobre": "Elimina o alvo do brute force sobre PSK; permite revogação granular e auditoria por usuário.",
+      "limite": "Requer infraestrutura (RADIUS, certificados/identidades) e configuração correta do EAP; métodos fracos ou validação de certificado ausente reintroduzem risco."
+    },
+    {
+      "nome": "Aplicar patch de KRACK e desativar WEP/TKIP",
+      "como_funciona": "Atualizar firmware de APs e sistemas clientes fecha a reinstalação de chave do KRACK. Desabilitar WEP e TKIP (inclusive modos mistos) remove cifras quebradas e obsoletas, forçando AES-CCMP como mínimo.",
+      "cobre": "KRACK, ataques a WEP e fraquezas do TKIP.",
+      "limite": "Depende de o fabricante ter liberado patch; equipamentos legados sem atualização permanecem expostos."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Colocar a interface em modo monitor",
+      "cenario": "Ambiente de laboratório didático, em rede própria e com autorização explícita. O modo monitor permite à placa escutar todo o tráfego 802.11 do ar, não só o destinado a ela.",
+      "comandos": "airmon-ng check kill   # antes do start: encerra processos que interferem\nairmon-ng start wlan0\n# cria a interface wlan0mon em modo monitor",
+      "explicacao": "Passo conceitual inicial de qualquer análise de Wi-Fi: sem modo monitor não se enxergam os quadros de gerenciamento (beacons, deauth) nem os EAPOL do handshake. Apenas para fins educativos em rede autorizada."
+    },
+    {
+      "titulo": "Capturar o 4-way handshake do WPA2",
+      "cenario": "Demonstração controlada de por que a captura do handshake é o alvo do WPA2-PSK. Feita apenas contra um AP de teste próprio.",
+      "comandos": "airodump-ng -c 6 --bssid AA:BB:CC:DD:EE:FF -w captura wlan0mon\n# escuta o canal 6 e grava; ao reconectar um cliente,\n# o handshake EAPOL é capturado no arquivo .cap",
+      "explicacao": "Ilustra que a rede entrega o handshake sempre que um cliente se associa. O arquivo capturado seria, num ataque real, levado para brute force offline - o que evidencia por que senha forte e WPA3 importam. Estritamente didático e autorizado."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Rede ainda aparece como WEP ou WPA/TKIP nas configurações",
+      "causa_provavel": "Equipamento legado ou modo de compatibilidade mantendo cifras quebradas/obsoletas.",
+      "leitura": "Se o AP só oferece WEP/TKIP, está indefensável - substituir ou, no mínimo, forçar WPA2-AES; idealmente WPA3.",
+      "comando": "# no roteador: definir segurança como WPA3-SAE ou WPA2-AES (CCMP), nunca WEP/TKIP"
+    },
+    {
+      "sintoma": "Rajadas de desautenticação e clientes reconectando sem parar",
+      "causa_provavel": "Possível ataque de deauth para forçar reemissão do handshake antes de brute force offline.",
+      "leitura": "Padrão clássico de captura de handshake WPA2; com Protected Management Frames (PMF), obrigatório no WPA3, o deauth forjado é descartado.",
+      "comando": "airodump-ng wlan0mon   # observar contagem anormal de quadros deauth por BSSID"
+    },
+    {
+      "sintoma": "Handshake WPA2 quebrado rapidamente em teste autorizado",
+      "causa_provavel": "Senha PSK curta ou presente em dicionário comum.",
+      "leitura": "Confirma que a entropia da senha é o único fator de proteção no WPA2-PSK; aumentar comprimento/aleatoriedade ou migrar para WPA3-SAE.",
+      "comando": "# mitigacao: definir passphrase longa e aleatoria (20+ caracteres) e habilitar WPA3"
+    }
+  ]
+}

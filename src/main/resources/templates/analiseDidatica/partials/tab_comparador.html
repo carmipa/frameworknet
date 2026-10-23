@@ -1,0 +1,25 @@
+<form method="POST" class="row g-3 calc-form" data-tab-form="comparador">
+    <input type="hidden" name="tab" value="comparador">
+    <div class="col-lg-4">
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Endereço IPv4</label>
+        <input type="text" name="ip" class="form-control input-ipv4 bg-dark text-light border-secondary {#if invalidFields.contains('ip')}is-invalid{/if}"
+               placeholder="Ex.: 172.19.0.10" value="{ipPre}" inputmode="text" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="col-lg-3">
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">looks_one</span> Comparador CIDR A</label>
+        <input type="text" name="comparador_cidr_a" class="form-control input-cidr bg-dark text-light border-secondary {#if invalidFields.contains('comparador_cidr_a')}is-invalid{/if}"
+               inputmode="numeric" maxlength="2" placeholder="ex.: 20" value="{comparadorCidrAPre}">
+    </div>
+    <div class="col-lg-3">
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">looks_two</span> Comparador CIDR B</label>
+        <input type="text" name="comparador_cidr_b" class="form-control input-cidr bg-dark text-light border-secondary {#if invalidFields.contains('comparador_cidr_b')}is-invalid{/if}"
+               inputmode="numeric" maxlength="2" placeholder="ex.: 24" value="{comparadorCidrBPre}">
+    </div>
+    <div class="col-lg-2 tab-actions d-grid gap-2">
+        <button type="submit" name="modo" value="comparador" class="aed-btn aed-btn-execute w-100"
+                data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Executar: comparar o mesmo IP sob os dois prefixos CIDR informados">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Executar
+        </button>
+    </div>
+</form>

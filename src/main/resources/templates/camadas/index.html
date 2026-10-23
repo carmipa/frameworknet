@@ -1,0 +1,37 @@
+{! Aba Geral do módulo Camadas: a tabela das camadas OSI × TCP/IP. Variáveis:
+    conteudo (ProtocoloAprofundamento com resumo + tabelas), aprofundamentos,
+    aprofundamentoAtivo. !}
+{#include shared/base.html}
+{#title}Camadas (OSI × TCP/IP) | Framework de Redes A&D{/title}
+{#description}Modelo de camadas OSI e TCP/IP lado a lado: a PDU de cada camada, os dispositivos que atuam em cada uma e o encapsulamento de um pacote do início ao fim.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
+<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='camadas' /}
+    {#include camadas/partials/subnav.html /}
+
+    <header class="text-center mb-4">
+        <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span></div>
+        <span class="aed-eyebrow aed-eyebrow-teal">Modelo de camadas</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Camadas — OSI × TCP/IP</h1>
+        <p class="text-secondary small mx-auto aed-medida-leitura">{conteudo.resumo}</p>
+        <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+            <a href="/camadas/osi" class="aed-btn aed-btn-teal btn-sm" title="As 7 camadas do modelo OSI">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Modelo OSI
+            </a>
+            <a href="/camadas/encapsulamento" class="aed-btn aed-btn-neutral btn-sm" title="Como os dados descem a pilha ganhando cabeçalhos">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">layers_clear</span> Encapsulamento
+            </a>
+            <a href="/trafego" class="aed-btn aed-btn-neutral btn-sm" title="Simulador de encapsulamento camada a camada, ao vivo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">play_circle</span> Simular encapsulamento
+            </a>
+        </div>
+    </header>
+
+    {#include protocolos/partials/tabelas.html tabelas=conteudo.tabelas /}
+</div>
+{/content}
+{/include}

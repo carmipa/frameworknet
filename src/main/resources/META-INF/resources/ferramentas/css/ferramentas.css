@@ -1,0 +1,14 @@
+/* Construtor de comando do módulo Ferramentas. */
+.cmd-flags-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 0 0;
+    border-top: 1px solid var(--aed-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.cmd-flags-list li {
+    line-height: 1.5;
+}

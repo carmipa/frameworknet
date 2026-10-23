@@ -1,0 +1,93 @@
+/* Estilos específicos do catálogo de Portas (DataGrid). Carregado só em templates/portas/index.html. */
+
+.table-dark-header th {
+    background-color: #161b22 !important;
+    color: #58a6ff !important;
+    border-color: #30363d !important;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sortable:hover {
+    color: #9ecbff !important;
+}
+
+.datagrid-wrap thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.comm-summary {
+    background: #0f1724;
+    border: 1px solid #30363d;
+    border-left: 3px solid #1f6feb;
+    border-radius: 0.6rem;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.82rem;
+}
+
+.datagrid-table th,
+.datagrid-table td {
+    vertical-align: middle;
+}
+
+/* --- Régua das 3 faixas de portas (largura proporcional ao tamanho) --- */
+.portas-faixas-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--aed-font-display);
+    font-size: 1rem;
+    color: var(--aed-teal);
+}
+
+.portas-faixas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    width: 100%;
+}
+
+.portas-faixa {
+    flex-basis: 0;
+    min-width: 8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--faixa-cor, rgba(45, 212, 191, 0.45));
+    border-left: 4px solid var(--faixa-cor, var(--aed-teal));
+    border-radius: 0.4rem;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.portas-faixa-wk {
+    --faixa-cor: #f43f5e;
+}
+
+.portas-faixa-reg {
+    --faixa-cor: #2dd4bf;
+}
+
+.portas-faixa-dyn {
+    --faixa-cor: #38bdf8;
+}
+
+.portas-faixa-nome {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--aed-text);
+}
+
+.portas-faixa-range {
+    font-family: var(--aed-font-mono);
+    font-size: .75rem;
+    color: var(--aed-text-faint);
+}

@@ -1,0 +1,345 @@
+{
+  "resumo": "SSH (Secure Shell) é o protocolo de acesso remoto cifrado que substituiu Telnet, rlogin e rsh — e, com SFTP e SCP, também o FTP em texto claro. Roda sobre TCP 22 e resolve três problemas de uma vez: prova ao cliente que o servidor é quem diz ser (chave de host), prova ao servidor quem é o usuário (senha, chave ou certificado) e cifra tudo o que passa depois. A versão em uso é a SSH-2 (RFC 4251 a 4254); a SSH-1 tem falha estrutural e está desativada há anos.",
+  "conceitos": [
+    {
+      "titulo": "Duas autenticações, não uma",
+      "icone": "swap_vert",
+      "texto": "Toda sessão autentica os dois lados. O SERVIDOR se identifica pela chave de host, verificada contra o ~/.ssh/known_hosts do cliente. Só depois o USUÁRIO se identifica, por senha, chave pública ou certificado. Confundir as duas é a origem de metade das dúvidas: a mensagem sobre chave de host alterada não fala do seu login, fala da identidade da máquina.",
+      "destaque": "Quem digita 'yes' sem olhar o fingerprint na primeira conexão abre mão justamente da proteção contra man-in-the-middle."
+    },
+    {
+      "titulo": "TOFU — confiança na primeira conexão",
+      "icone": "verified_user",
+      "texto": "Sem uma CA, o SSH usa Trust On First Use: aceita a chave de host na primeira vez e a grava em known_hosts; a partir daí, qualquer mudança vira alerta. Isso protege da segunda conexão em diante, não da primeira. As saídas para fechar essa janela são registrar a chave por canal fora de banda, publicar registros SSHFP no DNS com DNSSEC, ou emitir certificados de host por uma CA SSH.",
+      "destaque": "Em servidor reinstalado a chave muda de verdade. Apagar a linha antiga com 'ssh-keygen -R host' é correto; desligar a verificação com StrictHostKeyChecking=no é abrir mão dela para sempre."
+    },
+    {
+      "titulo": "Forward secrecy: a chave de host não cifra a sessão",
+      "icone": "key_off",
+      "texto": "A chave de host apenas ASSINA a negociação. As chaves de sessão nascem de uma troca Diffie-Hellman efêmera (hoje curve25519-sha256 ou os híbridos pós-quânticos do OpenSSH 9) e são descartadas ao fim. Por isso, capturar o tráfego hoje e roubar a chave de host amanhã não decifra o que foi gravado.",
+      "destaque": "É a diferença entre 'a chave privada vazou' e 'todas as sessões passadas vazaram' — no SSH-2 a segunda não decorre da primeira."
+    },
+    {
+      "titulo": "Canais: uma conexão, várias coisas ao mesmo tempo",
+      "icone": "account_tree",
+      "texto": "Depois da autenticação, a camada de conexão multiplexa canais dentro da mesma sessão TCP: o shell, uma transferência SFTP, um túnel de porta e um X11 podem coexistir. É o que permite ao ControlMaster reaproveitar uma conexão já aberta e abrir sessões novas em milissegundos, sem repetir o handshake.",
+      "destaque": "É também por isso que 'só liberei SSH no firewall' não significa 'só liberei shell': túneis viajam dentro da mesma porta 22."
+    },
+    {
+      "titulo": "SSH-1 × SSH-2",
+      "icone": "history",
+      "texto": "A SSH-1 usa uma verificação de integridade por CRC-32 que permitiu o ataque de inserção conhecido como CRC compensation attack, e não separa as camadas de transporte e autenticação. Foi removida do OpenSSH; encontrar um serviço que ainda a ofereça é achado de auditoria, não curiosidade.",
+      "destaque": "Nada de 'Protocol 2' no sshd_config moderno: a diretiva foi removida porque a SSH-1 não existe mais no código."
+    },
+    {
+      "titulo": "Certificados SSH: o known_hosts que não cresce",
+      "icone": "badge",
+      "texto": "Uma CA SSH assina chaves de host e de usuário com validade e principals. O cliente confia em uma linha @cert-authority no known_hosts e passa a aceitar qualquer host assinado por ela; o servidor confia em TrustedUserCAKeys e passa a aceitar qualquer usuário com certificado válido, sem authorized_keys distribuído máquina a máquina.",
+      "destaque": "Resolve os dois problemas operacionais do SSH em escala: a janela do TOFU e a revogação — certificado expira sozinho, chave em authorized_keys fica para sempre."
+    }
+  ],
+  "camadas": [
+    {
+      "ordem": 1,
+      "nome": "Transporte",
+      "rfc": "RFC 4253",
+      "funcao": "Autentica o servidor, negocia algoritmos, faz a troca de chaves e passa a cifrar e verificar integridade de tudo.",
+      "detalhe": "Aqui se decidem cifra (chacha20-poly1305, aes-gcm), MAC, algoritmo de troca de chaves e algoritmo da chave de host. Também é onde a sessão renegocia chaves depois de volume ou tempo (RekeyLimit)."
+    },
+    {
+      "ordem": 2,
+      "nome": "Autenticação do usuário",
+      "rfc": "RFC 4252",
+      "funcao": "Prova quem é o usuário, já dentro do canal cifrado.",
+      "detalhe": "O servidor anuncia os métodos aceitos e o cliente tenta em ordem. Com AuthenticationMethods é possível EXIGIR mais de um (chave e depois TOTP), que é o 2FA real do SSH."
+    },
+    {
+      "ordem": 3,
+      "nome": "Conexão",
+      "rfc": "RFC 4254",
+      "funcao": "Multiplexa canais: shell, exec, subsistema (SFTP), encaminhamento de porta e de X11.",
+      "detalhe": "Cada canal tem controle de fluxo próprio. É esta camada que torna possível ProxyJump, SOCKS dinâmico e reuso de conexão."
+    }
+  ],
+  "autenticacoes": [
+    {
+      "metodo": "publickey",
+      "como_funciona": "O cliente assina um desafio com a chave privada; o servidor confere com a pública do authorized_keys. A privada nunca sai da máquina do usuário.",
+      "forca": "Recomendado",
+      "forca_cor": "success",
+      "quando_usar": "Padrão para todo acesso administrativo. Combine com passphrase na chave e ssh-agent para não digitá-la a cada uso."
+    },
+    {
+      "metodo": "publickey com certificado",
+      "como_funciona": "A chave do usuário vem assinada por uma CA SSH, com validade e lista de principals. O servidor confia na CA, não em cada chave.",
+      "forca": "Recomendado em escala",
+      "forca_cor": "success",
+      "quando_usar": "Frota de servidores ou time com entrada e saída de pessoas: a validade curta resolve a revogação que authorized_keys não resolve."
+    },
+    {
+      "metodo": "keyboard-interactive",
+      "como_funciona": "Diálogo de perguntas e respostas conduzido pelo servidor, normalmente via PAM — é por onde entram TOTP e outros segundos fatores.",
+      "forca": "Bom como segundo fator",
+      "forca_cor": "info",
+      "quando_usar": "Junto com publickey em AuthenticationMethods, nunca como substituto dela."
+    },
+    {
+      "metodo": "password",
+      "como_funciona": "Senha enviada dentro do túnel cifrado e validada pelo sistema.",
+      "forca": "Desaconselhado em servidor exposto",
+      "forca_cor": "warning",
+      "quando_usar": "Cifrada em trânsito, sim — mas é o que alimenta o volume de força bruta na porta 22. Em servidor com IP público, desligue."
+    },
+    {
+      "metodo": "hostbased",
+      "como_funciona": "A máquina cliente se autentica com a própria chave de host, e o servidor confia no nome de usuário que ela afirma.",
+      "forca": "Uso restrito",
+      "forca_cor": "warning",
+      "quando_usar": "Cluster fechado e confiável. Fora disso, confiar na afirmação de identidade de outra máquina é premissa forte demais."
+    },
+    {
+      "metodo": "chave em hardware (FIDO2 / -sk)",
+      "como_funciona": "A chave privada mora numa YubiKey ou equivalente; o login exige toque físico no dispositivo.",
+      "forca": "Mais forte",
+      "forca_cor": "success",
+      "quando_usar": "Acesso a produção. Malware na estação não consegue exfiltrar a privada nem autenticar sem a presença física."
+    }
+  ],
+  "chaves": [
+    {
+      "algoritmo": "Ed25519",
+      "tamanho": "256 bits (fixo)",
+      "recomendacao": "Escolha padrão",
+      "recomendacao_cor": "success",
+      "comando": "ssh-keygen -t ed25519 -C \"paulo@estacao\""
+    },
+    {
+      "algoritmo": "Ed25519-SK / ECDSA-SK",
+      "tamanho": "256 bits + hardware",
+      "recomendacao": "Melhor para produção",
+      "recomendacao_cor": "success",
+      "comando": "ssh-keygen -t ed25519-sk -O resident -O verify-required"
+    },
+    {
+      "algoritmo": "RSA",
+      "tamanho": "3072 ou 4096 bits",
+      "recomendacao": "Aceitável por compatibilidade",
+      "recomendacao_cor": "info",
+      "comando": "ssh-keygen -t rsa -b 4096 -C \"compatibilidade\""
+    },
+    {
+      "algoritmo": "ECDSA (nistp256/384/521)",
+      "tamanho": "256 a 521 bits",
+      "recomendacao": "Evitar quando houver escolha",
+      "recomendacao_cor": "warning",
+      "comando": "ssh-keygen -t ecdsa -b 521"
+    },
+    {
+      "algoritmo": "DSA",
+      "tamanho": "1024 bits",
+      "recomendacao": "Não usar",
+      "recomendacao_cor": "danger",
+      "comando": "Removido do OpenSSH — se aparecer em auditoria, é chave a substituir."
+    },
+    {
+      "algoritmo": "ssh-rsa (assinatura SHA-1)",
+      "tamanho": "Independe do tamanho da chave",
+      "recomendacao": "Não usar",
+      "recomendacao_cor": "danger",
+      "comando": "A chave RSA continua válida; o que se abandona é a assinatura SHA-1. Use rsa-sha2-256 ou rsa-sha2-512."
+    }
+  ],
+  "encaminhamentos": [
+    {
+      "tipo": "Encaminhamento local",
+      "flag": "-L",
+      "cenario": "Alcançar da sua máquina um serviço que só existe dentro da rede remota — um Postgres que escuta apenas em 127.0.0.1 no servidor.",
+      "comando": "ssh -L 5432:127.0.0.1:5432 paulo@servidor",
+      "risco": "Se usar 0.0.0.0 no lado local (GatewayPorts), qualquer um na sua rede alcança o banco remoto pela sua máquina."
+    },
+    {
+      "tipo": "Encaminhamento remoto",
+      "flag": "-R",
+      "cenario": "Expor no servidor um serviço que roda na sua máquina, para demonstração ou webhook.",
+      "comando": "ssh -R 8080:localhost:3000 paulo@servidor",
+      "risco": "É a técnica usada para criar canal de volta através de firewall. Onde não for necessário, desligue AllowTcpForwarding — inclusive para não virar ponte de saída de um invasor."
+    },
+    {
+      "tipo": "Proxy SOCKS dinâmico",
+      "flag": "-D",
+      "cenario": "Navegar com a origem da rede remota, sem VPN.",
+      "comando": "ssh -D 1080 paulo@servidor",
+      "risco": "Todo o tráfego do navegador passa a sair pelo servidor. Vale lembrar que a resolução DNS pode continuar local e vazar o destino."
+    },
+    {
+      "tipo": "ProxyJump",
+      "flag": "-J",
+      "cenario": "Chegar a uma máquina interna atravessando o bastion, sem manter chave no bastion.",
+      "comando": "ssh -J paulo@bastion paulo@interno",
+      "risco": "Praticamente nenhum — é justamente o substituto seguro do agent forwarding. A autenticação no destino acontece na sua estação."
+    },
+    {
+      "tipo": "Encaminhamento de agente",
+      "flag": "-A",
+      "cenario": "Usar sua chave a partir do servidor para chegar a um terceiro host.",
+      "comando": "ssh -A paulo@servidor   # prefira -J",
+      "risco": "Alto. Enquanto a sessão estiver aberta, quem for root no servidor intermediário fala com o socket do seu agente e se autentica como você em qualquer lugar. Se for inevitável, use ssh-add -c para exigir confirmação a cada uso."
+    },
+    {
+      "tipo": "Encaminhamento X11",
+      "flag": "-X / -Y",
+      "cenario": "Abrir aplicação gráfica remota na sua tela.",
+      "comando": "ssh -X paulo@servidor",
+      "risco": "-Y desliga as restrições de segurança do X e permite ao host remoto capturar teclas e telas. Mantenha X11Forwarding no no servidor quando não houver uso real."
+    }
+  ],
+  "hardening": [
+    {
+      "diretiva": "PermitRootLogin",
+      "valor": "no  (ou prohibit-password)",
+      "porque": "Root é o único usuário cujo nome o atacante conhece de antemão em toda máquina Linux.",
+      "risco": "Com 'yes' e senha habilitada, a força bruta tem alvo garantido e prêmio máximo."
+    },
+    {
+      "diretiva": "PasswordAuthentication",
+      "valor": "no",
+      "porque": "Elimina de uma vez a força bruta e o vazamento por senha reaproveitada.",
+      "risco": "Desligar sem antes TESTAR a chave em uma segunda sessão aberta é a forma clássica de se trancar do lado de fora."
+    },
+    {
+      "diretiva": "KbdInteractiveAuthentication",
+      "valor": "no",
+      "porque": "Sem ela, desligar apenas PasswordAuthentication pode deixar a senha entrando pelo PAM assim mesmo.",
+      "risco": "É o item esquecido que faz o servidor continuar aceitando senha depois de um endurecimento que parecia completo."
+    },
+    {
+      "diretiva": "AuthenticationMethods",
+      "valor": "publickey,keyboard-interactive",
+      "porque": "A vírgula significa E, não OU: exige chave e depois o segundo fator. É o 2FA de verdade.",
+      "risco": "Trocar a vírgula por espaço muda o significado para 'qualquer um dos dois' e desfaz a proteção sem nenhum aviso."
+    },
+    {
+      "diretiva": "AllowUsers / AllowGroups",
+      "valor": "AllowGroups sshusers",
+      "porque": "Lista de permissão explícita: conta de serviço criada por um pacote não ganha acesso remoto de brinde.",
+      "risco": "Sem ela, qualquer conta nova com shell válido passa a poder entrar pela rede."
+    },
+    {
+      "diretiva": "LogLevel",
+      "valor": "VERBOSE",
+      "porque": "Registra o fingerprint da chave usada em cada login — sem isso, não há como saber QUAL chave entrou.",
+      "risco": "Em INFO, a investigação de um acesso indevido termina em 'alguém autenticou com sucesso'."
+    },
+    {
+      "diretiva": "AllowTcpForwarding / AllowAgentForwarding",
+      "valor": "no  (onde não houver uso)",
+      "porque": "Corta o uso do servidor como ponte para a rede interna e o abuso do socket do agente.",
+      "risco": "Servidor de acesso público com forwarding livre é pivô pronto para movimentação lateral."
+    },
+    {
+      "diretiva": "MaxAuthTries / LoginGraceTime",
+      "valor": "3  /  20s",
+      "porque": "Reduz tentativas por conexão e o tempo que uma sessão fica pendurada antes de autenticar.",
+      "risco": "Grace time generoso somado a MaxStartups alto é vetor de esgotamento de recursos."
+    },
+    {
+      "diretiva": "Ciphers / MACs / KexAlgorithms",
+      "valor": "AES-GCM (chacha20 só com strict kex) e curvas modernas",
+      "porque": "Remove CBC e MACs legados. Contra o Terrapin (CVE-2023-48795) a correção é o strict kex (OpenSSH 9.6+ dos dois lados); com par antigo, tire o chacha20-poly1305 — que é AEAD e é afetado — e os MACs -etm. A AES-GCM não é afetada.",
+      "risco": "Fixar lista à mão envelhece: revise a cada atualização maior do OpenSSH em vez de copiar um guia antigo."
+    },
+    {
+      "diretiva": "Restrições no authorized_keys",
+      "valor": "command=\"...\",no-port-forwarding,no-pty",
+      "porque": "Uma chave de automação deve poder executar UM comando, não abrir shell.",
+      "risco": "Chave de deploy sem restrição é chave de administração completa esperando ser copiada de um runner de CI."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "1. Gerar a chave e instalar no servidor",
+      "cenario": "Primeiro acesso por chave, ainda com senha habilitada.",
+      "comandos": "ssh-keygen -t ed25519 -C \"paulo@estacao\"\nssh-copy-id -i ~/.ssh/id_ed25519.pub paulo@servidor\nssh -i ~/.ssh/id_ed25519 paulo@servidor",
+      "explicacao": "ssh-copy-id acrescenta a chave ao authorized_keys com as permissões certas. Sem ele, lembre-se: ~/.ssh e authorized_keys não podem ter dono errado nem permissão de escrita para grupo ou outros (700 e 600 são o recomendado), ou o StrictModes recusa a chave (o motivo fica só no log do servidor) e o login volta a pedir senha."
+    },
+    {
+      "titulo": "2. Conferir o fingerprint antes de confiar",
+      "cenario": "Primeira conexão a um servidor novo, fechando a janela do TOFU.",
+      "comandos": "# no servidor, pelo console do provedor:\nssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub\n\n# na estação, comparar com o que o cliente mostrar:\nssh paulo@servidor",
+      "explicacao": "Os dois SHA256 têm de bater. Só então responder 'yes'. É o único momento em que a verificação depende do operador — depois disso o known_hosts faz o trabalho."
+    },
+    {
+      "titulo": "3. Endurecer o sshd sem se trancar do lado de fora",
+      "cenario": "Desligar senha e root em um servidor de produção.",
+      "comandos": "sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak\n# o seu usuário PRECISA estar no grupo antes do AllowGroups:\nsudo groupadd -f sshusers && sudo usermod -aG sshusers \"$USER\"\nsudo tee /etc/ssh/sshd_config.d/00-hardening.conf >/dev/null <<'EOF'\nPermitRootLogin no\nPasswordAuthentication no\nKbdInteractiveAuthentication no\nAllowGroups sshusers\nLogLevel VERBOSE\nEOF\nsudo sshd -t && sudo sshd -T | grep -Ei '^(permitrootlogin|passwordauthentication|kbdinteractiveauthentication|allowgroups) '\nsudo systemctl reload ssh",
+      "explicacao": "No sshd_config vale o PRIMEIRO valor lido de cada opção, e os arquivos de sshd_config.d entram em ordem alfabética: um '99-' perde para o '50-cloud-init.conf', que costuma trazer 'PasswordAuthentication yes'. Por isso o arquivo começa com '00-', e o 'sshd -T' mostra a configuração EFETIVA — confira que as quatro linhas saíram como você escreveu antes do reload. 'sshd -t' valida a sintaxe; o reload não derruba a sessão atual. Mantenha o terminal aberto e teste o login em uma segunda janela: se algo der errado, a sessão viva desfaz."
+    },
+    {
+      "titulo": "4. Atravessar o bastion sem expor a chave",
+      "cenario": "Máquina interna alcançável só pelo bastion.",
+      "comandos": "# ~/.ssh/config\nHost interno\n  HostName 10.0.0.20\n  User paulo\n  ProxyJump paulo@bastion\n  IdentityFile ~/.ssh/id_ed25519\n\nHost *\n  ControlMaster auto\n  ControlPath ~/.ssh/cm-%r@%h:%p\n  ControlPersist 10m",
+      "explicacao": "ProxyJump autentica no destino a partir da SUA estação — o bastion só encaminha bytes e nunca toca na sua chave, diferente do agent forwarding. O ControlMaster reaproveita a conexão e derruba o tempo dos acessos seguintes."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Permission denied (publickey)",
+      "causa_provavel": "Chave não oferecida, chave ausente do authorized_keys ou permissão de arquivo recusada pelo StrictModes.",
+      "comando": "ssh -vvv paulo@servidor 2>&1 | grep -i 'offering\\|authentications that can continue'\nsudo tail -n 50 /var/log/auth.log",
+      "leitura": "No cliente, 'Offering public key' mostra o que foi tentado. No servidor, 'Authentication refused: bad ownership or modes' aponta permissão, não chave errada — ~/.ssh 700, authorized_keys 600 e o home não pode ser gravável pelo grupo."
+    },
+    {
+      "sintoma": "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED",
+      "causa_provavel": "Servidor reinstalado, IP reaproveitado por outra máquina — ou, de fato, um man-in-the-middle.",
+      "comando": "ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub   # no servidor\nssh-keygen -R servidor                              # na estação, após confirmar",
+      "leitura": "Confirme o fingerprint por um canal independente ANTES de remover a linha. Apagar por reflexo transforma um alerta de segurança em um clique de rotina."
+    },
+    {
+      "sintoma": "Conexão trava depois do banner",
+      "causa_provavel": "UseDNS fazendo resolução reversa lenta, ou MTU quebrada no caminho.",
+      "comando": "ssh -vvv paulo@servidor\nsudo sshd -T | grep -i usedns",
+      "leitura": "Se a pausa acontece entre 'SSH2_MSG_KEXINIT sent' e a resposta, suspeite de MTU/fragmentação. Se acontece após o banner e antes do prompt, é resolução reversa: UseDNS no."
+    },
+    {
+      "sintoma": "Configuração alterada não surtiu efeito",
+      "causa_provavel": "Outro valor da mesma diretiva foi lido ANTES do seu (no sshd_config vale o primeiro): um arquivo de sshd_config.d com nome menor, ou um bloco Match que casou com a conexão.",
+      "comando": "sudo sshd -T | grep -i permitrootlogin\nsudo sshd -T -C user=paulo,host=x,addr=203.0.113.9",
+      "leitura": "'sshd -T' imprime a configuração EFETIVA, que é o que vale — não o que está no arquivo que você editou. A forma com -C aplica os blocos Match para aquele usuário e origem."
+    },
+    {
+      "sintoma": "Sessão cai sozinha após alguns minutos ociosa",
+      "causa_provavel": "NAT ou firewall no caminho expirando a tradução da conexão ociosa.",
+      "comando": "# ~/.ssh/config\nHost *\n  ServerAliveInterval 30\n  ServerAliveCountMax 3",
+      "leitura": "ServerAliveInterval é do cliente e trafega dentro do túnel cifrado — diferente do TCPKeepAlive, que é do sistema e forjável. Do lado do servidor, o par é ClientAliveInterval."
+    },
+    {
+      "sintoma": "Muitos logins falhos vindos da Internet",
+      "causa_provavel": "Varredura automatizada na porta 22 — é o estado normal de qualquer IP público.",
+      "comando": "sudo grep -c 'Failed password' /var/log/auth.log\nsudo fail2ban-client status sshd",
+      "leitura": "Com PasswordAuthentication no, as tentativas viram ruído sem risco. O fail2ban reduz o volume de log e a carga; ele não substitui desligar a senha."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Abertura de conexão SSH (RFC 4253) sobre TCP 22",
+    "definicao": "sequenceDiagram\n    participant C as Cliente SSH\n    participant S as Servidor SSH (porta 22)\n    Note over C,S: 1. Troca de versão (identification string) em texto claro\n    C->>S: SSH-2.0-OpenSSH_cliente\n    S-->>C: SSH-2.0-OpenSSH_servidor\n    Note over C,S: 2. Negociação de algoritmos (KEXINIT)\n    C->>S: SSH_MSG_KEXINIT (algoritmos de troca de chave, cifra, MAC, compressão)\n    S-->>C: SSH_MSG_KEXINIT (listas do servidor)\n    Note over C,S: 3. Troca de chaves Diffie-Hellman (segredo compartilhado)\n    C->>S: SSH_MSG_KEXDH_INIT (e = valor público do cliente)\n    S-->>C: SSH_MSG_KEXDH_REPLY (f, chave pública do host e assinatura)\n    Note over C,S: 4. NEWKEYS: ativa as chaves de sessão derivadas\n    C->>S: SSH_MSG_NEWKEYS\n    S-->>C: SSH_MSG_NEWKEYS\n    Note over C,S: canal cifrado a partir daqui\n    Note over C,S: 5. Autenticação (por chave pública)\n    C->>S: SSH_MSG_SERVICE_REQUEST (ssh-userauth)\n    S-->>C: SSH_MSG_SERVICE_ACCEPT\n    C->>S: SSH_MSG_USERAUTH_REQUEST (usuário, publickey, assinatura)\n    S-->>C: SSH_MSG_USERAUTH_SUCCESS\n    Note over C,S: Sessão autenticada: abre-se o canal e começa a shell/comando",
+    "legenda": "Fluxo de abertura de uma conexão SSH: o cliente e o servidor primeiro anunciam suas versões em texto claro, depois negociam os algoritmos com o KEXINIT, executam a troca de chaves Diffie-Hellman para chegar a um segredo compartilhado sem transmiti-lo, trocam NEWKEYS para ligar a cifra e, daí em diante, todo o tráfego (incluindo a autenticação por chave pública) viaja criptografado."
+  },
+  "cabecalho": {
+    "titulo": "Binary Packet Protocol do SSH (RFC 4253) - campos fixos do cabeçalho",
+    "nota": "São mostrados como campos apenas os dois cabeçalhos de tamanho fixo: Packet length (32 bits) + Padding length (8 bits) = 40 bits = 5 bytes. Logo após esses 5 bytes fixos seguem três partes de tamanho variável, descritas aqui na nota e não desenhadas por não terem largura fixa: (1) Payload - a mensagem real (por exemplo KEXINIT ou USERAUTH_REQUEST), possivelmente comprimida, com tamanho variável; (2) Random padding - bytes aleatórios de enchimento, com pelo menos 4 bytes, escolhidos para que o total (Packet length + o próprio campo Padding length + Payload + padding) seja múltiplo do tamanho de bloco da cifra, escondendo o tamanho real da mensagem; (3) MAC - código de autenticação da mensagem, de tamanho variável conforme o algoritmo negociado (por exemplo 32 bytes no hmac-sha2-256; nas cifras AEAD, como chacha20-poly1305 ou aes-gcm, não há HMAC separado e o campo leva a tag de autenticação de 16 bytes). O campo Packet length conta os bytes de todo o pacote exceto ele próprio e o MAC. Soma dos campos fixos exibidos: 32 + 8 = 40 bits = 5 bytes.",
+    "campos": [
+      {
+        "nome": "Packet length",
+        "bits": 32,
+        "descricao": "Comprimento do pacote em bytes, sem contar este próprio campo e o MAC final. Diz ao receptor quantos bytes ainda faltam ler para completar o pacote.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Padding length",
+        "bits": 8,
+        "descricao": "Quantidade de bytes de enchimento aleatório (Random padding) presentes no pacote. Vale no mínimo 4 e serve para alinhar o pacote ao tamanho de bloco da cifra.",
+        "cor": "#7c3aed"
+      }
+    ]
+  }
+}

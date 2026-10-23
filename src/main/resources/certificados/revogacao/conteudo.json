@@ -1,0 +1,254 @@
+{
+  "resumo": "Um certificado X.509 traz uma validade fixa (notBefore/notAfter), mas o mundo real exige tirá-lo de circulação ANTES de expirar: a chave privada vazou, o certificado foi emitido por engano, o titular deixou de existir ou o domínio mudou de dono. Revogação é o mecanismo pelo qual a Autoridade Certificadora (CA) declara \"este certificado não vale mais\", e o desafio central é fazer o cliente (navegador, aplicação) descobrir isso a tempo, sem quebrar privacidade nem desempenho. Há três abordagens principais: a CRL (lista de revogados que o cliente baixa e consulta), o OCSP (o cliente pergunta em tempo real o status de um certificado específico) e o OCSP stapling (o próprio servidor TLS anexa uma resposta OCSP assinada e recente dentro do handshake, resolvendo latência e privacidade de uma vez). O ponto fraco histórico é o soft-fail: quando o cliente não consegue verificar o status, a maioria segue em frente como se estivesse tudo bem, e um atacante em posição de rede explora exatamente isso. Nas CAs públicas a resposta moderna é a CRL — o OCSP virou opcional, e a Let's Encrypt o desligou em agosto de 2025, recusando Must-Staple desde maio — e, cada vez mais, certificados de vida curta, que quase dispensam revogação. Stapling e Must-Staple continuam valendo onde a CA ainda mantém OCSP. No site, o protocolo TLS mostra o handshake passo a passo; o grampo de um servidor real aparece com openssl s_client -status.",
+  "ficha": [
+    {
+      "rotulo": "Grupo",
+      "valor": "Ciclo de vida do certificado",
+      "dica": "Emissão, renovação, revogação e expiração fazem parte do mesmo ciclo."
+    },
+    {
+      "rotulo": "Padrão base",
+      "valor": "X.509 / RFC 5280 (CRL) e RFC 6960 (OCSP)",
+      "dica": "A RFC 6960 substituiu a antiga RFC 2560 e define o protocolo OCSP atual."
+    },
+    {
+      "rotulo": "Onde o cliente descobre",
+      "valor": "Extensões CRL Distribution Points e Authority Information Access (AIA)",
+      "dica": "O próprio certificado carrega a URL da CRL e do responder OCSP."
+    },
+    {
+      "rotulo": "Estados possíveis",
+      "valor": "good, revoked, unknown",
+      "dica": "unknown NÃO é o mesmo que good: o responder não conhece aquele certificado."
+    },
+    {
+      "rotulo": "Stapling (TLS)",
+      "valor": "Extensão status_request no handshake (RFC 6066)",
+      "dica": "O servidor entrega a resposta OCSP; o cliente não fala com a CA."
+    },
+    {
+      "rotulo": "Reforço opcional",
+      "valor": "OCSP Must-Staple (extensão TLS Feature, RFC 7633)",
+      "dica": "O certificado exige que o stapling esteja presente, fechando o soft-fail."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Por que revogar antes de expirar",
+      "icone": "block",
+      "texto": "Um certificado pode virar um risco muito antes do notAfter. Os gatilhos clássicos são: comprometimento da chave privada (vazou, foi copiada de um backup, saiu num commit); emissão indevida (a CA validou mal o dono do domínio, ou foi enganada); e mudanças de fato no mundo (o domínio trocou de dono, a empresa fechou, o servidor foi desativado). Enquanto o certificado for aceito, um atacante com a chave se passa pelo site legítimo. Revogar é a forma de encurtar essa janela de confiança.",
+      "destaque": "Expiração é o prazo natural; revogação é o freio de emergência."
+    },
+    {
+      "titulo": "CRL: a lista de revogados",
+      "icone": "description",
+      "texto": "A CA publica periodicamente uma Certificate Revocation List: um arquivo assinado com o número de série de todos os certificados revogados e a data. O cliente baixa a CRL e verifica se o serial está lá. É simples e funciona offline depois de baixada, mas a lista pode ficar grande em CAs grandes (megabytes), pois guarda todos os revogados ainda dentro da validade, fica desatualizada entre publicações (a revogação de hoje pode só aparecer daqui a horas ou dias) e obriga a baixar milhares de entradas só para checar um certificado.",
+      "destaque": "Robusta e cacheável, porém grande e sempre um pouco atrasada."
+    },
+    {
+      "titulo": "OCSP: pergunta em tempo real",
+      "icone": "fingerprint",
+      "texto": "Em vez de baixar a lista inteira, o Online Certificate Status Protocol pergunta ao responder OCSP (indicado no campo AIA) o status de UM serial específico e recebe uma resposta assinada: good, revoked ou unknown. É atual e leve por consulta, mas cria dois problemas sérios quando o próprio navegador faz a chamada: latência (uma ida e volta extra a cada conexão nova) e privacidade (o responder da CA passa a saber qual usuário visitou qual site, e quando).",
+      "destaque": "Atual, mas vaza o histórico de navegação para a CA e custa uma viagem de rede."
+    },
+    {
+      "titulo": "Soft-fail: o furo que anula tudo",
+      "icone": "gpp_bad",
+      "texto": "O que o cliente faz quando NÃO consegue obter o status (responder fora do ar, timeout, rede filtrada)? A esmagadora maioria dos navegadores adota soft-fail: na dúvida, aceita a conexão. Isso mantém a web funcionando quando um responder cai, mas transforma a verificação em teatro: um atacante que consegue bloquear o tráfego OCSP simplesmente força o timeout e o cliente aceita até um certificado revogado. Hard-fail (recusar sem status) seria seguro, mas quebraria sites demais para ser o padrão.",
+      "destaque": "Verificação que falha aberto é verificação que o atacante desliga."
+    },
+    {
+      "titulo": "Stapling resolve latência E privacidade",
+      "icone": "verified_user",
+      "texto": "No OCSP stapling o SERVIDOR TLS consulta o responder periodicamente, guarda a resposta OCSP assinada (com validade própria) e a anexa (grampeia) dentro do handshake, na extensão status_request. O cliente recebe status recente sem fazer nenhuma chamada extra: some a latência (nenhuma viagem adicional) e some o vazamento de privacidade (o cliente nunca fala com a CA). A resposta continua assinada pela CA, então o servidor não consegue forjar um good.",
+      "destaque": "O servidor faz a pergunta uma vez e serve a resposta a todos os clientes."
+    },
+    {
+      "titulo": "Must-Staple e o futuro dos short-lived",
+      "icone": "autorenew",
+      "texto": "Stapling sozinho ainda é soft-fail: se o servidor omitir o grampo, o cliente segue. O Must-Staple (extensão TLS Feature marcada no certificado) inverte isso: o cliente PASSA a exigir o grampo e recusa a conexão sem ele, fechando a brecha (na prática, poucos clientes aplicam essa exigência: o Firefox aplica; o Chrome, que nem consulta OCSP, ignora a extensão). A tendência complementar são os certificados de vida curta (dias, não meses): se um certificado vive pouco, a janela de exposição pós-vazamento é tão pequena que a revogação quase perde a função. É a direção para onde a PKI pública caminha.",
+      "destaque": "Must-Staple torna o grampo obrigatório; a vida curta torna a revogação quase dispensável."
+    }
+  ],
+  "diagrama": {
+    "titulo": "OCSP direto versus OCSP stapling no handshake TLS",
+    "definicao": "sequenceDiagram\n    actor C as Cliente (navegador)\n    participant S as Servidor TLS\n    participant O as Responder OCSP (CA)\n\n    Note over C,O: Cenário 1 - OCSP direto (o cliente pergunta)\n    C->>S: ClientHello / recebe o certificado\n    C->>O: Qual o status do serial 0x1A2B?\n    O-->>C: Resposta assinada: good / revoked / unknown\n    Note right of C: Latência extra e a CA vê quem visitou o site\n\n    Note over C,O: Cenário 2 - OCSP stapling (o servidor grampeia)\n    S->>O: Qual o status do meu certificado?\n    O-->>S: Resposta OCSP assinada (válida por horas)\n    Note left of S: O servidor guarda em cache e renova sozinho\n    C->>S: ClientHello com extensão status_request\n    S-->>C: Certificado + resposta OCSP grampeada\n    Note right of C: Sem viagem extra, sem vazar navegação para a CA",
+    "legenda": "No cenário 1 o cliente contata o responder da CA a cada conexão, pagando latência e entregando seu histórico de navegação. No cenário 2 o servidor faz a consulta periodicamente e anexa a resposta assinada no próprio handshake: o cliente valida o status sem falar com a CA. A resposta continua assinada pela CA, então o servidor não pode forjar um good. Você observa a resposta grampeada de um servidor real com openssl s_client -status."
+  },
+  "tabelas": [
+    {
+      "titulo": "CRL x OCSP x OCSP stapling",
+      "colunas": [
+        "Aspecto",
+        "CRL",
+        "OCSP (direto)",
+        "OCSP stapling"
+      ],
+      "linhas": [
+        [
+          "Como funciona",
+          "Cliente baixa a lista inteira de revogados e procura o serial",
+          "Cliente pergunta ao responder o status de um serial específico",
+          "Servidor consulta o responder e anexa a resposta assinada no handshake"
+        ],
+        [
+          "Quem fala com a CA",
+          "O cliente (baixa a CRL)",
+          "O cliente (a cada conexão)",
+          "O servidor (periodicamente, em cache)"
+        ],
+        [
+          "Latência na conexão",
+          "Alta na 1ª carga; depois usa cache local",
+          "Uma viagem extra por conexão nova",
+          "Nenhuma viagem extra: já vem no handshake"
+        ],
+        [
+          "Privacidade do usuário",
+          "Boa: a CA não vê qual site foi visitado",
+          "Ruim: a CA vê quem consultou qual certificado e quando",
+          "Boa: o cliente nunca contata a CA"
+        ],
+        [
+          "Atualidade da informação",
+          "Atrasada: só muda na próxima publicação",
+          "Alta: status quase em tempo real",
+          "Alta, limitada à validade da resposta em cache"
+        ],
+        [
+          "Tamanho / custo",
+          "Pode ficar grande em CAs grandes (MB); só sai da lista o que já expirou",
+          "Leve por consulta, mas multiplicado por conexão",
+          "Leve e amortizado entre todos os clientes"
+        ]
+      ]
+    },
+    {
+      "titulo": "Estados de resposta OCSP",
+      "colunas": [
+        "Estado",
+        "Significado",
+        "O que o cliente deve fazer"
+      ],
+      "linhas": [
+        [
+          "good",
+          "O responder confirma que o certificado NÃO está revogado dentro da validade da resposta",
+          "Prosseguir com o handshake"
+        ],
+        [
+          "revoked",
+          "O certificado foi revogado (pode trazer motivo e data, inclusive revogação retroativa)",
+          "Recusar a conexão — este é o veredito duro"
+        ],
+        [
+          "unknown",
+          "O responder não tem informação sobre aquele serial (CA errada, serial inexistente)",
+          "Tratar com desconfiança: NÃO equivale a good; idealmente recusar"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Soft-fail explorado por MITM",
+      "como_funciona": "O atacante em posição de rede (Wi-Fi público, roteador comprometido, provedor hostil) usa uma chave roubada de um certificado JÁ revogado. Como quase todo navegador faz soft-fail, o atacante só precisa bloquear ou dar timeout no tráfego OCSP/CRL: o cliente não consegue o status, assume que está tudo bem e aceita o certificado revogado. A revogação existe, mas nunca chega a ser consultada.",
+      "sinal": "Conexões que verificam status quando a rede está limpa, mas passam sem verificação alguma quando o tráfego para a CA é filtrado.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Responder OCSP indisponível (DoS de disponibilidade)",
+      "como_funciona": "O responder OCSP da CA é um ponto único de dependência. Se ele cai, fica lento ou é alvo de DDoS, os clientes que fazem OCSP direto ou stapling sem cache válido ficam sem status. Sob soft-fail, isso degrada silenciosamente para 'aceita tudo'. Sob hard-fail, derruba sites legítimos em massa. O atacante não precisa quebrar cripto: basta tornar a verificação impossível.",
+      "sinal": "Timeouts em massa nas URLs de AIA; picos de latência no handshake; respostas OCSP em cache expirando sem renovação.",
+      "gravidade": "Alta",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Certificado revogado ainda aceito",
+      "como_funciona": "Mesmo sem bloqueio ativo, a defasagem estrutural deixa uma janela: a CRL só se atualiza na próxima publicação e as respostas OCSP têm validade de horas ou dias, servidas de cache. Um certificado revogado agora pode continuar sendo aceito até o cache/lista antiga vencer. Se o cliente ainda usa CRL desatualizada ou cacheou uma resposta good de longa duração, aceita a chave comprometida por todo esse intervalo.",
+      "sinal": "nextUpdate distante nas respostas; CRLs com intervalo de publicação longo; cache do cliente com good antigo persistindo após a revogação.",
+      "gravidade": "Alta",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Downgrade da extensão de stapling",
+      "como_funciona": "Sem Must-Staple, o stapling é apenas oportunista. Um MITM remove a resposta grampeada (ou o servidor a omite por falha) e o cliente cai de volta no soft-fail: aceita sem status. O atacante rebaixa a proteção sem tocar no certificado. Só o Must-Staple, que faz o cliente EXIGIR o grampo, fecha esse rebaixamento.",
+      "sinal": "Handshakes do mesmo servidor ora com resposta OCSP grampeada, ora sem, dependendo do caminho de rede.",
+      "gravidade": "Média",
+      "gravidade_cor": "info"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "OCSP stapling + Must-Staple",
+      "como_funciona": "O servidor habilita stapling (consulta o responder, cacheia e anexa a resposta assinada no handshake) e o certificado é emitido com a extensão Must-Staple. O stapling elimina latência e vazamento de privacidade; o Must-Staple obriga o cliente a recusar a conexão se o grampo estiver ausente, convertendo o soft-fail em hard-fail apenas para aquele certificado, sem quebrar o resto da web. Depende de a CA manter OCSP: a Let's Encrypt desligou o dela em agosto de 2025 e não emite mais Must-Staple.",
+      "cobre": "Soft-fail explorado por MITM, downgrade do stapling e vazamento de privacidade do OCSP direto.",
+      "limite": "Se o servidor não renovar a resposta em cache e ela expirar, com Must-Staple o próprio site cai — exige monitoramento operacional do cache OCSP."
+    },
+    {
+      "nome": "CRLs curtas e bem operadas",
+      "como_funciona": "Reduzir o intervalo de publicação da CRL (e o nextUpdate das respostas OCSP) encolhe a janela em que um certificado revogado continua aceito. Complementa mecanismos modernos como CRLite/CRLSets, em que o navegador recebe do fornecedor um resumo compacto e atualizado dos revogados, evitando a consulta online por conexão.",
+      "cobre": "Certificado revogado ainda aceito por defasagem e a privacidade do OCSP direto (a checagem vira local).",
+      "limite": "Encurtar publicação aumenta a carga na infraestrutura da CA; CRLSets cobrem só um subconjunto priorizado de revogações, não todas."
+    },
+    {
+      "nome": "Certificados de vida curta (short-lived)",
+      "como_funciona": "Emitir certificados válidos por dias em vez de meses, com renovação automatizada (ACME). Se a chave vaza, a janela de exposição é tão curta que o certificado expira quase junto com a necessidade de revogá-lo. É a direção estratégica da PKI pública: menos dependência de revogação em tempo real.",
+      "cobre": "Praticamente toda a classe: soft-fail, responder indisponível e defasagem de revogação perdem relevância quando a validade é minúscula.",
+      "limite": "Exige automação de renovação robusta (ACME) e tratamento de rotação frequente; sem isso, gera indisponibilidade por certificado expirado."
+    },
+    {
+      "nome": "Preferir hard-fail onde o risco justifica",
+      "como_funciona": "Em aplicações de alto valor (banco, backend interno, mTLS entre serviços), configurar o cliente para recusar a conexão quando não obtiver status de revogação, em vez de aceitar por padrão. Combinado com stapling confiável, o hard-fail deixa de derrubar tudo e passa a ser viável.",
+      "cobre": "Soft-fail explorado por MITM e certificado revogado aceito por ausência de checagem.",
+      "limite": "Hard-fail cru, sem stapling estável, é frágil: qualquer indisponibilidade do responder vira indisponibilidade do serviço."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Consultar o status de revogação via OCSP com openssl",
+      "cenario": "Você tem o certificado de um servidor e quer perguntar diretamente ao responder OCSP se ele está good ou revoked, usando a URL que está no próprio certificado (campo AIA).",
+      "comandos": "# 1) Baixar a cadeia do servidor (folha + intermediária)\nopenssl s_client -connect exemplo.com.br:443 -showcerts </dev/null 2>/dev/null > cadeia.pem\n\n# Separe manualmente em folha.pem (1o bloco) e emissora.pem (2o bloco),\n# ou obtenha a emissora pelo campo caIssuers do AIA.\n\n# 2) Descobrir a URL do responder OCSP declarada no certificado\nopenssl x509 -in folha.pem -noout -ocsp_uri\n# saída de exemplo: http://ocsp.ca.example.com\n\n# 3) Perguntar o status ao responder\nopenssl ocsp -issuer emissora.pem -cert folha.pem \\\n  -url http://ocsp.ca.example.com \\\n  -header \"Host=ocsp.ca.example.com\" \\\n  -no_nonce -text",
+      "explicacao": "O openssl monta uma requisição OCSP com o serial da folha, envia ao responder e mostra o veredito. A linha decisiva é 'folha.pem: good' (ou 'revoked' com data e motivo, ou 'unknown'). Se você usar -issuer errado, receberá unknown — prova de que unknown não é ausência de problema, e sim ausência de conhecimento sobre aquele serial. O -text exibe o thisUpdate/nextUpdate, que define por quanto tempo a resposta é válida."
+    },
+    {
+      "titulo": "Verificar se o servidor faz OCSP stapling no handshake",
+      "cenario": "Você quer confirmar, do lado do cliente, se o servidor está de fato grampeando a resposta OCSP dentro do TLS (extensão status_request), sem precisar consultar a CA você mesmo.",
+      "comandos": "# Pedir o status grampeado durante o handshake\nopenssl s_client -connect exemplo.com.br:443 \\\n  -servername exemplo.com.br -status </dev/null 2>/dev/null \\\n  | openssl x509 -noout -subject 2>/dev/null\n\n# Para ver especificamente o bloco de resposta OCSP grampeada:\nopenssl s_client -connect exemplo.com.br:443 \\\n  -servername exemplo.com.br -status </dev/null 2>/dev/null \\\n  | sed -n '/OCSP response/,/Cert Status/p'",
+      "explicacao": "A flag -status envia a extensão status_request no ClientHello. Se o servidor grampeia, a saída traz 'OCSP Response Status: successful' e 'Cert Status: good'. Se aparecer 'OCSP response: no response sent', o servidor NÃO está fazendo stapling e o cliente cairia no soft-fail. É essa extensão que o protocolo TLS do site ilustra no handshake: correlacione o que o comando mostra com o desenho."
+    },
+    {
+      "titulo": "Inspecionar as extensões de revogação de um certificado com keytool",
+      "cenario": "Você administra uma aplicação Java e quer inspecionar as extensões de revogação (AIA/CRL Distribution Points) de um certificado importado, para saber por onde o cliente descobriria o status.",
+      "comandos": "# Listar o certificado com todos os detalhes, incluindo extensões\nkeytool -printcert -file folha.pem\n\n# Ou inspecionar uma entrada dentro de um keystore\nkeytool -list -v -alias servidor -keystore keystore.jks -storepass changeit\n\n# Ative a verificação de revogação na JVM da aplicação.\n# Duas são system properties (-D):\n#   -Dcom.sun.net.ssl.checkRevocation=true   (liga a checagem no TLS)\n#   -Dcom.sun.security.enableCRLDP=true      (habilita uso do CRL Distribution Point)\n# O OCSP é SECURITY property: -Docsp.enable não tem efeito.\n# Vai num arquivo de propriedades de segurança passado à JVM:\necho \"ocsp.enable=true\" > revogacao.security\n#   -Djava.security.properties=revogacao.security",
+      "explicacao": "O -printcert / -list -v mostra as extensões 'AuthorityInfoAccess' (com a URL do responder OCSP e da emissora) e 'CRLDistributionPoints' (URL da CRL). Por padrão a JVM NÃO valida revogação: sem as propriedades acima, um certificado revogado passaria — é o soft-fail em outra camada. Habilitar checkRevocation + enableCRLDP (system properties) e ocsp.enable (security property, no java.security ou num arquivo passado por -Djava.security.properties) faz a cadeia PKIX consultar CRL/OCSP de fato durante a validação TLS. Um -Docsp.enable=true passa sem erro e não liga nada: o OCSP continua desligado em silêncio."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "openssl ocsp responde 'revoked' com data e motivo",
+      "causa_provavel": "O certificado foi de fato revogado pela CA (chave comprometida, emissão indevida ou substituição). A resposta assinada é a verdade oficial.",
+      "comando": "openssl ocsp -issuer emissora.pem -cert folha.pem -url $(openssl x509 -in folha.pem -noout -ocsp_uri) -no_nonce -text",
+      "leitura": "Procure a linha 'Cert Status: revoked', 'Revocation Time' e 'Revocation Reason'. Se a data de revogação for anterior a agora, o certificado deve ser recusado imediatamente — reemita e substitua no servidor."
+    },
+    {
+      "sintoma": "Handshake sem resposta grampeada: '-status' retorna 'no response sent'",
+      "causa_provavel": "O servidor não tem stapling habilitado, ou a resposta em cache expirou e não foi renovada, ou o servidor não conseguiu contatar o responder da CA.",
+      "comando": "openssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br -status </dev/null 2>/dev/null | grep -A2 \"OCSP response\"",
+      "leitura": "'OCSP response: no response sent' confirma ausência de grampo. Sem Must-Staple, o cliente segue por soft-fail (risco). Verifique a config do servidor web e se a URL do responder no AIA está acessível a partir do servidor."
+    },
+    {
+      "sintoma": "Responder OCSP fora do ar: timeout ou erro de conexão na consulta",
+      "causa_provavel": "Indisponibilidade do responder da CA, bloqueio de rede/firewall para a URL do AIA, ou DNS falhando para o host do responder.",
+      "comando": "curl -sv $(openssl x509 -in folha.pem -noout -ocsp_uri) --max-time 5 2>&1 | tail -20",
+      "leitura": "Timeout ou HTTP 5xx indica responder inacessível. Neste estado, clientes com soft-fail aceitam a conexão sem verificar (perigoso) e clientes com hard-fail a recusam. É o argumento operacional a favor de stapling com cache renovado e de certificados de vida curta."
+    },
+    {
+      "sintoma": "openssl ocsp responde 'unknown' para um certificado que deveria existir",
+      "causa_provavel": "Emissora (-issuer) incorreta, responder de outra CA, ou serial que aquele responder não gerencia. unknown é falta de conhecimento, não ausência de revogação.",
+      "comando": "openssl x509 -in folha.pem -noout -issuer -serial && openssl x509 -in emissora.pem -noout -subject",
+      "leitura": "Confirme que o 'issuer' da folha bate com o 'subject' da emissora usada. Se não bater, você está perguntando à CA errada; corrija a cadeia. Nunca trate 'unknown' como 'good'."
+    }
+  ]
+}

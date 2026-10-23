@@ -1,0 +1,26 @@
+{! Aba "Comparador": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
+<div class="calc-form-card mb-3">
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">compare_arrows</span> Comparar dois endereços</h2>
+    <p class="calc-hint">Descobre se caem na mesma <code translate="no">/64</code>, se um contém o outro, o prefixo comum e a distância entre eles.</p>
+    <form id="formComp" class="row g-3 align-items-end" hx-post="/ipv6/api/comparar" hx-target="#saidaComp" hx-swap="innerHTML"
+          hx-disabled-elt="find button[type='submit']">
+        <div class="col-lg-5 col-md-6">
+            <label for="ipv6CompA" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">looks_one</span> Endereço A</label>
+            <input type="text" class="aed-input form-control" id="ipv6CompA" name="a"
+                   placeholder="2001:db8:0:1::/64" value="2001:db8:0:1::/64" autocomplete="off" spellcheck="false" required>
+        </div>
+        <div class="col-lg-5 col-md-6">
+            <label for="ipv6CompB" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">looks_two</span> Endereço B</label>
+            <input type="text" class="aed-input form-control" id="ipv6CompB" name="b"
+                   placeholder="2001:db8:0:1:abcd::1" value="2001:db8:0:1:abcd::1" autocomplete="off" spellcheck="false" required>
+        </div>
+        <div class="col-lg-2 col-md-12 d-flex gap-2">
+            <button type="submit" class="aed-btn aed-btn-execute flex-fill" title="Comparar os dois endereços IPv6 informados"><span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span><span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Comparar</button>
+            <button type="button" class="aed-btn aed-btn-neutral" data-limpar title="Esvaziar os campos e apagar o resultado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+        </div>
+    </form>
+</div>
+
+<div id="saidaComp" class="calc-saida ipv6-saida-full">
+    <div class="calc-placeholder"><span class="material-symbols-outlined" aria-hidden="true" translate="no">compare_arrows</span><p class="mb-0">Informe dois endereços (com ou sem prefixo) para ver se estão na mesma LAN /64, a relação de contenção, o prefixo comum, a distância e a grade de bits em comum.</p></div>
+</div>

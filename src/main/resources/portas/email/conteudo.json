@@ -1,0 +1,323 @@
+{
+  "resumo": "A família de portas de e-mail separa três papéis que muita gente confunde: submissão (o seu cliente entregando uma mensagem ao servidor), relay (servidores de e-mail conversando entre si) e recuperação (você baixando ou lendo a caixa postal). A regra de ouro de segurança é simples: submissão sempre autenticada e cifrada nas portas 587 (STARTTLS) ou 465 (TLS implícito), leitura sempre nas versões seguras 993 (IMAPS) e 995 (POP3S), e a porta 25 usada só para relay entre servidores, nunca aberta ao mundo com autenticação frouxa. As versões em texto claro (110 e 143) transmitem login e senha legíveis na rede e não devem mais ser expostas. Este framework também traz um aprofundamento dedicado de SMTP/POP3/IMAP, no qual cada protocolo é detalhado por dentro.",
+  "ficha": [
+    {
+      "rotulo": "Portas da família",
+      "valor": "25, 587, 465, 110, 995, 143, 993",
+      "dica": "Cada número é um papel diferente: entregar, retransmitir ou ler."
+    },
+    {
+      "rotulo": "Transporte",
+      "valor": "Todas sobre TCP",
+      "dica": "E-mail é orientado a conexão: entrega confiável importa mais que velocidade."
+    },
+    {
+      "rotulo": "Submissão (cliente para servidor)",
+      "valor": "587 (STARTTLS) ou 465 (TLS implícito)",
+      "dica": "Sempre com autenticação. É por aqui que o seu Outlook/Thunderbird envia."
+    },
+    {
+      "rotulo": "Relay entre servidores (MTA para MTA)",
+      "valor": "25 (SMTP)",
+      "dica": "Servidor a servidor. Nunca use a 25 para o cliente final autenticar."
+    },
+    {
+      "rotulo": "Leitura da caixa postal",
+      "valor": "POP3 995 / IMAP 993 (seguras), 110 / 143 (claras, evitar)",
+      "dica": "POP3 baixa e remove; IMAP sincroniza e mantém no servidor."
+    },
+    {
+      "rotulo": "Risco típico",
+      "valor": "Open relay na 25, credenciais em texto claro na 110/143, sniffing",
+      "dica": "25 mal configurada vira máquina de spam; 110/143 vazam senha na rede."
+    },
+    {
+      "rotulo": "RFCs de referência",
+      "valor": "SMTP RFC 5321, Submission RFC 6409, POP3 RFC 1939, IMAP RFC 9051 (IMAP4rev2; a RFC 3501 descreve o IMAP4rev1)",
+      "dica": "STARTTLS para e-mail: RFC 3207 (SMTP) e RFC 8314 (recomenda TLS implícito)."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Submissão não é relay",
+      "icone": "mail",
+      "texto": "Submissão é o seu programa de e-mail entregando uma mensagem nova ao SEU servidor, sempre com login e senha, nas portas 587 ou 465. Relay é um servidor repassando a mensagem a OUTRO servidor até chegar ao destino, na porta 25. Misturar os dois papéis é a origem de quase todo problema de spam.",
+      "destaque": "587/465 = você autentica. 25 = servidores conversam."
+    },
+    {
+      "titulo": "STARTTLS x TLS implícito",
+      "icone": "lock",
+      "texto": "Na 587 a conexão começa em texto claro e é promovida para criptografia com o comando STARTTLS. Na 465 a criptografia (TLS) já começa antes de qualquer byte de dados, de forma implícita. Ambas protegem; a 465 é preferida por não ter a janela inicial em claro. A RFC 8314 recomenda o TLS implícito.",
+      "destaque": "STARTTLS negocia depois; implícito já nasce cifrado."
+    },
+    {
+      "titulo": "Claro x seguro: os pares",
+      "icone": "shield",
+      "texto": "Cada protocolo de leitura tem uma versão insegura e uma segura. POP3 110 vira POP3S 995. IMAP 143 vira IMAPS 993. As portas claras enviam usuário e senha sem criptografia; qualquer um na mesma rede pode capturar. Use somente as portas seguras e desative as claras.",
+      "destaque": "110 para 995, 143 para 993. Sempre a versão segura."
+    },
+    {
+      "titulo": "POP3 x IMAP",
+      "icone": "folder_shared",
+      "texto": "POP3 (110/995) baixa as mensagens para o seu dispositivo e, tipicamente, as remove do servidor: bom para um único aparelho. IMAP (143/993) mantém tudo no servidor e sincroniza pastas entre celular, notebook e webmail. Hoje o IMAP é o padrão para quem usa vários dispositivos.",
+      "destaque": "POP3 baixa e some; IMAP sincroniza e permanece."
+    },
+    {
+      "titulo": "Open relay: o pecado da porta 25",
+      "icone": "warning",
+      "texto": "Um open relay é um servidor SMTP na porta 25 que aceita e repassa e-mail de qualquer remetente para qualquer destino, sem autenticar. Spammers procuram esses servidores para enviar milhões de mensagens em nome de outra pessoa. O resultado é o seu IP em listas negras e o seu domínio queimado.",
+      "destaque": "25 aberta sem controle = fábrica de spam com o seu nome."
+    },
+    {
+      "titulo": "SPF, DKIM e DMARC",
+      "icone": "security",
+      "texto": "Além de fechar o relay, três registros no DNS protegem a reputação do domínio: SPF diz quais servidores podem enviar em seu nome, DKIM assina as mensagens criptograficamente, e DMARC define o que fazer quando SPF/DKIM falham (e para onde reportar). Juntos, dificultam a falsificação (spoofing) do seu domínio.",
+      "destaque": "SPF autoriza, DKIM assina, DMARC decide e reporta."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Submissão autenticada (587) e relay entre servidores (25)",
+    "definicao": "sequenceDiagram\n    participant C as Cliente (Outlook/Thunderbird)\n    participant S as Seu servidor (MSA/MTA)\n    participant D as Servidor de destino (MTA)\n    participant X as Caixa postal do destinatário\n    C->>S: Conecta na porta 587 (Submission)\n    S-->>C: Pronto, envie STARTTLS\n    C->>S: STARTTLS (promove a conexão para TLS)\n    S-->>C: Canal cifrado estabelecido\n    C->>S: Login e senha (AUTH) sobre TLS\n    S-->>C: Autenticado, pode enviar a mensagem\n    C->>S: Mensagem (De, Para, Assunto, corpo)\n    S->>D: Relay pela porta 25 entre servidores (TLS oportunista)\n    D-->>S: Mensagem aceita para entrega\n    D->>X: Grava na caixa postal do destinatário\n    Note over C,S: 587/465 = submissão AUTENTICADA\n    Note over S,D: 25 = relay servidor a servidor, sem login do usuário",
+    "legenda": "O cliente nunca fala na 25. Ele autentica na 587 (ou 465) sobre TLS; só o servidor faz relay na 25 até o destino, que entrega na caixa postal (lida depois via 993/995)."
+  },
+  "tabelas": [
+    {
+      "titulo": "Porta x função x claro/seguro",
+      "colunas": [
+        "Porta",
+        "Protocolo",
+        "Função",
+        "Cifrado?"
+      ],
+      "linhas": [
+        [
+          "25",
+          "SMTP",
+          "Relay entre servidores (MTA para MTA)",
+          "TLS oportunista; nunca para login de cliente"
+        ],
+        [
+          "587",
+          "SMTP Submission",
+          "Envio autenticado do cliente",
+          "Sim, via STARTTLS"
+        ],
+        [
+          "465",
+          "SMTPS",
+          "Envio autenticado do cliente",
+          "Sim, TLS implícito"
+        ],
+        [
+          "110",
+          "POP3",
+          "Baixar caixa postal (legado)",
+          "Não - texto claro, evitar"
+        ],
+        [
+          "995",
+          "POP3S",
+          "Baixar caixa postal",
+          "Sim, TLS implícito"
+        ],
+        [
+          "143",
+          "IMAP",
+          "Ler/sincronizar caixa (legado)",
+          "Não - texto claro, evitar"
+        ],
+        [
+          "993",
+          "IMAPS",
+          "Ler/sincronizar caixa",
+          "Sim, TLS implícito"
+        ]
+      ]
+    },
+    {
+      "titulo": "STARTTLS x TLS implícito",
+      "colunas": [
+        "Aspecto",
+        "STARTTLS (ex.: 587)",
+        "TLS implícito (ex.: 465, 993, 995)"
+      ],
+      "linhas": [
+        [
+          "Início da conexão",
+          "Em texto claro, depois promove a TLS",
+          "Já começa cifrada, antes de qualquer dado"
+        ],
+        [
+          "Comando extra",
+          "Precisa do comando STARTTLS",
+          "Nenhum, o TLS é imediato"
+        ],
+        [
+          "Janela de risco",
+          "Breve trecho inicial em claro (alvo de downgrade)",
+          "Sem janela em claro"
+        ],
+        [
+          "Recomendação atual",
+          "Aceitável se STARTTLS for obrigatório",
+          "Preferido pela RFC 8314"
+        ],
+        [
+          "Falha se sem TLS",
+          "Deve recusar enviar em claro (require TLS)",
+          "Não conecta sem TLS por definição"
+        ]
+      ]
+    },
+    {
+      "titulo": "Quando usar cada porta",
+      "colunas": [
+        "Situação",
+        "Porta certa",
+        "Por quê"
+      ],
+      "linhas": [
+        [
+          "Seu app/cliente vai ENVIAR e-mail",
+          "587 ou 465",
+          "Submissão autenticada e cifrada"
+        ],
+        [
+          "Dois servidores trocam e-mail",
+          "25",
+          "Relay padrão entre MTAs"
+        ],
+        [
+          "Ler e-mail em vários dispositivos",
+          "993 (IMAPS)",
+          "Sincroniza e mantém no servidor, cifrado"
+        ],
+        [
+          "Baixar tudo para um único PC",
+          "995 (POP3S)",
+          "Download seguro, remove do servidor"
+        ],
+        [
+          "Legado 110/143",
+          "Nenhuma (desativar)",
+          "Enviam senha em texto claro"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Open relay na porta 25",
+      "como_funciona": "O servidor SMTP na 25 aceita retransmitir mensagens de qualquer origem para qualquer destino sem autenticar. Spammers descobrem o servidor por varredura e o usam para disparar spam e phishing em massa, gastando o seu IP e a sua reputação.",
+      "sinal": "Fila de e-mails de saída para domínios que não são seus; IP aparecendo em blocklists (Spamhaus); pico de tráfego na 25.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Credenciais em texto claro (110/143)",
+      "como_funciona": "POP3 e IMAP sem TLS trafegam o comando de login com usuário e senha legíveis. Qualquer atacante na mesma rede (Wi-Fi público, switch comprometido) captura a senha e assume a conta de e-mail.",
+      "sinal": "Cliente configurado em 110/143 sem 'usar SSL/TLS'; captura de pacotes mostrando USER/PASS ou LOGIN em claro.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Sniffing e captura de sessão",
+      "como_funciona": "Sem criptografia, todo o conteúdo (mensagens, anexos, cookies de sessão de webmail) circula visível. Um atacante posicionado na rede lê a correspondência inteira e pode sequestrar a sessão.",
+      "sinal": "Tráfego SMTP/POP3/IMAP sem TLS no Wireshark; conexões em portas claras a partir de redes não confiáveis.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Downgrade de STARTTLS (stripping)",
+      "como_funciona": "Um atacante no meio do caminho remove ou bloqueia o anúncio do STARTTLS na 587/25, forçando a conexão a continuar em texto claro sem que o usuário perceba. O cliente 'acha' que tentou, mas envia em claro.",
+      "sinal": "STARTTLS anunciado às vezes some; e-mails de envio saindo sem TLS apesar de configurado; logs mostrando fallback para claro.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Spoofing de domínio (falta de SPF/DKIM/DMARC)",
+      "como_funciona": "Sem esses registros no DNS, qualquer servidor pode enviar e-mail dizendo ser o seu domínio. Vítimas recebem phishing que parece legítimo, com o seu nome no remetente.",
+      "sinal": "Relatos de e-mails falsos em seu nome; relatórios DMARC (rua/ruf) mostrando envios não autorizados; ausência de registros SPF/DKIM no DNS.",
+      "gravidade": "Média",
+      "gravidade_cor": "info"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Submissão só em 587/465 com TLS e autenticação obrigatórios",
+      "como_funciona": "Configure o servidor para exigir AUTH e TLS na submissão e para RECUSAR envio em texto claro. O cliente entrega apenas autenticado e cifrado; nunca pela 25.",
+      "cobre": "Sniffing de credenciais, downgrade, envio anônimo pelo cliente.",
+      "limite": "Não protege o relay entre servidores (25), que depende do TLS oportunista da outra ponta."
+    },
+    {
+      "nome": "Fechar o relay aberto na porta 25",
+      "como_funciona": "O servidor só aceita relay para os próprios domínios (destinatários locais) ou de remetentes autenticados. Origens externas anônimas não conseguem retransmitir para terceiros.",
+      "cobre": "Open relay, uso do servidor como fábrica de spam, queima de IP.",
+      "limite": "Precisa ser testado de fora da rede; teste feito de dentro pode enganar por confiar na rede local."
+    },
+    {
+      "nome": "Desativar 110 e 143 em texto claro",
+      "como_funciona": "Remova ou bloqueie as portas claras e ofereça somente 993 (IMAPS) e 995 (POP3S). Force todos os clientes a migrar para as versões cifradas.",
+      "cobre": "Vazamento de senha e de conteúdo em POP3/IMAP.",
+      "limite": "Pode quebrar clientes antigos mal configurados; exige comunicar a mudança aos usuários."
+    },
+    {
+      "nome": "Publicar SPF, DKIM e DMARC no DNS",
+      "como_funciona": "SPF lista os servidores autorizados a enviar; DKIM assina cada mensagem; DMARC diz aos receptores para rejeitar/pôr em quarentena o que falhar e envia relatórios. Juntos, barram a falsificação do seu domínio.",
+      "cobre": "Spoofing, phishing em seu nome, perda de reputação.",
+      "limite": "Protege contra abuso do SEU domínio por terceiros; não cifra tráfego nem substitui o TLS."
+    },
+    {
+      "nome": "Exigir TLS e monitorar downgrade (MTA-STS/TLS-RPT)",
+      "como_funciona": "Marque STARTTLS como obrigatório na submissão e adote MTA-STS para sinalizar que o seu servidor exige TLS no relay, com TLS-RPT recebendo relatórios de falhas de criptografia.",
+      "cobre": "STARTTLS stripping e conexões que caem para texto claro sem aviso.",
+      "limite": "MTA-STS depende de a outra ponta suportar; ainda há servidores legados sem TLS."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Descobrir quais portas de e-mail estão abertas",
+      "cenario": "Você quer saber se um servidor expõe portas claras (110/143) ou apenas as seguras, e se a 25 está aberta ao mundo.",
+      "comandos": "# Varredura das portas da família e-mail\nnmap -p 25,110,143,465,587,993,995 mail.example.com\n\n# Detecção de serviço e versão nessas portas\nnmap -sV -p 25,110,143,465,587,993,995 mail.example.com\n\n# Ver quais métodos de autenticação e STARTTLS o SMTP anuncia\nnmap --script smtp-commands -p 25,587 mail.example.com",
+      "explicacao": "Se 110 ou 143 aparecerem 'open', há transporte em texto claro exposto - candidato a desativação. O script smtp-commands mostra se o servidor anuncia STARTTLS e AUTH; um servidor de submissão saudável exige ambos na 587."
+    },
+    {
+      "titulo": "Testar se a porta 25 é um open relay",
+      "cenario": "Confirmar, a partir de FORA da rede, se o servidor retransmite e-mail de remetente e destinatário externos (o que caracteriza open relay).",
+      "comandos": "# Script pronto do nmap para testar relay aberto (executar de fora)\nnmap -p 25 --script smtp-open-relay mail.example.com\n\n# Teste manual com o cliente SMTP (use um MAIL FROM e RCPT TO EXTERNOS)\nswaks --server mail.example.com:25 \\\n  --from teste@example.org \\\n  --to alvo@example.net\n\n# Inspecionar STARTTLS na submissão\nopenssl s_client -starttls smtp -connect mail.example.com:587",
+      "explicacao": "Se o swaks conseguir entregar para um destino externo sem autenticar, o relay está ABERTO - falha crítica a corrigir imediatamente. Rode o teste de fora da rede: por dentro, o servidor pode confiar no IP local e dar um falso 'seguro'. O openssl confirma que a 587 promove a conexão para TLS antes do login."
+    },
+    {
+      "titulo": "Capturar credenciais em texto claro no POP3/IMAP",
+      "cenario": "Demonstrar em laboratório por que 110/143 são perigosas: a senha viaja legível na rede.",
+      "comandos": "# Capturar tráfego POP3 em claro (porta 110) e ver USER/PASS\nsudo tcpdump -i any -A 'tcp port 110'\n\n# Capturar IMAP em claro (porta 143) e ver o comando LOGIN\nsudo tcpdump -i any -A 'tcp port 143'\n\n# Comparar: conexão IMAPS segura (993) - conteúdo fica cifrado\nopenssl s_client -connect mail.example.com:993",
+      "explicacao": "No tcpdump das portas claras, os comandos USER, PASS e LOGIN aparecem em texto legível - qualquer um na rede lê a senha. Já a sessão 993 pelo openssl mostra apenas bytes cifrados após o handshake TLS. É a prova prática de por que só as portas seguras devem ficar ativas."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "E-mails de saída não são entregues e o IP entrou em blocklist",
+      "causa_provavel": "Servidor operando como open relay na porta 25, usado por spammers",
+      "comando": "nmap -p 25 --script smtp-open-relay mail.example.com",
+      "leitura": "Se o script indicar relay permitido, feche o relay (só domínios locais ou remetentes autenticados) e solicite a remoção das listas negras após corrigir."
+    },
+    {
+      "sintoma": "Cliente de e-mail pede senha repetidamente ou avisa 'conexão insegura'",
+      "causa_provavel": "Cliente apontado para 110/143 sem TLS, ou 587 sem STARTTLS obrigatório",
+      "comando": "openssl s_client -starttls imap -connect mail.example.com:143",
+      "leitura": "Se o STARTTLS não for oferecido, migre o cliente para 993/995 (TLS implícito) e desative as portas claras no servidor."
+    },
+    {
+      "sintoma": "Envios saem às vezes cifrados, às vezes em texto claro",
+      "causa_provavel": "STARTTLS opcional na submissão, sujeito a downgrade/stripping",
+      "comando": "nmap --script smtp-commands -p 587 mail.example.com",
+      "leitura": "O smtp-commands lista as extensões do EHLO: ver STARTTLS ali só prova que ele é oferecido, não que é exigido. Para saber se é obrigatório, tente AUTH ou MAIL FROM sem TLS: um servidor que exige TLS responde 530 (Must issue a STARTTLS command first, RFC 3207). Se ele aceitar, torne o TLS obrigatório na 587 (ou migre para a 465 implícita) e configure o cliente para exigir criptografia."
+    },
+    {
+      "sintoma": "Terceiros recebem phishing falsificando o seu domínio",
+      "causa_provavel": "Ausência de SPF/DKIM/DMARC no DNS",
+      "comando": "dig TXT dominio.com | grep -i spf && dig TXT _dmarc.dominio.com",
+      "leitura": "Se não houver registros SPF/DMARC, publique-os: SPF autorizando seus servidores, DKIM assinando e DMARC em política de quarentena/rejeição com relatórios."
+    }
+  ]
+}

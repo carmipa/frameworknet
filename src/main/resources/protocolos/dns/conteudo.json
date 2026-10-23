@@ -1,0 +1,359 @@
+{
+  "resumo": "DNS (Domain Name System) é a agenda telefônica da Internet: traduz nomes que gente lê (frameworknet.carminati.dev.br) em endereços que máquinas roteiam (um IPv4 ou IPv6). Roda sobre UDP 53 para consultas rápidas e cai para TCP 53 em respostas grandes ou transferência de zona. É hierárquico e distribuído — nenhum servidor conhece tudo; cada um sabe apenas para quem delegar. Essa delegação é a força do sistema e, sem DNSSEC, também a sua fraqueza: uma resposta UDP forjada que chegue antes da verdadeira envenena o cache e redireciona o tráfego sem que o usuário perceba.",
+  "conceitos": [
+    {
+      "titulo": "Resolver recursivo × servidor autoritativo",
+      "icone": "account_tree",
+      "texto": "São dois papéis distintos. O resolver recursivo (o do provedor, o 8.8.8.8, o 1.1.1.1) recebe a pergunta do cliente e sai batendo de servidor em servidor até achar a resposta. O autoritativo é quem DETÉM a resposta de uma zona — ele não pergunta a ninguém, apenas responde pelo que administra. Confundir os dois é a origem de metade das dúvidas de DNS.",
+      "destaque": "O cliente (stub resolver do sistema operacional) faz uma pergunta recursiva e espera a resposta final; o recursivo faz várias perguntas iterativas em nome dele."
+    },
+    {
+      "titulo": "Recursivo × iterativo",
+      "icone": "sync",
+      "texto": "Consulta recursiva: 'me devolva a resposta final, eu não quero saber o caminho'. Consulta iterativa: 'me devolva a resposta OU o próximo servidor a quem perguntar'. O stub pede recursivo ao resolver; o resolver pergunta iterativamente à raiz, ao TLD e ao autoritativo. A raiz não resolve o nome inteiro — ela só diz quem cuida do .br.",
+      "destaque": "Servidor autoritativo que responde consulta recursiva de qualquer um na Internet é um 'open resolver' — combustível para ataques de amplificação."
+    },
+    {
+      "titulo": "TTL e cache: velocidade que também é dívida",
+      "icone": "cached",
+      "texto": "Cada resposta vem com um TTL (Time To Live) em segundos. Enquanto ele não expira, o resolver responde da memória sem perguntar de novo — é o que torna o DNS rápido. Mas o cache é exatamente o que o cache poisoning ataca: envenenar uma entrada faz o desvio durar TODO o TTL, e um TTL alto prolonga o estrago.",
+      "destaque": "Ao migrar um serviço, baixe o TTL horas antes; a propagação não é mágica, é a soma dos caches expirando pelo TTL antigo."
+    },
+    {
+      "titulo": "UDP 53 primeiro, TCP 53 quando precisa",
+      "icone": "swap_vert",
+      "texto": "A consulta comum vai por UDP 53 — sem handshake, uma pergunta e uma resposta, barato e rápido. Se a resposta não cabe (bit TC=truncated ligado), o cliente refaz por TCP 53. Transferência de zona (AXFR) é sempre TCP. Justamente por ser UDP sem conexão, o atacante não precisa interceptar nada: basta chegar antes com uma resposta falsa e o campo Transaction ID certo.",
+      "destaque": "Não ter conexão significa não ter prova de origem. É por isso que a defesa do DNS não é 'confiar no remetente' e sim assinar a resposta (DNSSEC)."
+    },
+    {
+      "titulo": "A zona e a delegação",
+      "icone": "schema",
+      "texto": "Uma zona é um pedaço da árvore de nomes sob uma administração — carminati.dev.br é uma zona. O registro NS delega uma subzona a outros servidores, e o registro SOA marca quem é o autoritativo primário e os tempos de atualização. Delegar é dizer 'eu não respondo por isto, pergunte àqueles servidores'.",
+      "destaque": "Delegação pendente (registro NS apontando para servidor que não responde mais pela zona) é a porta de entrada do subdomain takeover."
+    },
+    {
+      "titulo": "0x20, porta e Transaction ID: a entropia que protege sem DNSSEC",
+      "icone": "casino",
+      "texto": "Sem assinatura, o resolver só aceita a resposta se ela casar três coisas que o atacante teria de adivinhar: o Transaction ID de 16 bits, a porta de origem UDP aleatória e — com a codificação 0x20 — o padrão de maiúsculas/minúsculas do nome consultado. Quanto mais entropia, mais improvável a resposta forjada casar por sorte.",
+      "destaque": "Foi a falta de aleatoriedade de porta (resolvers antigos usavam porta fixa) que tornou o ataque de Kaminsky prático em 2008."
+    }
+  ],
+  "resolucao": [
+    {
+      "ordem": 1,
+      "ator": "Cliente (stub resolver)",
+      "pergunta": "A? www.exemplo.com.br",
+      "resposta": "→ envia ao resolver recursivo configurado (recursivo desejado, RD=1)",
+      "detalhe": "O stub do sistema operacional não sai pela Internet; ele delega tudo ao recursivo. Consulta o cache local e o /etc/hosts antes."
+    },
+    {
+      "ordem": 2,
+      "ator": "Resolver recursivo → Raiz (.)",
+      "pergunta": "A? www.exemplo.com.br",
+      "resposta": "Não sei, mas o .br está com estes servidores NS (a.dns.br, ...)",
+      "detalhe": "A raiz nunca resolve o nome inteiro. Ela responde com uma referral: os NS do TLD mais à direita. Há 13 identidades de servidores-raiz, replicadas por anycast."
+    },
+    {
+      "ordem": 3,
+      "ator": "Resolver recursivo → TLD (.br)",
+      "pergunta": "A? www.exemplo.com.br",
+      "resposta": "Não sei, mas exemplo.com.br está com estes servidores autoritativos",
+      "detalhe": "Outra referral, agora um nível mais fundo. O TLD delega a zona ao autoritativo do domínio registrado."
+    },
+    {
+      "ordem": 4,
+      "ator": "Resolver recursivo → Autoritativo (exemplo.com.br)",
+      "pergunta": "A? www.exemplo.com.br",
+      "resposta": "www.exemplo.com.br. 300 IN A 203.0.113.10 (resposta autoritativa, AA=1)",
+      "detalhe": "O autoritativo detém a zona e responde de fato, com o bit AA (authoritative answer) ligado e o TTL da entrada."
+    },
+    {
+      "ordem": 5,
+      "ator": "Resolver recursivo → Cliente",
+      "pergunta": "(devolve a resposta final)",
+      "resposta": "203.0.113.10, e guarda no cache por 300 s",
+      "detalhe": "O resolver responde ao stub e memoriza cada etapa pelo respectivo TTL. A próxima pergunta igual, dentro do TTL, é respondida da memória sem repetir o caminho."
+    }
+  ],
+  "registros": [
+    {
+      "tipo": "A",
+      "funcao": "Nome → endereço IPv4.",
+      "exemplo": "exemplo.com.br.  300  IN  A  203.0.113.10",
+      "nota": "O registro mais comum. TTL baixo facilita migração; alto reduz consultas."
+    },
+    {
+      "tipo": "AAAA",
+      "funcao": "Nome → endereço IPv6.",
+      "exemplo": "exemplo.com.br.  300  IN  AAAA  2001:db8::10",
+      "nota": "Publicar AAAA sem o serviço realmente ouvir em IPv6 causa timeout intermitente (Happy Eyeballs mascara, mas não some)."
+    },
+    {
+      "tipo": "CNAME",
+      "funcao": "Apelido: um nome que aponta para outro nome.",
+      "exemplo": "www.exemplo.com.br.  300  IN  CNAME  exemplo.com.br.",
+      "nota": "Não pode coexistir com outros registros no mesmo nome, e não pode ficar no ápice da zona (use ALIAS/ANAME do provedor)."
+    },
+    {
+      "tipo": "MX",
+      "funcao": "Para onde entregar e-mail do domínio, com prioridade.",
+      "exemplo": "exemplo.com.br.  3600  IN  MX  10 mail.exemplo.com.br.",
+      "nota": "Menor número = maior prioridade. O alvo do MX deve ser um nome com A/AAAA, nunca um IP nem um CNAME."
+    },
+    {
+      "tipo": "NS",
+      "funcao": "Delega uma zona aos servidores autoritativos dela.",
+      "exemplo": "exemplo.com.br.  86400  IN  NS  ns1.provedor.net.",
+      "nota": "É a cola da hierarquia. NS órfão (apontando para servidor que não responde mais) habilita o subdomain takeover."
+    },
+    {
+      "tipo": "SOA",
+      "funcao": "Início de autoridade: primário, e-mail do responsável e tempos da zona.",
+      "exemplo": "exemplo.com.br.  IN  SOA  ns1... hostmaster... (serial refresh retry expire minimum)",
+      "nota": "O 'serial' aumenta a cada mudança; secundários comparam para saber se precisam transferir a zona."
+    },
+    {
+      "tipo": "TXT",
+      "funcao": "Texto livre — hoje usado por SPF, DKIM, DMARC e verificação de domínio.",
+      "exemplo": "exemplo.com.br.  IN  TXT  \"v=spf1 mx -all\"",
+      "nota": "SPF/DKIM/DMARC no TXT são o que impede que forjar o remetente do seu domínio seja trivial."
+    },
+    {
+      "tipo": "PTR",
+      "funcao": "Reverso: endereço IP → nome (na zona in-addr.arpa / ip6.arpa).",
+      "exemplo": "10.113.0.203.in-addr.arpa.  IN  PTR  exemplo.com.br.",
+      "nota": "Servidores de e-mail exigem PTR coerente com o A; sem ele, sua mensagem cai em spam ou é recusada."
+    },
+    {
+      "tipo": "CAA",
+      "funcao": "Declara quais Autoridades Certificadoras podem emitir certificado para o domínio.",
+      "exemplo": "exemplo.com.br.  IN  CAA  0 issue \"letsencrypt.org\"",
+      "nota": "Reduz emissão indevida de certificado: uma CA obediente recusa emitir se o CAA não a autoriza."
+    },
+    {
+      "tipo": "SRV",
+      "funcao": "Localiza serviço por protocolo/porta (SIP, XMPP, LDAP, Minecraft).",
+      "exemplo": "_sip._tcp.exemplo.com.br.  IN  SRV  10 5 5060 sipserver.exemplo.com.br.",
+      "nota": "Formato: prioridade peso porta alvo. É o registro que dispensa 'porta fixa combinada' entre cliente e serviço."
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "DNS spoofing (resposta forjada)",
+      "como_funciona": "Como a consulta é UDP sem conexão, o atacante que consiga chegar antes do servidor legítimo com uma resposta que case o Transaction ID (16 bits) e a porta de origem faz o resolver aceitar um IP falso. Off-path exige adivinhar/estourar a entropia; on-path (mesma rede, Wi-Fi aberto) enxerga a consulta e responde na hora.",
+      "sinal": "O nome resolve para um IP fora da faixa esperada; o navegador reclama de certificado (o TLS não bate) — se houver TLS.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Cache poisoning (ataque de Kaminsky, 2008)",
+      "como_funciona": "Em vez de mirar um nome, o atacante induz o resolver a consultar nomes aleatórios de um domínio e responde em rajada forjando o registro NS/cola (glue) do domínio inteiro. Acertando o Transaction ID uma vez, sequestra a delegação e não só um host — e o efeito dura o TTL. Foi o que forçou a aleatorização de porta de origem.",
+      "sinal": "Vários nomes de um mesmo domínio passam a resolver errado ao mesmo tempo, todos do mesmo resolver.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Amplificação / DDoS por reflexão",
+      "como_funciona": "O atacante manda consultas pequenas a open resolvers com o IP de origem FORJADO para o da vítima; a resposta (bem maior, ex.: ANY ou DNSSEC) inunda a vítima. A relação resposta/pergunta pode passar de 50×.",
+      "sinal": "Tráfego UDP 53 de entrada enorme na vítima, vindo de milhares de resolvers legítimos.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "NXDOMAIN hijack / captive redirect",
+      "como_funciona": "O resolver (às vezes o do próprio provedor) reescreve a resposta 'não existe' (NXDOMAIN) para o IP de uma página de propaganda ou busca. Quebra aplicações que dependem de receber NXDOMAIN de verdade.",
+      "sinal": "Nomes claramente inexistentes resolvem para um IP que serve uma página; e-mail e antispam se confundem.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Subdomain takeover",
+      "como_funciona": "Um CNAME/registro aponta para um recurso de terceiro (bucket, app PaaS, CDN) que foi desativado. O atacante recria o recurso com o mesmo nome e passa a servir conteúdo sob o SEU subdomínio — com certificado válido, porque o DNS realmente aponta para ele.",
+      "sinal": "Subdomínio antigo que 'ninguém usa mais' voltando a responder, servindo conteúdo estranho.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "DNS tunneling / exfiltração",
+      "como_funciona": "Dados são codificados em nomes consultados (dados.chave.atacante.com) e a resposta traz o comando de volta. Vira canal de C2 e vazamento que atravessa firewall onde a 53 está liberada sem inspeção.",
+      "sinal": "Volume anormal de consultas a subdomínios longos e aleatórios de um mesmo domínio; entropia alta nos rótulos.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "DNSSEC (assinatura da resposta)",
+      "como_funciona": "Cada resposta vem com uma assinatura (RRSIG) verificável por uma cadeia de chaves (DNSKEY) ancorada na raiz. O resolver validante recusa resposta forjada porque ela não tem assinatura válida.",
+      "cobre": "Spoofing e cache poisoning: a resposta falsa não passa na validação.",
+      "limite": "Autentica a resposta, NÃO cifra a consulta (o observador ainda vê o nome). E só protege se o resolver validar e a zona estiver assinada."
+    },
+    {
+      "nome": "Aleatorização de porta + Transaction ID",
+      "como_funciona": "O resolver usa porta de origem UDP aleatória e ID de 16 bits imprevisível, multiplicando o espaço que o atacante off-path teria de adivinhar.",
+      "cobre": "Eleva muito o custo do spoofing off-path (a defesa que matou o Kaminsky na prática).",
+      "limite": "É probabilística, não prova: atacante on-path (mesma rede) enxerga os valores e não precisa adivinhar."
+    },
+    {
+      "nome": "Codificação 0x20 (DNS-0x20)",
+      "como_funciona": "O resolver embaralha maiúsculas/minúsculas do nome na consulta (eXeMPlo.CoM); a resposta legítima ecoa o mesmo padrão. Mais entropia de graça.",
+      "cobre": "Reforça contra spoofing off-path, somando bits à porta e ao ID.",
+      "limite": "Não ajuda contra on-path; alguns autoritativos antigos normalizam o caso e quebram o eco."
+    },
+    {
+      "nome": "DoT / DoH (DNS sobre TLS / HTTPS)",
+      "como_funciona": "A consulta ao resolver viaja dentro de TLS (porta 853 no DoT, 443 no DoH). Cifra e autentica o canal stub↔resolver.",
+      "cobre": "Confidencialidade e integridade do trecho até o resolver; impede o on-path de ver/alterar a consulta nesse trecho.",
+      "limite": "Protege só stub↔resolver, não resolver↔autoritativo. Move a confiança para o operador do resolver."
+    },
+    {
+      "nome": "Response Rate Limiting (RRL)",
+      "como_funciona": "O autoritativo limita respostas idênticas por origem por segundo, cortando o volume que a reflexão precisa.",
+      "cobre": "Reduz a eficácia da amplificação/DDoS por reflexão.",
+      "limite": "Mitiga o abuso do seu servidor como refletor; não protege sua rede de ser vítima de outros refletores."
+    },
+    {
+      "nome": "Higiene de zona (CAA, SPF/DKIM/DMARC, varredura de CNAME órfão)",
+      "como_funciona": "CAA restringe quem emite certificado; SPF/DKIM/DMARC dificultam forjar e-mail do domínio; auditar CNAME que aponta para recurso morto fecha o takeover.",
+      "cobre": "Emissão indevida de certificado, spoofing de e-mail e subdomain takeover.",
+      "limite": "É disciplina operacional contínua: registro esquecido é o furo, e ninguém recebe alerta automático dele."
+    }
+  ],
+  "dnssec": [
+    {
+      "ordem": 1,
+      "elemento": "Trust anchor da raiz (.)",
+      "papel": "O ponto de partida da confiança, distribuído com o resolver.",
+      "detalhe": "O resolver validante já conhece a chave pública da raiz (a KSK da root). Toda validação sobe até ela. Zona sem DS no pai (sem cadeia) é 'insecure': a resposta chega, só que sem o bit AD. 'Bogus' é quando a cadeia DEVERIA existir e a assinatura não confere — aí o resolver devolve SERVFAIL."
+    },
+    {
+      "ordem": 2,
+      "elemento": "DS na zona-pai",
+      "papel": "Aponta e resume (hash) a chave da zona-filha.",
+      "detalhe": "O registro DS de exemplo.com.br fica publicado no .br e é assinado pela chave do .br. É o elo que costura a delegação — publicar o DS no registrador é o que 'liga' o DNSSEC do seu domínio."
+    },
+    {
+      "ordem": 3,
+      "elemento": "DNSKEY (KSK e ZSK)",
+      "papel": "As chaves públicas da zona.",
+      "detalhe": "A KSK (Key Signing Key) assina o conjunto de DNSKEY e é a apontada pelo DS; a ZSK (Zone Signing Key) assina os registros do dia a dia. Separar as duas permite trocar a ZSK sem mexer no DS no pai."
+    },
+    {
+      "ordem": 4,
+      "elemento": "RRSIG",
+      "papel": "A assinatura de cada conjunto de registros.",
+      "detalhe": "Cada resposta (o A, o MX etc.) vem com um RRSIG correspondente, com validade (inception/expiration). Assinatura expirada é falha comum e derruba a zona inteira para quem valida."
+    },
+    {
+      "ordem": 5,
+      "elemento": "NSEC / NSEC3",
+      "papel": "Prova assinada de que um nome NÃO existe.",
+      "detalhe": "Sem eles, o atacante poderia forjar 'não existe'. NSEC lista o próximo nome (permite 'zone walking'); NSEC3 usa hash para dificultar enumerar a zona."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "1. Seguir a resolução recursiva do zero",
+      "cenario": "Ver, na prática, a raiz → TLD → autoritativo que a página descreve.",
+      "comandos": "dig +trace www.google.com\n\n# só a resposta final, com o TTL:\ndig www.google.com A +noall +answer",
+      "explicacao": "O +trace desliga a recursão do resolver e faz o dig andar a hierarquia ele mesmo, imprimindo cada referral (NS) até o autoritativo. É a versão de linha de comando do diagrama de resolução."
+    },
+    {
+      "titulo": "2. Perguntar direto a um autoritativo × a um recursivo",
+      "cenario": "Enxergar a diferença entre quem detém a zona e quem só resolve.",
+      "comandos": "# ao autoritativo do domínio (AA=1 na resposta):\ndig @ns1.exemplo.com.br www.exemplo.com.br A\n\n# a um recursivo público (sem AA, vem do cache):\ndig @1.1.1.1 www.exemplo.com.br A",
+      "explicacao": "Procure a flag 'aa' na seção de flags: presente na resposta do autoritativo, ausente na do recursivo. O campo 'Query time' e o TTL decrescente denunciam a resposta que veio do cache."
+    },
+    {
+      "titulo": "3. Validar DNSSEC e ver uma assinatura",
+      "cenario": "Conferir se um domínio está assinado e se a validação passa.",
+      "comandos": "dig +dnssec cloudflare.com A\n\n# a flag 'ad' (authenticated data) diz que o resolver validou:\ndig @1.1.1.1 +dnssec dnssec-failed.org A",
+      "explicacao": "Com DNSSEC, a resposta traz o RRSIG ao lado do A. A flag 'ad' no cabeçalho significa que o resolver validou a cadeia. Em dnssec-failed.org (quebrado de propósito) o resolver validante devolve SERVFAIL — a recusa é a proteção funcionando."
+    },
+    {
+      "titulo": "4. Reverso, MX e TXT de um domínio",
+      "cenario": "Auditar rapidamente a superfície de e-mail e o reverso de um IP.",
+      "comandos": "dig exemplo.com.br MX +short\ndig exemplo.com.br TXT +short\ndig -x 203.0.113.10 +short",
+      "explicacao": "O -x monta o nome reverso (in-addr.arpa) sozinho. Um MX apontando para host sem A, ou a ausência de SPF/DMARC no TXT, é achado de auditoria de e-mail. PTR ausente ou divergente do A derruba a entrega."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "O nome não resolve em lugar nenhum (NXDOMAIN)",
+      "causa_provavel": "Registro inexistente, zona não delegada, ou serial não propagado nos secundários.",
+      "comando": "dig +trace nome.exemplo.com.br\ndig exemplo.com.br SOA +short",
+      "leitura": "Se o +trace para no TLD sem chegar ao autoritativo, a delegação (NS) está errada. Compare o serial do SOA entre os NS: seriais diferentes = zona não sincronizada."
+    },
+    {
+      "sintoma": "Resolve para um IP, mas errado / desatualizado",
+      "causa_provavel": "Cache com TTL antigo, ou dois autoritativos com dados divergentes.",
+      "comando": "dig @1.1.1.1 nome A +noall +answer\ndig @8.8.8.8 nome A +noall +answer\ndig @ns-autoritativo nome A +noall +answer",
+      "leitura": "Se o autoritativo já mostra o IP novo mas os recursivos mostram o velho, é TTL — espere expirar. Se os autoritativos divergem entre si, a zona está inconsistente entre os servidores."
+    },
+    {
+      "sintoma": "Resolve, mas o navegador reclama de certificado",
+      "causa_provavel": "Possível spoofing/poisoning, ou apontamento para servidor errado.",
+      "comando": "dig nome A +short\n# compare o IP com o esperado e teste o TLS naquele IP:\nopenssl s_client -connect IP:443 -servername nome </dev/null 2>/dev/null | openssl x509 -noout -subject",
+      "leitura": "Se o certificado do IP não corresponde ao nome, ou o IP está fora da faixa esperada, trate como incidente de DNS — não como 'erro de navegador'. O TLS é justamente o que denuncia o desvio quando o DNS mente."
+    },
+    {
+      "sintoma": "Validação DNSSEC devolvendo SERVFAIL",
+      "causa_provavel": "Assinatura RRSIG expirada, DS desatualizado no pai após troca de KSK, ou relógio do resolver fora de hora.",
+      "comando": "dig +dnssec nome A\ndelv nome A   # mostra o resultado da validação passo a passo",
+      "leitura": "O delv diz 'fully validated' ou aponta o elo quebrado. RRSIG expirado e DS órfão após rollover de chave são as duas causas mais comuns — e derrubam a zona inteira, não um registro."
+    },
+    {
+      "sintoma": "Consultas muito lentas ou intermitentes",
+      "causa_provavel": "Resposta grande caindo para TCP com a 53/TCP bloqueada, ou MTU/fragmentação de UDP grande.",
+      "comando": "dig nome A +tcp\ndig nome DNSKEY +bufsize=1232",
+      "leitura": "Se +tcp resolve e o UDP normal falha, a 53/TCP está liberada: o problema é o UDP grande descartado no caminho (fragmentação) ou a 53/UDP filtrada. Se o UDP volta truncado (flag tc) e o +tcp não responde, aí sim um firewall bloqueia a 53/TCP. Limitar o bufsize a 1232 evita a fragmentação IP que muitos caminhos descartam."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Resolução recursiva de um nome DNS (RFC 1035)",
+    "definicao": "sequenceDiagram\n    participant C as Cliente\n    participant R as Resolver recursivo\n    participant Raiz as Servidor Raiz\n    participant TLD as Servidor TLD .com\n    participant Aut as Servidor Autoritativo\n    Note over R: Verifica o cache local antes de perguntar\n    C->>R: Consulta A para www.example.com\n    R->>Raiz: Onde fica .com?\n    Raiz-->>R: Referral: pergunte ao TLD .com\n    R->>TLD: Onde fica example.com?\n    TLD-->>R: Referral: pergunte ao autoritativo de example.com\n    R->>Aut: Qual o registro A de www.example.com?\n    Aut-->>R: Resposta A: 203.0.113.10\n    Note over R: Guarda a resposta no cache respeitando o TTL\n    R-->>C: Resposta final: 203.0.113.10",
+    "legenda": "O cliente delega toda a busca a um resolver recursivo. As setas cheias (->>) são perguntas e as tracejadas (-->>) são respostas. Os servidores raiz e TLD não entregam o endereço final, apenas indicam (referral) o próximo servidor a consultar, até que o servidor autoritativo devolva o registro A. O resolver consulta o cache antes de perguntar e armazena a resposta pelo tempo do TTL, evitando repetir todo o percurso a cada nova consulta."
+  },
+  "cabecalho": {
+    "titulo": "Cabeçalho da mensagem DNS (12 bytes / 96 bits)",
+    "nota": "O cabeçalho fixo do DNS tem 6 campos de 16 bits cada: 16 + 16 + 16 + 16 + 16 + 16 = 96 bits, que equivalem a 96 / 8 = 12 bytes. O campo Flags, também de 16 bits, subdivide-se internamente em: QR (1 bit, consulta ou resposta), Opcode (4 bits, tipo de operação), AA (1 bit, resposta autoritativa), TC (1 bit, mensagem truncada), RD (1 bit, recursão desejada), RA (1 bit, recursão disponível), Z (1 bit, reservado, deve ser zero), AD (1 bit, dado autenticado pelo DNSSEC), CD (1 bit, checagem DNSSEC desligada) e RCODE (4 bits, código de resultado). Somando: 1 + 4 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 4 = 16 bits.",
+    "campos": [
+      {
+        "nome": "ID",
+        "bits": 16,
+        "descricao": "Identificador da transação escolhido pelo cliente; a resposta repete o mesmo valor para casar pergunta e resposta.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Flags",
+        "bits": 16,
+        "descricao": "Conjunto de indicadores de controle. Subdivide-se em QR(1), Opcode(4), AA(1), TC(1), RD(1), RA(1), Z(1), AD(1), CD(1) e RCODE(4).",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "QDCOUNT",
+        "bits": 16,
+        "descricao": "Número de entradas na seção de perguntas (Question); normalmente 1.",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "ANCOUNT",
+        "bits": 16,
+        "descricao": "Número de registros de recurso na seção de respostas (Answer).",
+        "cor": "#059669"
+      },
+      {
+        "nome": "NSCOUNT",
+        "bits": 16,
+        "descricao": "Número de registros de servidores autoritativos na seção Authority (usada em referrals).",
+        "cor": "#d97706"
+      },
+      {
+        "nome": "ARCOUNT",
+        "bits": 16,
+        "descricao": "Número de registros adicionais na seção Additional (ex.: endereços dos servidores citados).",
+        "cor": "#dc2626"
+      }
+    ]
+  }
+}

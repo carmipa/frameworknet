@@ -1,0 +1,215 @@
+{! Experiência "Camadas em ação": encapsulamento/desencapsulamento entre dois hosts
+    e um switch, na mesma rede, com transporte UDP. Máquina de estados no cliente
+    (laboratorios/js/camadas.js). Variáveis: activeMainMenu, labAtivo. !}
+{#include shared/base.html}
+{#title}Camadas em ação — Laboratórios Interativos | Framework de Redes A&D{/title}
+{#description}Laboratório interativo Camadas em ação: veja passo a passo uma mensagem ganhar cabeçalhos (UDP, IP, Ethernet), atravessar um switch e ser desencapsulada no destino, na mesma rede.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/laboratorios/css/laboratorios.css?v=20261023">
+{/extraHead}
+{#content}
+<div class="container py-5 lab-page">
+    {#include shared/main_menu.html activeMainMenu='laboratorios' /}
+    {#include laboratorios/partials/subnav.html labAtivo='camadas' /}
+
+    <header class="mb-3">
+        <span class="aed-eyebrow aed-eyebrow-teal">Laboratório · Camadas em ação</span>
+        <h1 class="aed-title" style="font-family:var(--aed-font-display);">
+            <span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">layers</span>
+            Camadas em ação
+        </h1>
+        <p class="aed-subtitle aed-medida-leitura">
+            Uma mensagem sai do <strong>Host A</strong>, ganha um cabeçalho a cada camada, atravessa um
+            <strong>switch</strong> e chega ao <strong>Host B</strong> na mesma rede, onde os cabeçalhos são
+            retirados na ordem inversa. Avance no seu ritmo e inspecione cada campo.
+        </p>
+    </header>
+
+    {! Cenário declarado — condições iniciais, o que é real e o que está fora do escopo. !}
+    <details class="lab-cenario" open>
+        <summary><span class="material-symbols-outlined" aria-hidden="true" translate="no">tune</span> Cenário deste laboratório</summary>
+        <div class="lab-cenario-corpo">
+            <div class="lab-cenario-col">
+                <h2 class="h3">Como está montado</h2>
+                <ul>
+                    <li><strong>Host A</strong> — IP <code translate="no">192.168.1.10</code>, MAC <code translate="no">02:00:00:00:00:0A</code></li>
+                    <li><strong>Host B</strong> — IP <code translate="no">192.168.1.20</code>, MAC <code translate="no">02:00:00:00:00:14</code> (unicast, localmente administrado)</li>
+                    <li>Um <strong>switch</strong> Ethernet ligando os dois (mesma rede <code translate="no">192.168.1.0/24</code>)</li>
+                    <li>Transporte: <strong>UDP</strong> — um datagrama transporta a mensagem inteira</li>
+                </ul>
+            </div>
+            <div class="lab-cenario-col">
+                <h2 class="h3">O que já é conhecido</h2>
+                <ul>
+                    <li>Os dois já estão na <strong>mesma sub-rede</strong> — não há gateway no caminho.</li>
+                    <li>O Host A <strong>já sabe o MAC</strong> do Host B (o passo de ARP fica fora deste cenário).</li>
+                    <li>A porta de destino da aplicação é <code translate="no">7777/udp</code> (demonstração).</li>
+                </ul>
+            </div>
+            <div class="lab-cenario-col">
+                <h2 class="h3">Real × didático</h2>
+                <ul>
+                    <li><strong>Real:</strong> o tamanho do payload é contado nos bytes UTF-8 da sua mensagem.</li>
+                    <li><strong>Didático:</strong> os tamanhos de cabeçalho são os mínimos padrão (UDP 8 B, IP 20 B, Ethernet 14 B + 4 B de FCS) e os endereços são de demonstração.</li>
+                    <li><strong>Fora de escopo:</strong> DNS, roteamento/gateway, NAT, TLS e a negociação do ARP — entram em laboratórios futuros.</li>
+                </ul>
+            </div>
+        </div>
+    </details>
+
+    {! Mensagem editável. !}
+    <div class="lab-entrada">
+        <label for="lab-msg" class="form-label small text-secondary">
+            <span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">edit</span> Mensagem da aplicação (Host A → Host B)
+        </label>
+        <div class="lab-entrada-row">
+            <input type="text" id="lab-msg" class="form-control bg-dark text-light border-secondary"
+                   value="Oi, Host B!" maxlength="120" autocomplete="off" spellcheck="false"
+                   aria-describedby="lab-msg-ajuda">
+            <span id="lab-msg-bytes" class="lab-bytes" aria-live="polite">11 bytes</span>
+        </div>
+        <p id="lab-msg-ajuda" class="form-text text-secondary small mb-0">
+            Trocar a mensagem <strong>reinicia</strong> a experiência (o tamanho do datagrama muda com ela).
+        </p>
+    </div>
+
+    {! Controles da experiência — separados da navegação de páginas. !}
+    <div class="lab-controles" role="group" aria-label="Controles da experiência">
+        <button type="button" class="aed-btn aed-btn-neutral" id="lab-reiniciar" data-bs-trigger="hover" title="Voltar à etapa inicial">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">restart_alt</span> Reiniciar
+        </button>
+        <button type="button" class="aed-btn aed-btn-neutral" id="lab-prev" data-bs-trigger="hover" title="Etapa anterior">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_previous</span> Anterior
+        </button>
+        <button type="button" class="aed-btn aed-btn-teal" id="lab-play" aria-pressed="false"
+                data-bs-trigger="hover" title="Reproduzir / pausar">
+            <span class="material-symbols-outlined" aria-hidden="true" id="lab-play-icone" translate="no">play_arrow</span>
+            <span id="lab-play-texto">Executar</span>
+        </button>
+        <button type="button" class="aed-btn aed-btn-neutral" id="lab-next" data-bs-trigger="hover" title="Próxima etapa">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_next</span> Próxima
+        </button>
+        <span class="lab-passo-indicador" aria-live="polite">
+            Etapa <strong id="lab-passo-num">1</strong> de <strong id="lab-passo-total">1</strong>
+        </span>
+    </div>
+
+    <div class="lab-corpo">
+        {! Cena: Host A — switch — Host B, com o pacote em trânsito. !}
+        <div class="lab-cena-wrap">
+            <div id="lab-reproduzindo" class="lab-reproduzindo" role="status" aria-live="polite" hidden>
+                <span class="lab-rep-dot" aria-hidden="true"></span> Reproduzindo demonstração
+            </div>
+            <svg id="lab-cena" class="lab-cena" viewBox="0 0 900 260" role="img"
+                 aria-label="Cena: Host A à esquerda, um switch no centro e Host B à direita; o pacote percorre esse caminho.">
+                <line class="lab-fio" x1="150" y1="130" x2="450" y2="130"></line>
+                <line class="lab-fio" x1="450" y1="130" x2="750" y2="130"></line>
+                <g class="lab-no" data-no="A">
+                    <rect x="60" y="90" width="140" height="80" rx="12"></rect>
+                    <text class="lab-no-titulo" x="130" y="118" text-anchor="middle">Host A</text>
+                    <text class="lab-no-sub" x="130" y="140" text-anchor="middle">192.168.1.10</text>
+                    <text class="lab-no-sub" x="130" y="156" text-anchor="middle">…00:0A</text>
+                </g>
+                <g class="lab-no" data-no="SW">
+                    <rect x="380" y="95" width="140" height="70" rx="10"></rect>
+                    <text class="lab-no-titulo" x="450" y="126" text-anchor="middle">Switch</text>
+                    <text class="lab-no-sub" x="450" y="146" text-anchor="middle">camada 2</text>
+                </g>
+                <g class="lab-no" data-no="B">
+                    <rect x="700" y="90" width="140" height="80" rx="12"></rect>
+                    <text class="lab-no-titulo" x="770" y="118" text-anchor="middle">Host B</text>
+                    <text class="lab-no-sub" x="770" y="140" text-anchor="middle">192.168.1.20</text>
+                    <text class="lab-no-sub" x="770" y="156" text-anchor="middle">…00:14</text>
+                </g>
+                <g id="lab-pacote" transform="translate(130,130)" opacity="0">
+                    <rect x="-26" y="-14" width="52" height="28" rx="6"></rect>
+                    <text x="0" y="5" text-anchor="middle" id="lab-pacote-rotulo">·</text>
+                </g>
+            </svg>
+        </div>
+
+        {! Pilha de encapsulamento — cresce na origem e encolhe no destino. !}
+        <div class="lab-lado">
+            <h2 class="lab-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">stacks</span> Pilha de encapsulamento</h2>
+            <div class="lab-pilha" id="lab-pilha" aria-hidden="true">
+                <div class="lab-camada" data-camada="eth">
+                    <span class="lab-camada-nome">Ethernet · L2</span><span class="lab-camada-bytes">14 B + 4 B</span>
+                    <div class="lab-camada" data-camada="ip">
+                        <span class="lab-camada-nome">IP · L3</span><span class="lab-camada-bytes">20 B</span>
+                        <div class="lab-camada" data-camada="udp">
+                            <span class="lab-camada-nome">UDP · L4</span><span class="lab-camada-bytes">8 B</span>
+                            <div class="lab-camada" data-camada="app">
+                                <span class="lab-camada-nome">Mensagem · L7</span><span class="lab-camada-bytes" id="lab-app-bytes">11 B</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="lab-total"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">straighten</span>
+                <span id="lab-total-rotulo">Tamanho da unidade</span>: <strong id="lab-total-bytes">—</strong></p>
+            <p class="lab-total-nota" id="lab-total-nota" hidden></p>
+        </div>
+    </div>
+
+    {! Explicação da etapa atual (preenchida pelo JS). !}
+    <div class="lab-explica" aria-live="polite">
+        <div class="lab-explica-cab">
+            <span class="lab-explica-tag" id="lab-etapa-dispositivo">—</span>
+            <h2 class="lab-explica-titulo" id="lab-etapa-titulo">—</h2>
+        </div>
+        <p class="lab-explica-desc" id="lab-etapa-desc">Clique em <strong>Executar</strong> ou <strong>Próxima</strong> para começar.</p>
+        <p class="lab-explica-porque" id="lab-etapa-porque"></p>
+        <table class="lab-campos" id="lab-campos-tabela" hidden>
+            <thead><tr>
+                <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span> Campo</th>
+                <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">sync_alt</span> Ação</th>
+                <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">info</span> Valor / observação</th>
+            </tr></thead>
+            <tbody id="lab-campos"></tbody>
+        </table>
+        <p class="lab-proximo" id="lab-proximo"></p>
+    </div>
+
+    {! Pergunta de previsão (aparece só nas etapas que têm). !}
+    <div class="lab-pergunta" id="lab-pergunta-bloco" hidden>
+        <h2 class="lab-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span> Preveja antes de avançar</h2>
+        <p id="lab-pergunta-texto" class="mb-2"></p>
+        <div class="lab-pergunta-opcoes" id="lab-pergunta-opcoes" role="group" aria-label="Opções da pergunta"></div>
+        <p class="lab-pergunta-feedback" id="lab-pergunta-feedback" role="status" aria-live="polite" hidden></p>
+    </div>
+
+    {! OSI × TCP/IP — explicação em níveis, sem forçar equivalência exata. !}
+    <div class="lab-modelo">
+        <div class="lab-modelo-cab">
+            <h2 class="lab-secao-titulo mb-0"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span> Este cenário nos modelos</h2>
+            <div class="lab-modelo-toggle" role="group" aria-label="Escolher modelo de referência">
+                <button type="button" class="aed-btn aed-btn-neutral btn-sm is-active" id="lab-modelo-tcpip" aria-pressed="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span> TCP/IP</button>
+                <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="lab-modelo-osi" aria-pressed="false"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span> OSI</button>
+            </div>
+        </div>
+        <div id="lab-modelo-explica" class="lab-modelo-explica"></div>
+        <p class="text-secondary small mb-0">
+            Os modelos <strong>não se encaixam campo a campo</strong>: neste cenário há cabeçalhos reais de L2, L3 e L4;
+            as camadas de Sessão e Apresentação do OSI são papéis conceituais que aqui vivem dentro da própria aplicação,
+            sem um cabeçalho separado.
+        </p>
+    </div>
+
+    {! Alternativa textual completa — para leitores de tela e movimento reduzido. !}
+    <details class="lab-alt">
+        <summary><span class="material-symbols-outlined" aria-hidden="true" translate="no">description</span> Descrição em texto (todas as etapas)</summary>
+        <ol id="lab-alt-lista" class="lab-alt-lista"></ol>
+    </details>
+
+    <section class="lab-relacionado mt-4" aria-label="Conteúdo e ferramentas relacionados">
+        <span class="text-secondary small">Aprofunde:</span>
+        <a href="/camadas" class="aed-btn aed-btn-neutral btn-sm"><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Teoria das camadas</a>
+        <a href="/trafego" class="aed-btn aed-btn-neutral btn-sm"><span class="material-symbols-outlined" aria-hidden="true" translate="no">travel_explore</span> Encapsulamento / decodificador</a>
+        <a href="/protocolos" class="aed-btn aed-btn-neutral btn-sm"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Protocolos</a>
+    </section>
+</div>
+{/content}
+{#extraScripts}
+<script src="/laboratorios/js/camadas.js?v=20260909d"></script>
+{/extraScripts}
+{/include}

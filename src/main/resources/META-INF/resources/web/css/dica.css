@@ -1,0 +1,60 @@
+/* dica.css v1.2 (2026-10-18) — tooltip explicativo acessível (regra 6-A). Fonte canônica: instrucoes/tooltip-canonico/. Não editar no projeto.
+   v1.1 (revisão de boa-fé, 18/10/2026): a dica que aparece sem estar sob o mouse — no toque, e a de um campo com o foco —
+   deixa o toque e o clique passarem para o que está embaixo. Ela cobria o campo de cima e os itens de menu seguintes, e
+   tocar neles caía na dica (3 de 3 toques num item de menu; 4 de 8 nas abas). Com o mouse sobre o "?", ela continua
+   alcançável pelo ponteiro (WCAG 1.4.13: dá para mover o mouse até o texto).
+   v1.2 (18/10/2026, menu em sanfona do site pessoal): o foco que veio de um CLIQUE de mouse num botão ou link não
+   prende mais a dica na tela depois que o mouse sai — ela cobria os itens de baixo até a pessoa clicar em outro
+   lugar. Pelo teclado (foco visível) a dica continua aparecendo; a de campo de texto, em qualquer foco. */
+:root {
+  --dica-bg: #1f2937;
+  --dica-fg: #ffffff;
+  --dica-gatilho: #1d4ed8;
+  --dica-largura: 20rem;
+  --dica-alvo: 1.5rem;            /* WCAG 2.5.8: mínimo 24px */
+}
+@media (pointer: coarse) { :root { --dica-alvo: 2.75rem; } } /* toque: 44px */
+
+.dica { position: relative; display: inline-flex; align-items: center; vertical-align: middle; }
+
+.dica__gatilho {
+  inline-size: var(--dica-alvo); block-size: var(--dica-alvo);
+  display: inline-grid; place-items: center; padding: 0; border: 0;
+  background: transparent; color: var(--dica-gatilho); cursor: help; border-radius: 50%;
+}
+.dica__gatilho svg { inline-size: 1rem; block-size: 1rem; }
+.dica__gatilho:focus-visible, .dica :is(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid currentColor; outline-offset: 2px;
+}
+
+.dica__texto {
+  position: fixed; z-index: 1000; left: 0; top: 0;      /* x/y calculados pelo dica.js; escapa de overflow:hidden|auto */
+  inline-size: max-content; max-inline-size: min(var(--dica-largura), calc(100vw - 1rem));
+  padding: .5rem .75rem; border-radius: .375rem; outline: 1px solid transparent; /* forced-colors */
+  background: var(--dica-bg); color: var(--dica-fg);
+  font: 400 .875rem/1.4 system-ui, sans-serif; text-align: start; white-space: normal;
+  font-weight: 400; text-transform: none; letter-spacing: normal;
+  visibility: hidden; opacity: 0;
+}
+/* ponte invisível: dá para passar o mouse do gatilho para o texto sem ele sumir (WCAG 1.4.13) */
+.dica__texto::before { content: ""; position: absolute; inset-inline: 0; inset-block-end: 100%; block-size: 8px; }
+.dica[data-lado="cima"] > .dica__texto::before { inset-block-end: auto; inset-block-start: 100%; }
+
+/* mostrar */
+.dica:hover > .dica__texto,
+.dica:has(:focus-visible) > .dica__texto,
+.dica[data-aberta] > .dica__texto,
+.campo:focus-within .dica__texto,
+.campo:has(> :is(input, select, textarea):hover) .dica__texto { visibility: visible; opacity: 1; }
+/* navegador sem :has — o foco de qualquer jeito mostra, como na v1.1 */
+@supports not selector(:has(*)) { .dica:focus-within > .dica__texto { visibility: visible; opacity: 1; } }
+/* dispensar com Esc (precisa vir DEPOIS) */
+.dica[data-fechada] > .dica__texto,
+.campo[data-fechada] .dica__texto { visibility: hidden; opacity: 0; }
+
+/* não engole o toque nem o clique de quem quer o que está embaixo (precisa vir DEPOIS do "mostrar") */
+@media (pointer: coarse) { .dica__texto { pointer-events: none; } }
+.campo:focus-within .dica__texto { pointer-events: none; }
+
+@media (prefers-reduced-motion: no-preference) { .dica__texto { transition: opacity .12s ease-out; } }
+@media (forced-colors: active) { .dica__texto { border: 1px solid CanvasText; } }

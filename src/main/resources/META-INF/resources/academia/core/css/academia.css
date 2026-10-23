@@ -1,0 +1,692 @@
+/* =========================================================================
+   ACADEMIA — estilos compartilhados pelas páginas da Academia.
+   Reusa os tokens do site (--aed-*); só o que é da Academia mora aqui.
+   Largura cheia e % (regra de CSS do Paulo): nada de coluna central.
+   px só em borda fina e sombra.
+   ========================================================================= */
+
+/* A página usa o MESMO .container py-5 do resto do site: o menu fica na mesma posição em todas
+   as páginas e a margem negativa dele (= o padding do container) não estoura a tela no celular.
+   O container do site já ocupa 98% da largura a partir de 992px (largura cheia, sem coluna central). */
+.acad-pagina {
+    width: 100%;
+}
+
+/* [hidden] do navegador perde para o display da classe (display:flex/grid): sem esta linha, painel
+   de aba escondido e aviso escondido continuariam na tela. */
+.acad-pagina [hidden] {
+    display: none !important;
+}
+
+/* ---------- cabeçalho ---------- */
+.acad-hero {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.acad-hero h1 {
+    font-family: var(--aed-font-display);
+    font-size: clamp(1.8rem, 3.2vw, 2.8rem);
+    line-height: 1.15;
+    margin: .5rem 0 1rem;
+}
+
+.acad-hero p {
+    color: var(--aed-text-secondary);
+    font-size: 1.05rem;
+    max-width: 100%;
+}
+
+.acad-trilha-titulo,
+.acad-etapa-titulo {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-family: var(--aed-font-display);
+    font-size: 1.25rem;
+    margin: 0 0 1rem;
+}
+
+.acad-etapa-titulo .material-symbols-outlined,
+.acad-trilha-titulo .material-symbols-outlined {
+    color: var(--aed-teal);
+}
+
+/* ---------- trilha (landing e nível) ---------- */
+.acad-trilha {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+.acad-nivel {
+    border: 1px solid var(--aed-border);
+    border-radius: var(--aed-radius-card);
+    background: linear-gradient(180deg, var(--aed-card-top), var(--aed-card-bottom));
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.acad-nivel.fechado {
+    opacity: .7;
+}
+
+.acad-nivel > .acad-selo {
+    align-self: flex-start;
+}
+
+.acad-nivel-cabeca {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+.acad-nivel-cabeca h3 {
+    font-size: 1.15rem;
+    margin: 0;
+}
+
+.acad-nivel-icone {
+    color: var(--aed-teal);
+    font-size: 1.8rem;
+}
+
+.acad-licoes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.acad-licao-link {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .6rem .75rem;
+    border: 1px solid var(--aed-border);
+    border-radius: var(--aed-radius-input, .6rem);
+    color: var(--aed-text);
+    text-decoration: none;
+}
+
+.acad-licao-link:hover,
+.acad-licao-link:focus-visible {
+    border-color: var(--aed-teal);
+    color: var(--aed-text);
+}
+
+.acad-licao-link .acad-licao-texto {
+    flex: 1 1 auto;
+}
+
+.acad-licao-link small {
+    display: block;
+    color: var(--aed-text-secondary);
+}
+
+.acad-licao-texto .acad-selo {
+    margin-top: .35rem;
+}
+
+/* ---------- abas da trilha (desbloqueio nível a nível) ---------- */
+.acad-abas {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.acad-abas-lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: .5rem;
+}
+
+.acad-aba {
+    font-size: .85rem;
+}
+
+.acad-aba:focus-visible {
+    outline: 2px solid var(--aed-teal);
+    outline-offset: 2px;
+}
+
+.acad-aba-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    font-size: .75rem;
+    font-weight: 500;
+}
+
+.acad-aba-estado .material-symbols-outlined {
+    font-size: 1rem;
+}
+
+/* A cor reforça o estado; ícone e texto já o dizem sozinhos (cor nunca é o único sinal). */
+.acad-aba.estado-concluido .acad-aba-estado { color: var(--aed-risk-safe); }
+.acad-aba.estado-liberado .acad-aba-estado { color: var(--aed-teal); }
+.acad-aba.estado-bloqueado { border-style: dashed; }
+.acad-aba.estado-bloqueado .acad-aba-estado,
+.acad-aba.estado-em-breve .acad-aba-estado { color: var(--aed-text-secondary); }
+
+.acad-painel.bloqueado .acad-licao-link {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.acad-licao-link[aria-disabled="true"]:hover {
+    border-color: var(--aed-border);
+}
+
+/* ---------- navegação de nível e lição (abas e sub-abas) ---------- */
+.acad-nav {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    margin: .5rem 0 1.25rem;
+}
+
+.acad-nav-niveis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
+    gap: .5rem;
+}
+
+.acad-nav-niveis .acad-aba {
+    text-decoration: none;
+    min-height: 0;
+}
+
+.acad-nav-niveis .acad-aba[aria-disabled="true"] {
+    cursor: not-allowed;
+}
+
+.acad-nav-licoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+}
+
+.acad-subaba {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .35rem .75rem;
+    border: 1px solid var(--aed-border);
+    border-radius: 999rem;
+    color: var(--aed-text-secondary);
+    font-size: .85rem;
+    text-decoration: none;
+}
+
+.acad-subaba .material-symbols-outlined {
+    font-size: 1.1rem;
+}
+
+.acad-subaba:hover,
+.acad-subaba:focus-visible {
+    border-color: var(--aed-teal);
+    color: var(--aed-text);
+}
+
+.acad-subaba:focus-visible,
+.acad-nav-niveis .acad-aba:focus-visible {
+    outline: 2px solid var(--aed-teal);
+    outline-offset: 2px;
+}
+
+.acad-subaba.active {
+    border-color: var(--aed-teal);
+    background: var(--aed-teal-dim, rgba(45, 212, 191, .12));
+    color: var(--aed-teal);
+}
+
+.acad-subaba-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: .2rem;
+    font-size: .75rem;
+}
+
+.acad-subaba-estado:empty {
+    display: none;
+}
+
+.acad-subaba-estado.concluida {
+    color: var(--aed-risk-safe);
+}
+
+/* ---------- aviso de nível bloqueado ---------- */
+.acad-bloqueio {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem .75rem;
+    padding: .7rem .9rem;
+    margin: .75rem 0;
+    border: 1px solid var(--aed-risk-attention);
+    border-radius: .6rem;
+}
+
+.acad-bloqueio > .material-symbols-outlined {
+    color: var(--aed-risk-attention);
+}
+
+.acad-bloqueio > p,
+.acad-bloqueio > span:not(.material-symbols-outlined) {
+    flex: 1 1 18rem;
+    min-width: 0;
+}
+
+/* ---------- selo de progresso ---------- */
+.acad-selo {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .8rem;
+    border-radius: 999rem;
+    padding: .15rem .6rem;
+    border: 1px solid var(--aed-border);
+    color: var(--aed-text-secondary);
+    white-space: nowrap;
+}
+
+.acad-selo.concluida {
+    border-color: var(--aed-risk-safe);
+    color: var(--aed-risk-safe);
+}
+
+.acad-aviso-local {
+    font-size: .85rem;
+    color: var(--aed-text-secondary);
+    display: flex;
+    gap: .4rem;
+    align-items: flex-start;
+}
+
+/* ---------- lição ---------- */
+.acad-licao-cabeca {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.acad-trilha-caminho {
+    font-size: .9rem;
+    color: var(--aed-text-secondary);
+}
+
+.acad-trilha-caminho a {
+    color: var(--aed-text-secondary);
+}
+
+/* Flex e não grid: com grid auto-fit, a etapa "larga" (1 / -1) segurava uma terceira coluna vazia
+   ao lado de Ver e Mexer. Assim as duas dividem a linha e a larga ocupa a linha inteira. */
+.acad-etapas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    align-items: stretch;
+}
+
+.acad-etapa {
+    flex: 1 1 26rem;
+    border: 1px solid var(--aed-border);
+    border-radius: var(--aed-radius-card);
+    background: linear-gradient(180deg, var(--aed-card-top), var(--aed-card-bottom));
+    padding: 1.25rem;
+    min-width: 0;
+}
+
+.acad-etapa-larga {
+    flex-basis: 100%;
+}
+
+.acad-explica {
+    color: var(--aed-text-secondary);
+}
+
+/* ---------- Entenda: o texto para ler ---------- */
+/* Os blocos ficam lado a lado e preenchem a largura (regra de CSS do Paulo); cada bloco tem linha de
+   leitura confortável porque divide a largura com os vizinhos, nunca por uma coluna central. */
+.acad-leitura-texto {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+    gap: 1rem 1.5rem;
+}
+
+.acad-leitura-bloco {
+    min-width: 0;
+}
+
+.acad-leitura-bloco h3 {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    font-size: 1.05rem;
+    margin: 0 0 .5rem;
+}
+
+.acad-leitura-bloco h3 .material-symbols-outlined {
+    color: var(--aed-teal);
+    font-size: 1.25rem;
+}
+
+.acad-leitura-bloco p,
+.acad-leitura-bloco li {
+    color: var(--aed-text);
+    line-height: 1.6;
+}
+
+.acad-leitura-bloco ul,
+.acad-leitura-bloco ol {
+    padding-left: 1.2rem;
+    margin-bottom: .5rem;
+}
+
+.acad-leitura-bloco li + li {
+    margin-top: .3rem;
+}
+
+/* ---------- controles da animação ---------- */
+.acad-controles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    margin: 1rem 0;
+}
+
+.acad-controles label {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    color: var(--aed-text-secondary);
+    font-size: .9rem;
+}
+
+.acad-legenda-passo {
+    min-height: 3rem;
+    color: var(--aed-text);
+}
+
+/* ---------- bits ---------- */
+.acad-bits {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: .4rem;
+    width: 100%;
+}
+
+.acad-bit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .2rem;
+    padding: .6rem 0;
+    border-radius: .6rem;
+    border: 1px solid var(--aed-border-input, var(--aed-border));
+    background: rgba(255, 255, 255, .02);
+    color: var(--aed-text-secondary);
+    font-family: var(--aed-font-mono);
+    cursor: pointer;
+    transition: background-color .2s, color .2s, box-shadow .2s;
+}
+
+.acad-bit .acad-bit-valor {
+    font-size: 1.4rem;
+    color: var(--aed-text);
+}
+
+.acad-bit .acad-bit-peso {
+    font-size: .75rem;
+}
+
+.acad-bit[aria-pressed="true"] {
+    background: rgba(45, 212, 191, .18);
+    border-color: var(--aed-teal);
+    box-shadow: 0 0 1rem rgba(45, 212, 191, .25);
+}
+
+.acad-bit[aria-pressed="true"] .acad-bit-valor {
+    color: var(--aed-teal);
+}
+
+.acad-bit.destaque {
+    outline: 2px solid var(--aed-indigo);
+}
+
+.acad-bit.marcado-erro {
+    outline: 2px solid var(--aed-risk-critical);
+}
+
+.acad-bit:disabled,
+.acad-bit[aria-disabled="true"] {
+    cursor: default;
+}
+
+.acad-nibble-separador {
+    display: none;
+}
+
+.acad-bits.com-nibbles .acad-bit:nth-child(4) {
+    margin-right: .6rem;
+}
+
+/* ---------- valores e campos ---------- */
+.acad-valor {
+    font-family: var(--aed-font-mono);
+    color: var(--aed-teal);
+}
+
+.acad-valor-grande {
+    font-family: var(--aed-font-mono);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    color: var(--aed-text);
+}
+
+.acad-campo {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    margin-bottom: 1rem;
+}
+
+.row > .acad-campo {
+    margin-bottom: 0;
+}
+
+.acad-campo label {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    color: var(--aed-text);
+}
+
+.acad-campo input,
+.acad-campo select {
+    width: 100%;
+    font-family: var(--aed-font-mono);
+}
+
+.acad-eco {
+    font-size: .85rem;
+    color: var(--aed-text-secondary);
+    min-height: 1.3rem;
+}
+
+.acad-resultado {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: .75rem;
+    margin-top: .75rem;
+}
+
+.acad-resultado > div {
+    border: 1px solid var(--aed-border);
+    border-radius: .6rem;
+    padding: .6rem .75rem;
+}
+
+.acad-resultado dt {
+    font-size: .8rem;
+    font-weight: 400;
+    color: var(--aed-text-secondary);
+}
+
+.acad-resultado dd {
+    margin: 0;
+    font-family: var(--aed-font-mono);
+    font-size: 1.2rem;
+}
+
+/* ---------- provar ---------- */
+.acad-pergunta {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.acad-feedback {
+    margin-top: .75rem;
+    padding: .6rem .8rem;
+    border-radius: .6rem;
+    border: 1px solid var(--aed-border);
+    min-height: 2.6rem;
+}
+
+.acad-feedback:not(.ok):not(.erro):not(.neutro) {
+    border-color: transparent;
+    padding: 0;
+    min-height: 0;
+}
+
+.acad-feedback.ok {
+    border-color: var(--aed-risk-safe);
+}
+
+.acad-feedback.erro {
+    border-color: var(--aed-risk-critical);
+}
+
+.acad-feedback.neutro {
+    border-color: var(--aed-risk-attention);
+}
+
+.acad-placar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: .9rem;
+    color: var(--aed-text-secondary);
+    margin-top: .75rem;
+}
+
+/* ---------- camadas ---------- */
+.acad-pilha {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+    width: 100%;
+}
+
+.acad-unidade {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    min-height: 2.6rem;
+    opacity: .35;
+    transition: opacity .3s;
+}
+
+.acad-unidade.ativa {
+    opacity: 1;
+}
+
+.acad-unidade-rotulo {
+    flex: 0 0 22%;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .85rem;
+    color: var(--aed-text-secondary);
+    padding-right: .5rem;
+}
+
+.acad-unidade-blocos {
+    flex: 1 1 auto;
+    display: flex;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+/* O bloco não encolhe abaixo do rótulo: antes ele cortava "Ethernet 14" e "IPv4 20"
+   de 1024 px para baixo; agora a linha de blocos quebra quando não cabe. */
+.acad-bloco {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .3em;
+    padding: .25rem .4rem;
+    font-family: var(--aed-font-mono);
+    font-size: .8rem;
+    border: 1px solid rgba(0, 0, 0, .35);
+    white-space: nowrap;
+    flex: 0 0 auto;
+}
+
+/* Celular: o nome da unidade sobe e os blocos ganham a largura inteira. */
+@media (max-width: 36em) {
+    .acad-unidade { flex-wrap: wrap; }
+    .acad-unidade-rotulo { flex: 0 0 100%; padding: 0 0 .2rem; }
+}
+
+.acad-bloco.carga { background: rgba(96, 165, 250, .25); flex: 1 1 auto; }
+.acad-bloco.transporte { background: rgba(45, 212, 191, .28); }
+.acad-bloco.rede { background: rgba(99, 102, 241, .32); }
+.acad-bloco.enlace { background: rgba(245, 158, 11, .30); }
+.acad-bloco.preenchimento { background: repeating-linear-gradient(45deg, rgba(255,255,255,.08) 0 .4rem, transparent .4rem .8rem); }
+
+/* ---------- demonstração da landing ---------- */
+.acad-demo {
+    border: 1px solid var(--aed-border);
+    border-radius: var(--aed-radius-card);
+    padding: 1.25rem;
+    background: linear-gradient(180deg, var(--aed-card-top), var(--aed-card-bottom));
+}
+
+.acad-demo-numero {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-top: .75rem;
+}
+
+/* ---------- movimento reduzido ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .acad-bit,
+    .acad-unidade {
+        transition: none !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .acad-bit .acad-bit-valor {
+        font-size: 1.1rem;
+    }
+
+    .acad-unidade-rotulo {
+        flex-basis: 32%;
+    }
+}

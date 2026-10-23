@@ -1,0 +1,125 @@
+# robots.txt - Framework de Redes | Analise Didatica Avancada
+# https://frameworknet.carminati.dev.br
+#
+# Em uma frase: buscador legitimo indexa as paginas didaticas; coletor de
+# treinamento de modelo e robo de SEO nao entram; nenhum robo entra em rota
+# autenticada, em rota que devolve JSON nem em rota que dispara consulta
+# externa a cada acesso.
+#
+# ISTO NAO E CONTROLE DE ACESSO. O arquivo e publico e so vale para o robo que
+# escolhe obedecer. Area autenticada NAO aparece aqui, nem em comentario: um
+# robots.txt e um mapa para quem quiser ler. Ela se protege com o login e com o
+# cabecalho X-Robots-Tag: noindex que a aplicacao manda (XRobotsTagHttpTest).
+# Tela de entrada que nao deve indexar tambem fica FORA do Disallow: robo que
+# obedece ao Disallow nunca busca a pagina e nunca le o noindex dela.
+#
+# ARMADILHA AO EDITAR: o robots.txt NAO soma grupos. Um robo obedece apenas ao
+# bloco mais especifico que casa com o nome dele. Por isso a lista de Disallow
+# se repete inteira em cada grupo permitido, em vez de ficar so no "*".
+# RobotsTxtHttpTest reprova o build se um grupo esquecer uma rota, e tambem se
+# uma rota /*/api/ nova nascer no codigo sem entrar aqui.
+#
+# Por que cada bloqueio existe:
+#   /history                    historico de consultas, com o IP de quem consultou
+#   /export                     gera PDF/JSON sob demanda a cada acesso
+#   /informacoes                cada GET dispara consulta geografica externa
+#                               (ip-api, 45 req/min) e o conteudo e o IP de quem
+#                               visita: nao ha o que indexar, so custo
+#   /diagnostico/api            ping e DNS reais saindo do servidor
+#   /mascara-referencia, .../api, /health    devolvem JSON ou sonda, nao pagina
+#
+# As paginas didaticas ficam abertas de proposito: / /analise /calculadora /ipv6
+# /portas /protocolos (+/bgp +/ssh) /resolucao-problemas /localizacao /trafego
+# /seguranca /diagnostico /documentacao /sobre.
+#
+# NOTA DE PRODUCAO (medido em 02/09, revisado em 08/09/2026): o nginx do proxy
+# reverso da VPS tem um "location = /robots.txt" em
+# /opt/infra-proxy/data/nginx/custom/server_proxy.conf, incluido no server{} de
+# TODOS os hosts. Match exato ganha do "location /" que faz o proxy_pass, entao
+# enquanto aquele bloco existir a resposta em frameworknet.carminati.dev.br vem
+# do proxy, e ESTE arquivo vale so em desenvolvimento e em qualquer outro deploy.
+#
+# MUDOU EM 03/09: a politica do proxy deixou de ser um arquivo unico e passou a
+# ser POR HOST, via "map $host" com lista branca -- e nao "try_files /$host.txt",
+# porque $host vem do cabecalho Host, que o cliente escolhe, e interpolar isso num
+# caminho de arquivo e path traversal esperando acontecer. Medido em 08/09: este
+# dominio ainda cai no arquivo padrao, e nao num proprio.
+
+# --- Buscadores: bem-vindos nas paginas ---
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /history
+Disallow: /export
+Disallow: /informacoes
+Disallow: /mascara-referencia
+Disallow: /health
+Disallow: /api
+Disallow: /calculadora/api
+Disallow: /calculadora/export
+Disallow: /ipv6/api
+Disallow: /ipv6/export
+Disallow: /diagnostico/api
+Disallow: /localizacao/api
+Disallow: /seguranca/api
+Disallow: /simuladores/api
+Disallow: /trafego/api
+Disallow: /academia/api
+
+# --- Coleta em massa para treinar modelo, e robo de SEO: nao autorizados ---
+# Mesma lista do robots.txt compartilhado da VPS, para que as duas politicas
+# nao divirjam conforme qual arquivo responder.
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: CCBot
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: PerplexityBot
+User-agent: Bytespider
+User-agent: Amazonbot
+User-agent: Omgilibot
+User-agent: FacebookBot
+User-agent: Diffbot
+User-agent: ImagesiftBot
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: MJ12bot
+User-agent: DotBot
+User-agent: PetalBot
+User-agent: DataForSeoBot
+Disallow: /
+
+# --- Demais robos: navegacao liberada, com ritmo e as mesmas rotas fechadas ---
+User-agent: *
+Allow: /
+Disallow: /history
+Disallow: /export
+Disallow: /informacoes
+Disallow: /mascara-referencia
+Disallow: /health
+Disallow: /api
+Disallow: /calculadora/api
+Disallow: /calculadora/export
+Disallow: /ipv6/api
+Disallow: /ipv6/export
+Disallow: /diagnostico/api
+Disallow: /localizacao/api
+Disallow: /seguranca/api
+Disallow: /simuladores/api
+Disallow: /trafego/api
+Disallow: /academia/api
+Crawl-delay: 10
+
+# Mapa do site, servido por SitemapResource: so as paginas didaticas, as mesmas
+# que os grupos acima deixam abertas. A URL e absoluta e canonica de propriedade
+# -- o Sitemap: independe de grupo e vale para o arquivo inteiro.
+# Ausente do arquivo servido em producao, e isto e PENDENCIA, nao decisao: em
+# 02/09 a linha ficou de fora porque um unico arquivo do proxy respondia por mais
+# de um dominio, e apontar o sitemap de um para outro e submissao cruzada, que o
+# buscador descarta. Desde 03/09 a politica e por host, entao a objecao caiu --
+# falta este dominio ganhar entrada propria no "map $host". Enquanto isso, o
+# sitemap chega ao Google pelo Search Console, que independe do robots.txt.
+Sitemap: https://frameworknet.carminati.dev.br/sitemap.xml

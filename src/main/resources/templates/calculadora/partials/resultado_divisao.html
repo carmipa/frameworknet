@@ -1,0 +1,116 @@
+<div class="calc-resultado">
+    <div class="calc-resumo-head">
+        <h3 class="h5 mb-1">
+            <span class="material-symbols-outlined text-warning" aria-hidden="true" translate="no">grid_on</span>
+            {plano.blocoBase}/{plano.prefixoBase} dividido em /{plano.prefixoAlvo}
+        </h3>
+        <a class="aed-btn aed-btn-json btn-sm"
+           title="Baixar planilha CSV com a listagem de sub-redes geradas"
+           href="/calculadora/export/divisao.csv?bloco={plano.blocoBase}&prefixoBase={plano.prefixoBase}&criterio=prefixo&prefixoAlvo={plano.prefixoAlvo}">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> CSV
+        </a>
+    </div>
+
+    <div class="calc-kpis">
+        <div class="calc-kpi calc-kpi-destaque">
+            <span class="calc-kpi-label">Sub-redes que cabem</span>
+            <strong class="calc-kpi-valor">{plano.totalSubredes}</strong>
+            <span class="calc-kpi-nota">2^{plano.bitsEmprestados} blocos /{plano.prefixoAlvo}</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">IPs por sub-rede</span>
+            <strong class="calc-kpi-valor">{plano.ipsPorSubrede}</strong>
+            <span class="calc-kpi-nota">inclui rede e broadcast</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Hosts úteis</span>
+            <strong class="calc-kpi-valor">{plano.hostsUteisPorSubrede}</strong>
+            <span class="calc-kpi-nota">por sub-rede</span>
+        </div>
+        <div class="calc-kpi">
+            <span class="calc-kpi-label">Máscara alvo</span>
+            <strong class="calc-kpi-valor calc-kpi-mono">{plano.mascaraAlvo}</strong>
+            <span class="calc-kpi-nota">base: {plano.mascaraBase}</span>
+        </div>
+    </div>
+
+    <p class="calc-explicacao">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span>
+        {plano.explicacao}
+    </p>
+
+    <h4 class="h6 calc-secao-titulo">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span>
+        Quantas cabem em cada prefixo — a partir de /{plano.prefixoBase}
+    </h4>
+    <div class="table-responsive calc-tabela-scroll">
+        <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
+            <thead>
+            <tr>
+                <th title="Máscara em bits: /n"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span>Prefixo</th>
+                <th title="Máscara de sub-rede em decimal"><span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_view</span>Máscara</th>
+                <th title="Quantas sub-redes desse prefixo cabem no bloco base"><span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span>Sub-redes</th>
+                <th title="Endereços totais por sub-rede (inclui rede e broadcast)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">deployed_code</span>IPs por sub-rede</th>
+                <th title="Endereços utilizáveis por sub-rede (exclui rede e broadcast)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span>Hosts úteis</th>
+            </tr>
+            </thead>
+            <tbody>
+            {#for linha in plano.capacidade}
+            <tr class="{#if linha.destaque}calc-linha-destaque{/if}">
+                <td class="font-monospace">/{linha.prefixoAlvo}</td>
+                <td class="font-monospace">{linha.mascara}</td>
+                <td class="fw-bold">{linha.subredes}</td>
+                <td>{linha.ipsPorSubrede}</td>
+                <td>{linha.hostsUteis}</td>
+            </tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="h6 calc-secao-titulo mt-4">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span>
+        Sub-redes geradas
+        <span class="calc-contador">{plano.exibidos} de {plano.totalSubredes}</span>
+    </h4>
+
+    {#if plano.truncado}
+    <div class="calc-aviso" role="status">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span>
+        <span>
+            A listagem foi limitada às primeiras <strong>{plano.exibidos}</strong> sub-redes para não travar
+            o navegador. O total real continua sendo <strong>{plano.totalSubredes}</strong> —
+            use um prefixo alvo mais curto para ver o plano inteiro.
+        </span>
+    </div>
+    {/if}
+
+    <div class="table-responsive calc-tabela-scroll">
+        <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
+            <thead>
+            <tr>
+                <th title="Número da sub-rede na sequência"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span>#</th>
+                <th title="Endereço de rede da sub-rede (não atribuível a host)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span>Rede</th>
+                <th title="Primeiro endereço utilizável (normalmente o gateway)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">first_page</span>Primeiro host</th>
+                <th title="Último endereço utilizável"><span class="material-symbols-outlined" aria-hidden="true" translate="no">last_page</span>Último host</th>
+                <th title="Endereço de broadcast (não atribuível a host)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">campaign</span>Broadcast</th>
+                <th title="Máscara curinga (inverso da máscara) — usada em ACL e OSPF"><span class="material-symbols-outlined" aria-hidden="true" translate="no">flip</span>Wildcard</th>
+                <th title="Endereços utilizáveis nesta sub-rede"><span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span>Hosts</th>
+            </tr>
+            </thead>
+            <tbody>
+            {#for bloco in plano.blocos}
+            <tr>
+                <td class="text-secondary">{bloco.indice}</td>
+                <td class="font-monospace fw-bold">{bloco.cidr}</td>
+                <td class="font-monospace">{bloco.primeiroHost}</td>
+                <td class="font-monospace">{bloco.ultimoHost}</td>
+                <td class="font-monospace text-secondary">{bloco.broadcast}</td>
+                <td class="font-monospace text-secondary">{bloco.wildcard}</td>
+                <td>{bloco.hostsUteis}</td>
+            </tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,238 @@
+/* Sub-aba "Anomalias TCP" da página Tráfego.
+   Unidades: rem para espaço/fonte, em nos breakpoints, px só em borda/sombra.
+   Cor por natureza do passo: ataque (rosa), alerta (âmbar), ok (verde), normal. */
+
+.anom-form .aed-mode-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 0.5rem;
+}
+
+.anom-titulo {
+    font-family: var(--aed-font-display);
+    font-size: 1.15rem;
+    color: #fca5a5;
+    margin-bottom: 0.25rem;
+}
+
+/* --- Indicadores --- */
+.anom-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 0.6rem;
+    margin: 0.5rem 0 1.25rem;
+}
+
+.anom-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--aed-border);
+    border-left-width: 3px;
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.02);
+    cursor: help;
+}
+
+.anom-kpi-valor {
+    font-family: var(--aed-font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--aed-text);
+}
+
+.anom-kpi-rotulo {
+    font-size: .75rem;
+    color: var(--aed-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.anom-kpi-danger { border-left-color: #f43f5e; }
+.anom-kpi-danger .anom-kpi-valor { color: #fda4af; }
+.anom-kpi-warning { border-left-color: #f59e0b; }
+.anom-kpi-warning .anom-kpi-valor { color: #fcd34d; }
+.anom-kpi-success { border-left-color: #34d399; }
+.anom-kpi-success .anom-kpi-valor { color: #6ee7b7; }
+.anom-kpi-info { border-left-color: #38bdf8; }
+.anom-kpi-info .anom-kpi-valor { color: #7dd3fc; }
+
+/* --- Passos --- */
+.anom-passos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.anom-passo {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--aed-border);
+    border-left-width: 3px;
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.02);
+    opacity: 0.28;
+    transform: translateY(0.25rem);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.anom-passo.revelado {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.anom-passo-normal { border-left-color: rgba(148, 163, 184, 0.6); }
+.anom-passo-ataque { border-left-color: #f43f5e; background: linear-gradient(90deg, rgba(244, 63, 94, 0.08), transparent 55%); }
+.anom-passo-alerta { border-left-color: #f59e0b; background: linear-gradient(90deg, rgba(245, 158, 11, 0.08), transparent 55%); }
+.anom-passo-ok { border-left-color: #34d399; background: linear-gradient(90deg, rgba(52, 211, 153, 0.08), transparent 55%); }
+
+.anom-passo-num {
+    flex: 0 0 auto;
+    width: 1.6rem;
+    height: 1.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--aed-text);
+    font-family: var(--aed-font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.anom-passo-corpo { flex: 1 1 auto; min-width: 0; }
+
+.anom-passo-cabeca {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.anom-passo-ator {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--aed-text);
+}
+
+.anom-passo-acao {
+    font-family: var(--aed-font-mono);
+    font-size: .75rem;
+    color: #93c5fd;
+}
+
+.anom-passo-estado {
+    margin-left: auto;
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--aed-border);
+    border-radius: 0.35rem;
+    background: #04060c;
+    color: var(--aed-text-faint);
+    font-family: var(--aed-font-mono);
+    font-size: .75rem;
+}
+
+.anom-passo-detalhe {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--aed-text-secondary);
+}
+
+/* --- Rodapé: defesas e lição --- */
+.anom-rodape {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.anom-bloco-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--aed-font-display);
+    font-size: 1rem;
+    color: #6ee7b7;
+    margin-bottom: 0.6rem;
+}
+
+.anom-mitigacoes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.anom-mitigacao {
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--aed-border);
+    border-left: 3px solid rgba(52, 211, 153, 0.5);
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--aed-text);
+}
+
+.anom-licao {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(245, 158, 11, 0.30);
+    border-radius: 0.6rem;
+    background: rgba(245, 158, 11, 0.07);
+    color: #fcd34d;
+    font-size: 0.85rem;
+}
+
+.anom-licao .material-symbols-outlined {
+    flex: 0 0 auto;
+    font-size: 1.2rem;
+}
+
+/* --- Glossário --- */
+.anom-glossario > summary {
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--aed-teal);
+    user-select: none;
+    padding: 0.4rem 0;
+}
+
+.anom-termos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 0.5rem;
+    margin: 0.5rem 0 0;
+}
+
+.anom-termos > div {
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--aed-border);
+    border-left: 3px solid rgba(56, 189, 248, 0.5);
+    border-radius: 0.5rem;
+}
+
+.anom-termos dt {
+    font-family: var(--aed-font-mono);
+    font-size: 0.78rem;
+    color: #7dd3fc;
+    margin-bottom: 0.15rem;
+}
+
+.anom-termos dd {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--aed-text-secondary);
+}
+
+.anom-termos code {
+    font-family: var(--aed-font-mono);
+    color: #93c5fd;
+}

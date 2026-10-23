@@ -1,0 +1,291 @@
+{
+  "resumo": "A criptografia do TLS quase nunca falha por matemática quebrada; falha por erro de operação e por engano de confiança. Certificado expirado, nome que não bate com o domínio, cadeia incompleta enviada pelo servidor, uma autoridade que o cliente não reconhece, um algoritmo de assinatura fraco ou uma chave privada vazada: são esses os problemas que você encontra no dia a dia, e são eles que os atacantes exploram. Este aprofundamento mostra o que cada aviso do navegador realmente significa, como um ataque man-in-the-middle (MITM) usa uma CA falsa para se passar pelo servidor, por que o cadeado sozinho não prova segurança e como o momento perigoso é o clique em \"Prosseguir mesmo assim\". Você também aprende a reproduzir e diagnosticar cada erro com openssl e testssl, e a fechar as brechas com HSTS, validação completa da cadeia, TLS 1.2/1.3, Certificate Transparency (CT) e CAA. Para experimentar, use o protocolo TLS explicado no site e o Inspetor TLS (\"teste você mesmo\"), uma simulação em que você informa nome, validade, emissor, versão e cipher e vê o veredito de cada regra; contra um servidor real, use os comandos openssl e testssl.sh dos laboratórios.",
+  "ficha": [
+    {
+      "rotulo": "Camada afetada",
+      "valor": "Validação de certificado e handshake TLS",
+      "dica": "A falha raramente está na cifra; está na confiança e na configuração."
+    },
+    {
+      "rotulo": "Erro mais comum",
+      "valor": "Certificado expirado (ERR_CERT_DATE_INVALID)",
+      "dica": "Renovação esquecida ou automação (ACME) que parou de rodar."
+    },
+    {
+      "rotulo": "Ataque clássico",
+      "valor": "MITM com CA falsa ou CA instalada no dispositivo",
+      "dica": "Interceptador se passa pelo servidor apresentando um certificado forjado."
+    },
+    {
+      "rotulo": "Elo mais fraco",
+      "valor": "O usuário que clica em 'Prosseguir mesmo assim'",
+      "dica": "O aviso do navegador só protege se for respeitado."
+    },
+    {
+      "rotulo": "Ferramentas de diagnóstico",
+      "valor": "openssl s_client e testssl.sh (servidor real); Inspetor TLS do site (simulação)",
+      "dica": "Os dois primeiros mostram a cadeia, a validade, os algoritmos e a versão de um servidor de verdade; o Inspetor aplica as regras aos dados que você informa."
+    },
+    {
+      "rotulo": "Defesa de base",
+      "valor": "HSTS + TLS 1.2/1.3 + CT/CAA",
+      "dica": "HSTS remove o botão de prosseguir; o CAA diz quais CAs podem emitir e o CT torna toda emissão pública e detectável."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Certificado expirado",
+      "icone": "autorenew",
+      "texto": "Todo certificado tem uma janela de validade (notBefore/notAfter). Passou da data, o cliente rejeita mesmo que tudo o mais esteja certo. Quase sempre é renovação esquecida ou automação ACME que parou.",
+      "destaque": "ERR_CERT_DATE_INVALID"
+    },
+    {
+      "titulo": "Nome não bate (SAN)",
+      "icone": "badge",
+      "texto": "O navegador compara o domínio digitado com a lista Subject Alternative Name (SAN) do certificado. O campo Common Name (CN) legado não vale mais sozinho. Se o domínio não estiver na SAN, a identidade não é comprovada.",
+      "destaque": "COMMON_NAME_INVALID"
+    },
+    {
+      "titulo": "Cadeia incompleta",
+      "icone": "account_tree",
+      "texto": "O servidor deve enviar o certificado da folha mais as intermediárias, de modo que o cliente consiga encadear até uma raiz confiável. Se a intermediária for esquecida, alguns clientes não fecham a cadeia e a validação falha de forma intermitente.",
+      "destaque": "Falha só em alguns clientes"
+    },
+    {
+      "titulo": "CA não confiável",
+      "icone": "gpp_bad",
+      "texto": "A raiz que assinou a cadeia não está no armazenamento de confiança do sistema/navegador. Pode ser certificado self-signed, CA interna sem distribuição correta ou, no pior caso, uma CA de atacante.",
+      "destaque": "AUTHORITY_INVALID"
+    },
+    {
+      "titulo": "Algoritmo fraco",
+      "icone": "block",
+      "texto": "Assinaturas com SHA-1 ou MD5 são vulneráveis a colisão: é viável forjar um certificado com a mesma assinatura. Navegadores modernos e CAs públicas já rejeitam SHA-1 em certificados públicos. Exija SHA-256 ou superior.",
+      "destaque": "SHA-1 / MD5 proibidos"
+    },
+    {
+      "titulo": "Chave comprometida e mixed content",
+      "icone": "key",
+      "texto": "Se a chave privada vaza, o certificado precisa ser revogado (CRL/OCSP) e reemitido com nova chave. E uma página HTTPS que carrega scripts ou imagens via HTTP (mixed content) abre brecha de injeção e quebra a garantia do cadeado.",
+      "destaque": "REVOKED / conteúdo misto"
+    }
+  ],
+  "diagrama": {
+    "titulo": "MITM com certificado inválido e a decisão do usuário",
+    "definicao": "sequenceDiagram\n    participant U as Usuário\n    participant N as Navegador\n    participant M as Atacante (MITM)\n    participant S as Servidor real\n    U->>N: Acessa https://banco.exemplo\n    N->>M: Handshake TLS (tráfego interceptado)\n    M-->>N: Certificado forjado (CA falsa ou self-signed)\n    N->>N: Valida cadeia, validade e nome (SAN)\n    alt Cadeia não confiável\n        N-->>U: Aviso ERR_CERT_AUTHORITY_INVALID\n        U->>N: Clica em Prosseguir mesmo assim\n        N->>M: Envia credenciais sob o TLS do atacante\n        M->>S: Repassa o tráfego e lê tudo em claro\n        S-->>M: Resposta do servidor\n        M-->>N: Resposta possivelmente adulterada\n    else Usuário respeita o aviso\n        U->>N: Fecha a aba\n        N-->>U: Conexão abortada, credenciais protegidas\n    end",
+    "legenda": "O navegador detecta a CA falsa e barra a conexão. O ataque só tem sucesso se o usuário ignorar o aviso e clicar em prosseguir. Com HSTS ativo o botão de prosseguir some, tornando o clique impossível."
+  },
+  "tabelas": [
+    {
+      "titulo": "Erros de certificado no navegador: causa e correção",
+      "colunas": [
+        "Erro (Chrome/Chromium)",
+        "O que significa",
+        "Causa provável",
+        "Correção"
+      ],
+      "linhas": [
+        [
+          "ERR_CERT_DATE_INVALID",
+          "Data fora da validade (expirado ou notBefore no futuro)",
+          "Renovação esquecida, automação ACME parada ou relógio do cliente errado",
+          "Renovar o certificado; corrigir cron/ACME; conferir o relógio do dispositivo"
+        ],
+        [
+          "ERR_CERT_COMMON_NAME_INVALID",
+          "Domínio acessado não consta na SAN",
+          "Certificado emitido para outro nome, faltou incluir o domínio/wildcard na SAN",
+          "Reemitir com todos os domínios na SAN; usar o host correto"
+        ],
+        [
+          "ERR_CERT_AUTHORITY_INVALID",
+          "Cadeia não chega a uma raiz confiável",
+          "Self-signed, intermediária ausente ou CA não reconhecida (possível MITM)",
+          "Instalar a intermediária no servidor; usar CA pública; investigar se é interceptação"
+        ],
+        [
+          "ERR_CERT_REVOKED",
+          "Certificado foi revogado pela CA",
+          "Chave comprometida, emissão indevida ou domínio transferido",
+          "Reemitir após rotacionar a chave; validar via OCSP/CRL antes de confiar"
+        ],
+        [
+          "ERR_SSL_VERSION_OR_CIPHER_MISMATCH",
+          "Sem versão/cifra em comum",
+          "Servidor só oferece TLS antigo (1.0/1.1) ou cifras fracas",
+          "Habilitar TLS 1.2/1.3; desativar SSLv3, TLS 1.0/1.1 e RC4/3DES"
+        ]
+      ]
+    },
+    {
+      "titulo": "Sinais no cadeado x realidade da conexão",
+      "colunas": [
+        "Sinal visto",
+        "O que NÃO garante",
+        "O que ainda verificar"
+      ],
+      "linhas": [
+        [
+          "Cadeado fechado",
+          "Que o site é legítimo ou seguro",
+          "Se o domínio no certificado é o que você esperava"
+        ],
+        [
+          "HTTPS na barra",
+          "Ausência de mixed content",
+          "Console do navegador por avisos de conteúdo misto"
+        ],
+        [
+          "Certificado válido",
+          "Que a CA é idônea ou não foi coagida",
+          "Registro em Certificate Transparency (CT) e política CAA"
+        ]
+      ]
+    },
+    {
+      "titulo": "Formatos e artefatos que você vai encontrar",
+      "colunas": [
+        "Formato",
+        "O que é",
+        "Como aparece / comando típico"
+      ],
+      "linhas": [
+        [
+          "PEM",
+          "Codificação Base64 (texto) com marcadores BEGIN/END; formato padrão em servidores Linux",
+          "-----BEGIN CERTIFICATE----- ; openssl x509 -in cert.pem -text"
+        ],
+        [
+          "DER",
+          "Mesma estrutura X.509, porém em binário (ASN.1 puro); comum em ambientes Windows/Java",
+          "openssl x509 -inform der -in cert.der -text"
+        ],
+        [
+          "PKCS#12 (.p12/.pfx)",
+          "Pacote com certificado + cadeia + chave privada, protegido por senha",
+          "openssl pkcs12 -in cert.pfx -info ; keytool -importkeystore"
+        ],
+        [
+          "PKCS#7 (.p7b)",
+          "Só cadeia de certificados (sem chave privada); usado para distribuir folha + intermediárias",
+          "openssl pkcs7 -in chain.p7b -print_certs"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "MITM com CA falsa ou CA instalada no dispositivo",
+      "como_funciona": "O atacante se posiciona no caminho (rede Wi-Fi hostil, proxy corporativo, malware) e apresenta um certificado forjado. Se conseguir instalar uma CA raiz sua no armazenamento de confiança da vítima (via malware, MDM abusivo ou engenharia social), o navegador aceita o certificado sem nenhum aviso e todo o tráfego HTTPS fica legível para o interceptador.",
+      "sinal": "Emissor desconhecido na cadeia, ou uma CA raiz estranha no armazenamento do sistema. Sem CA instalada, aparece ERR_CERT_AUTHORITY_INVALID.",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Downgrade de protocolo",
+      "como_funciona": "O atacante interfere no handshake para forçar cliente e servidor a negociar uma versão antiga e vulnerável (TLS 1.0/1.1, SSLv3) ou cifras fracas, onde ataques como POODLE e BEAST são viáveis. Explora servidores que ainda aceitam protocolos legados.",
+      "sinal": "Conexão fechada em TLS antigo apesar de o cliente suportar 1.3; testssl aponta protocolos obsoletos habilitados.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Self-signed aceito pelo usuário",
+      "como_funciona": "O atacante apresenta um certificado autoassinado. O navegador barra, mas exibe a opção de prosseguir. O usuário habituado a ignorar avisos clica em 'Prosseguir mesmo assim' e entrega credenciais diretamente ao interceptador.",
+      "sinal": "Tela de aviso vermelha com botão de exceção; certificado sem cadeia até uma raiz pública.",
+      "gravidade": "Alta",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Forja por assinatura fraca (SHA-1/MD5)",
+      "como_funciona": "Com MD5 (colisão já demonstrada, caso Flame) ou SHA-1 (colisão prática desde o SHAttered, 2017, e de prefixo escolhido, a que permite forjar certificado, desde o 'SHA-1 is a Shambles', 2020), o atacante constrói um certificado diferente com a mesma assinatura da CA, obtendo um certificado válido para um domínio que não controla. Hoje é em grande parte histórico: navegadores e CAs públicas rejeitam SHA-1.",
+      "sinal": "Campo Signature Algorithm indicando sha1WithRSAEncryption ou md5WithRSAEncryption na cadeia.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Uso de chave comprometida não revogada",
+      "como_funciona": "A chave privada vazou (backup exposto, Heartbleed, repositório público), mas o certificado segue ativo porque a revogação não foi propagada ou o cliente não consulta OCSP/CRL (soft-fail). O atacante usa o par vazado para se passar pelo servidor legítimo.",
+      "sinal": "Certificado tecnicamente válido, porém listado como revogado na CRL (ou no OCSP, onde ainda houver).",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "HSTS (HTTP Strict Transport Security)",
+      "como_funciona": "O servidor envia o cabeçalho Strict-Transport-Security e o navegador passa a exigir HTTPS para aquele domínio, removendo o botão 'Prosseguir mesmo assim' em erros de certificado. Com a preload list, a proteção vale já no primeiro acesso.",
+      "cobre": "MITM com self-signed/CA falsa e downgrade para HTTP",
+      "limite": "Só protege após o primeiro contato, salvo se o domínio estiver na preload list."
+    },
+    {
+      "nome": "Validar sempre a cadeia completa",
+      "como_funciona": "O cliente valida folha, intermediárias e raiz, verifica validade, nome (SAN) e revogação. O servidor deve entregar a cadeia completa (folha + intermediárias). Nunca desabilitar a verificação em código de produção (curl -k, verify=False).",
+      "cobre": "Cadeia incompleta, CA não confiável e certificado forjado",
+      "limite": "Exige armazenamento de raízes atualizado e cliente que consulte revogação."
+    },
+    {
+      "nome": "Auditar e remover CAs suspeitas",
+      "como_funciona": "Revisar periodicamente o armazenamento de confiança do sistema e dos navegadores, removendo CAs raiz desconhecidas ou instaladas por software indevido. Em frota, gerenciar por política (MDM) auditável.",
+      "cobre": "MITM com CA raiz instalada no dispositivo",
+      "limite": "Depende de acesso administrativo e de detecção contínua de novas inserções."
+    },
+    {
+      "nome": "Exigir TLS 1.2/1.3 e cifras fortes",
+      "como_funciona": "Desativar SSLv3, TLS 1.0/1.1 e algoritmos fracos (RC4, 3DES, MD5, SHA-1). Preferir suítes com forward secrecy (ECDHE). Isso elimina os cenários que os ataques de downgrade tentam alcançar.",
+      "cobre": "Downgrade de protocolo e assinaturas fracas",
+      "limite": "Clientes muito antigos podem perder acesso; exige inventário de compatibilidade."
+    },
+    {
+      "nome": "Certificate Transparency (CT) e CAA",
+      "como_funciona": "O registro CAA no DNS declara quais CAs podem emitir para o domínio, barrando emissão por CA não autorizada. Os logs de CT tornam pública toda emissão, permitindo detectar certificados fraudulentos emitidos para o seu domínio.",
+      "cobre": "Emissão indevida por CA comprometida ou coagida",
+      "limite": "CT é detecção (depois da emissão); CAA depende de a CA respeitar o registro."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Inspecionar cadeia, validade e nome com openssl",
+      "cenario": "Você quer ver, para um host real, qual cadeia é enviada, as datas de validade e a SAN, para diagnosticar expirado, cadeia incompleta ou nome que não bate.",
+      "comandos": "# Ver a cadeia apresentada e o resultado da verificação\nopenssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br -showcerts\n\n# Extrair validade (notBefore/notAfter), a SAN e o emissor\nopenssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br 2>/dev/null \\\n  | openssl x509 -noout -dates -ext subjectAltName -issuer\n\n# Ver o algoritmo de assinatura (detecta SHA-1/MD5)\nopenssl s_client -connect exemplo.com.br:443 -servername exemplo.com.br 2>/dev/null \\\n  | openssl x509 -noout -text | grep -i 'Signature Algorithm'",
+      "explicacao": "A linha 'Verify return code' resume o veredito: 0 (ok) ou um código com a causa (por exemplo, 'unable to get local issuer certificate' indica intermediária ausente, e 'certificate has expired' indica validade vencida). O -servername envia o SNI, essencial em servidores com vários sites. Confira se o domínio consta em X509v3 Subject Alternative Name; o CN sozinho não basta. O Inspetor TLS do site aplica essas mesmas regras de forma visual, sobre os dados que você informa (simulação, sem conexão)."
+    },
+    {
+      "titulo": "Varredura completa de protocolos e cifras com testssl",
+      "cenario": "Você precisa saber se o servidor ainda aceita TLS antigo, cifras fracas ou está vulnerável a downgrade, e se HSTS e OCSP stapling estão ativos.",
+      "comandos": "# Troque servidor.example.com pelo SEU servidor: varredura em servidor alheio só com autorização\n\n# Varredura padrão (protocolos, cifras, vulnerabilidades, cabeçalhos)\n./testssl.sh servidor.example.com\n\n# Focar só em protocolos habilitados e forward secrecy\n./testssl.sh --protocols --fs servidor.example.com\n\n# Verificar vulnerabilidades conhecidas (POODLE, BEAST, Heartbleed etc.)\n./testssl.sh --vulnerable servidor.example.com",
+      "explicacao": "O relatório marca em vermelho protocolos obsoletos (SSLv3, TLS 1.0/1.1) que devem ser desativados, cifras fracas (RC4, 3DES) e ausência de HSTS. A seção de vulnerabilidades confirma exposição a downgrade e correlatos. O alvo desejado: apenas TLS 1.2 e 1.3 habilitados, suítes com ECDHE (forward secrecy) e HSTS presente."
+    },
+    {
+      "titulo": "Reproduzir CA não confiável com um self-signed local",
+      "cenario": "Para entender o aviso AUTHORITY_INVALID sem atacar ninguém, gere um certificado self-signed e observe o cliente rejeitar a cadeia.",
+      "comandos": "# Gerar chave e certificado self-signed com SAN\nopenssl req -x509 -newkey rsa:2048 -nodes \\\n  -keyout chave.pem -out cert.pem -days 30 \\\n  -subj '/CN=local.teste' \\\n  -addext 'subjectAltName=DNS:local.teste'\n\n# Servir localmente e conectar validando a confiança\nopenssl s_server -accept 4443 -cert cert.pem -key chave.pem &\nopenssl s_client -connect localhost:4443 -verify_return_error",
+      "explicacao": "Como a raiz self-signed não está no armazenamento de confiança, o s_client com -verify_return_error encerra com 'self-signed certificate' ou 'unable to verify the first certificate' -- exatamente a condição que gera ERR_CERT_AUTHORITY_INVALID no navegador. Adicionar essa raiz ao armazenamento faria o erro sumir, o que ilustra por que uma CA instalada por um atacante é tão perigosa."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "ERR_CERT_DATE_INVALID no navegador",
+      "causa_provavel": "Certificado expirado (notAfter no passado) ou notBefore no futuro; às vezes relógio do cliente errado",
+      "comando": "openssl s_client -connect host:443 -servername host 2>/dev/null | openssl x509 -noout -dates",
+      "leitura": "Compare notAfter com a data atual. Se já passou, renove o certificado e conserte a automação ACME. Se as datas parecem corretas mas o erro persiste só no seu dispositivo, verifique o relógio local."
+    },
+    {
+      "sintoma": "ERR_CERT_AUTHORITY_INVALID em site público conhecido",
+      "causa_provavel": "Cadeia não chega a uma raiz confiável: intermediária ausente, ou uma CA de interceptação no caminho",
+      "comando": "openssl s_client -connect host:443 -servername host -showcerts",
+      "leitura": "Olhe a linha Verify return code e a lista de certificados. 'unable to get local issuer certificate' aponta intermediária faltando no servidor. Se aparecer um emissor desconhecido em rede pública, suspeite de MITM e não clique em prosseguir."
+    },
+    {
+      "sintoma": "ERR_CERT_COMMON_NAME_INVALID",
+      "causa_provavel": "O domínio acessado não está na lista SAN do certificado",
+      "comando": "openssl s_client -connect host:443 -servername host 2>/dev/null | openssl x509 -noout -ext subjectAltName",
+      "leitura": "Confirme se o domínio digitado consta em subjectAltName. Se não, o certificado foi emitido para outro nome; reemita incluindo todos os domínios (ou um wildcard) na SAN. No Inspetor TLS do site você simula o caso: nome acessado fora da SAN é recusado."
+    },
+    {
+      "sintoma": "Cadeado presente, mas a página mostra aviso de não segura",
+      "causa_provavel": "Mixed content: página HTTPS carregando recursos via HTTP",
+      "comando": "Abrir o console do navegador (F12) e observar avisos 'Mixed Content'; na aba Rede (Network), procurar recursos carregados por http://",
+      "leitura": "Cada recurso HTTP em página HTTPS quebra a garantia da conexão e abre brecha de injeção. Corrija as URLs para HTTPS e adote Content-Security-Policy para bloquear conteúdo inseguro."
+    }
+  ]
+}

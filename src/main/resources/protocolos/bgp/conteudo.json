@@ -1,0 +1,433 @@
+{
+  "resumo": "BGP-4 (RFC 4271) é o protocolo de roteamento que liga os Sistemas Autônomos da Internet. Diferente de OSPF e EIGRP, ele não procura o caminho mais curto: procura o caminho que a POLÍTICA do operador mandou preferir. Roda sobre TCP 179, troca atualizações incrementais e carrega o caminho inteiro (AS_PATH) em cada rota — é um protocolo de vetor de caminho (path vector), e é o AS_PATH que também impede loop entre AS.",
+  "conceitos": [
+    {
+      "titulo": "Sistema Autônomo (AS) e ASN",
+      "icone": "public",
+      "texto": "Um AS é um conjunto de prefixos IP sob uma única política de roteamento — uma operadora, um datacenter, uma empresa multi-homed. Cada AS tem um número (ASN) alocado por um RIR; no Brasil, pelo NIC.br/LACNIC. ASN de 16 bits vai até 65535; desde a RFC 6793 usa-se ASN de 32 bits, escrito também como asdot (ex.: 1.10 = 65546).",
+      "destaque": "Faixas privadas: 64512–65534 (16 bits) e 4200000000–4294967294 (32 bits). Elas nunca podem vazar para a Internet — removê-las na saída é obrigação da borda."
+    },
+    {
+      "titulo": "eBGP × iBGP — mesma máquina, regras diferentes",
+      "icone": "swap_horiz",
+      "texto": "eBGP é a sessão entre AS diferentes: TTL 1 por padrão (vizinho tem de estar diretamente conectado, salvo ebgp-multihop), o AS local é prependado no AS_PATH e o NEXT_HOP é reescrito para o próprio roteador. iBGP é a sessão dentro do mesmo AS: não altera AS_PATH, não altera NEXT_HOP e obedece ao split horizon do iBGP — rota aprendida de um par iBGP NÃO é repassada a outro par iBGP.",
+      "destaque": "É desse split horizon que nasce a exigência de malha completa (full-mesh) no iBGP — e são route reflector e confederação que a evitam."
+    },
+    {
+      "titulo": "Por que 'path vector' e não 'link-state'",
+      "icone": "route",
+      "texto": "OSPF e IS-IS montam um mapa idêntico da rede em cada roteador e calculam SPF. BGP não conhece a topologia interna de ninguém: recebe do vizinho a lista de AS que a rota atravessou e decide por atributos. Isso é o que permite escalar para mais de um milhão de prefixos na tabela global sem cada roteador conhecer o interior dos outros AS.",
+      "destaque": "Consequência prática: BGP converge por evento e por política, não por cálculo topológico. Convergência lenta é característica de projeto, não defeito."
+    },
+    {
+      "titulo": "Distância administrativa e a tabela do BGP",
+      "icone": "layers",
+      "texto": "No Cisco IOS, rota eBGP tem AD 20 e rota iBGP tem AD 200. O 200 é deliberadamente pior que qualquer IGP: uma rota interna aprendida por iBGP não deve ganhar da rota que o IGP já conhece. A tabela BGP (show ip bgp) não é a tabela de roteamento — só o melhor caminho de cada prefixo é instalado na RIB, marcado com '>'.",
+      "destaque": "Rota que aparece em 'show ip bgp' mas não em 'show ip route' quase sempre tem NEXT_HOP inalcançável ou perdeu a seleção de melhor rota."
+    },
+    {
+      "titulo": "Direção do tráfego: quem você controla de verdade",
+      "icone": "compare_arrows",
+      "texto": "Atributo local (Weight, LOCAL_PREF) decide por onde o SEU tráfego SAI — é controle firme, dentro do seu AS. Para influenciar por onde o tráfego ENTRA você só pode sugerir ao vizinho: AS-path prepend, MED, communities acordadas ou anúncio de prefixo mais específico. A decisão final é sempre do AS remoto.",
+      "destaque": "Regra que evita frustração: saída você manda; entrada você pede."
+    },
+    {
+      "titulo": "NEXT_HOP e a armadilha do iBGP",
+      "icone": "alt_route",
+      "texto": "Ao repassar uma rota por eBGP, o roteador põe a si mesmo como NEXT_HOP. Ao repassar por iBGP, ele preserva o NEXT_HOP original — que costuma ser o IP do roteador do OUTRO AS, um endereço que o interior da sua rede não conhece. O par iBGP recebe a rota, não consegue resolver o next hop e não a instala.",
+      "destaque": "Conserto canônico: 'neighbor <ip> next-hop-self' nas sessões iBGP da borda. O sintoma é rota visível no BGP e ausente na tabela de roteamento."
+    }
+  ],
+  "atributos": [
+    {
+      "nome": "WEIGHT",
+      "tipo": "Proprietário Cisco (não é atributo BGP padrão)",
+      "escopo": "Local ao roteador — nunca é anunciado a ninguém",
+      "preferencia": "Maior vence",
+      "descricao": "Padrão 0 para rota aprendida de vizinho e 32768 para rota originada localmente. É o primeiro critério da seleção, o que o torna o martelo mais pesado — e o mais perigoso, porque só afeta um roteador e some sem aviso quando o tráfego passa por outro."
+    },
+    {
+      "nome": "LOCAL_PREF",
+      "tipo": "Bem conhecido, discricionário",
+      "escopo": "Propagado a todos os pares iBGP do AS; nunca sai em eBGP",
+      "preferencia": "Maior vence",
+      "descricao": "Padrão 100. É a ferramenta correta para dizer a TODO o seu AS por qual saída preferir o tráfego. Uso clássico multi-homed: 200 no link principal, 100 no de backup."
+    },
+    {
+      "nome": "AS_PATH",
+      "tipo": "Bem conhecido, obrigatório",
+      "escopo": "Propagado entre AS; cada eBGP prepende o AS local",
+      "preferencia": "Mais curto vence",
+      "descricao": "Acumula a lista de AS atravessados. Serve à decisão e à prevenção de loop: o roteador descarta rota cujo AS_PATH já contenha o próprio ASN. Prepend artificial (repetir o próprio ASN) é a forma mais comum de tornar um caminho menos atraente para quem está de fora."
+    },
+    {
+      "nome": "ORIGIN",
+      "tipo": "Bem conhecido, obrigatório",
+      "escopo": "Propagado entre AS",
+      "preferencia": "IGP (i) melhor que EGP (e), melhor que Incomplete (?)",
+      "descricao": "Diz como a rota entrou no BGP: 'network' gera i, redistribuição de IGP gera ?. Critério de desempate raramente ajustado à mão, mas explica por que uma rota redistribuída perde de uma anunciada com 'network'."
+    },
+    {
+      "nome": "MED (MULTI_EXIT_DISC)",
+      "tipo": "Opcional, não transitivo",
+      "escopo": "Anunciado ao AS vizinho; não é repassado adiante por ele",
+      "preferencia": "Menor vence",
+      "descricao": "Sugere ao AS vizinho por qual dos vários enlaces entrar quando existem dois ou mais pontos de interconexão entre os mesmos dois AS. Por padrão o Cisco só compara MED entre caminhos vindos do MESMO AS vizinho — 'bgp always-compare-med' muda isso e precisa ser decisão consciente."
+    },
+    {
+      "nome": "NEXT_HOP",
+      "tipo": "Bem conhecido, obrigatório",
+      "escopo": "Reescrito no eBGP, preservado no iBGP",
+      "preferencia": "Não é critério de preferência — é pré-requisito",
+      "descricao": "Caminho com next hop inalcançável é descartado antes de qualquer comparação de atributo. É a causa número um de 'a rota está no BGP e não entra na tabela'."
+    },
+    {
+      "nome": "COMMUNITY",
+      "tipo": "Opcional, transitivo",
+      "escopo": "Propagado se 'neighbor send-community' estiver ligado",
+      "preferencia": "Não decide sozinho — dispara política",
+      "descricao": "Etiqueta de 32 bits no formato ASN:valor usada para pedir tratamento ao vizinho (não exportar, prepend em tal região, blackhole). Comunidades bem conhecidas: NO_EXPORT, NO_ADVERTISE, LOCAL_AS e a BLACKHOLE 65535:666 da RFC 7999."
+    },
+    {
+      "nome": "ORIGINATOR_ID e CLUSTER_LIST",
+      "tipo": "Opcional, não transitivo",
+      "escopo": "Interno ao AS, criado por route reflector",
+      "preferencia": "CLUSTER_LIST mais curta vence (critério tardio)",
+      "descricao": "Substituem o papel anti-loop do AS_PATH dentro do AS quando há route reflector: o refletor marca quem originou e por quais clusters a rota passou, e descarta o que volta."
+    }
+  ],
+  "selecao_melhor_rota": [
+    {
+      "ordem": 0,
+      "criterio": "NEXT_HOP alcançável",
+      "regra": "Descarta o caminho cujo next hop não resolve na tabela de roteamento",
+      "observacao": "Pré-requisito, não desempate. Ignorar isto faz perder horas comparando atributos de um caminho que sequer entrou na disputa."
+    },
+    {
+      "ordem": 1,
+      "criterio": "WEIGHT mais alto",
+      "regra": "Proprietário Cisco, só vale neste roteador",
+      "observacao": "Padrão 0; rota originada localmente nasce com 32768."
+    },
+    {
+      "ordem": 2,
+      "criterio": "LOCAL_PREF mais alto",
+      "regra": "Vale para todo o AS, propagado por iBGP",
+      "observacao": "Padrão 100. É aqui que se define a saída preferencial do AS."
+    },
+    {
+      "ordem": 3,
+      "criterio": "Rota originada localmente",
+      "regra": "Originada localmente (network, redistribute ou aggregate) ganha da aprendida de vizinho; entre as locais, network e redistribute ganham do aggregate-address",
+      "observacao": "Prefere o que este AS anuncia por conta própria."
+    },
+    {
+      "ordem": 4,
+      "criterio": "AS_PATH mais curto",
+      "regra": "Conta entradas do caminho, não roteadores",
+      "observacao": "AS_SET conta como 1 e um bloco confederado não conta. É o degrau que o prepend ataca."
+    },
+    {
+      "ordem": 5,
+      "criterio": "ORIGIN mais baixo",
+      "regra": "i (IGP) < e (EGP) < ? (Incomplete)",
+      "observacao": "Explica a desvantagem silenciosa de rota redistribuída."
+    },
+    {
+      "ordem": 6,
+      "criterio": "MED mais baixo",
+      "regra": "Só entre caminhos do mesmo AS vizinho, por padrão",
+      "observacao": "'bgp always-compare-med' amplia a comparação e pode gerar decisão instável se os AS usarem escalas diferentes."
+    },
+    {
+      "ordem": 7,
+      "criterio": "eBGP antes de iBGP",
+      "regra": "Caminho externo prevalece sobre o aprendido dentro do AS",
+      "observacao": "Coerente com a AD 20 × 200."
+    },
+    {
+      "ordem": 8,
+      "criterio": "Menor métrica IGP até o NEXT_HOP",
+      "regra": "Sai pela porta mais perto, medida pelo IGP",
+      "observacao": "É o 'hot potato routing': entregar o tráfego ao vizinho o quanto antes."
+    },
+    {
+      "ordem": 9,
+      "criterio": "Multipath, se habilitado",
+      "regra": "Com 'maximum-paths', instala vários caminhos equivalentes",
+      "observacao": "Exige atributos compatíveis até este ponto; 'as-path multipath-relax' afrouxa a exigência de mesmo AS_PATH."
+    },
+    {
+      "ordem": 10,
+      "criterio": "Caminho eBGP mais antigo",
+      "regra": "Entre dois externos, prefere o recebido primeiro",
+      "observacao": "Critério de estabilidade: evita trocar de melhor rota a cada oscilação."
+    },
+    {
+      "ordem": 11,
+      "criterio": "Menor Router ID do vizinho",
+      "regra": "Desempate determinístico pelo BGP identifier",
+      "observacao": "Com route reflector, compara-se antes o ORIGINATOR_ID."
+    },
+    {
+      "ordem": 12,
+      "criterio": "Menor CLUSTER_LIST",
+      "regra": "Menos refletores atravessados vence",
+      "observacao": "Só existe em topologia com route reflector."
+    },
+    {
+      "ordem": 13,
+      "criterio": "Menor endereço IP do vizinho",
+      "regra": "Último desempate possível",
+      "observacao": "Se chegou aqui, os caminhos eram equivalentes em tudo o mais."
+    }
+  ],
+  "estados": [
+    {
+      "ordem": 1,
+      "estado": "Idle",
+      "significado": "Recusa conexões; espera o evento de início e uma rota para o vizinho.",
+      "trava_comum": "Preso em Idle: vizinho administrativamente em shutdown, ou não existe rota para o IP configurado."
+    },
+    {
+      "ordem": 2,
+      "estado": "Connect",
+      "significado": "Aguardando o three-way handshake TCP na porta 179 terminar.",
+      "trava_comum": "Passagem rápida. Se o TCP falhar, cai para Active e reinicia o ConnectRetry."
+    },
+    {
+      "ordem": 3,
+      "estado": "Active",
+      "significado": "Escutando e aceitando uma conexão TCP do vizinho depois que a tentativa ativa falhou; quando o ConnectRetry expira, volta a Connect e tenta de novo.",
+      "trava_comum": "Oscilar entre Active e Connect é o sintoma clássico de porta 179 bloqueada por ACL/firewall, IP de vizinho errado, update-source incorreto ou senha MD5 divergente — com a senha errada o TCP é descartado antes de abrir (no Cisco, log %TCP-6-BADAUTH)."
+    },
+    {
+      "ordem": 4,
+      "estado": "OpenSent",
+      "significado": "OPEN enviado; espera o OPEN do outro lado.",
+      "trava_comum": "ASN remoto divergente do 'remote-as' configurado gera NOTIFICATION e derruba a sessão aqui."
+    },
+    {
+      "ordem": 5,
+      "estado": "OpenConfirm",
+      "significado": "OPEN aceito; espera o primeiro KEEPALIVE.",
+      "trava_comum": "Se o KEEPALIVE não chega antes do Hold Time, a sessão cai com NOTIFICATION (Hold Timer Expired). Senha MD5 errada não chega até aqui: o TCP nem abre."
+    },
+    {
+      "ordem": 6,
+      "estado": "Established",
+      "significado": "Sessão de pé; UPDATE, KEEPALIVE e ROUTE-REFRESH podem trafegar.",
+      "trava_comum": "Established sem prefixo recebido não é sucesso: quase sempre é filtro de entrada ou ausência de 'network' do outro lado."
+    }
+  ],
+  "mensagens": [
+    {
+      "tipo": "OPEN",
+      "codigo": 1,
+      "quando": "Primeira mensagem após o TCP subir",
+      "conteudo": "Versão, ASN local, Hold Time proposto, BGP identifier e capacidades negociadas (multiprotocolo, route refresh, ASN de 32 bits, graceful restart)."
+    },
+    {
+      "tipo": "UPDATE",
+      "codigo": 2,
+      "quando": "Sempre que houver mudança de alcançabilidade",
+      "conteudo": "Prefixos retirados, atributos de caminho e o NLRI anunciado. Uma UPDATE carrega vários prefixos que compartilham os mesmos atributos."
+    },
+    {
+      "tipo": "NOTIFICATION",
+      "codigo": 3,
+      "quando": "Ao detectar erro",
+      "conteudo": "Código e subcódigo do erro. Sempre encerra a sessão — é a mensagem a procurar no log quando um peer cai sozinho."
+    },
+    {
+      "tipo": "KEEPALIVE",
+      "codigo": 4,
+      "quando": "Periodicamente, a 1/3 do Hold Time",
+      "conteudo": "Apenas o cabeçalho de 19 bytes. Sua ausência dentro do Hold Time derruba a sessão."
+    },
+    {
+      "tipo": "ROUTE-REFRESH",
+      "codigo": 5,
+      "quando": "Ao mudar política de entrada (RFC 2918)",
+      "conteudo": "Pede ao vizinho o reenvio das rotas, permitindo reaplicar filtros sem derrubar a sessão nem gastar memória com soft-reconfiguration."
+    }
+  ],
+  "temporizadores": [
+    {
+      "nome": "Keepalive",
+      "padrao": "60 s (Cisco)",
+      "funcao": "Intervalo de envio do KEEPALIVE; convenção é 1/3 do Hold Time."
+    },
+    {
+      "nome": "Hold Time",
+      "padrao": "180 s (Cisco)",
+      "funcao": "Tempo sem receber nada do vizinho antes de declarar a sessão morta. Os dois lados negociam o MENOR valor proposto no OPEN; 0 desliga os keepalives."
+    },
+    {
+      "nome": "ConnectRetry",
+      "padrao": "120 s",
+      "funcao": "Espera antes de nova tentativa de TCP depois de uma falha."
+    },
+    {
+      "nome": "Advertisement Interval",
+      "padrao": "30 s em eBGP, 0 s em iBGP",
+      "funcao": "Agrupa atualizações do mesmo prefixo para não inundar o vizinho a cada oscilação."
+    },
+    {
+      "nome": "BGP Scan / Next-hop tracking",
+      "padrao": "60 s (scan) ou por evento",
+      "funcao": "Revalida a alcançabilidade dos next hops. Com next-hop tracking a reação é por evento e a convergência cai de dezenas de segundos para poucos."
+    }
+  ],
+  "topologias": [
+    {
+      "nome": "Full-mesh iBGP",
+      "problema": "O split horizon do iBGP obriga cada roteador a falar com todos os outros: n(n-1)/2 sessões. Com 20 roteadores são 190 sessões para manter.",
+      "solucao": "Aceitável só em AS pequeno. Acima de uma dezena de roteadores, migrar para route reflector.",
+      "atencao": "Malha incompleta produz buraco negro silencioso: parte do AS simplesmente não conhece o prefixo."
+    },
+    {
+      "nome": "Route Reflector (RFC 4456)",
+      "problema": "Como repassar rotas entre pares iBGP sem violar o split horizon nem criar loop.",
+      "solucao": "O refletor repassa rotas entre clientes e marca ORIGINATOR_ID e CLUSTER_LIST para detectar retorno. Cliente comum não precisa de configuração especial.",
+      "atencao": "O refletor anuncia apenas o SEU melhor caminho — a visão dos clientes fica mais pobre que a de uma malha completa. Redundância exige dois refletores por cluster."
+    },
+    {
+      "nome": "Confederação (RFC 5065)",
+      "problema": "AS muito grande, com times ou regiões que precisam de autonomia interna.",
+      "solucao": "Divide o AS em sub-AS privados que conversam entre si como se fosse eBGP, usando AS_CONFED_SEQUENCE. Do lado de fora, tudo continua sendo um único ASN.",
+      "atencao": "Mais complexo de operar que route reflector; hoje é minoria. Blocos confederados não contam no comprimento do AS_PATH."
+    }
+  ],
+  "protecoes": [
+    {
+      "nome": "Filtro de prefixo nas duas direções",
+      "ameaca": "Vazamento de rota: reanunciar para a operadora B o que se aprendeu da operadora A transforma sua borda em trânsito e derruba seu link.",
+      "aplicacao": "Negar por padrão e permitir explicitamente. Na saída, anunciar apenas os prefixos próprios; na entrada, recusar bogons, RFC 1918, default e prefixos mais específicos que /24 em IPv4.",
+      "comando": "ip prefix-list MEUS-BLOCOS seq 5 permit 203.0.113.0/24\nrouter bgp 65001\n neighbor 198.51.100.1 prefix-list MEUS-BLOCOS out"
+    },
+    {
+      "nome": "maximum-prefix",
+      "ameaca": "Vizinho mal configurado despeja a tabela global inteira e estoura a memória do seu roteador.",
+      "aplicacao": "Definir um teto coerente com o que aquele vizinho deveria anunciar, com aviso percentual antes do corte.",
+      "comando": "router bgp 65001\n neighbor 198.51.100.1 maximum-prefix 500 80 restart 15"
+    },
+    {
+      "nome": "RPKI / ROV",
+      "ameaca": "Hijack: outro AS anuncia o seu prefixo e sequestra o tráfego.",
+      "aplicacao": "Publicar ROA para os seus prefixos e validar na entrada, descartando rotas com estado Invalid. Estado NotFound (prefixo sem ROA) ainda é parcela grande das rotas e não deve ser descartado sem análise.",
+      "comando": "router bgp 65001\n bgp rpki server tcp 10.0.0.9 port 3323 refresh 600\n neighbor 198.51.100.1 route-map RPKI-ENTRADA in\n!\nroute-map RPKI-ENTRADA deny 10\n match rpki invalid\nroute-map RPKI-ENTRADA permit 20"
+    },
+    {
+      "nome": "Autenticação da sessão (MD5 / TCP-AO) e GTSM",
+      "ameaca": "Injeção de pacote e reset de sessão TCP por terceiro.",
+      "aplicacao": "Chave na sessão e, para eBGP diretamente conectado, exigir TTL alto na chegada (GTSM, RFC 5082) — pacote forjado de longe chega com TTL baixo e é descartado.",
+      "comando": "router bgp 65001\n ! senha em texto: sem o 7, que é para colar uma senha já cifrada em tipo 7\n neighbor 198.51.100.1 password <segredo>\n neighbor 198.51.100.1 ttl-security hops 1"
+    },
+    {
+      "nome": "Dampening com parcimônia",
+      "ameaca": "Route flapping consumindo CPU e propagando instabilidade.",
+      "aplicacao": "Penaliza prefixo que oscila. Parâmetros agressivos punem prefixo legítimo por tempo demais. A recomendação antiga (RIPE-378, 2006) era desligar; a atual (RIPE-580, 2013, e RFC 7196) é usar com limiar de supressão de pelo menos 6000 — o padrão 2000 é agressivo demais.",
+      "comando": "router bgp 65001\n bgp dampening 15 750 6000 60"
+    },
+    {
+      "nome": "Blackhole por community (RFC 7999)",
+      "ameaca": "Ataque volumétrico saturando o enlace antes do seu equipamento.",
+      "aplicacao": "Anunciar o /32 atacado ao trânsito com a community 65535:666 para que ele descarte o tráfego na rede dele. Descarta o alvo para salvar o resto — é decisão consciente.",
+      "comando": "route-map BLACKHOLE permit 10\n set community 65535:666\nrouter bgp 65001\n neighbor 198.51.100.1 send-community"
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "1. Sessão eBGP entre dois AS",
+      "cenario": "R1 (AS 65001, 198.51.100.1) conectado a R2 (AS 65002, 198.51.100.2). Cada um anuncia o próprio bloco.",
+      "comandos": "R1(config)# router bgp 65001\nR1(config-router)# bgp router-id 1.1.1.1\nR1(config-router)# neighbor 198.51.100.2 remote-as 65002\nR1(config-router)# network 203.0.113.0 mask 255.255.255.0\nR1(config-router)# no auto-summary",
+      "explicacao": "O 'network' do BGP não liga o protocolo na interface como no OSPF — ele só anuncia um prefixo que JÁ existe na tabela de roteamento, e com a máscara exata. Máscara divergente é o erro mais comum: o prefixo simplesmente não aparece."
+    },
+    {
+      "titulo": "2. iBGP e o next-hop-self",
+      "cenario": "R1 é a borda; R3 é interno, no mesmo AS 65001, alcançado por OSPF.",
+      "comandos": "R1(config-router)# neighbor 10.0.0.3 remote-as 65001\nR1(config-router)# neighbor 10.0.0.3 update-source Loopback0\nR1(config-router)# neighbor 10.0.0.3 next-hop-self",
+      "explicacao": "update-source Loopback0 mantém a sessão de pé enquanto qualquer caminho interno existir. next-hop-self reescreve o NEXT_HOP para o próprio R1; sem ele, R3 recebe as rotas com o next hop de R2 (outro AS), não resolve e não instala nada."
+    },
+    {
+      "titulo": "3. Escolher a saída (LOCAL_PREF) e pedir a entrada (prepend)",
+      "cenario": "AS 65001 multi-homed: link A é o principal, link B é backup.",
+      "comandos": "route-map PREFERIR-A permit 10\n set local-preference 200\nroute-map SAIDA-B permit 10\n set as-path prepend 65001 65001 65001\nrouter bgp 65001\n neighbor <A> route-map PREFERIR-A in\n neighbor <B> route-map SAIDA-B out",
+      "explicacao": "LOCAL_PREF entra na direção IN e comanda a saída de todo o AS. O prepend vai na direção OUT e apenas torna o caminho B mais longo aos olhos dos outros — quem decide a entrada continua sendo o AS remoto."
+    },
+    {
+      "titulo": "4. Fechar a borda antes de subir a sessão",
+      "cenario": "Antes de ativar o vizinho de trânsito, aplicar teto e filtro.",
+      "comandos": "router bgp 65001\n neighbor 198.51.100.2 maximum-prefix 1000 90 warning-only\n neighbor 198.51.100.2 prefix-list MEUS-BLOCOS out\n neighbor 198.51.100.2 soft-reconfiguration inbound",
+      "explicacao": "soft-reconfiguration guarda as rotas recebidas antes do filtro e permite ver o que o vizinho realmente mandou — custa memória; onde houver route refresh negociado, prefira 'clear ip bgp <ip> soft in'."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Vizinho oscilando entre Active e Idle",
+      "causa_provavel": "TCP 179 bloqueado, IP de vizinho errado, update-source ausente ou ASN divergente.",
+      "comando": "show ip bgp summary\nshow ip bgp neighbors 198.51.100.2\ndebug ip bgp events",
+      "leitura": "Na coluna State/PfxRcd do summary, texto em vez de número significa sessão fora de Established. Em 'neighbors', confira 'remote AS' e 'Local host/Foreign host' — o par de IPs revela update-source errado."
+    },
+    {
+      "sintoma": "Sessão Established, mas nenhum prefixo recebido",
+      "causa_provavel": "Filtro de entrada seu, ou ausência de 'network'/filtro de saída do outro lado.",
+      "comando": "show ip bgp neighbors 198.51.100.2 received-routes\nshow ip bgp neighbors 198.51.100.2 routes",
+      "leitura": "'received-routes' exige soft-reconfiguration inbound (o route refresh não guarda as rotas recebidas antes do filtro). Se received traz rotas e 'routes' vem vazio, o descarte é seu — o filtro de entrada é o culpado."
+    },
+    {
+      "sintoma": "Prefixo aparece em 'show ip bgp' e não entra em 'show ip route'",
+      "causa_provavel": "NEXT_HOP inalcançável — em geral falta next-hop-self no iBGP.",
+      "comando": "show ip bgp 203.0.113.0\nshow ip route <next-hop>",
+      "leitura": "Sem o '>' antes da linha, o caminho não foi eleito. A marca '(inaccessible)' no next hop fecha o diagnóstico."
+    },
+    {
+      "sintoma": "O tráfego sai pelo link errado",
+      "causa_provavel": "Ordem de seleção: alguém deixou Weight ou LOCAL_PREF ajustado em um roteador só.",
+      "comando": "show ip bgp 203.0.113.0\nshow ip bgp neighbors 198.51.100.2 advertised-routes",
+      "leitura": "Compare os caminhos linha a linha na ordem oficial de decisão. Weight só existe localmente: um valor ajustado em um roteador explica por que a decisão difere entre equipamentos do mesmo AS."
+    },
+    {
+      "sintoma": "Sessão derrubada sozinha com log %BGP-3-MAXPFXEXCEED (o %BGP-4-MAXPFX é só o aviso de limiar)",
+      "causa_provavel": "Vizinho anunciou mais prefixos que o teto configurado.",
+      "comando": "show ip bgp summary\nshow logging | include BGP",
+      "leitura": "O teto funcionou — ele existe para proteger a memória. Verifique se o vizinho vazou tabela antes de simplesmente aumentar o limite."
+    },
+    {
+      "sintoma": "Convergência lenta após queda de enlace",
+      "causa_provavel": "Detecção dependendo apenas do Hold Time de 180 s.",
+      "comando": "show ip bgp neighbors 198.51.100.2 | include hold time\nshow bfd neighbors",
+      "leitura": "Hold Time é detecção de último recurso. Para queda em subsegundos, use BFD associado ao vizinho; para o interior, next-hop tracking reage por evento em vez de por varredura."
+    }
+  ],
+  "diagrama": {
+    "titulo": "Estabelecimento da sessão BGP-4 e troca de rotas entre R1 e R2",
+    "definicao": "sequenceDiagram\n    participant R1 as Roteador R1\n    participant R2 as Roteador R2\n    Note over R1,R2: Estado Idle: sessão desativada, aguardando início\n    Note over R1: Estado Connect: R1 inicia a conexão TCP na porta 179\n    R1->>R2: Abertura da conexão TCP (porta 179)\n    R2-->>R1: TCP estabelecido (three-way handshake concluído)\n    Note over R1,R2: Estado OpenSent: cada lado envia sua mensagem OPEN\n    R1->>R2: OPEN (versão, ASN, Hold Time, BGP Identifier)\n    R2->>R1: OPEN (versão, ASN, Hold Time, BGP Identifier)\n    Note over R1,R2: Estado OpenConfirm: parâmetros negociados e aceitos\n    R1->>R2: KEEPALIVE (confirma o OPEN recebido)\n    R2->>R1: KEEPALIVE (confirma o OPEN recebido)\n    Note over R1,R2: Estado Established: sessão BGP ativa e operacional\n    R1->>R2: UPDATE (anuncia prefixos, ex.: 200.10.0.0/16)\n    R2->>R1: UPDATE (anuncia prefixos, ex.: 198.51.100.0/24)\n    Note over R1,R2: Tabelas de roteamento atualizadas em ambos os lados\n    loop A cada intervalo (menor que o Hold Time)\n        R1->>R2: KEEPALIVE (mantém a sessão viva)\n        R2->>R1: KEEPALIVE (mantém a sessão viva)\n    end\n    Note over R1,R2: Se o Hold Time expirar sem KEEPALIVE, envia-se NOTIFICATION e a sessão volta a Idle",
+    "legenda": "Fluxo temporal da máquina de estados do BGP-4 (RFC 4271): partindo de Idle, os roteadores R1 e R2 abrem a conexão TCP na porta 179 (Connect), negociam parâmetros com mensagens OPEN (OpenSent), confirmam com KEEPALIVE (OpenConfirm) e atingem o estado Established. A partir daí trocam prefixos com mensagens UPDATE e mantêm a sessão viva com KEEPALIVE periódicos, sempre enviados antes de o Hold Time expirar; se ele expirar, uma NOTIFICATION derruba a sessão de volta a Idle."
+  },
+  "cabecalho": {
+    "titulo": "Cabeçalho comum da mensagem BGP-4 (19 bytes / 152 bits)",
+    "nota": "Todas as mensagens BGP começam por este cabeçalho fixo. Soma total: 128 + 16 + 8 = 152 bits = 19 bytes. Marker: 128 bits (16 bytes) historicamente usados para sincronização e autenticação, hoje preenchidos com todos os bits em 1. Length: 16 bits com o tamanho total da mensagem em bytes (mínimo 19, máximo 4096), incluindo o próprio cabeçalho. Type: 8 bits que identificam o tipo da mensagem: 1 = OPEN, 2 = UPDATE, 3 = NOTIFICATION, 4 = KEEPALIVE. Todo o conjunto roda sobre TCP na porta 179.",
+    "campos": [
+      {
+        "nome": "Marker",
+        "bits": 128,
+        "descricao": "Campo de sincronização de 16 bytes; na prática todos os bits ficam em 1. Serve para o receptor detectar perda de sincronismo no fluxo TCP.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Length",
+        "bits": 16,
+        "descricao": "Comprimento total da mensagem em bytes, incluindo este cabeçalho. Valor entre 19 e 4096.",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "Type",
+        "bits": 8,
+        "descricao": "Tipo da mensagem: 1 = OPEN, 2 = UPDATE, 3 = NOTIFICATION, 4 = KEEPALIVE.",
+        "cor": "#0891b2"
+      }
+    ]
+  }
+}

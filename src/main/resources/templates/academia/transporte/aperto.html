@@ -1,0 +1,182 @@
+{! Lição Transporte · Aperto de mão e sequência. Ver (SYN, SYN-ACK, ACK e uma troca de dados),
+   Mexer (ISN e bytes de cada lado, com os segmentos ao vivo) e Provar (seq e ack, com a correção
+   nomeando o engano). Contas no navegador (R10). Variáveis: nivel, licao, proxima, activeMainMenu. !}
+{#include shared/base.html}
+{#title}Aperto de mão e sequência — Academia | Framework de Redes A&D{/title}
+{#description}Lição do aperto de mão em três vias do TCP: siga SYN, SYN-ACK e ACK, escolha os números iniciais e os bytes de cada lado e veja seq e ack de cada segmento.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/academia/core/css/academia.css?v=20261022">
+<link rel="stylesheet" href="/academia/transporte/css/transporte.css?v=20261001b">
+{/extraHead}
+{#content}
+<div class="container py-5 acad-pagina" data-acad-licao="{licao.id}">
+    {#include shared/main_menu.html activeMainMenu='academia' /}
+    {#include academia/core/cabecalho-licao.html /}
+
+    <div class="acad-etapas">
+        <section class="acad-etapa acad-etapa-larga acad-leitura" id="ler" aria-labelledby="ler-titulo">
+            <h2 class="acad-etapa-titulo" id="ler-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
+                Entenda
+            </h2>
+            <p class="acad-explica">Leia primeiro; depois siga os segmentos do aperto de mão na animação e mude os números no Mexer.</p>
+            <div class="acad-leitura-texto">
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
+                    <p>O <strong>TCP</strong> entrega os dados completos e na ordem, mesmo que a rede perca ou embaralhe
+                    pacotes. Para isso ele numera cada byte enviado e espera confirmação. Antes de mandar o primeiro dado, os
+                    dois lados combinam o número por onde cada um começa: é o <strong>aperto de mão em três vias</strong>.</p>
+                    <p>O <strong>UDP</strong> não faz nada disso: não abre conexão, não numera e não confirma. É mais leve e mais
+                    rápido, e por isso é usado onde atraso pesa mais que perda — consulta DNS, chamada de voz, vídeo ao vivo e
+                    jogos.</p>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
+                    <ol>
+                        <li>O cliente envia <span class="acad-valor" translate="no">SYN</span> com o seu número inicial, <span class="acad-valor" translate="no">seq = x</span>.</li>
+                        <li>O servidor responde <span class="acad-valor" translate="no">SYN-ACK</span> com o número dele, <span class="acad-valor" translate="no">seq = y</span>, e confirma o do cliente com
+                            <span class="acad-valor" translate="no">ack = x + 1</span> — o SYN <strong>gasta</strong> um número.</li>
+                        <li>O cliente fecha com <span class="acad-valor" translate="no">ACK</span>: <span class="acad-valor" translate="no">seq = x + 1</span>, <span class="acad-valor" translate="no">ack = y + 1</span>.</li>
+                    </ol>
+                    <p>Depois disso, cada byte de dados anda a sequência em 1, e o <span class="acad-valor" translate="no">ack</span> sempre aponta o
+                    <strong>próximo byte esperado</strong>. Exemplo: com <span class="acad-valor" translate="no">x = 100</span>, o cliente manda 50 bytes, numerados de
+                    <span class="acad-valor" translate="no">101</span> a <span class="acad-valor" translate="no">150</span>; o servidor confirma com <span class="acad-valor" translate="no">ack 151</span>.</p>
+                    <p>Os números iniciais são sorteados, não começam em zero: assim fica difícil um segmento velho, de outra
+                    conexão, ou um segmento forjado ser aceito. O número de sequência tem 32 bits e dá a volta: depois de
+                    <span class="acad-valor" translate="no">4294967295</span> vem <span class="acad-valor" translate="no">0</span>.</p>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
+                    <ul>
+                        <li>Esquecer o <span class="acad-valor" translate="no">+ 1</span> do SYN no primeiro ack.</li>
+                        <li>Confirmar o último byte recebido em vez do próximo esperado (um a menos).</li>
+                        <li>Usar o número do próprio lado: o ack confirma o que veio do <strong>outro</strong> lado.</li>
+                    </ul>
+                </section>
+                <section class="acad-leitura-bloco">
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
+                    <ul>
+                        <li><span class="acad-valor" translate="no">SYN</span> e <span class="acad-valor" translate="no">FIN</span> gastam 1 número; <span class="acad-valor" translate="no">ACK</span> sozinho não gasta; dado gasta 1 por byte.</li>
+                        <li><span class="acad-valor" translate="no">ack</span> = próximo byte esperado.</li>
+                    </ul>
+                </section>
+            </div>
+        </section>
+
+        <section class="acad-etapa" id="ver" aria-labelledby="ver-titulo">
+            <h2 class="acad-etapa-titulo" id="ver-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span>
+                Ver
+            </h2>
+            <p class="acad-explica">
+                O TCP numera cada byte. Antes de mandar dados, os dois lados trocam o número inicial
+                (<span class="acad-valor" translate="no">ISN</span>) em três segmentos. O
+                <span class="acad-valor" translate="no">SYN</span> gasta um número, e o
+                <span class="acad-valor" translate="no">ack</span> sempre aponta o próximo byte esperado.
+                O UDP pula tudo isso: manda direto, sem número de sequência nem confirmação.
+            </p>
+            <div id="ver-animacao">
+                <div class="acad-lados" aria-hidden="true"><span>Cliente</span><span>Servidor</span></div>
+                <ol class="acad-setas" id="ver-setas" aria-label="Os segmentos do exemplo"></ol>
+                {#include academia/core/controles-animacao.html /}
+            </div>
+        </section>
+
+        <section class="acad-etapa" id="mexer" aria-labelledby="mexer-titulo">
+            <h2 class="acad-etapa-titulo" id="mexer-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">touch_app</span>
+                Mexer
+            </h2>
+            <div class="row g-3">
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="mexer-isn-cliente">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">computer</span>
+                        ISN do cliente
+                    </label>
+                    <input id="mexer-isn-cliente" aria-describedby="mexer-isn-cliente-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="16" value="100"
+                           title="Número inicial do cliente, de 0 a 4294967295">
+                    <span class="acad-eco" id="mexer-isn-cliente-eco"></span>
+                </div>
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="mexer-isn-servidor">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span>
+                        ISN do servidor
+                    </label>
+                    <input id="mexer-isn-servidor" aria-describedby="mexer-isn-servidor-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="16" value="300"
+                           title="Número inicial do servidor, de 0 a 4294967295">
+                    <span class="acad-eco" id="mexer-isn-servidor-eco"></span>
+                </div>
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="mexer-bytes-cliente">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">upload</span>
+                        Bytes que o cliente envia
+                    </label>
+                    <input id="mexer-bytes-cliente" aria-describedby="mexer-bytes-cliente-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="8" value="50"
+                           title="Dados do cliente depois do aperto de mão; 0 para nenhum">
+                    <span class="acad-eco" id="mexer-bytes-cliente-eco"></span>
+                </div>
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="mexer-bytes-servidor">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">download</span>
+                        Bytes que o servidor responde
+                    </label>
+                    <input id="mexer-bytes-servidor" aria-describedby="mexer-bytes-servidor-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="8" value="20"
+                           title="Dados do servidor depois dos dados do cliente; 0 para nenhum">
+                    <span class="acad-eco" id="mexer-bytes-servidor-eco"></span>
+                </div>
+            </div>
+            <p class="acad-explica mt-2" id="mexer-nota" aria-live="polite"></p>
+            <div class="acad-lados" aria-hidden="true"><span>Cliente</span><span>Servidor</span></div>
+            <ol class="acad-setas" id="mexer-setas" aria-label="Os segmentos com os seus números"></ol>
+        </section>
+
+        <section class="acad-etapa acad-etapa-larga" id="provar" aria-labelledby="provar-titulo">
+            <h2 class="acad-etapa-titulo" id="provar-titulo">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span>
+                Provar
+            </h2>
+            <p class="acad-pergunta" id="provar-pergunta"></p>
+            <form id="provar-form" class="row g-3 align-items-end" novalidate>
+                <div class="col-12 col-md-6 acad-campo">
+                    <label for="provar-resposta">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">edit</span>
+                        <span id="provar-rotulo">Sua resposta</span>
+                    </label>
+                    <input id="provar-resposta" aria-describedby="provar-eco" class="form-control" inputmode="numeric" autocomplete="off"
+                           data-history="off" maxlength="16" title="Escreva o número; só algarismos">
+                </div>
+                <div class="col-12 col-md-6 d-flex flex-wrap gap-2 align-items-center">
+                    <button type="submit" class="aed-btn aed-btn-teal" title="Confere a sua resposta">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">check_circle</span>
+                        <span>Conferir</span>
+                    </button>
+                    <button type="button" class="aed-btn aed-btn-neutral" id="provar-outra"
+                            title="Troca por outra pergunta, sem contar tentativa">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">casino</span>
+                        <span>Outra pergunta</span>
+                    </button>
+                </div>
+            </form>
+            <span class="acad-eco d-block mt-1" id="provar-eco"></span>
+            <div class="acad-feedback" id="provar-feedback" aria-live="polite"></div>
+            <div class="acad-placar" id="provar-placar"></div>
+        </section>
+    </div>
+
+    {#include academia/core/rodape-licao.html /}
+</div>
+{/content}
+{#extraScripts}
+<script src="/academia/core/js/normalizador.js?v=20261002b"></script>
+<script src="/academia/core/js/motor.js?v=20261002b"></script>
+<script src="/academia/core/js/progresso.js?v=20261002b"></script>
+<script src="/academia/core/js/niveis.js?v=20261002b"></script>
+<script src="/academia/core/js/sinais.js?v=20261002b"></script>
+<script src="/academia/transporte/js/contas-transporte.js?v=20261002b"></script>
+<script src="/academia/transporte/js/aperto.js?v=20261002b"></script>
+{/extraScripts}
+{/include}

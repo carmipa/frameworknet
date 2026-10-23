@@ -1,0 +1,118 @@
+/* Estilos da página inicial (landing). Carregado apenas em templates/home/index.html. */
+
+.home-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 42%) 1fr;
+    gap: 2rem 5%;
+    align-items: center;
+    padding: 4% 5%;
+    margin-bottom: 4%;
+}
+
+.home-hero-banner {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--aed-radius-card, 1rem);
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.08));
+}
+
+.home-hero-title {
+    font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
+    font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+    line-height: 1.12;
+    margin: 0.4rem 0 0.7rem;
+    color: var(--aed-text, #eef2f8);
+}
+
+.home-hero-sub {
+    color: var(--aed-text-secondary, #8b97ad);
+    max-width: 52ch;
+    margin-bottom: 1.1rem;
+}
+
+.home-hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.3rem;
+}
+
+.home-chip {
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+    font-size: .75rem;
+    padding: 0.28rem 0.7rem;
+    border-radius: 62.4375rem;
+    border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.1));
+    color: var(--aed-teal, #2dd4bf);
+    background: rgba(45, 212, 191, 0.08);
+    white-space: nowrap;
+}
+
+.home-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1.25rem 3%;
+}
+
+.home-module {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 5% 6%;
+    text-decoration: none;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.home-module:hover,
+.home-module:focus-visible {
+    transform: translateY(-.1875rem);
+    border-color: rgba(45, 212, 191, 0.5);
+    box-shadow: 0 0.5rem 1.6rem rgba(2, 6, 12, 0.55);
+}
+
+.home-module-icon {
+    font-size: 2rem;
+    color: var(--aed-teal, #2dd4bf);
+}
+
+.home-module-title {
+    font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
+    font-size: 1.05rem;
+    margin: 0;
+    color: var(--aed-text, #eef2f8);
+}
+
+.home-module-desc {
+    font-size: 0.85rem;
+    margin: 0;
+    color: var(--aed-text-secondary, #8b97ad);
+}
+
+.home-module code {
+    color: var(--aed-teal, #2dd4bf);
+    font-family: var(--aed-font-mono, "JetBrains Mono", monospace);
+}
+
+@media (max-width: 48em) {
+    .home-hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .home-hero-banner {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .home-hero-chips,
+    .home-hero-actions {
+        justify-content: center;
+    }
+}

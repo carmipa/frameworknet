@@ -1,0 +1,62 @@
+{#include shared/base.html}
+{#title}Documentação | Framework de Redes A&D{/title}
+{#description}Documentação técnica do Framework de Redes: arquitetura, módulos, rotas, decisões de projeto e como executar o sistema localmente ou em contêiner.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/documentacao/css/documentacao.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='documentacao' /}
+    <div class="text-center mb-4">
+        <span class="aed-eyebrow aed-eyebrow-teal">Documentação técnica</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Central de Documentação</h1>
+        <p class="text-secondary small mx-auto aed-medida-leitura">
+            Visão arquitetural, documentação da stack e guias do projeto renderizados dinamicamente.
+        </p>
+        <div class="doc-actions mt-3">
+            <span class="doc-meta-pill">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">description</span>
+                {nomeDocumento}
+            </span>
+            <span class="doc-meta-pill">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span>
+                Mermaid
+            </span>
+            <a href="/documentacao" class="aed-btn aed-btn-teal btn-sm"
+               title="Recarregar o documento markdown e re-renderizar diagramas Mermaid"><span class="material-symbols-outlined" translate="no" aria-hidden="true">refresh</span> Atualizar</a>
+        </div>
+    </div>
+
+    {#if erro}
+    <div class="alert alert-danger">{erro}</div>
+    {#else}
+    <div class="doc-layout aed-doc-layout">
+        <aside class="doc-sidebar aed-doc-sidebar aed-card card-tech p-3">
+            <span class="aed-eyebrow">Sumário</span>
+            <div class="small text-secondary fw-semibold mb-2">NAVEGAÇÃO</div>
+            {#if tocGrupos.isEmpty}
+            <div class="small text-secondary">Sem títulos mapeados.</div>
+            {#else}
+            {#for grupo in tocGrupos}
+            <div class="doc-toc-group">{grupo.titulo}</div>
+            {#for secao in grupo.itens}
+            <a href="#{secao.id}" class="doc-toc-link doc-toc-nivel-{secao.tocNivel} doc-toc-group-{secao.tocGrupoCss}">
+                <span class="material-symbols-outlined doc-toc-icon" aria-hidden="true" translate="no">{secao.tocIcone}</span>
+                <span>{secao.tocTitulo}</span>
+            </a>
+            {/for}
+            {/for}
+            {/if}
+        </aside>
+        <section class="doc-content-wrap card-tech p-3">
+            <article class="markdown-doc">{conteudoHtml}</article>
+        </section>
+    </div>
+    {/if}
+</div>
+{/content}
+{#extraScripts}
+<script src="/web/vendor/mermaid-11.17.2/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script src="/web/js/documentacao.js?v=20261022"></script>
+{/extraScripts}
+{/include}

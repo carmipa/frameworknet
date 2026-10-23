@@ -1,0 +1,270 @@
+{#include shared/base.html}
+{#title}Ferramentas de Diagnóstico | Framework de Redes A&D{/title}
+{#description}Simulador didático de ferramentas de diagnóstico de rede: PING e consultas DNS, para entender a saída de cada comando sem depender de um terminal real.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/ferramentasDiagnostico/css/diagnostico.css?v=20261022" />
+{/extraHead}
+{#content}
+
+<div class="container py-4">
+    {#include shared/main_menu.html activeMainMenu=activeMainMenu /}
+
+    <header class="mb-4">
+        <h1 class="aed-title">
+            <span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">troubleshoot</span>
+            Ferramentas de Diagnóstico
+        </h1>
+        <p class="aed-subtitle">
+            Simuladores didáticos de rede: PING e DNS, e as ferramentas do analista —
+            traceroute, ping sweep, varredura de portas e DNS spoofing. Cada resultado vem
+            <strong>dissecado</strong> (o que é cada valor, como funciona e o que observar). Tudo
+            simulado: o app roda em VPS e sondagem real exigiria um agente nativo com privilégio.
+        </p>
+    </header>
+
+    <div class="aed-card card-tech p-4 shadow" data-aed-tabs data-active-tab="ping">
+        <span class="aed-eyebrow">Ferramenta</span>
+        <div class="aed-mode-grid tab-nav mb-3" role="tablist">
+            <button type="button" class="aed-mode-btn tab-trigger active" data-tab="ping" role="tab"
+                    title="Ping (ICMP): dispara Echo Requests simulados para testar conectividade e latência">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span><span>Ping (ICMP)</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dns" role="tab"
+                    title="DNS (dig): resolve um domínio e mostra a resposta no formato do dig">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span><span>DNS (dig)</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="traceroute" role="tab"
+                    title="Traceroute: revela os saltos da rota manipulando o TTL do pacote IP">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span><span>Traceroute</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="sweep" role="tab"
+                    title="Ping Sweep: descobre quais hosts de uma faixa respondem ao ICMP">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span><span>Ping Sweep</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="scan" role="tab"
+                    title="Varredura SYN stealth: portas abertas, fechadas e filtradas, e como um IDS detecta">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span><span>Varredura (SYN)</span>
+            </button>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="spoofing" role="tab"
+                    title="DNS Spoofing: a corrida entre a resposta legítima e a forjada na porta 53/UDP">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">gpp_bad</span><span>DNS Spoofing</span>
+            </button>
+        </div>
+
+        <!-- PING -->
+        <div class="tab-panel active" data-tab-panel="ping">
+            <div class="diag-intro" role="note">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">radar</span>
+                <div><strong>Ping (ICMP).</strong> Pergunta "você está aí?" a um host e mede quanto tempo a resposta leva. É o primeiro teste quando algo "não conecta": prova se o destino responde e qual a latência.</div>
+            </div>
+            <form id="formPing"
+                  hx-post="/diagnostico/api/ping"
+                  hx-target="#pingSaida"
+                  hx-swap="innerHTML"
+                  hx-trigger="submit delay:1.2s"
+                  hx-disabled-elt="find button[type='submit']">
+                <div class="mb-3">
+                    <label for="pingHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio de destino</label>
+                    <input type="text" class="aed-input form-control" id="pingHost" name="host"
+                           value="8.8.8.8" placeholder="8.8.8.8" required>
+                    <div class="form-text aed-ajuda">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
+                        Digite um IP ou um nome. <strong>Exemplos:</strong> <code translate="no">8.8.8.8</code> (DNS do Google),
+                        <code translate="no">1.1.1.1</code> (Cloudflare) ou <code translate="no">google.com</code>.
+                    </div>
+                </div>
+                <button type="submit" class="aed-btn aed-btn-execute w-100" id="btnPing"
+                        title="Disparar pacotes ICMP Echo Request simulados para testar conectividade e latência">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">network_ping</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                    Disparar Ping Simulado
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
+                        title="Esvaziar os campos e apagar o resultado">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                </button>
+            </form>
+            <div id="pingSaida"></div>
+        </div>
+
+        <!-- DNS -->
+        <div class="tab-panel" data-tab-panel="dns">
+            <div class="diag-intro" role="note">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span>
+                <div><strong>Consulta DNS (dig).</strong> Traduz um nome (o que você digita no navegador) no endereço IP que a máquina realmente usa. Mostra a resposta no mesmo formato da ferramenta <code translate="no">dig</code>.</div>
+            </div>
+            <form id="formDns"
+                  hx-post="/diagnostico/api/dns"
+                  hx-target="#dnsSaida"
+                  hx-swap="innerHTML"
+                  hx-trigger="submit delay:1s"
+                  hx-disabled-elt="find button[type='submit']">
+                <div class="mb-3">
+                    <label for="dnsDominio" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio para resolver</label>
+                    <input type="text" class="aed-input form-control" id="dnsDominio" name="dominio"
+                           value="google.com" placeholder="exemplo.com.br" required>
+                    <div class="form-text aed-ajuda">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
+                        Um nome de domínio (sem <code translate="no">http://</code>). <strong>Exemplos:</strong>
+                        <code translate="no">google.com</code>, <code translate="no">fiap.com.br</code>, <code translate="no">carminati.dev.br</code>.
+                    </div>
+                </div>
+                <button type="submit" class="aed-btn aed-btn-indigo w-100" id="btnDns"
+                        title="Consultar registros DNS e IPs associados ao domínio informado">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                    Resolver Nome Simulado
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
+                        title="Esvaziar os campos e apagar o resultado">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                </button>
+            </form>
+            <div id="dnsSaida"></div>
+        </div>
+
+        <!-- TRACEROUTE -->
+        <div class="tab-panel" data-tab-panel="traceroute">
+            <div class="diag-intro" role="note">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span>
+                <div><strong>Traceroute.</strong> Mostra o caminho — roteador por roteador — entre você e um destino. Serve para descobrir <em>onde</em> a conexão fica lenta ou trava.</div>
+            </div>
+            <form id="formTrace"
+                  hx-post="/diagnostico/api/traceroute"
+                  hx-target="#traceSaida"
+                  hx-swap="innerHTML"
+                  hx-trigger="submit delay:1s"
+                  hx-disabled-elt="find button[type='submit']">
+                <div class="mb-3">
+                    <label for="traceHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio de destino</label>
+                    <input type="text" class="aed-input form-control" id="traceHost" name="host"
+                           value="1.1.1.1" placeholder="1.1.1.1" required>
+                    <div class="form-text aed-ajuda">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
+                        O destino cuja rota você quer ver. <strong>Exemplos:</strong> <code translate="no">1.1.1.1</code>,
+                        <code translate="no">8.8.8.8</code> ou <code translate="no">github.com</code>.
+                    </div>
+                </div>
+                <button type="submit" class="aed-btn aed-btn-teal w-100"
+                        title="Traçar a rota até o destino, salto a salto, via TTL crescente (simulado)">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                    Traçar Rota Simulada
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
+                        title="Esvaziar os campos e apagar o resultado">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                </button>
+            </form>
+            <div id="traceSaida"></div>
+        </div>
+
+        <!-- PING SWEEP -->
+        <div class="tab-panel" data-tab-panel="sweep">
+            <div class="diag-intro" role="note">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">radar</span>
+                <div><strong>Ping Sweep.</strong> Pinga uma faixa inteira de endereços de uma vez para descobrir <em>quais máquinas estão ligadas</em> na rede. É o primeiro mapa de um ambiente.</div>
+            </div>
+            <form id="formSweep"
+                  hx-post="/diagnostico/api/ping-sweep"
+                  hx-target="#sweepSaida"
+                  hx-swap="innerHTML"
+                  hx-trigger="submit delay:1s"
+                  hx-disabled-elt="find button[type='submit']">
+                <div class="mb-3">
+                    <label for="sweepRede" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Faixa / rede a varrer (CIDR)</label>
+                    <input type="text" class="aed-input form-control" id="sweepRede" name="rede"
+                           value="192.168.1.0/24" placeholder="192.168.1.0/24" required>
+                    <div class="form-text aed-ajuda">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
+                        Uma rede no formato <code translate="no">endereço/prefixo</code>. <strong>Exemplos:</strong>
+                        <code translate="no">192.168.1.0/24</code> (256 endereços domésticos), <code translate="no">10.0.0.0/24</code>.
+                    </div>
+                </div>
+                <button type="submit" class="aed-btn aed-btn-teal w-100"
+                        title="Varrer a faixa e listar os hosts que respondem ao ICMP (simulado)">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                    Varrer Faixa Simulada
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
+                        title="Esvaziar os campos e apagar o resultado">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                </button>
+            </form>
+            <div id="sweepSaida"></div>
+        </div>
+
+        <!-- VARREDURA SYN -->
+        <div class="tab-panel" data-tab-panel="scan">
+            <div class="diag-intro" role="note">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">radar</span>
+                <div><strong>Varredura de portas (SYN stealth).</strong> Descobre quais <em>portas/serviços</em> um host expõe (SSH, web, banco…). Só faça em alvos que você tem autorização para testar.</div>
+            </div>
+            <form id="formScan"
+                  hx-post="/diagnostico/api/scan"
+                  hx-target="#scanSaida"
+                  hx-swap="innerHTML"
+                  hx-trigger="submit delay:1.2s"
+                  hx-disabled-elt="find button[type='submit']">
+                <div class="mb-3">
+                    <label for="scanHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio alvo</label>
+                    <input type="text" class="aed-input form-control" id="scanHost" name="host"
+                           value="scanme.nmap.org" placeholder="scanme.nmap.org" required>
+                    <div class="form-text aed-ajuda">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
+                        O host cujas portas você quer descobrir. <strong>Exemplo autorizado:</strong>
+                        <code translate="no">scanme.nmap.org</code> (o nmap mantém esse host para praticar).
+                    </div>
+                </div>
+                <button type="submit" class="aed-btn aed-btn-amber w-100"
+                        title="Executar uma varredura SYN stealth simulada e classificar as portas">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                    Varrer Portas (Simulado)
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
+                        title="Esvaziar os campos e apagar o resultado">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                </button>
+            </form>
+            <div id="scanSaida"></div>
+        </div>
+
+        <!-- DNS SPOOFING -->
+        <div class="tab-panel" data-tab-panel="spoofing">
+            <div class="diag-intro" role="note">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span>
+                <div><strong>DNS Spoofing.</strong> Mostra <em>como</em> um atacante engana o DNS: forja uma resposta falsa que chega antes da verdadeira e manda a vítima para o servidor errado. Aqui você vê a corrida e as defesas.</div>
+            </div>
+            <form id="formSpoof"
+                  hx-post="/diagnostico/api/dns-spoofing"
+                  hx-target="#spoofSaida"
+                  hx-swap="innerHTML"
+                  hx-trigger="submit delay:1s"
+                  hx-disabled-elt="find button[type='submit']">
+                <div class="mb-3">
+                    <label for="spoofDominio" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio alvo da consulta</label>
+                    <input type="text" class="aed-input form-control" id="spoofDominio" name="dominio"
+                           value="banco.example.com" placeholder="banco.example.com" required>
+                    <div class="form-text aed-ajuda">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>
+                        O nome que o atacante tentaria falsificar. <strong>Exemplos:</strong>
+                        <code translate="no">banco.example.com</code>, <code translate="no">login.example.com</code> — alvos típicos de phishing.
+                    </div>
+                </div>
+                <button type="submit" class="aed-btn aed-btn-amber w-100"
+                        title="Simular a corrida entre a resposta DNS legítima e a forjada">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">gpp_maybe</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                    Simular Spoofing (Didático)
+                </button>
+                <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
+                        title="Esvaziar os campos e apagar o resultado">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                </button>
+            </form>
+            <div id="spoofSaida"></div>
+        </div>
+    </div>
+</div>
+
+{/content}
+{#extraScripts}
+<script src="/web/js/aed-tabs.js?v=20260710"></script>
+{/extraScripts}
+{/include}

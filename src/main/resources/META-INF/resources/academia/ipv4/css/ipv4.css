@@ -1,0 +1,115 @@
+/* =========================================================================
+   ACADEMIA · IPv4 — só o que é da régua de 32 bits. O resto vem do academia.css.
+   Largura em % e unidades relativas; px só em borda fina.
+   ========================================================================= */
+
+.acad-regua {
+    display: grid;
+    grid-template-columns: repeat(32, minmax(0, 1fr));
+    gap: .15rem;
+    width: 100%;
+}
+
+
+.acad-regua-bit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: .35rem 0;
+    border-radius: .35rem;
+    border: 1px solid var(--aed-border);
+    font-family: var(--aed-font-mono);
+    font-size: .8rem;
+    color: var(--aed-text);
+    background: rgba(255, 255, 255, .02);
+    cursor: pointer;
+    transition: background-color .2s;
+}
+
+.acad-regua-bit.rede {
+    background: rgba(45, 212, 191, .22);
+    border-color: var(--aed-teal);
+}
+
+.acad-regua-bit.host {
+    background: rgba(99, 102, 241, .16);
+}
+
+/* o primeiro bit de cada octeto ganha respiro à esquerda */
+.acad-regua-bit:nth-child(8n + 1):not(:first-child) {
+    margin-left: .45rem;
+}
+
+.acad-regua-bit:disabled,
+.acad-regua-bit[aria-disabled="true"] {
+    cursor: default;
+}
+
+.acad-regua-legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: .85rem;
+    color: var(--aed-text-secondary);
+    margin-top: .5rem;
+}
+
+.acad-regua-legenda .amostra {
+    display: inline-block;
+    width: .9rem;
+    height: .9rem;
+    border-radius: .2rem;
+    vertical-align: middle;
+    margin-right: .3rem;
+}
+
+.acad-regua-legenda .amostra.rede { background: rgba(45, 212, 191, .45); }
+.acad-regua-legenda .amostra.host { background: rgba(99, 102, 241, .35); }
+
+.acad-lista-subredes {
+    list-style: none;
+    padding: 0;
+    margin: .75rem 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: .4rem;
+    font-family: var(--aed-font-mono);
+    font-size: .85rem;
+}
+
+.acad-lista-subredes li {
+    border: 1px solid var(--aed-border);
+    border-radius: .4rem;
+    padding: .35rem .5rem;
+}
+
+.acad-lista-subredes li.destaque {
+    border-color: var(--aed-teal);
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+    .acad-regua-bit {
+        transition: none !important;
+    }
+}
+
+/* Tela estreita: um octeto por linha (4 × 8). Com 32 colunas cada bit ficava com 14 px de largura e 2 px de
+   vão — alvo de toque abaixo dos 24 px da WCAG 2.5.8 (auditoria de responsividade, 22/10/2026). Assim cada bit
+   tem pelo menos 1,5rem de largura (24 px; ~32 px em 320) e 2,75rem de altura. A ordem dos bits não muda: a
+   grade só quebra a linha a cada oito. */
+@media (max-width: 52em) {
+    .acad-regua {
+        grid-template-columns: repeat(8, minmax(1.5rem, 1fr));
+        gap: .35rem;
+    }
+
+    .acad-regua-bit {
+        min-height: 2.75rem;
+    }
+
+    /* cada octeto já começa numa linha nova: o respiro à esquerda desalinharia a coluna */
+    .acad-regua-bit:nth-child(8n + 1):not(:first-child) {
+        margin-left: 0;
+    }
+}

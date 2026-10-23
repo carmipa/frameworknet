@@ -1,0 +1,363 @@
+/* Estilos ÚNICOS das páginas de aprofundamento genéricas (HTTP, FTP, SMTP,
+   Telnet, Handshake e adiante TCP/UDP/ICMP/IPv4/IPv6/ARP). Paleta teal/emerald
+   (acento do framework) para todas — a distinção entre elas vem do sub-menu por
+   camada, não da cor. Unidades: rem para espaço e fonte, em nos breakpoints,
+   px só em borda e sombra; largura de layout em % / flex, nunca px. */
+
+/* --- Ícone-identidade do protocolo (hero) --- */
+.aprof-hero-icone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 0.75rem;
+    border-radius: 50%;
+    border: 1px solid rgba(45, 212, 191, 0.45);
+    background: rgba(45, 212, 191, 0.12);
+    box-shadow: 0 0 0 6px rgba(45, 212, 191, 0.06);
+}
+
+.aprof-hero-icone .material-symbols-outlined {
+    font-size: 2.2rem;
+    color: var(--aed-teal);
+}
+
+/* --- Ficha rápida do cabeçalho --- */
+.aprof-ficha {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.aprof-ficha-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid rgba(45, 212, 191, 0.35);
+    border-radius: 999rem;
+    background: rgba(45, 212, 191, 0.10);
+    color: var(--aed-text);
+    font-size: .75rem;
+    max-width: 100%;
+}
+
+.aprof-ficha-item strong {
+    color: var(--aed-text-faint);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: .75rem;
+}
+
+.aprof-ficha-icone {
+    font-size: 0.95rem;
+    color: var(--aed-teal);
+    flex: 0 0 auto;
+}
+
+/* Ícone pequeno dentro de célula de tabela (cobre/não cobre) — herda a cor da célula. */
+.aprof-td-icone {
+    font-size: 0.95rem;
+    vertical-align: -0.15em;
+}
+
+/* --- Índice pegajoso --- */
+.aprof-indice {
+    position: sticky;
+    /* embaixo do menu do topo quando ele também gruda (aed-shell.js mede a altura) */
+    top: var(--aed-topnav-fixo, 0px);
+    z-index: 3;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.6rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--aed-border);
+    border-radius: var(--aed-radius-card);
+    background: rgba(6, 8, 15, 0.92);
+    backdrop-filter: blur(0.4rem);
+}
+
+.aprof-indice a {
+    padding: 0.25rem 0.65rem;
+    border-radius: 0.5rem;
+    color: var(--aed-text-secondary);
+    font-size: 0.76rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.aprof-indice a:hover,
+.aprof-indice a:focus-visible {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--aed-text);
+}
+
+.aprof-indice a.is-current {
+    background: rgba(45, 212, 191, 0.18);
+    color: var(--aed-teal);
+}
+
+/* --- Seções --- */
+.aprof-secao {
+    margin-bottom: 2.5rem;
+    scroll-margin-top: 4.5rem;
+}
+
+.aprof-secao-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--aed-border);
+    font-family: var(--aed-font-display);
+    font-size: 1.2rem;
+    color: var(--aed-teal);
+}
+
+/* --- Conceitos --- */
+.aprof-conceito-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.95rem;
+    color: var(--aed-teal);
+    margin-bottom: 0.6rem;
+}
+
+.aprof-destaque {
+    padding: 0.5rem 0.7rem;
+    border-left: 3px solid var(--aed-risk-attention);
+    border-radius: 0.4rem;
+    background: rgba(245, 158, 11, 0.08);
+    color: #fcd34d;
+    font-size: 0.8rem;
+}
+
+/* --- Diagrama (Mermaid) --- */
+.aprof-diagrama-caixa {
+    overflow-x: auto;
+}
+
+.aprof-mermaid {
+    margin: 0;
+    text-align: center;
+    background: transparent;
+    border: 0;
+}
+
+.aprof-mermaid:not([data-processed]) {
+    /* enquanto o Mermaid não desenhou, mostra a definição em mono discreta */
+    color: var(--aed-text-faint);
+    font-family: var(--aed-font-mono);
+    font-size: .75rem;
+    white-space: pre-wrap;
+}
+
+.aprof-legenda {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.aprof-legenda .material-symbols-outlined {
+    font-size: 1rem;
+    flex: 0 0 auto;
+}
+
+/* --- Régua binária do cabeçalho (largura proporcional aos bits) --- */
+.aprof-regua {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--aed-border);
+    border-radius: 0.6rem;
+    background: #04060c;
+}
+
+.aprof-regua-campo {
+    flex-basis: 0;
+    min-width: 4.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.5rem 0.4rem;
+    border: 1px solid var(--aprof-campo-cor, rgba(45, 212, 191, 0.45));
+    border-top: 3px solid var(--aprof-campo-cor, var(--aed-teal));
+    border-radius: 0.35rem;
+    background: rgba(45, 212, 191, 0.06);
+    text-align: center;
+}
+
+.aprof-regua-nome {
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--aed-text);
+    line-height: 1.2;
+    /* Nomes longos (ex.: "Flags (CWR,ECE,URG,ACK,PSH,RST,SYN,FIN)") precisam
+       quebrar dentro da célula estreita da régua; sem isto a página inteira
+       rolava na horizontal no celular. */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.aprof-regua-bits {
+    font-family: var(--aed-font-mono);
+    font-size: .75rem;
+    color: var(--aed-text-faint);
+}
+
+/* --- Tabelas --- */
+.aprof-tabela-bloco {
+    margin-bottom: 1.5rem;
+}
+
+.aprof-tabela-titulo {
+    font-size: 0.95rem;
+    color: var(--aed-teal);
+    margin-bottom: 0.5rem;
+}
+
+.aprof-tabela thead th {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--aed-text-faint);
+}
+
+.aprof-tabela code,
+.aprof-inline {
+    color: #93c5fd;
+    background: rgba(56, 189, 248, 0.10);
+    padding: 0.05rem 0.3rem;
+    border-radius: 0.3rem;
+    font-size: .75rem;
+}
+
+/* --- Ataques --- */
+.aprof-ataque-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.92rem;
+    color: #fca5a5;
+}
+
+/* O selo de gravidade deve ser um rótulo curto; se vier texto longo, quebra em
+   vez de esticar a página (defesa contra conteúdo fora do padrão). */
+.aprof-ataque .badge {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    max-width: 100%;
+    text-align: left;
+}
+
+.aprof-ataque-danger {
+    border-color: rgba(244, 63, 94, 0.35) !important;
+}
+
+.aprof-ataque-warning {
+    border-color: rgba(245, 158, 11, 0.30) !important;
+}
+
+.aprof-ataque-info {
+    border-color: rgba(56, 189, 248, 0.30) !important;
+}
+
+.aprof-ataque-success {
+    border-color: rgba(52, 211, 153, 0.30) !important;
+}
+
+.aprof-sinal {
+    display: flex;
+    gap: 0.35rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--aed-border);
+    color: var(--aed-text-secondary);
+}
+
+.aprof-sinal .material-symbols-outlined {
+    font-size: 1rem;
+    flex: 0 0 auto;
+}
+
+/* --- Laboratório e diagnóstico --- */
+.aprof-lab-titulo {
+    font-size: 0.95rem;
+    color: var(--aed-teal);
+    margin-bottom: 0.6rem;
+}
+
+.aprof-diag-sintoma {
+    display: flex;
+    overflow-wrap: anywhere; /* "NET::ERR_CERT_COMMON_NAME_INVALID" num flex nao encolhe com break-word */
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.92rem;
+    color: #fca5a5;
+    margin-bottom: 0.6rem;
+}
+
+.aprof-rotulo {
+    display: inline-block;
+    padding: 0.05rem 0.4rem;
+    margin-right: 0.3rem;
+    border-radius: 0.3rem;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.aprof-rotulo-risco {
+    background: rgba(244, 63, 94, 0.16);
+    color: #fda4af;
+}
+
+.aprof-rotulo-ok {
+    background: rgba(52, 211, 153, 0.16);
+    color: #6ee7b7;
+}
+
+.aprof-codigo {
+    padding: 0.65rem 0.75rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.5rem;
+    background: #04060c;
+    color: #d1d5db;
+    font-family: var(--aed-font-mono);
+    font-size: 0.76rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-x: auto;
+}
+
+.aprof-lab-nota {
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--aed-border);
+}
+
+@media (max-width: 36em) {
+    .aprof-indice {
+        position: static;
+    }
+
+    .aprof-secao-titulo {
+        font-size: 1.05rem;
+    }
+}
+
+/* Ícone do item do índice: o mesmo do título da seção para onde ele leva (UX-10). */
+.aprof-indice .material-symbols-outlined {
+    font-size: 1.05em;
+    vertical-align: -0.18em;
+    margin-right: 0.2em;
+}

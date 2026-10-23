@@ -1,0 +1,259 @@
+{#include shared/base.html}
+{#title}SSH em profundidade | Framework de Redes A&D{/title}
+{#description}SSH em profundidade: troca de chaves, autenticação por chave pública, túneis e encaminhamento de porta, e a configuração que separa um servidor exposto de um servidor seguro.{/description}
+{#extraHead}
+<link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
+<link rel="stylesheet" href="/protocolos/ssh/css/ssh.css?v=20261022">
+<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261022">
+{/extraHead}
+{#content}
+<div class="container py-5">
+    {#include shared/main_menu.html activeMainMenu='protocolos' /}
+    {#include protocolos/partials/subnav.html /}
+
+    <header class="text-center mb-4">
+        <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span></div>
+        <span class="aed-eyebrow aed-eyebrow-teal">Aprofundamento · Camada de Aplicação</span>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">SSH — Secure Shell</h1>
+        <p class="text-secondary small mx-auto aed-medida-leitura">{conteudo.resumo}</p>
+        <div class="ssh-ficha" role="list">
+            <span class="ssh-ficha-item" role="listitem"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">menu_book</span><strong>RFC</strong> 4251–4254</span>
+            <span class="ssh-ficha-item" role="listitem"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">lan</span><strong>Transporte</strong> TCP 22</span>
+            <span class="ssh-ficha-item" role="listitem"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">layers</span><strong>Camada</strong> Aplicação</span>
+            <span class="ssh-ficha-item" role="listitem"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">swap_horiz</span><strong>Substitui</strong> Telnet, rlogin, rsh, FTP</span>
+            <span class="ssh-ficha-item" role="listitem"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">extension</span><strong>Subsistema</strong> SFTP (o SCP roda como comando remoto)</span>
+            <span class="ssh-ficha-item" role="listitem"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">verified</span><strong>Versão viva</strong> SSH-2</span>
+        </div>
+    </header>
+
+    <nav class="ssh-indice" aria-label="Índice da página">
+        <a href="#conceitos" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Conceitos</a>
+        <a href="#diagrama" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama</a>
+        <a href="#cabecalho" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> Cabeçalho (bits)</a>
+        <a href="#camadas" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Camadas</a>
+        <a href="#autenticacao" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">passkey</span> Autenticação</a>
+        <a href="#chaves" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">key</span> Chaves</a>
+        <a href="#tuneis" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_calls</span> Túneis</a>
+        <a href="#hardening" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> Hardening</a>
+        <a href="#laboratorio" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</a>
+        <a href="#troubleshooting" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</a>
+    </nav>
+
+    <section id="conceitos" class="ssh-secao">
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">school</span> O que o SSH garante</h2>
+        <div class="row g-3">
+            {#for item in conteudo.conceitos}
+            <div class="col-12 col-lg-6">
+                <article class="card-tech p-3 h-100 ssh-conceito">
+                    <h3 class="h4 ssh-conceito-titulo">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">{item.icone}</span>
+                        {item.titulo}
+                    </h3>
+                    <p class="small text-light mb-2">{item.texto}</p>
+                    <p class="ssh-destaque mb-0">{item.destaque}</p>
+                </article>
+            </div>
+            {/for}
+        </div>
+    </section>
+
+    {#include protocolos/partials/diagrama.html diagrama=conteudo.diagrama /}
+
+    {#include protocolos/partials/cabecalho_bits.html cabecalho=conteudo.cabecalho /}
+
+    <section id="camadas" class="ssh-secao">
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span> As três camadas do SSH-2</h2>
+        <p class="small text-secondary">
+            A separação em camadas é o que a SSH-1 não tinha. Cada uma entra em ação depois que a
+            anterior terminou — e é por isso que um erro de autenticação já acontece dentro do túnel cifrado.
+        </p>
+        <div class="ssh-camadas">
+            {#for camada in conteudo.camadas}
+            <div class="ssh-camada">
+                <div class="ssh-camada-cabeca">
+                    <span class="ssh-camada-num">{camada.ordem}</span>
+                    <span class="ssh-camada-nome">{camada.nome}</span>
+                    <span class="ssh-camada-rfc">{camada.rfc}</span>
+                </div>
+                <p class="small text-light mb-1">{camada.funcao}</p>
+                <p class="small text-secondary mb-0">{camada.detalhe}</p>
+            </div>
+            {/for}
+        </div>
+    </section>
+
+    <section id="autenticacao" class="ssh-secao">
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">passkey</span> Métodos de autenticação</h2>
+        <div class="table-responsive border border-secondary border-opacity-25 rounded">
+            <table class="table table-dark table-sm align-middle mb-0 ssh-tabela">
+                <thead>
+                    <tr>
+                        <th>Método</th>
+                        <th>Como funciona</th>
+                        <th>Avaliação</th>
+                        <th>Quando usar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#for auth in conteudo.autenticacoes}
+                    <tr>
+                        <td class="fw-bold text-info text-nowrap">{auth.metodo}</td>
+                        <td class="small text-light">{auth.comoFunciona}</td>
+                        <td class="text-nowrap">
+                            <span class="badge bg-dark border border-{auth.forcaCor} text-{auth.forcaCor}">{auth.forca}</span>
+                        </td>
+                        <td class="small text-light">{auth.quandoUsar}</td>
+                    </tr>
+                    {/for}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="chaves" class="ssh-secao">
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">key</span> Tipos de chave</h2>
+        <div class="row g-3">
+            {#for chave in conteudo.chaves}
+            <div class="col-12 col-lg-6">
+                <article class="card-tech p-3 h-100 ssh-chave ssh-chave-{chave.recomendacaoCor}">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                        <h3 class="h4 ssh-chave-titulo mb-0">{chave.algoritmo}</h3>
+                        <span class="badge bg-dark border border-{chave.recomendacaoCor} text-{chave.recomendacaoCor}">{chave.recomendacao}</span>
+                    </div>
+                    <p class="small text-secondary mb-2">Tamanho: {chave.tamanho}</p>
+                    <pre class="ssh-codigo" id="ssh-chave-{chave_count}" translate="no">{chave.comando}</pre>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-copiar="ssh-chave-{chave_count}"
+                                title="Copiar o comando de geração de chave para a área de transferência">
+                            <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar
+                        </button>
+                    </div>
+                </article>
+            </div>
+            {/for}
+        </div>
+    </section>
+
+    <section id="tuneis" class="ssh-secao">
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_calls</span> Túneis e encaminhamentos</h2>
+        <p class="small text-secondary">
+            Liberar a porta 22 no firewall não libera apenas o shell: os túneis viajam dentro da
+            mesma conexão. Por isso cada linha traz o cenário legítimo e o risco que carrega.
+        </p>
+        <div class="row g-3">
+            {#for enc in conteudo.encaminhamentos}
+            <div class="col-12 col-xl-6">
+                <article class="card-tech p-3 h-100 ssh-tunel">
+                    <h3 class="h4 ssh-tunel-titulo">
+                        <span class="ssh-flag">{enc.flag}</span>
+                        {enc.tipo}
+                    </h3>
+                    <p class="small text-light mb-2">{enc.cenario}</p>
+                    <pre class="ssh-codigo" id="ssh-tunel-{enc_count}" translate="no">{enc.comando}</pre>
+                    <div class="d-flex justify-content-end mb-2">
+                        <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-copiar="ssh-tunel-{enc_count}"
+                                title="Copiar o comando de túnel SSH para a área de transferência">
+                            <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar
+                        </button>
+                    </div>
+                    <p class="small mb-0 ssh-risco">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">warning</span>
+                        {enc.risco}
+                    </p>
+                </article>
+            </div>
+            {/for}
+        </div>
+    </section>
+
+    <section id="hardening" class="ssh-secao">
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span> Endurecimento do servidor</h2>
+        <p class="small text-secondary">
+            Diretivas do <code translate="no">sshd_config</code>. A coluna "se ficar aberto" existe para que a
+            escolha seja consciente: cada linha aqui tem um custo operacional real.
+        </p>
+        <div class="table-responsive border border-secondary border-opacity-25 rounded">
+            <table class="table table-dark table-sm align-middle mb-0 ssh-tabela">
+                <thead>
+                    <tr>
+                        <th>Diretiva</th>
+                        <th>Valor</th>
+                        <th>Por quê</th>
+                        <th>Se ficar aberto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#for item in conteudo.hardening}
+                    <tr>
+                        <td class="fw-bold text-info">{item.diretiva}</td>
+                        <td class="text-nowrap ssh-valor">{item.valor}</td>
+                        <td class="small text-light">{item.porque}</td>
+                        <td class="small text-warning">{item.risco}</td>
+                    </tr>
+                    {/for}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="laboratorio" class="ssh-secao">
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">science</span> Laboratório</h2>
+        <div class="row g-3">
+            {#for lab in conteudo.laboratorios}
+            <div class="col-12 col-xl-6">
+                <article class="card-tech p-3 h-100 ssh-lab">
+                    <h3 class="h4 ssh-lab-titulo">{lab.titulo}</h3>
+                    <p class="small text-secondary mb-2">{lab.cenario}</p>
+                    <pre class="ssh-codigo" id="ssh-lab-{lab_count}" translate="no">{lab.comandos}</pre>
+                    <div class="d-flex justify-content-end mb-2">
+                        <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-copiar="ssh-lab-{lab_count}"
+                                title="Copiar os comandos do laboratório para a área de transferência">
+                            <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar comandos
+                        </button>
+                    </div>
+                    <p class="small text-light mb-0 ssh-lab-nota">{lab.explicacao}</p>
+                </article>
+            </div>
+            {/for}
+        </div>
+    </section>
+
+    <section id="troubleshooting" class="ssh-secao">
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">build</span> Troubleshooting</h2>
+        <div class="row g-3">
+            {#for diag in conteudo.diagnosticos}
+            <div class="col-12 col-xl-6">
+                <article class="card-tech p-3 h-100 ssh-diag">
+                    <h3 class="h4 ssh-diag-sintoma">
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">bug_report</span>
+                        {diag.sintoma}
+                    </h3>
+                    <p class="small mb-2"><span class="ssh-rotulo ssh-rotulo-risco">Causa provável</span> {diag.causaProvavel}</p>
+                    <pre class="ssh-codigo" id="ssh-diag-{diag_count}" translate="no">{diag.comando}</pre>
+                    <div class="d-flex justify-content-end mb-2">
+                        <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-copiar="ssh-diag-{diag_count}"
+                                title="Copiar comando de diagnóstico para a área de transferência">
+                            <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar
+                        </button>
+                    </div>
+                    <p class="small text-light mb-0"><span class="ssh-rotulo ssh-rotulo-ok">Leitura</span> {diag.leitura}</p>
+                </article>
+            </div>
+            {/for}
+        </div>
+    </section>
+
+    <div class="text-center mt-4">
+        <a href="/protocolos" class="aed-btn aed-btn-neutral"
+           title="Retornar à tabela comparativa de protocolos">
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">arrow_back</span> Voltar ao catálogo de protocolos
+        </a>
+    </div>
+</div>
+{/content}
+{#extraScripts}
+<script src="/protocolos/js/aprofundamento.js?v=20261022"></script>
+<script src="/web/vendor/mermaid-11.17.2/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script src="/protocolos/aprofundamento/js/aprofundamento-diagrama.js?v=20261022"></script>
+{/extraScripts}
+{/include}

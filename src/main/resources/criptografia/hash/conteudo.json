@@ -1,0 +1,302 @@
+{
+  "resumo": "Uma função de hash criptográfica comprime uma entrada de tamanho arbitrário (uma senha, um arquivo, uma mensagem) em uma saída de tamanho fixo chamada digest ou resumo. A operação é de mão única: é computacionalmente inviável recuperar a entrada a partir do digest, e trocar um único bit da entrada muda cerca de metade dos bits da saída (efeito avalanche). Diferente de uma cifra, um hash NÃO tem chave e NÃO é reversível por design, então ele não guarda segredo para ser aberto depois: serve para verificar integridade, gerar identificadores e, com as técnicas certas, proteger senhas. O ponto prático mais importante é este: hashes gerais (SHA-256, SHA-3) são propositalmente rápidos, o que é ótimo para integridade mas péssimo para senhas, porque um atacante testa bilhões por segundo. Para senha usa-se hash lento com salt (Argon2, bcrypt, PBKDF2). Famílias antigas como MD5 e SHA-1 estão quebradas para resistência a colisão e não devem ser usadas em contexto de segurança.",
+  "ficha": [
+    {
+      "rotulo": "Tipo de primitiva",
+      "valor": "Função de mão única (one-way), sem chave",
+      "dica": "Não confundir com cifra: hash não se decifra, não há operação inversa por design"
+    },
+    {
+      "rotulo": "Saída",
+      "valor": "Tamanho fixo (ex.: 256 bits = 32 bytes = 64 hex)",
+      "dica": "O tamanho da saída não depende do tamanho da entrada"
+    },
+    {
+      "rotulo": "Padrão recomendado (geral)",
+      "valor": "SHA-256 ou superior; SHA-3 quando exigido",
+      "dica": "MD5 e SHA-1 proibidos para uso de segurança"
+    },
+    {
+      "rotulo": "Padrão recomendado (senha)",
+      "valor": "Argon2id, com bcrypt e PBKDF2 como alternativas",
+      "dica": "Sempre com salt único por senha; nunca SHA puro"
+    },
+    {
+      "rotulo": "Propriedades exigidas",
+      "valor": "Determinismo, avalanche, resistência a colisão e a pré-imagem",
+      "dica": "Perder qualquer uma abre um vetor de ataque"
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Determinismo",
+      "icone": "fingerprint",
+      "texto": "A mesma entrada produz sempre o mesmo digest, em qualquer máquina e a qualquer momento. É isso que permite comparar arquivos e verificar senhas: se o hash bate, a entrada é a mesma. Se não fosse determinístico, verificação seria impossível.",
+      "destaque": "Mesma entrada, sempre o mesmo digest"
+    },
+    {
+      "titulo": "Efeito avalanche",
+      "icone": "shuffle",
+      "texto": "Mudar um único bit da entrada altera aproximadamente metade dos bits da saída, de forma imprevisível. Não existe correlação visível entre a proximidade de duas entradas e a proximidade de seus digests, o que impede inferir a entrada por tentativa incremental.",
+      "destaque": "1 bit muda ~50% da saída"
+    },
+    {
+      "titulo": "Mão única (pré-imagem)",
+      "icone": "lock",
+      "texto": "Dado um digest, é computacionalmente inviável encontrar uma entrada que o gere. É o que torna o hash irreversível. Diferente de cifrar, aqui não há chave nem processo de reversão: a informação original não está contida no digest de forma recuperável.",
+      "destaque": "Do digest não se volta para a entrada"
+    },
+    {
+      "titulo": "Resistência a colisão",
+      "icone": "compare_arrows",
+      "texto": "Deve ser inviável encontrar duas entradas diferentes com o mesmo digest. Quando essa propriedade cai, assinaturas digitais e verificação de integridade deixam de valer, pois um documento pode ser trocado por outro de mesmo hash. MD5 e SHA-1 já falham aqui.",
+      "destaque": "Duas entradas, nunca o mesmo hash"
+    },
+    {
+      "titulo": "Rápido e ruim para senha",
+      "icone": "speed",
+      "texto": "SHA-256 e SHA-3 são otimizados para velocidade, ideal para integridade de arquivos. Mas velocidade ajuda o atacante: com hash rápido testam-se bilhões de senhas por segundo em GPU. Por isso senha NUNCA usa SHA puro; usa-se função lenta e ajustável (Argon2, bcrypt, PBKDF2).",
+      "destaque": "NUNCA SHA rápido para senha"
+    },
+    {
+      "titulo": "Salt",
+      "icone": "grain",
+      "texto": "Um valor aleatório único por senha, concatenado antes de aplicar o hash lento. Garante que senhas iguais gerem digests diferentes e inutiliza rainbow tables pré-computadas, forçando o atacante a quebrar cada senha individualmente. Deve ser único por usuário, não secreto.",
+      "destaque": "Salt único por senha derruba rainbow tables"
+    }
+  ],
+  "diagrama": {
+    "titulo": "Fluxo de uma função de hash: entrada arbitrária vira digest de tamanho fixo",
+    "definicao": "flowchart LR\n  A[Entrada de tamanho arbitrário<br/>senha, arquivo, mensagem] --> B{Função de hash<br/>SHA-256}\n  B --> C[Digest de tamanho fixo<br/>256 bits / 64 hex]\n  A2[Entrada com 1 bit alterado] --> B2{Função de hash<br/>SHA-256}\n  B2 --> C2[Digest completamente diferente<br/>efeito avalanche]\n  C -.mão única, sem volta.-> A\n  C2 -.mão única, sem volta.-> A2",
+    "legenda": "Qualquer entrada, independentemente do tamanho, produz um digest de comprimento fixo. Alterar 1 bit da entrada gera um digest totalmente distinto (avalanche). As setas tracejadas mostram que o caminho de volta, do digest para a entrada, é inviável por design (mão única)."
+  },
+  "tabelas": [
+    {
+      "titulo": "Famílias de hash: tamanho do digest e status de segurança",
+      "colunas": [
+        "Algoritmo",
+        "Tamanho do digest",
+        "Família",
+        "Status"
+      ],
+      "linhas": [
+        [
+          "MD5",
+          "128 bits",
+          "Legado",
+          "QUEBRADO para colisão - não usar em segurança"
+        ],
+        [
+          "SHA-1",
+          "160 bits",
+          "SHA-1",
+          "QUEBRADO para colisão (SHAttered, 2017) - descontinuar"
+        ],
+        [
+          "SHA-256",
+          "256 bits",
+          "SHA-2",
+          "Seguro - padrão geral recomendado"
+        ],
+        [
+          "SHA-384",
+          "384 bits",
+          "SHA-2",
+          "Seguro - variante truncada de SHA-512"
+        ],
+        [
+          "SHA-512",
+          "512 bits",
+          "SHA-2",
+          "Seguro - margem maior, rápido em CPU 64 bits"
+        ],
+        [
+          "SHA3-256",
+          "256 bits",
+          "SHA-3 (Keccak)",
+          "Seguro - construção esponja, alternativa ao SHA-2"
+        ],
+        [
+          "SHA3-512",
+          "512 bits",
+          "SHA-3 (Keccak)",
+          "Seguro - design distinto de SHA-2, diversidade criptográfica"
+        ]
+      ]
+    },
+    {
+      "titulo": "Hash geral x hash de senha: propósito oposto",
+      "colunas": [
+        "Aspecto",
+        "Hash geral (SHA-256, SHA-3)",
+        "Hash de senha (Argon2, bcrypt, PBKDF2)"
+      ],
+      "linhas": [
+        [
+          "Objetivo",
+          "Integridade, identificador, assinatura",
+          "Armazenar senha resistente a quebra"
+        ],
+        [
+          "Velocidade",
+          "Propositalmente rápido",
+          "Propositalmente lento e ajustável (custo/memória)"
+        ],
+        [
+          "Salt",
+          "Não aplicável",
+          "Obrigatório, único por senha"
+        ],
+        [
+          "Custo configurável",
+          "Não",
+          "Sim: iterações em todas; memória e paralelismo só no Argon2 (e no scrypt)"
+        ],
+        [
+          "Resistência a GPU/ASIC",
+          "Baixa (velocidade ajuda o atacante)",
+          "Alta no Argon2 (memória de propósito); média no bcrypt; baixa no PBKDF2, que só tem iterações"
+        ],
+        [
+          "Usar para senha?",
+          "NUNCA sozinho",
+          "Sim - esta é a ferramenta correta"
+        ]
+      ]
+    },
+    {
+      "titulo": "Funções de derivação de senha: característica de defesa",
+      "colunas": [
+        "Função",
+        "Defesa principal",
+        "Recomendação"
+      ],
+      "linhas": [
+        [
+          "Argon2id",
+          "Custo de memória + tempo, resiste a GPU/ASIC",
+          "Preferencial (vencedor do Password Hashing Competition)"
+        ],
+        [
+          "bcrypt",
+          "Fator de custo ajustável, salt embutido",
+          "Boa opção madura; limite de 72 bytes na entrada"
+        ],
+        [
+          "PBKDF2",
+          "Muitas iterações de um hash (HMAC-SHA-256)",
+          "Aceitável quando exigido por conformidade; use alto número de iterações"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Colisão (MD5 / SHA-1)",
+      "como_funciona": "O atacante encontra duas entradas diferentes com o mesmo digest. Com MD5 isso é trivial e com SHA-1 já foi demonstrado na prática (ataque SHAttered, 2017). Permite forjar um documento malicioso que tem o mesmo hash de um documento legítimo, quebrando assinaturas digitais e verificação de integridade.",
+      "sinal": "Uso de MD5 ou SHA-1 em assinatura, certificado ou checksum de segurança",
+      "gravidade": "Crítica",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Rainbow tables (hash sem salt)",
+      "como_funciona": "Tabelas pré-computadas que mapeiam digests conhecidos de volta para as senhas que os geraram. Se as senhas foram armazenadas com um hash sem salt (mesmo SHA-256), o atacante que rouba o banco simplesmente consulta a tabela e recupera senhas em massa quase instantaneamente.",
+      "sinal": "Senhas iguais geram o mesmo digest no banco (ausência de salt)",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Força bruta em hash rápido",
+      "como_funciona": "Como SHA-256 é projetado para ser rápido, uma GPU testa bilhões de candidatos por segundo. Se as senhas usam hash rápido em vez de função lenta, o atacante quebra a maioria das senhas fracas e médias em horas, mesmo com salt (o salt só evita reúso de trabalho entre contas, não a velocidade por conta).",
+      "sinal": "Senhas guardadas com SHA puro em vez de Argon2/bcrypt/PBKDF2",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Ataque de dicionário",
+      "como_funciona": "Em vez de testar todas as combinações, o atacante testa listas de senhas comuns e vazadas. Combinado com hash rápido, resolve as senhas mais previsíveis quase de imediato. Salt não impede o dicionário, apenas impede reutilizar o mesmo esforço entre várias contas.",
+      "sinal": "Política de senha fraca somada a hash rápido",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Length extension (construção Merkle-Damgård)",
+      "como_funciona": "Em hashes como SHA-256, sabendo H(mensagem) e o tamanho da mensagem, o atacante consegue calcular H(mensagem || padding || extensão) sem conhecer a mensagem original. Isso quebra o uso ingênuo de hash(segredo || dados) como autenticador. A defesa é usar HMAC (ou SHA-3, que não sofre desse problema).",
+      "sinal": "Autenticação caseira do tipo hash(segredo concatenado com dados)",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Usar SHA-256 ou superior para integridade",
+      "como_funciona": "Substituir MD5 e SHA-1 por SHA-256, SHA-384, SHA-512 ou SHA-3 em checksums, assinaturas e identificadores. Essas famílias não têm colisões práticas conhecidas, o que preserva a garantia de que digests iguais significam entradas iguais.",
+      "cobre": "Colisão (MD5/SHA-1), integridade de arquivos e assinaturas",
+      "limite": "Não resolve segurança de senha; hash rápido continua inadequado para senha"
+    },
+    {
+      "nome": "Argon2id com salt único para senhas",
+      "como_funciona": "Cada senha recebe um salt aleatório único e passa por Argon2id com custo de tempo e de memória calibrado (bcrypt e PBKDF2 só calibram o tempo). O salt inutiliza rainbow tables e o custo de memória do Argon2id torna a força bruta em GPU/ASIC economicamente inviável.",
+      "cobre": "Rainbow tables, força bruta e dicionário contra senhas",
+      "limite": "Não protege senha trivial de forma absoluta; exige também política de senha e limite de tentativas"
+    },
+    {
+      "nome": "HMAC em vez de hash concatenado",
+      "como_funciona": "Para autenticar mensagens com um segredo, usar HMAC-SHA-256 em vez de hash(segredo || dados). O HMAC estrutura o segredo de forma que o ataque de length extension deixa de ser aplicável.",
+      "cobre": "Length extension em construções Merkle-Damgård",
+      "limite": "Depende da guarda correta da chave secreta; chave vazada anula a proteção"
+    },
+    {
+      "nome": "Pepper e limite de tentativas",
+      "como_funciona": "Adicionar um pepper (segredo global guardado fora do banco, ex.: em HSM ou variável de ambiente) somado ao salt, e limitar tentativas de login (rate limiting / lockout). O pepper protege mesmo se o banco vazar; o rate limiting corta ataques online.",
+      "cobre": "Vazamento de banco (defesa em profundidade) e ataque online",
+      "limite": "Pepper só ajuda se o segredo global não vazar junto; não substitui o hash lento"
+    },
+    {
+      "nome": "Migração e aumento periódico do custo",
+      "como_funciona": "Reavaliar o fator de custo do Argon2/bcrypt conforme o hardware evolui, re-hasheando no próximo login do usuário, e migrar hashes legados (MD5/SHA-1) para o esquema atual. Mantém a defesa proporcional ao poder de ataque disponível.",
+      "cobre": "Envelhecimento de parâmetros e hashes legados",
+      "limite": "Requer processo operacional contínuo; hashes antigos só migram quando o usuário retorna"
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Gerar e comparar digests com sha256sum e openssl",
+      "cenario": "Verificar que a mesma entrada gera sempre o mesmo digest e observar o efeito avalanche com uma mudança mínima.",
+      "comandos": "echo -n \"senha123\" | sha256sum\necho -n \"senha123\" | openssl dgst -sha256\necho -n \"senha124\" | openssl dgst -sha256",
+      "explicacao": "As duas primeiras linhas produzem exatamente o mesmo digest (determinismo). A terceira, com apenas um caractere diferente, produz um digest totalmente distinto, sem semelhança com o anterior: é o efeito avalanche na prática. O -n evita que o echo adicione uma quebra de linha que mudaria o resultado."
+    },
+    {
+      "titulo": "Comparar velocidade das famílias e verificar integridade de arquivo",
+      "cenario": "Calcular o digest de um arquivo com diferentes algoritmos e usar o hash para verificar integridade.",
+      "comandos": "openssl dgst -sha256 arquivo.iso\nopenssl dgst -sha512 arquivo.iso\nopenssl dgst -sha3-256 arquivo.iso\nsha256sum -c arquivo.iso.sha256",
+      "explicacao": "Cada algoritmo gera um digest de tamanho diferente (256, 512, 256 bits). O último comando lê um arquivo .sha256 previamente distribuído e confirma se o arquivo baixado corresponde ao esperado, detectando corrupção ou adulteração. Nenhum destes serve para senha: são rápidos de propósito."
+    },
+    {
+      "titulo": "Derivar senha corretamente com PBKDF2 (não usar SHA puro)",
+      "cenario": "Demonstrar o caminho certo para senha: função lenta com salt, em contraste com o hash rápido acima.",
+      "comandos": "openssl rand -hex 16\nopenssl kdf -keylen 32 -kdfopt digest:SHA256 -kdfopt pass:senha123 -kdfopt hexsalt:0f1e2d3c4b5a69788796a5b4c3d2e1f0 -kdfopt iter:600000 PBKDF2",
+      "explicacao": "A primeira linha gera um salt aleatório de 16 bytes (único por senha). A segunda deriva a chave com PBKDF2 usando 600000 iterações, tornando cada tentativa cara para o atacante. Em produção prefira Argon2id (via biblioteca da aplicação); PBKDF2 aqui ilustra o princípio de hash lento com salt. Você pode reproduzir o contraste rápido/lento no playground de hash do site, colando a mesma senha e observando digest fixo e avalanche."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Senhas iguais aparecem com o mesmo valor no banco",
+      "causa_provavel": "Hash sem salt (ou salt fixo global)",
+      "leitura": "Vulnerável a rainbow tables; adicionar salt único por senha e migrar para Argon2id",
+      "comando": "SELECT senha_hash, COUNT(*) FROM usuarios GROUP BY senha_hash HAVING COUNT(*) > 1;"
+    },
+    {
+      "sintoma": "Login valida senha muito rápido mesmo sob carga",
+      "causa_provavel": "Uso de SHA rápido para senha em vez de função lenta",
+      "leitura": "Custo baixo demais; força bruta em GPU é viável. Trocar por Argon2id/bcrypt com custo calibrado",
+      "comando": "grep -riE \"sha256|sha512|md5\" --include=*.java src/ | grep -i senha"
+    },
+    {
+      "sintoma": "Checksum de download usa MD5 ou SHA-1",
+      "causa_provavel": "Algoritmo quebrado para colisão",
+      "leitura": "Não garante integridade contra adulteração intencional; migrar checksums para SHA-256+",
+      "comando": "openssl dgst -sha256 arquivo-baixado"
+    }
+  ]
+}

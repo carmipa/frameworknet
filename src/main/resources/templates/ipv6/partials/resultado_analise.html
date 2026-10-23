@@ -1,0 +1,315 @@
+{! Resultado rico da Análise IPv6 — gêmeo do resultado_ipv4.html (na medida do possível). !}
+<div class="contextual-block resultado-ipv6-block">
+
+    {! ---------- 1. Banner de tipo/escopo (análogo do banner de classe A/B/C) ---------- !}
+    <div class="aed-card card-tech aed-class-banner shadow mb-3">
+        <div class="p-3 d-flex flex-wrap justify-content-between align-items-start gap-2">
+            <div>
+                <span class="aed-eyebrow">Resultado</span>
+                <div class="aed-class-giant mb-1">
+                    {r.base.tipo}
+                    <span class="aed-class-cidr">/{r.base.prefixo}</span>
+                </div>
+                <p class="small text-secondary mb-0">{r.base.descricaoTipo}</p>
+            </div>
+            <div class="text-end small text-secondary">
+                <div>Comprimido: <span class="text-warning fw-bold font-monospace">{r.base.comprimido}</span></div>
+                <div>Rede: <span class="text-light fw-bold font-monospace">{r.base.rede}</span></div>
+                <div>Endereços: <span class="text-light fw-bold">{r.totalPotencia}</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dynamic-theme" style="--dyn-bit1: {r.corBit1}; --dyn-and: {r.corAcento}; --dyn-pulo: {r.corAcento}; --dyn-resumo: {r.corAcento}; --dyn-accent: {r.corAcento};">
+
+    {! ---------- 4. Card de tipo/escopo ---------- !}
+    <div class="classe-destaque card-tech shadow mb-3 py-4 px-3 text-center">
+        <div class="classe-destaque-rotulo">Classificação do endereço (faixa IANA)</div>
+        <div class="classe-destaque-valor">{r.base.tipo}</div>
+        <div class="classe-destaque-octeto">Prefixo: <span class="text-warning fw-bold">/{r.base.prefixo}</span> · <span class="text-info">{r.bitsRede} bits de rede / {r.bitsInterface} de interface</span></div>
+        <div class="classe-destaque-faixa">{r.base.descricaoTipo}</div>
+    </div>
+
+    {! ---------- 5. Decomposição dos 128 bits, célula a célula ---------- !}
+    <div class="card-tech shadow mb-3">
+        <div class="p-3 border-bottom border-secondary text-info fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">bar_chart</span> Decomposição dos 128 bits (8 hextetos × 16 bits)</div>
+        <div class="p-3 ipv6-bit-container">
+            {#for hx in r.hextetos}
+            <div class="ipv6-octeto-group">
+                <div class="ipv6-bit-row shadow-sm">
+                    {#for bit in hx.bits}
+                    <div class="ipv6-bit-col {bit.css}">
+                        <div class="ipv6-info-top">#{bit.num}</div>
+                        <div class="ipv6-info-top ipv6-pow">2<sup>{bit.power}</sup></div>
+                        <div class="ipv6-val-bin">{bit.val}</div>
+                        <div class="ipv6-peso-bot">{bit.pesoLocal}</div>
+                    </div>
+                    {/for}
+                </div>
+                <div class="ipv6-octeto-label">HEXTETO {hx.indice}: {hx.hex}</div>
+            </div>
+            {/for}
+        </div>
+        <div class="px-3 pb-3 small">
+            <span class="ipv6-legenda ipv6-bit-rede">bits de rede (prefixo)</span>
+            <span class="ipv6-legenda ipv6-bit-iface">bits de interface</span>
+            — a fronteira é o /{r.bitsRede}, o análogo IPv6 do AND com máscara do IPv4.
+        </div>
+    </div>
+
+    {! ---------- 6. Aplicação do prefixo (análogo do bitwise AND IP×máscara) ---------- !}
+    <div class="card-tech shadow mb-3">
+        <div class="p-3 border-bottom border-secondary text-warning fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">memory</span> Aplicação do prefixo (rede × interface)</div>
+        <div class="p-3 and-table-wrap">
+            <table class="table table-dark table-bordered align-middle and-table mb-2">
+                <tbody>
+                {#for l in r.aplicacaoPrefixo}
+                <tr class="{l.css}"><td class="text-start">{l.campo}</td><td class="font-monospace">{l.valor}</td></tr>
+                {/for}
+                </tbody>
+            </table>
+            <div class="small text-secondary">Em IPv6 não há máscara decimal nem wildcard: a fronteira entre rede e interface é o próprio prefixo. Zerar os bits de interface produz a rede — o análogo do AND com a máscara no IPv4.</div>
+        </div>
+    </div>
+
+    {! ---------- 7. Tema e severidade (por prefixo) ---------- !}
+    <div class="card-tech p-3 mb-3 dynamic-legend">
+        <div class="top-card-title d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">palette</span> Tema e severidade (por prefixo)</div>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="dynamic-legend-chip chip-verde">/64+ Verde</span>
+            <span class="dynamic-legend-chip chip-azul">/48-63 Azul</span>
+            <span class="dynamic-legend-chip chip-ambar">/32-47 Âmbar</span>
+            <span class="dynamic-legend-chip chip-vermelho">/0-31 Vermelho</span>
+        </div>
+        <div class="small mt-2 mb-0"><strong>Nível atual:</strong> {r.nivelTema} — {r.nivelTemaDescricao}</div>
+    </div>
+
+    {! ---------- 8. Passo a passo ---------- !}
+    <div class="card-tech p-3 mb-3">
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h3>
+        <div class="table-responsive">
+            <table class="table table-dark table-bordered table-sm wizard-table mb-0">
+                <thead><tr><th>Etapa</th><th>Ação</th><th>Resultado</th></tr></thead>
+                <tbody>
+                {#for passo in r.wizard}
+                <tr><td>{passo.icone} {passo.etapa}</td><td>{passo.acao}</td><td class="font-monospace">{passo.resultado}</td></tr>
+                {/for}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {! ---------- 9. Linha do tempo do bloco (sem broadcast) ---------- !}
+    <div class="card-tech p-3 mb-3">
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Linha do tempo do bloco</h3>
+        <div class="timeline-bloco">
+            <div class="timeline-step">
+                <div class="timeline-title">Rede</div>
+                <div class="timeline-ip">{r.linhaTempo.rede}</div>
+            </div>
+            <div class="timeline-step is-active">
+                <div class="timeline-title">Faixa atribuível</div>
+                <div class="timeline-ip">{r.linhaTempo.primeiro} → {r.linhaTempo.ultimo}</div>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-title">Último endereço</div>
+                <div class="timeline-ip">{r.linhaTempo.ultimo}</div>
+            </div>
+        </div>
+        <div class="small text-secondary mt-2">IPv6 não tem broadcast nem "hosts úteis = total − 2": fora do uso em host ficam só o anycast Subnet-Router (identificador de interface todo zero) e os anycast reservados do topo do /64 (RFC 4291, RFC 2526).</div>
+    </div>
+
+    {! ---------- 10. Resultados + Capacidade/Termos/Cisco ---------- !}
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="card-tech p-4 h-100 resumo-box">
+                <h3 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resultados</h3>
+                <div class="table-responsive">
+                    <table class="table table-dark table-bordered table-sm resultados-table mb-2">
+                        <tbody>
+                            <tr><th>Comprimido (RFC 5952)</th><td class="font-monospace text-warning fw-bold">{r.base.comprimido}</td></tr>
+                            <tr><th>Expandido</th><td class="font-monospace">{r.base.expandido}</td></tr>
+                            <tr><th>Rede (/{r.base.prefixo})</th><td class="font-monospace">{r.base.rede}</td></tr>
+                            <tr><th>1º endereço</th><td class="font-monospace text-success">{r.base.primeiro}</td></tr>
+                            <tr><th>Último endereço</th><td class="font-monospace text-success">{r.base.ultimo}</td></tr>
+                            <tr><th>Interface ID</th><td class="font-monospace">{r.base.interfaceId}</td></tr>
+                            <tr><th>Solicited-node</th><td class="font-monospace">{r.base.solicitedNode}</td></tr>
+                            <tr><th>Reverso (ip6.arpa)</th><td class="font-monospace" style="word-break:break-all;">{r.base.reversePtr}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="small">Gateway sugerido: <span class="text-success fw-bold font-monospace">{r.gateway}</span> <span class="text-secondary">(::1 do prefixo, convenção)</span></p>
+                {#if r.provaItens.size > 0}
+                <hr class="border-secondary">
+                <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">edit_note</span> Resumo rápido (modo prova)</h3>
+                <table class="table table-dark table-bordered table-sm resumo-table mb-0">
+                    <tbody>{#for item in r.provaItens}<tr><th>{item.campo}</th><td class="font-monospace">{item.valor}</td></tr>{/for}</tbody>
+                </table>
+                {/if}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-tech p-4 h-100 resumo-box" style="border-left-color:#238636;">
+                <h3 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Capacidade</h3>
+                <p>Bits de interface: <span class="fw-bold">{r.bitsInterface}</span></p>
+                <p>Endereços no bloco: {r.totalPotencia} = <span class="text-warning fw-bold">{r.totalEnderecos}</span></p>
+                <p class="small text-secondary">Sem broadcast e sem "hosts úteis = total − 2"; só o anycast Subnet-Router (identificador todo zero) e os anycast reservados do topo do /64 ficam fora do uso em host.</p>
+                <hr class="border-secondary">
+                <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Termos da rede (IPv6)</h3>
+                <table class="table table-dark table-bordered table-sm termos-table mb-0">
+                    <tbody>
+                    {#for t in r.termos}
+                        <tr><td>{t.termo}</td><td class="small">{t.valor}</td></tr>
+                    {/for}
+                    </tbody>
+                </table>
+                <hr class="border-secondary">
+                <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco (IPv6 / OSPFv3)</h3>
+                <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{r.ciscoOspfv3}</pre>
+            </div>
+        </div>
+    </div>
+
+    {! ---------- 11. Delegação de prefixo ---------- !}
+    <div class="card-tech p-3 mb-3">
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">account_tree</span> Delegação de prefixo — quantas sub-redes menores cabem</h3>
+        <table class="table table-dark table-bordered table-sm interval-table mb-0">
+            <thead><tr><th>Prefixo</th><th>Quantas cabem</th><th>Uso típico</th></tr></thead>
+            <tbody>
+            {#for l in r.delegacao}
+                <tr><td class="font-monospace">{l.prefixo}</td><td class="fw-bold">{l.quantidade}</td><td class="small text-secondary">{l.uso}</td></tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+
+    {! ---------- 12. Régua de sub-redes ---------- !}
+    {#if r.regua.size > 0}
+    <div class="card-tech p-3 mb-3">
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {r.reguaCount} de /{r.base.prefixo})</h3>
+        <div class="table-responsive">
+            <table class="table table-dark table-bordered table-sm regua-table mb-0">
+                <thead><tr><th>#</th><th>Rede</th><th>1º endereço</th><th>Último endereço</th></tr></thead>
+                <tbody>
+                {#for s in r.regua}
+                <tr class="{#if s_isFirst}regua-current{/if}">
+                    <td>{s.indice}</td><td class="font-monospace">{s.rede}{s.prefixoStr}</td><td class="font-monospace">{s.primeiro}</td><td class="font-monospace">{s.ultimo}</td>
+                </tr>
+                {/for}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {/if}
+
+    {! ---------- 13. Tabela de referência de prefixos ---------- !}
+    <div class="card-tech shadow mb-3">
+        <div class="p-3 border-bottom border-secondary text-info fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">table_chart</span> Tabela de referência de prefixos IPv6</div>
+        <div class="p-3 table-responsive">
+            <table class="table table-dark table-bordered table-sm ref-table mb-0">
+                <thead><tr><th>Prefixo</th><th>Sub-redes /64</th><th>Endereços</th><th>Fronteira</th></tr></thead>
+                <tbody>
+                {#for row in r.referencia}
+                <tr class="{#if row.atual}is-current{/if}">
+                    <td class="font-monospace">{row.prefixo}</td><td>{row.quantasLan}</td><td>{row.enderecos}</td><td class="small text-secondary">{row.fronteira}</td>
+                </tr>
+                {/for}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {! ---------- 14. Tabela de conversão nibble/hexteto ---------- !}
+    <div class="card-tech shadow mb-3">
+        <div class="p-3 border-bottom border-secondary text-warning fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_horiz</span> Conversão (bits, nibbles, hextetos, hex)</div>
+        <div class="p-3 table-responsive">
+            <table class="table table-dark table-bordered table-sm conv-table mb-0">
+                <thead><tr><th>Referência</th><th>Bits</th><th>Nibbles</th><th>Hextetos</th><th>Hex</th></tr></thead>
+                <tbody>
+                {#for row in r.conversao}
+                <tr><td>{row.referencia}</td><td>{row.bits}</td><td>{row.nibbles}</td><td>{row.hextetos}</td><td>{row.hex}</td></tr>
+                {/for}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {! ---------- 15. Cyber segurança (GRC) ---------- !}
+    <div class="card-tech p-4 shadow mb-3">
+        <h3 class="h6 text-danger mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> Cyber segurança (GRC + contexto)</h3>
+        <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h3>
+        <ul class="small mb-3 grc-list">{#for linha in r.grcResumo}<li>{linha}</li>{/for}</ul>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span> Alertas e recomendações</h3>
+        {#for dica in r.segurancaDicas}
+        <div class="alert alert-{dica.tipo} bg-dark border-{dica.tipo} text-light small py-2 mb-2">
+            <span>{dica.icon}</span> {dica.texto}
+        </div>
+        {/for}
+    </div>
+
+    {! ---------- 16. OSPFv3 / EIGRP IPv6 ---------- !}
+    <div class="card-tech p-4 shadow mb-3 border border-secondary" style="border-left:0.312% solid #d29922 !important;">
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> OSPFv3 / EIGRP (IPv6)</h3>
+        <p class="small text-secondary mb-2">{r.ciscoNota}</p>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="small text-info mb-1 fw-bold">OSPFv3</div>
+                <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{r.ciscoOspfv3}</pre>
+            </div>
+            <div class="col-md-6">
+                <div class="small text-info mb-1 fw-bold">EIGRP para IPv6</div>
+                <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{r.ciscoEigrp}</pre>
+            </div>
+        </div>
+    </div>
+
+    {! ---------- 17. Dicas de terminal (Linux e Windows) ---------- !}
+    <div class="card-tech shadow mb-3">
+        <div class="p-3 border-bottom border-secondary text-warning fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dicas de terminal IPv6 (Linux e Windows)</div>
+        <div class="p-3 small text-secondary">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <h3 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Linux</h3>
+                    <ul class="mb-0"><li><code translate="no">ip -6 addr</code> — endereços IPv6</li><li><code translate="no">ip -6 route</code> — rotas IPv6</li><li><code translate="no">ping6 2606:4700:4700::1111</code> — testar alcance</li></ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">desktop_windows</span> Windows</h3>
+                    <ul class="mb-0"><li><code translate="no">netsh interface ipv6 show address</code></li><li><code translate="no">ping -6 ipv6.google.com</code></li><li><code translate="no">tracert -6 2606:4700:4700::1111</code></li></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {! ---------- 18. Banner contextual didático ---------- !}
+    <div class="card-tech border border-info border-2 shadow mb-3 banner-contexto-didatico">
+        <div class="p-3">
+            <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> {r.bannerTitulo}</h3>
+            <p class="small text-secondary mb-3">{r.bannerSubtitulo}</p>
+            <ul class="list-unstyled mb-0">
+            {#for it in r.bannerItens}
+            <li class="mb-2 pb-2 border-bottom border-secondary border-opacity-25">
+                <div class="text-warning fw-bold text-uppercase small">{it.rotulo}</div>
+                <div class="text-light mt-1">{it.valor}</div>
+            </li>
+            {/for}
+            </ul>
+        </div>
+    </div>
+
+    {! ---------- 19. Resposta tipo prova ---------- !}
+    <div class="card-tech border border-warning border-opacity-50 shadow mb-3 enunciado-prova-mascara">
+        <div class="p-3">
+            <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resposta tipo prova (IPv6) /{r.base.prefixo}</h3>
+            <p class="frase-estilo-quadro p-3 rounded border border-info border-opacity-25 text-light small mb-3" style="background:rgba(31,111,235,0.08);">
+                <span class="text-info text-uppercase small d-block mb-1" style="letter-spacing:0.04em;">Resumo estilo quadro (aula)</span>
+                {r.provaFrase}
+            </p>
+            <p class="linha-potencias-quadro p-2 mb-0 rounded small text-secondary border border-secondary border-opacity-25 font-monospace">{r.enunciado}</p>
+        </div>
+    </div>
+
+    </div>
+
+    {! Classe, não id: este parcial também entra no resultado da aba Domínio, e id repetido fazia "Copiar" pegar o da outra aba. data-endereco = o endereço que ESTE resultado analisou. !}
+    <textarea class="d-none texto-copia-oculto" data-endereco="{r.base.entrada}" readonly>{r.textoCopia}</textarea>
+</div>

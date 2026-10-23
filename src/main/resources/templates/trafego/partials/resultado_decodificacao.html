@@ -1,0 +1,35 @@
+<div class="trafego-resultado">
+    {#if resultado.ok}
+    <div class="aed-card card-tech loc-nota">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span>
+        <div>
+            <strong>{resultado.totalBytes} bytes decodificados</strong>
+            · camada inicial: {resultado.camadaInicial} · {resultado.camadas.size} camada(s).
+        </div>
+    </div>
+
+    {#for camada in resultado.camadas}
+    <div class="aed-card card-tech trafego-camada">
+        <div class="trafego-camada-head">
+            <h3 class="trafego-camada-nome">{camada.nome}</h3>
+            {#if camada.resumo}<span class="trafego-camada-resumo">{camada.resumo}</span>{/if}
+        </div>
+        <table class="trafego-campos">
+            <tbody>
+                {#for campo in camada.campos}
+                <tr>
+                    <td class="trafego-campo-nome">{campo.nome}</td>
+                    <td class="trafego-campo-valor">{campo.valor}</td>
+                    <td class="trafego-campo-desc">{campo.descricao}</td>
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+    </div>
+    {/for}
+    {#else}
+    <div class="aed-card card-tech trafego-erro">
+        <strong>Não foi possível decodificar. </strong>{resultado.mensagem ?: 'Verifique o hex informado.'}
+    </div>
+    {/if}
+</div>

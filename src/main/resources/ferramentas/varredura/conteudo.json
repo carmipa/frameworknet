@@ -1,0 +1,234 @@
+{
+  "resumo": "O nmap (Network Mapper) é a ferramenta padrão para descoberta de hosts e varredura de portas: ele envia pacotes cuidadosamente montados e interpreta as respostas para dizer quais máquinas estão vivas, quais portas estão abertas e quais serviços as atendem. O tipo mais usado, o SYN scan (-sS), inicia o aperto de mão TCP mas nunca o completa: envia SYN, e se voltar SYN/ACK a porta está aberta (o kernel da máquina do nmap, que não abriu aquela conexão, responde RST), se voltar RST está fechada, e se nada voltar está filtrada por firewall. IMPORTANTE: varredura de portas só é legítima em redes próprias ou com autorização explícita por escrito. Escanear terceiros sem permissão é reconhecimento hostil e, em muitos países, crime. Todo o conteúdo abaixo pressupõe uso didático e autorizado. No próprio site, a rota /diagnostico traz um SYN scan simulado para você ver o mecanismo sem tocar em nenhuma rede real.",
+  "ficha": [
+    {
+      "rotulo": "Ferramenta",
+      "valor": "nmap (Network Mapper)",
+      "dica": "Código aberto, disponível para Linux, Windows e macOS; a versão gráfica se chama Zenmap."
+    },
+    {
+      "rotulo": "Função principal",
+      "valor": "Descoberta de hosts e varredura de portas TCP/UDP",
+      "dica": "Mapeia o que está vivo na rede e o que cada máquina está ouvindo."
+    },
+    {
+      "rotulo": "Scan padrão (com privilégio)",
+      "valor": "SYN scan (-sS)",
+      "dica": "Rápido e discreto; não completa o aperto de mão TCP. Exige root/administrador."
+    },
+    {
+      "rotulo": "Requisito legal",
+      "valor": "Autorização por escrito do dono da rede",
+      "dica": "Sem permissão, a varredura pode ser enquadrada como acesso não autorizado."
+    },
+    {
+      "rotulo": "Estados de porta",
+      "valor": "aberta, fechada, filtrada",
+      "dica": "Filtrada quase sempre indica um firewall descartando os pacotes."
+    }
+  ],
+  "conceitos": [
+    {
+      "titulo": "Aperto de mão TCP em 3 vias",
+      "icone": "handshake",
+      "texto": "Uma conexão TCP normal começa com SYN do cliente, SYN/ACK do servidor e ACK do cliente. O nmap explora justamente essas respostas para deduzir o estado de cada porta.",
+      "destaque": "SYN, SYN/ACK, ACK"
+    },
+    {
+      "titulo": "SYN scan (half-open)",
+      "icone": "content_cut",
+      "texto": "O -sS envia o SYN e, ao receber SYN/ACK, não completa com ACK: o kernel da máquina do nmap, que não reconhece a conexão, responde com RST. A conexão nunca se completa, por isso é chamado de half-open: rápido e menos ruidoso nos logs da aplicação.",
+      "destaque": "Half-open"
+    },
+    {
+      "titulo": "Estados de porta",
+      "icone": "traffic",
+      "texto": "Aberta: um serviço respondeu (SYN/ACK). Fechada: a máquina respondeu RST, está viva mas sem serviço ali. Filtrada: nenhuma resposta útil voltou, tipicamente um firewall descartando o pacote em silêncio.",
+      "destaque": "aberta | fechada | filtrada"
+    },
+    {
+      "titulo": "Descoberta de host (ping sweep)",
+      "icone": "radar",
+      "texto": "Antes de varrer portas, o nmap descobre quais IPs estão ativos. O -sn faz apenas essa varredura de presença (ping sweep), sem varrer portas — mas não sem tocar nelas: como root, a descoberta padrão manda ICMP Echo, um SYN na 443, um ACK na 80 e um ICMP Timestamp; na rede local, só ARP.",
+      "destaque": "-sn"
+    },
+    {
+      "titulo": "Detecção de serviço e versão",
+      "icone": "manage_search",
+      "texto": "Encontrar a porta 22 aberta é só metade da história. O -sV interroga a porta e lê o banner para dizer qual software e qual versão está rodando, base para avaliar vulnerabilidades.",
+      "destaque": "-sV"
+    },
+    {
+      "titulo": "Autorização não é opcional",
+      "icone": "gavel",
+      "texto": "Varredura sem consentimento é reconhecimento hostil e pode configurar crime. Use nmap apenas na sua própria rede, em laboratórios isolados ou sob contrato de teste com escopo definido por escrito.",
+      "destaque": "Só com permissão"
+    }
+  ],
+  "diagrama": {
+    "titulo": "SYN scan: como o nmap decide se a porta está aberta ou fechada",
+    "definicao": "sequenceDiagram\n    participant N as nmap (atacante autorizado)\n    participant A as Porta aberta\n    participant F as Porta fechada\n    participant X as Porta filtrada\n    Note over N,A: Caso 1 - porta ABERTA\n    N->>A: SYN (tento abrir a porta)\n    A-->>N: SYN/ACK (serviço presente)\n    N->>A: RST (abandono, half-open)\n    Note over N,F: Caso 2 - porta FECHADA\n    N->>F: SYN (tento abrir a porta)\n    F-->>N: RST (viva, mas sem serviço)\n    Note over N,X: Caso 3 - porta FILTRADA\n    N->>X: SYN (tento abrir a porta)\n    Note right of X: silêncio - firewall descartou o pacote",
+    "legenda": "No SYN scan, o nmap nunca completa a conexão. SYN/ACK significa aberta; RST significa fechada; ausência de resposta significa filtrada (firewall). O envio de RST após o SYN/ACK é o que mantém a conexão half-open."
+  },
+  "tabelas": [
+    {
+      "titulo": "Principais tipos de scan e o que cada um faz",
+      "colunas": [
+        "Opção",
+        "Nome",
+        "O que faz",
+        "Precisa de root?"
+      ],
+      "linhas": [
+        [
+          "-sS",
+          "SYN scan (half-open)",
+          "Envia SYN e não completa o aperto de mão; rápido e discreto. Scan padrão com privilégio.",
+          "Sim"
+        ],
+        [
+          "-sT",
+          "TCP connect scan",
+          "Completa o aperto de mão TCP via chamada do sistema; usado quando não há privilégio de root.",
+          "Não"
+        ],
+        [
+          "-sU",
+          "UDP scan",
+          "Sonda portas UDP (DNS, SNMP, DHCP). Lento, pois UDP não confirma entrega.",
+          "Sim"
+        ],
+        [
+          "-sV",
+          "Detecção de versão",
+          "Interroga a porta aberta e lê o banner para identificar serviço e versão.",
+          "Não"
+        ],
+        [
+          "-O",
+          "Detecção de SO",
+          "Analisa a pilha TCP/IP para adivinhar o sistema operacional do alvo.",
+          "Sim"
+        ],
+        [
+          "-sn",
+          "Ping sweep",
+          "Só descobre quais hosts estão vivos, sem varrer portas.",
+          "Não (root melhora)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Estados de porta e o que significam",
+      "colunas": [
+        "Estado",
+        "Resposta observada",
+        "Interpretação"
+      ],
+      "linhas": [
+        [
+          "aberta",
+          "SYN/ACK",
+          "Há um serviço escutando e aceitando conexões naquela porta."
+        ],
+        [
+          "fechada",
+          "RST",
+          "O host está vivo e acessível, mas nenhum serviço ocupa a porta."
+        ],
+        [
+          "filtrada",
+          "Nenhuma resposta ou ICMP de bloqueio",
+          "Um firewall ou filtro descarta os pacotes; o nmap não consegue determinar o estado real."
+        ],
+        [
+          "aberta|filtrada",
+          "Sem resposta (comum em UDP)",
+          "Não dá para distinguir aberta de filtrada porque nenhuma resposta chegou."
+        ]
+      ]
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "TCP connect scan sem privilégio",
+      "cenario": "Descobrir portas abertas na sua própria máquina de laboratório sem precisar de root. O -sT usa a chamada connect() do sistema, então qualquer usuário roda.",
+      "comandos": "nmap -sT scanme.nmap.org\n\n# na sua rede local (troque pelo seu IP):\nnmap -sT 192.168.0.10",
+      "explicacao": "scanme.nmap.org é um host que o próprio projeto nmap mantém e AUTORIZA para testes. O -sT completa o aperto de mão TCP, aparece nos logs da aplicação, mas não exige privilégio administrativo."
+    },
+    {
+      "titulo": "Detecção de versão em portas específicas",
+      "cenario": "Você já sabe que há portas web e SSH abertas e quer saber qual software e versão estão rodando ali.",
+      "comandos": "nmap -sV -p 22,80,443 192.168.0.10\n\n# faixa de portas e serviço detalhado:\nnmap -sV -p 1-1000 192.168.0.10",
+      "explicacao": "O -p restringe quais portas verificar (mais rápido que varrer as 65535). O -sV lê o banner de cada porta aberta e mostra, por exemplo, OpenSSH 8.9 ou nginx 1.24, informação essencial para cruzar com bases de vulnerabilidade."
+    },
+    {
+      "titulo": "Ping sweep: quem está vivo na rede",
+      "cenario": "Antes de varrer portas, mapear quais IPs de uma sub-rede autorizada estão ligados.",
+      "comandos": "nmap -sn 192.168.0.0/24",
+      "explicacao": "O -sn faz apenas a descoberta de hosts (ping sweep) na faixa inteira /24, sem varrer portas (na própria LAN ele pergunta por ARP; fora dela, ICMP e sondas TCP na 443 e na 80). Retorna a lista de máquinas ativas, ponto de partida para decidir o que varrer em seguida."
+    },
+    {
+      "titulo": "SYN scan discreto com detecção de SO",
+      "cenario": "Auditoria autorizada onde você tem privilégio de root e quer o scan padrão, rápido e completo.",
+      "comandos": "sudo nmap -sS -O 192.168.0.10\n\n# scan rápido das portas mais comuns:\nsudo nmap -sS -F 192.168.0.10",
+      "explicacao": "O -sS exige root porque monta pacotes SYN crus. Combinado com -O, tenta ainda identificar o sistema operacional pela pilha TCP/IP. O -F limita a varredura às ~100 portas mais comuns para um resultado rápido."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "Todas as portas aparecem como filtered",
+      "causa_provavel": "Um firewall com política default-deny está descartando os pacotes em silêncio antes de chegarem aos serviços.",
+      "leitura": "Não há resposta útil (nem SYN/ACK, nem RST). Isso na verdade é um bom sinal de defesa: o alvo não revela nada. Confirme testando uma porta que você sabe aberta.",
+      "comando": "nmap -sS -p 80,443 192.168.0.10"
+    },
+    {
+      "sintoma": "O host não responde ao ping, mas você sabe que está ligado",
+      "causa_provavel": "O firewall descarta todas as sondas de descoberta do nmap (ICMP echo e timestamp, SYN na 443, ACK na 80), então ele conclui que o host está down (numa LAN, a descoberta por ARP costuma achar o host mesmo assim).",
+      "leitura": "Use -Pn para pular a descoberta por ping e forçar a varredura assumindo o host vivo.",
+      "comando": "nmap -Pn -sS 192.168.0.10"
+    },
+    {
+      "sintoma": "UDP scan retorna quase tudo como open|filtered",
+      "causa_provavel": "UDP não confirma entrega: a ausência de resposta é ambígua entre porta aberta e porta filtrada.",
+      "leitura": "É o comportamento normal do -sU, não um erro. Combine com -sV para forçar sondas de aplicação que ajudam a desambiguar.",
+      "comando": "sudo nmap -sU -sV -p 53,161 192.168.0.10"
+    },
+    {
+      "sintoma": "Quero ver o mecanismo do SYN scan sem varrer nenhuma rede real",
+      "causa_provavel": "Ainda não tem um laboratório autorizado montado, ou só quer entender a lógica antes.",
+      "leitura": "A rota /diagnostico do próprio site traz um SYN scan simulado: ele encena os três casos (aberta, fechada, filtrada) de forma didática, sem enviar um único pacote a terceiros.",
+      "comando": "# acesse a rota didatica /diagnostico no navegador"
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Reconhecimento (footprinting)",
+      "como_funciona": "O atacante varre faixas de IP e portas para montar um mapa do alvo: quais hosts existem, quais serviços rodam e em que versão. É a fase inicial de quase todo ataque, feita antes de qualquer exploração, para escolher onde bater.",
+      "sinal": "Muitas conexões SYN de uma mesma origem para muitas portas em curto intervalo; conexões half-open (SYN sem ACK final) registradas pelo firewall ou IDS.",
+      "gravidade": "Média",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "Enumeração de serviços e versões",
+      "como_funciona": "Após achar portas abertas, o atacante usa detecção de versão (-sV) para descobrir softwares desatualizados e cruzar com bases públicas de vulnerabilidades (CVE), identificando alvos exploráveis.",
+      "sinal": "Múltiplas conexões completas seguidas de leitura de banner em portas de serviço; picos de tráfego para portas como 22, 80, 443, 3389.",
+      "gravidade": "Alta",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Firewall com política default-deny",
+      "como_funciona": "O firewall descarta por padrão tudo que não foi explicitamente permitido. Portas não liberadas aparecem como filtered para o scanner, que não consegue distinguir aberta de fechada nem obter informação útil.",
+      "cobre": "Reconhecimento e enumeração vindos de fora do perímetro",
+      "limite": "Não protege contra scan vindo de dentro da rede (host já comprometido) nem contra as portas que precisam ficar abertas por necessidade do negócio."
+    },
+    {
+      "nome": "IDS/IPS (detecção de intrusão)",
+      "como_funciona": "Sistemas como Snort ou Suricata reconhecem o padrão de um scan (muitos SYN para muitas portas de uma só origem) e alertam ou bloqueiam automaticamente a origem, transformando o reconhecimento em evento auditável.",
+      "cobre": "Detecção da fase de varredura em tempo quase real",
+      "limite": "Scans lentos e distribuídos (várias origens, um pacote por vez) podem passar abaixo do limiar de detecção; gera falsos positivos que exigem ajuste fino."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+<div class="calc-parecer {#if parecer.utilizavel}calc-parecer-ok{#else}calc-parecer-bloqueado{/if}">
+    <div class="calc-parecer-head">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">
+            {#if parecer.utilizavel}check_circle{#else}block{/if}
+        </span>
+        <div>
+            <strong class="d-block">VLAN {parecer.vlanId} — {parecer.faixa}</strong>
+            <span class="calc-badge">{parecer.faixaDetalhe}</span>
+        </div>
+    </div>
+    <p class="calc-parecer-texto">{parecer.explicacao}</p>
+</div>

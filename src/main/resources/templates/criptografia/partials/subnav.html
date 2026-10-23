@@ -1,0 +1,14 @@
+{! Sub-menu FLAT do módulo — reutiliza protocolos/css/subnav.css. Variáveis: aprofundamentos, aprofundamentoAtivo. !}
+<nav class="protocolo-subnav" aria-label="Catálogo e aprofundamentos">
+    <div class="protocolo-subnav-camadas" role="tablist">
+        <a href="/criptografia" class="protocolo-subnav-item {#if aprofundamentoAtivo == 'geral'}is-active{/if}" {#if aprofundamentoAtivo == 'geral'}aria-current="page"{/if} title="Catálogo (aba Geral)">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_rows</span><span>Geral</span>
+        </a>
+        {#for item in aprofundamentos}
+        <a href="{item.rota}" class="protocolo-subnav-item {#if aprofundamentoAtivo == item.slug}is-active{/if}" {#if aprofundamentoAtivo == item.slug}aria-current="page"{/if} title="{item.chamada}">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">{item.icone}</span><span>{item.rotuloMenu}</span>
+        </a>
+        {/for}
+        <span class="protocolo-subnav-hint"><span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span> Criptografia por tema</span>
+    </div>
+</nav>
