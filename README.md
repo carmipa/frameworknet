@@ -349,7 +349,7 @@ A documentação técnica completa fica em `src/main/resources/README.md` e é r
 
 Paulo André Carminati — site pessoal: [carminati.dev.br](https://carminati.dev.br/)
 
-Repositório: [github.com/carmipa/framework-net-java-quarkus](https://github.com/carmipa/framework-net-java-quarkus)
+Repositório: [github.com/carmipa/frameworknet](https://github.com/carmipa/frameworknet)
 
 ## Licença
 

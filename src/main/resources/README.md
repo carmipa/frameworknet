@@ -28,7 +28,7 @@ Documentação, Sobre):
 - **Telemetria** — dashboard de eventos, console ao vivo e **origem do tráfego** (bots × pessoas pelo User-Agent e, quando houver borda que garanta o cabeçalho, país por `CF-IPCountry` — **sem guardar IP**) — server-side. O país fica em `??` enquanto `framework.telemetria.confiar-cf-ipcountry` for `false`, que é o padrão: sem um Cloudflare que **sobrescreva** o cabeçalho, ele é escolhido pelo visitante, e métrica ditada por quem é medido não é medição.
 - **Documentação** — este README renderizado.
 
-> Repositório: [https://github.com/carmipa/framework-net-java-quarkus](https://github.com/carmipa/framework-net-java-quarkus)
+> Repositório: [https://github.com/carmipa/frameworknet](https://github.com/carmipa/frameworknet)
 
 ---
 
