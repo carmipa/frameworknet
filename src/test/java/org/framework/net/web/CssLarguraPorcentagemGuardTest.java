@@ -313,14 +313,14 @@ class CssLarguraPorcentagemGuardTest {
         }
         List<String> novas = atuais.stream().filter(v -> !base.contains(v)).toList();
         List<String> resolvidas = base.stream().filter(v -> !atuais.contains(v)).toList();
-        assertTrue(novas.isEmpty(), "violação NOVA da Regra 27 (largura cheia, px só em borda/sombra):\n  "
+        assertTrue(novas.isEmpty(), "violação NOVA de largura cheia (px só em borda/sombra):\n  "
                 + String.join("\n  ", novas));
         assertTrue(resolvidas.isEmpty(), "item da linha de base já corrigido — tire de " + LINHA_DE_BASE + ":\n  "
                 + String.join("\n  ", resolvidas));
     }
 
     /**
-     * O tooltip canônico (regra 6-A) é cópia SEM edição da fonte do componente: os 8px da ponte invisível e o
+     * O tooltip compartilhado é cópia SEM edição da fonte do componente: os 8px da ponte invisível e o
      * calc(100vw - 1rem) do balão de posição fixa são dele, e não mexem no layout da página. Ele fica fora da
      * varredura, e o teste abaixo garante que continua sendo a cópia fiel — editado no projeto, reprova.
      */

@@ -2,7 +2,7 @@
    Todos os seletores começam por .lab- (ou descendem de .lab-page): nada aqui
    deve vazar para outras telas. Reutiliza os tokens --aed-* do design system. */
 
-/* .lab-page: largura cheia (Regra 27) — o contêiner da página não leva max-width. */
+/* .lab-page: largura cheia — o contêiner da página não leva max-width. */
 
 /* ---- Subnav interna ---- */
 .lab-subnav {

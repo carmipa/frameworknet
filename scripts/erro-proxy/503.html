@@ -20,7 +20,7 @@
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
     <style>
 /*
- * Material Symbols Outlined servido LOCAL (regra de UX do vault: ícone nunca por CDN).
+ * Material Symbols Outlined servido LOCAL (ícone nunca por CDN: sem a fonte, o nome do glifo aparece como palavra).
  * Sem a fonte, o glifo é desenhado como a PALAVRA do nome ("content_copy Copiar") — offline, no
  * PWA instalado ou em rede que bloqueia o Google Fonts. Mesmo eixo usado antes pelo CDN:
  * opsz 24, wght 400, FILL 0, GRAD 0. Fonte: Google Fonts (Apache License 2.0).
@@ -174,7 +174,7 @@ a:hover { color: #eef2f8; }
 
 /* ---------- LAYOUT ---------- */
 .main { flex: 1; padding: 3% 4% 4%; }
-/* Regra 27: largura cheia — o .main já dá o respiro lateral de 4%. */
+/* Largura cheia — o .main já dá o respiro lateral de 4%. */
 .wrap { width: 100%; }
 
 /* ---------- HERO ---------- */
@@ -231,7 +231,7 @@ a:hover { color: #eef2f8; }
 .tv-dim { color: var(--tx-3); }
 
 /* ---------- ARTE / MATRIX ---------- */
-/* A arte é decorativa e quadrada: mede em vmin para caber na altura da tela em qualquer proporção (Regra 27). */
+/* A arte é decorativa e quadrada: mede em vmin para caber na altura da tela em qualquer proporção. */
 .hero-right { display: flex; justify-content: center; min-width: 0; }
 .hero-right .art-frame { width: min(100%, 80vmin); }
 .art-frame {

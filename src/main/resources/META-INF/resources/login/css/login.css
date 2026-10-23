@@ -86,7 +86,7 @@ a:hover { color: #eef2f8; }
 /* ---------- LAYOUT ---------- */
 .main { flex: 1; display: flex; align-items: center; padding: 3% 4%; }
 .view { width: 100%; }
-/* Regra 27: a grade ocupa a largura da página (o .main já dá o respiro de 4%); nada de coluna no meio. */
+/* A grade ocupa a largura da página (o .main já dá o respiro de 4%); nada de coluna no meio. */
 .login-grid { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .86fr); gap: 2rem 4%; align-items: center; }
 /* Cartão único da contingência: cresce com a tela (40% da área) sem passar dela; centrado pelo flex do .view. */
 .view:has(> .key-wrap) { display: flex; justify-content: center; }

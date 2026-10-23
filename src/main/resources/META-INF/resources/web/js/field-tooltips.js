@@ -1,5 +1,5 @@
 /**
- * Adaptador do tooltip canônico (regra 6-A) para as dicas que o site escreve como atributo title.
+ * Adaptador do tooltip compartilhado para as dicas que o site escreve como atributo title.
  *
  * PROPÓSITO DE NEGÓCIO: o site tem centenas de dicas escritas como title="…" nos templates, nos JSON de
  * conteúdo e no JS que monta tela. Até 22/10/2026 elas viravam Tooltip do Bootstrap, que só põe o
@@ -12,7 +12,7 @@
  * INVARIANTES DO DOMÍNIO:
  *  - o rótulo visível continua sendo o nome acessível: a dica entra como DESCRIÇÃO, nunca como nome; botão
  *    só com ícone, cujo único nome era o title, ganha aria-label com o mesmo texto antes do title sair;
- *  - dica igual ao rótulo não é dica (regra 6-A §3): vira só o nome, sem balão repetindo o que já está escrito;
+ *  - dica igual ao rótulo não é dica: vira só o nome, sem balão repetindo o que já está escrito;
  *  - o title sai depois da conversão (sem balão nativo duplicado), e o texto fica em data-dica-texto para o
  *    balão ser refeito se o JS da página trocar o conteúdo do elemento;
  *  - nada é embrulhado onde o embrulho quebraria o comportamento: menu suspenso (o Bootstrap acha o menu pelo

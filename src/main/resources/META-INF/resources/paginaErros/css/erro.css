@@ -119,7 +119,7 @@ a:hover { color: #eef2f8; }
 
 /* ---------- LAYOUT ---------- */
 .main { flex: 1; padding: 3% 4% 4%; }
-/* Regra 27: largura cheia — o .main já dá o respiro lateral de 4%. */
+/* Largura cheia — o .main já dá o respiro lateral de 4%. */
 .wrap { width: 100%; }
 
 /* ---------- HERO ---------- */
@@ -176,7 +176,7 @@ a:hover { color: #eef2f8; }
 .tv-dim { color: var(--tx-3); }
 
 /* ---------- ARTE / MATRIX ---------- */
-/* A arte é decorativa e quadrada: mede em vmin para caber na altura da tela em qualquer proporção (Regra 27). */
+/* A arte é decorativa e quadrada: mede em vmin para caber na altura da tela em qualquer proporção. */
 .hero-right { display: flex; justify-content: center; min-width: 0; }
 .hero-right .art-frame { width: min(100%, 80vmin); }
 .art-frame {

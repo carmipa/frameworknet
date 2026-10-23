@@ -1,7 +1,7 @@
 /* Ferramentas > Rede: Windows x Linux — estilos ESCOPADOS (.rede-*). Sem seletor global.
    Cores por categoria via variavel --c; cada .rede-cat-<id> define a sua. */
 
-/* .rede-page: largura cheia (Regra 27) — o contêiner da página não leva max-width. */
+/* .rede-page: largura cheia — o contêiner da página não leva max-width. */
 .rede-secao-titulo { display: flex; align-items: center; gap: 0.45rem; font-size: 1.05rem; font-weight: 700; color: #eef2f8; margin: 2rem 0 0.75rem; }
 .rede-secao-titulo .material-symbols-outlined { color: #2dd4bf; }
 .rede-aviso-inline { color: #fcd34d; }

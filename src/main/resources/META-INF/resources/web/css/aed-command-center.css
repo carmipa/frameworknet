@@ -819,7 +819,7 @@ body.aed-app .form-select:focus {
     color: inherit;
 }
 
-/* Medida de leitura do parágrafo de abertura das páginas (Regra 27: o limite em ch vale para o bloco de
+/* Medida de leitura do parágrafo de abertura das páginas (o limite em ch vale para o bloco de
    texto, nunca para o contêiner da página). Antes cada template trazia o seu style="max-width:NNrem". */
 .aed-medida-leitura {
     max-width: 100ch;
@@ -858,7 +858,7 @@ body.aed-app .main-menu-wrap {
 .tab-panel.active { display: block; }
 
 /* --- Admin login --- */
-/* Acesso administrativo em largura cheia (Regra 27): a explicação de um lado e o formulário do outro, que
+/* Acesso administrativo em largura cheia: a explicação de um lado e o formulário do outro, que
    empilham quando a tela não comporta as duas colunas. Antes era uma coluna fixa de 26,25rem no meio. */
 .aed-admin-card {
     width: 100%;

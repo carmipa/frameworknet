@@ -1,5 +1,5 @@
 /**
- * Catraca das dicas (regra 6-A): todo título, rótulo, campo, botão e cabeçalho de coluna tem tooltip acessível.
+ * Catraca das dicas: todo título, rótulo, campo, botão e cabeçalho de coluna tem tooltip acessível.
  *
  * PROPOSITO DE NEGOCIO: em 22/10/2026 as ~1.400 dicas do site passaram para o tooltip canonico (aria-describedby
  * permanente, foco, toque, Esc), mas ainda ha elementos do escopo sem texto de dica nenhum — sobretudo titulos e

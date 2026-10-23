@@ -1,5 +1,5 @@
 /*
- * Tooltip canônico (regra 6-A, dica.css v1.2 copiado SEM edição) numa camada de cascata própria.
+ * Tooltip compartilhado (dica.css v1.2 copiado SEM edição) numa camada de cascata própria.
  *
  * Por que camada: o adaptador (web/js/field-tooltips.js) põe a classe .dica no próprio link ou botão que já
  * tinha dica, em vez de embrulhá-lo — embrulhar quebraria o menu suspenso do Bootstrap (ele acha o menu pelo

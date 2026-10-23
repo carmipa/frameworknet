@@ -29,7 +29,7 @@
  */
 /* v3: expurga caches anteriores, que guardavam export/API e páginas com dado pessoal da sessão.
    v4: a casca offline passa a levar o offline.css (a página offline aparecia sem estilo, FRONT-14).
-   v5: CSS em largura cheia e rem (Regra 27) e Bootstrap/mermaid/Chart.js/Leaflet servidos pelo próprio site —
+   v5: CSS em largura cheia e rem e Bootstrap/mermaid/Chart.js/Leaflet servidos pelo próprio site —
        mesma origem, então entram no cache na primeira visita e o menu funciona offline.
    v6: a página offline passa a sair do template das páginas de erro (mesmo visual de todas elas);
        a casca leva o CSS, a fonte, o script e as bandeiras que ela usa, e o offline.css sai. */
