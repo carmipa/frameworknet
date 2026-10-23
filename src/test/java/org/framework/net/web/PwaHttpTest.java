@@ -111,6 +111,23 @@ class PwaHttpTest {
     }
 
     @Test
+    @DisplayName("o ícone da página é PNG quadrado com lado múltiplo de 48, como o Google exige no resultado de busca")
+    void iconeAceitoPeloBuscador() {
+        // O icone.png do projeto é um banner 1376x768: o serviço de favicons do Google
+        // devolvia 404 para o host, e o resultado de busca mostrava o globo genérico.
+        String html = given().when().get("/").then().statusCode(200).extract().asString();
+        var m = java.util.regex.Pattern.compile("<link rel=\"icon\"[^>]*href=\"([^\"]+)\"").matcher(html);
+        org.junit.jupiter.api.Assertions.assertTrue(m.find(), "a página não declara <link rel=\"icon\">");
+        byte[] png = given().when().get(m.group(1)).then().statusCode(200).extract().asByteArray();
+        org.junit.jupiter.api.Assertions.assertTrue(png.length > 24 && png[1] == 'P' && png[2] == 'N' && png[3] == 'G',
+                "o ícone declarado não é PNG: " + m.group(1));
+        int largura = java.nio.ByteBuffer.wrap(png, 16, 4).getInt();
+        int altura = java.nio.ByteBuffer.wrap(png, 20, 4).getInt();
+        org.junit.jupiter.api.Assertions.assertTrue(largura == altura && largura % 48 == 0,
+                "ícone " + largura + "x" + altura + " — o buscador exige quadrado com lado múltiplo de 48");
+    }
+
+    @Test
     @DisplayName("a CSP permite manifest e service worker")
     void cspPermiteOPwa() {
         var csp = given().when().get("/").then().statusCode(200)
