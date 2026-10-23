@@ -40,15 +40,15 @@
     </nav>
 
     <section id="conceitos" class="tls-secao">
-        <h3 class="tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> O que o TLS garante</h3>
+        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> O que o TLS garante</h2>
         <div class="row g-3">
             {#for item in conteudo.conceitos}
             <div class="col-12 col-lg-6">
                 <article class="card-tech p-3 h-100 tls-conceito">
-                    <h4 class="tls-conceito-titulo">
+                    <h3 class="h4 tls-conceito-titulo">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">{item.icone}</span>
                         {item.titulo}
-                    </h4>
+                    </h3>
                     <p class="small text-light mb-2">{item.texto}</p>
                     <p class="tls-destaque mb-0">{item.destaque}</p>
                 </article>
@@ -62,7 +62,7 @@
     {#include protocolos/partials/cabecalho_bits.html cabecalho=conteudo.cabecalho /}
 
     <section id="handshake" class="tls-secao">
-        <h3 class="tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">handshake</span> O handshake TLS 1.3</h3>
+        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">handshake</span> O handshake TLS 1.3</h2>
         <p class="small text-secondary">
             Um round-trip (1-RTT): o cliente já manda uma chave efêmera no primeiro pacote, e a validação
             do certificado acontece antes de o cliente enviar dados de aplicação (no handshake completo, sem 0-RTT).
@@ -81,7 +81,7 @@
     </section>
 
     <section id="cadeia" class="tls-secao">
-        <h3 class="tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">workspace_premium</span> A cadeia de certificados</h3>
+        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">workspace_premium</span> A cadeia de certificados</h2>
         <p class="small text-secondary">
             O navegador confia na CA raiz; a raiz assina a intermediária; a intermediária assina o seu site.
             O servidor precisa enviar a folha <em>e</em> a intermediária — esquecer a segunda é o erro clássico.
@@ -101,7 +101,7 @@
     </section>
 
     <section id="ciphers" class="tls-secao">
-        <h3 class="tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">enhanced_encryption</span> Cipher suites</h3>
+        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">enhanced_encryption</span> Cipher suites</h2>
         <div class="table-responsive border border-secondary border-opacity-25 rounded">
             <table class="table table-dark table-sm align-middle mb-0 tls-tabela">
                 <thead>
@@ -127,16 +127,16 @@
     </section>
 
     <section id="ataques" class="tls-secao">
-        <h3 class="tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques contra TLS/PKI</h3>
+        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques contra TLS/PKI</h2>
         <div class="row g-3">
             {#for at in conteudo.ataques}
             <div class="col-12 col-xl-6">
                 <article class="card-tech p-3 h-100 tls-ataque tls-ataque-{at.gravidadeCor}">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                        <h4 class="tls-ataque-titulo mb-0">
+                        <h3 class="h4 tls-ataque-titulo mb-0">
                             <span class="material-symbols-outlined" aria-hidden="true" translate="no">{#if at.gravidadeCor == 'danger'}local_fire_department{#else if at.gravidadeCor == 'warning'}warning{#else if at.gravidadeCor == 'info'}info{#else}report{/if}</span>
                             {at.nome}
-                        </h4>
+                        </h3>
                         <span class="badge bg-dark border border-{at.gravidadeCor} text-{at.gravidadeCor}">{at.gravidade}</span>
                     </div>
                     <p class="small text-light mb-2">{at.comoFunciona}</p>
@@ -151,7 +151,7 @@
     </section>
 
     <section id="mitigacoes" class="tls-secao">
-        <h3 class="tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</h3>
+        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</h2>
         <p class="small text-secondary">
             A coluna "não cobre" existe de propósito: pinning mal feito trava o app, CT só detecta depois,
             HSTS não protege o primeiro acesso sem preload.
@@ -181,12 +181,12 @@
     </section>
 
     <section id="laboratorio" class="tls-secao">
-        <h3 class="tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</h3>
+        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</h2>
         <div class="row g-3">
             {#for lab in conteudo.laboratorios}
             <div class="col-12 col-xl-6">
                 <article class="card-tech p-3 h-100 tls-lab">
-                    <h4 class="tls-lab-titulo">{lab.titulo}</h4>
+                    <h3 class="h4 tls-lab-titulo">{lab.titulo}</h3>
                     <p class="small text-secondary mb-2">{lab.cenario}</p>
                     <pre class="tls-codigo" id="tls-lab-{lab_count}" translate="no">{lab.comandos}</pre>
                     <div class="d-flex justify-content-end mb-2">
@@ -203,15 +203,15 @@
     </section>
 
     <section id="troubleshooting" class="tls-secao">
-        <h3 class="tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</h3>
+        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</h2>
         <div class="row g-3">
             {#for diag in conteudo.diagnosticos}
             <div class="col-12 col-xl-6">
                 <article class="card-tech p-3 h-100 tls-diag">
-                    <h4 class="tls-diag-sintoma">
+                    <h3 class="h4 tls-diag-sintoma">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">bug_report</span>
                         {diag.sintoma}
-                    </h4>
+                    </h3>
                     <p class="small mb-2"><span class="tls-rotulo tls-rotulo-risco">Causa provável</span> {diag.causaProvavel}</p>
                     <pre class="tls-codigo" id="tls-diag-{diag_count}" translate="no">{diag.comando}</pre>
                     <div class="d-flex justify-content-end mb-2">

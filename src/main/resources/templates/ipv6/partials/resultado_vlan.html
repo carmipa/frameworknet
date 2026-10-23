@@ -1,7 +1,7 @@
 <div class="calc-resultado card-tech shadow">
     <div class="calc-resumo-head">
         <span class="aed-eyebrow">Plano de VLANs IPv6</span>
-        <h5 class="mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">dns</span> {v.baseCidr} → LANs /{v.prefixoLan}</h5>
+        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">dns</span> {v.baseCidr} → LANs /{v.prefixoLan}</h3>
     </div>
 
     <div class="calc-kpis">
@@ -32,7 +32,7 @@
 !
 {/for}{v.trunkCli}</textarea>
 
-    <h6 class="calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> VLANs (uma LAN /{v.prefixoLan} por VLAN)</h6>
+    <h4 class="h6 calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> VLANs (uma LAN /{v.prefixoLan} por VLAN)</h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
             <thead><tr>
@@ -51,10 +51,10 @@
         </table>
     </div>
 
-    <h6 class="calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">router</span> Trunk 802.1Q (uplink)</h6>
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">router</span> Trunk 802.1Q (uplink)</h4>
     <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{v.trunkCli}</pre>
 
-    <h6 class="calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> SVI Cisco por VLAN (roteamento inter-VLAN)</h6>
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> SVI Cisco por VLAN (roteamento inter-VLAN)</h4>
     <div class="row g-3">
         {#for l in v.vlans}
         <div class="col-12 col-lg-6">

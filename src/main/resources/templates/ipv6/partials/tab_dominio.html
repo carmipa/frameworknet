@@ -1,6 +1,6 @@
 {! Aba "Domínio": resolve o registro AAAA (IPv6) e mostra a análise rica completa em largura total. !}
 <div class="calc-form-card mb-3">
-    <h6 class="calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">language</span> Domínio → IPv6 (AAAA)</h6>
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">language</span> Domínio → IPv6 (AAAA)</h2>
     <p class="calc-hint">O registro <code translate="no">AAAA</code> é o "A record" do IPv6: mapeia um nome ao endereço de 128 bits. A resolução acontece no servidor; endereços internos/privados são recusados.</p>
     <form id="formDom" class="row g-2 align-items-end" hx-post="/ipv6/api/dominio" hx-target="#saidaDom" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">

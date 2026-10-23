@@ -1,6 +1,6 @@
 {! Aba "Projetar": form em largura total; plano 100% abaixo (regra global de layout IPv6). !}
 <div class="calc-form-card mb-3">
-    <h6 class="calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">architecture</span> Projetar rede IPv6</h6>
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">architecture</span> Projetar rede IPv6</h2>
     <p class="calc-hint">Informe o bloco base, os prefixos de LAN/WAN, a topologia e as localidades (uma por linha). Gera plano de endereçamento, enlaces, gateways, rotas e CLI Cisco (OSPFv3/EIGRP).</p>
     <form id="formProjetar" hx-post="/ipv6/api/projetar" hx-target="#saidaProjetar" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">

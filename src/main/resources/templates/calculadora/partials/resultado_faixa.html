@@ -1,9 +1,9 @@
 <div class="calc-resultado">
     <div class="calc-resumo-head">
-        <h5 class="mb-1">
+        <h3 class="h5 mb-1">
             <span class="material-symbols-outlined text-warning" aria-hidden="true" translate="no">linear_scale</span>
             {resultado.inicio} até {resultado.fim}
-        </h5>
+        </h3>
         <span class="calc-badge">{resultado.totalBlocos} bloco(s) CIDR</span>
     </div>
 
@@ -66,13 +66,13 @@
         </table>
     </div>
 
-    <h6 class="calc-secao-titulo mt-4">
+    <h4 class="h6 calc-secao-titulo mt-4">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span>
         ACL equivalente
         <button type="button" class="aed-btn aed-btn-neutral btn-sm calc-copiar" data-alvo="cliFaixa">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar
         </button>
-    </h6>
+    </h4>
     <pre class="calc-cli" id="cliFaixa" translate="no">{#for linha in resultado.comandosCisco}{linha}
 {/for}</pre>
 </div>

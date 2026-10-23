@@ -1,6 +1,6 @@
 {! Aba "Sumarizar": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
 <div class="calc-form-card mb-3">
-    <h6 class="calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">merge</span> Sumarizar prefixos</h6>
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">merge</span> Sumarizar prefixos</h2>
     <p class="calc-hint">Encontra o menor prefixo (supernet) que cobre todos e mescla no conjunto mínimo. Um prefixo por linha.</p>
     <form id="formSum" hx-post="/ipv6/api/sumarizar" hx-target="#saidaSum" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">

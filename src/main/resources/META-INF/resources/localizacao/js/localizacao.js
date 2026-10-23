@@ -72,8 +72,8 @@
     }
 
     function titulo(el, texto) {
-        var h = document.createElement("h5");
-        h.className = "loc-form-title";
+        var h = document.createElement("h3");
+        h.className = "h5 loc-form-title";
         h.textContent = texto;
         el.appendChild(h);
     }

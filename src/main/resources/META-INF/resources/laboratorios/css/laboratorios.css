@@ -49,7 +49,7 @@
 .lab-cenario > summary { cursor: pointer; font-weight: 700; color: #eef2f8; display: flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0; }
 .lab-cenario > summary .material-symbols-outlined { color: #2dd4bf; }
 .lab-cenario-corpo { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 1rem; padding: 0.5rem 0 0.75rem; }
-.lab-cenario-col h3 { font-size: 0.95rem; color: #2dd4bf; margin-bottom: 0.4rem; }
+.lab-cenario-col :is(h3, .h3) { font-size: 0.95rem; color: #2dd4bf; margin-bottom: 0.4rem; }
 .lab-cenario-col ul { margin: 0; padding-left: 1.1rem; }
 .lab-cenario-col li { font-size: 0.86rem; color: #cbd5e1; margin-bottom: 0.3rem; }
 .lab-cenario-col code { color: #fcd34d; background: rgba(0,0,0,0.25); padding: 0 0.25rem; border-radius: .25rem; }

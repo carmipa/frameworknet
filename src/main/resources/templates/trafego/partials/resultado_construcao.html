@@ -1,7 +1,7 @@
 {#if sim.ok}
 <div class="aed-card mt-3">
     <div class="card-body">
-        <h5 class="d-flex flex-wrap align-items-center gap-2 text-white mb-2">
+        <h2 class="h5 d-flex flex-wrap align-items-center gap-2 text-white mb-2">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">construction</span>
             Pacote {sim.protocolo} &middot; {sim.totalBytes} bytes
             {#if sim.checksumValido}
@@ -9,7 +9,7 @@
             {#else}
             <span class="badge bg-danger">checksum inválido (didático)</span>
             {/if}
-        </h5>
+        </h2>
         <ul class="small text-secondary mb-3">
             {#for c in sim.camadas}<li>{c}</li>{/for}
         </ul>

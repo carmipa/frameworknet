@@ -40,15 +40,15 @@
     </nav>
 
     <section id="conceitos" class="ssh-secao">
-        <h3 class="ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">school</span> O que o SSH garante</h3>
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">school</span> O que o SSH garante</h2>
         <div class="row g-3">
             {#for item in conteudo.conceitos}
             <div class="col-12 col-lg-6">
                 <article class="card-tech p-3 h-100 ssh-conceito">
-                    <h4 class="ssh-conceito-titulo">
+                    <h3 class="h4 ssh-conceito-titulo">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">{item.icone}</span>
                         {item.titulo}
-                    </h4>
+                    </h3>
                     <p class="small text-light mb-2">{item.texto}</p>
                     <p class="ssh-destaque mb-0">{item.destaque}</p>
                 </article>
@@ -62,7 +62,7 @@
     {#include protocolos/partials/cabecalho_bits.html cabecalho=conteudo.cabecalho /}
 
     <section id="camadas" class="ssh-secao">
-        <h3 class="ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span> As três camadas do SSH-2</h3>
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span> As três camadas do SSH-2</h2>
         <p class="small text-secondary">
             A separação em camadas é o que a SSH-1 não tinha. Cada uma entra em ação depois que a
             anterior terminou — e é por isso que um erro de autenticação já acontece dentro do túnel cifrado.
@@ -83,7 +83,7 @@
     </section>
 
     <section id="autenticacao" class="ssh-secao">
-        <h3 class="ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">passkey</span> Métodos de autenticação</h3>
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">passkey</span> Métodos de autenticação</h2>
         <div class="table-responsive border border-secondary border-opacity-25 rounded">
             <table class="table table-dark table-sm align-middle mb-0 ssh-tabela">
                 <thead>
@@ -111,13 +111,13 @@
     </section>
 
     <section id="chaves" class="ssh-secao">
-        <h3 class="ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">key</span> Tipos de chave</h3>
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">key</span> Tipos de chave</h2>
         <div class="row g-3">
             {#for chave in conteudo.chaves}
             <div class="col-12 col-lg-6">
                 <article class="card-tech p-3 h-100 ssh-chave ssh-chave-{chave.recomendacaoCor}">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                        <h4 class="ssh-chave-titulo mb-0">{chave.algoritmo}</h4>
+                        <h3 class="h4 ssh-chave-titulo mb-0">{chave.algoritmo}</h3>
                         <span class="badge bg-dark border border-{chave.recomendacaoCor} text-{chave.recomendacaoCor}">{chave.recomendacao}</span>
                     </div>
                     <p class="small text-secondary mb-2">Tamanho: {chave.tamanho}</p>
@@ -135,7 +135,7 @@
     </section>
 
     <section id="tuneis" class="ssh-secao">
-        <h3 class="ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_calls</span> Túneis e encaminhamentos</h3>
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_calls</span> Túneis e encaminhamentos</h2>
         <p class="small text-secondary">
             Liberar a porta 22 no firewall não libera apenas o shell: os túneis viajam dentro da
             mesma conexão. Por isso cada linha traz o cenário legítimo e o risco que carrega.
@@ -144,10 +144,10 @@
             {#for enc in conteudo.encaminhamentos}
             <div class="col-12 col-xl-6">
                 <article class="card-tech p-3 h-100 ssh-tunel">
-                    <h4 class="ssh-tunel-titulo">
+                    <h3 class="h4 ssh-tunel-titulo">
                         <span class="ssh-flag">{enc.flag}</span>
                         {enc.tipo}
-                    </h4>
+                    </h3>
                     <p class="small text-light mb-2">{enc.cenario}</p>
                     <pre class="ssh-codigo" id="ssh-tunel-{enc_count}" translate="no">{enc.comando}</pre>
                     <div class="d-flex justify-content-end mb-2">
@@ -167,7 +167,7 @@
     </section>
 
     <section id="hardening" class="ssh-secao">
-        <h3 class="ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span> Endurecimento do servidor</h3>
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span> Endurecimento do servidor</h2>
         <p class="small text-secondary">
             Diretivas do <code translate="no">sshd_config</code>. A coluna "se ficar aberto" existe para que a
             escolha seja consciente: cada linha aqui tem um custo operacional real.
@@ -197,12 +197,12 @@
     </section>
 
     <section id="laboratorio" class="ssh-secao">
-        <h3 class="ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">science</span> Laboratório</h3>
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">science</span> Laboratório</h2>
         <div class="row g-3">
             {#for lab in conteudo.laboratorios}
             <div class="col-12 col-xl-6">
                 <article class="card-tech p-3 h-100 ssh-lab">
-                    <h4 class="ssh-lab-titulo">{lab.titulo}</h4>
+                    <h3 class="h4 ssh-lab-titulo">{lab.titulo}</h3>
                     <p class="small text-secondary mb-2">{lab.cenario}</p>
                     <pre class="ssh-codigo" id="ssh-lab-{lab_count}" translate="no">{lab.comandos}</pre>
                     <div class="d-flex justify-content-end mb-2">
@@ -219,15 +219,15 @@
     </section>
 
     <section id="troubleshooting" class="ssh-secao">
-        <h3 class="ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">build</span> Troubleshooting</h3>
+        <h2 class="h3 ssh-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">build</span> Troubleshooting</h2>
         <div class="row g-3">
             {#for diag in conteudo.diagnosticos}
             <div class="col-12 col-xl-6">
                 <article class="card-tech p-3 h-100 ssh-diag">
-                    <h4 class="ssh-diag-sintoma">
+                    <h3 class="h4 ssh-diag-sintoma">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">bug_report</span>
                         {diag.sintoma}
-                    </h4>
+                    </h3>
                     <p class="small mb-2"><span class="ssh-rotulo ssh-rotulo-risco">Causa provável</span> {diag.causaProvavel}</p>
                     <pre class="ssh-codigo" id="ssh-diag-{diag_count}" translate="no">{diag.comando}</pre>
                     <div class="d-flex justify-content-end mb-2">

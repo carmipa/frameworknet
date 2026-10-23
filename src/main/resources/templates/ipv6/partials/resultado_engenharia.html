@@ -1,7 +1,7 @@
 <div class="calc-resultado card-tech shadow">
     <div class="calc-resumo-head">
         <span class="aed-eyebrow">Engenharia reversa</span>
-        <h5 class="mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">manage_search</span> {#if e.hostname}{e.hostname}{#else}Configuração Cisco IPv6{/if}</h5>
+        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">manage_search</span> {#if e.hostname}{e.hostname}{#else}Configuração Cisco IPv6{/if}</h3>
     </div>
 
     <div class="calc-kpis">
@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <h6 class="calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">settings_ethernet</span> Interfaces e endereços</h6>
+    <h4 class="h6 calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">settings_ethernet</span> Interfaces e endereços</h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
             <thead><tr><th>Interface</th><th>Endereço IPv6</th><th>Prefixo</th><th>Tipo (IANA)</th><th>Descrição</th></tr></thead>
@@ -43,12 +43,12 @@
     </div>
 
     {#if e.protocolos.size > 0}
-    <h6 class="calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Protocolos de roteamento</h6>
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Protocolos de roteamento</h4>
     <ul class="small text-light mb-0">{#for pr in e.protocolos}<li>{pr}</li>{/for}</ul>
     {/if}
 
     {#if e.rotas.size > 0}
-    <h6 class="calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">alt_route</span> Rotas estáticas</h6>
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">alt_route</span> Rotas estáticas</h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
             <thead><tr><th>Destino</th><th>Próximo salto</th></tr></thead>
@@ -59,7 +59,7 @@
     </div>
     {/if}
 
-    <h6 class="calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">fact_check</span> Achados e recomendações</h6>
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">fact_check</span> Achados e recomendações</h4>
     {#for a in e.achados}
     <div class="alert alert-warning bg-dark border-warning text-light small py-2 mb-2">
         <span class="material-symbols-outlined align-middle" aria-hidden="true" translate="no">warning</span> {a}

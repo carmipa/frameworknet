@@ -1,12 +1,12 @@
 <div class="w-100">
-    <h5 class="d-flex flex-wrap align-items-center gap-2 text-white mb-1">
+    <h3 class="h5 d-flex flex-wrap align-items-center gap-2 text-white mb-1">
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">handshake</span> {hs.titulo}
         {#if hs.sucesso}
         <span class="badge bg-success">conexão estabelecida</span>
         {#else}
         <span class="badge bg-danger">handshake abortado</span>
         {/if}
-    </h5>
+    </h3>
     <p class="small text-secondary mb-3">{hs.desfecho}</p>
 
     <div class="d-flex flex-column gap-2">

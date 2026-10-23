@@ -1,9 +1,9 @@
 <div class="calc-resultado">
     <div class="calc-resumo-head">
-        <h5 class="mb-1">
+        <h3 class="h5 mb-1">
             <span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">merge</span>
             Rota resumo: {resultado.resumo}/{resultado.prefixoResumo}
-        </h5>
+        </h3>
         <span class="calc-badge {#if resultado.exata}calc-badge-ok{#else}calc-badge-atencao{/if}">
             {#if resultado.exata}Agregação exata{#else}Cobre espaço extra{/if}
         </span>
@@ -44,11 +44,11 @@
         {/if}
     </p>
 
-    <h6 class="calc-secao-titulo">
+    <h4 class="h6 calc-secao-titulo">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span>
         Redes agregadas
         <span class="calc-contador">{resultado.entradas.size()}</span>
-    </h6>
+    </h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
             <thead>
@@ -74,13 +74,13 @@
         </table>
     </div>
 
-    <h6 class="calc-secao-titulo mt-4">
+    <h4 class="h6 calc-secao-titulo mt-4">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span>
         Como anunciar
         <button type="button" class="aed-btn aed-btn-neutral btn-sm calc-copiar" data-alvo="cliResumo">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar
         </button>
-    </h6>
+    </h4>
     <pre class="calc-cli" id="cliResumo" translate="no">{#for linha in resultado.comandosCisco}{linha}
 {/for}</pre>
 </div>

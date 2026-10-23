@@ -1,7 +1,7 @@
 <div class="calc-resultado card-tech shadow">
     <div class="calc-resumo-head">
         <span class="aed-eyebrow">Plano de rede IPv6</span>
-        <h5 class="mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">architecture</span> {p.baseCidr} · {p.topologia}</h5>
+        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">architecture</span> {p.baseCidr} · {p.topologia}</h3>
     </div>
 
     <div class="calc-kpis">
@@ -34,7 +34,7 @@
     </div>
     <textarea id="ipv6-plano-texto" class="d-none" readonly>{p.planoTexto}</textarea>
 
-    <h6 class="calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> LANs (uma por localidade)</h6>
+    <h4 class="h6 calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> LANs (uma por localidade)</h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
             <thead><tr>
@@ -56,7 +56,7 @@
     </div>
 
     {#if p.wans.size > 0}
-    <h6 class="calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cable</span> Enlaces WAN (/{p.prefixoWan}, RFC 6164)</h6>
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cable</span> Enlaces WAN (/{p.prefixoWan}, RFC 6164)</h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
             <thead><tr><th>#</th><th>Enlace</th><th>Rede</th><th>Lado A</th><th>Lado B</th></tr></thead>
@@ -75,17 +75,17 @@
     </div>
     {/if}
 
-    <h6 class="calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Rotas estáticas (alternativa)</h6>
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Rotas estáticas (alternativa)</h4>
     <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{#for r in p.rotasEstaticas}{r}
 {/for}</pre>
 
-    <h6 class="calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama de arquitetura ({p.topologia})</h6>
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama de arquitetura ({p.topologia})</h4>
     <div class="ipv6-diagrama card-tech p-3 mb-2">
         <pre class="mermaid mb-0" translate="no">{p.topologyMermaid}</pre>
     </div>
     <div class="small text-secondary mb-2">Roteadores (um por localidade) e os enlaces WAN /{p.prefixoWan} da topologia {p.topologia}. Cada nó mostra a LAN /{p.prefixoLan}.</div>
 
-    <h6 class="calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> CLI Cisco por roteador (OSPFv3 + EIGRP IPv6)</h6>
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> CLI Cisco por roteador (OSPFv3 + EIGRP IPv6)</h4>
     <div class="row g-3">
         {#for rt in p.roteadores}
         <div class="col-12 col-lg-6">
@@ -97,7 +97,7 @@
         {/for}
     </div>
 
-    <h6 class="calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Passo a passo</h6>
+    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Passo a passo</h4>
     <ul class="small text-secondary mb-0">
         {#for passo in p.passos}<li>{passo}</li>{/for}
     </ul>

@@ -37,9 +37,9 @@
                 esc(j.tipo) +
                 "</span></div>" +
                 '<div class="card-body"><div class="row mb-3"><div class="col-12">' +
-                '<h5 class="font-monospace geo-ip-readout mb-2">' +
+                '<h3 class="h5 font-monospace geo-ip-readout mb-2">' +
                 esc(j.ip) +
-                "</h5>" +
+                "</h3>" +
                 '<span class="badge bg-secondary me-1">' +
                 esc(j.reservado_motivo || "Reservado") +
                 '</span><span class="badge bg-dark">Sem país no mapa público</span></div></div><hr class="border-secondary opacity-75">' +
@@ -180,7 +180,7 @@
             }
             const netSection =
                 netRows.length > 0
-                    ? '<h6 class="text-primary border-bottom pb-1 mb-2">🌐 Rede / ASN</h6>' +
+                    ? '<h3 class="h6 text-primary border-bottom pb-1 mb-2">🌐 Rede / ASN</h3>' +
                       '<div class="row g-2 mb-3" style="align-items:flex-start;">' +
                       netRows.join("") +
                       "</div>"
@@ -231,19 +231,19 @@
                 esc(j.risco_badge || "") +
                 "</span></div>" +
                 '<div class="card-body">' +
-                '<h6 class="text-primary border-bottom pb-1 mb-2">' + HtmlEscape.icone("place", "Localização") + '</h6>' +
+                '<h3 class="h6 text-primary border-bottom pb-1 mb-2">' + HtmlEscape.icone("place", "Localização") + '</h3>' +
                 '<div class="row g-2 mb-3" style="align-items:flex-start;">' +
                 locRows.join("") +
                 "</div>" +
                 locNote +
                 netSection +
-                '<h6 class="text-primary border-bottom pb-1 mb-2">🔍 Tipo de Conexão</h6>' +
+                '<h3 class="h6 text-primary border-bottom pb-1 mb-2">🔍 Tipo de Conexão</h3>' +
                 '<div class="d-flex flex-wrap gap-2 mb-3">' +
                 connBadges +
                 extraConn +
                 resCorp +
                 "</div>" +
-                '<h6 class="text-primary border-bottom pb-1 mb-2">🛡️ Avaliação de Risco (GRC)</h6>' +
+                '<h3 class="h6 text-primary border-bottom pb-1 mb-2">🛡️ Avaliação de Risco (GRC)</h3>' +
                 '<div class="alert alert-' +
                 rcolor +
                 ' py-2 mb-2">' +

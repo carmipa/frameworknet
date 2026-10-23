@@ -51,9 +51,9 @@
     <!-- GeoIP por IP (movido da aba "Região Geo" da Análise Didática) -->
     <div class="aed-card card-tech p-4 shadow border-start border-warning border-3 mb-4">
         <span class="aed-eyebrow aed-eyebrow-amber">GeoIP</span>
-        <h5 class="text-warning mb-3 d-flex align-items-center gap-2">
+        <h2 class="h5 text-warning mb-3 d-flex align-items-center gap-2">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Região geográfica (GeoIP)
-        </h5>
+        </h2>
         <p class="small text-secondary mb-3">
             Informe um IPv4/IPv6 para localizar a região ou use o IP da conexão atual.
             A consulta externa só é executada para IPs públicos.
@@ -113,7 +113,7 @@
             <!-- Histórico GeoIP (dentro da aba GeoIP) -->
             <div id="geo-historico-panel" class="card-tech p-3 shadow history-box">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                    <h6 class="text-info mb-0 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico GeoIP</h6>
+                    <h3 class="h6 text-info mb-0 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico GeoIP</h3>
                     <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">public</span>Apenas consultas geográficas</span>
                 </div>
                 <div class="small text-secondary mb-2">Últimas consultas com localização, rede, tipo de conexão e risco GRC.</div>
@@ -151,9 +151,9 @@
         <div class="tab-panel" data-tab-panel="privacidade">
             <div class="aed-card card-tech p-4 shadow border-start border-info border-3 mb-4" id="privacidade-card">
                 <span class="aed-eyebrow aed-eyebrow-teal">Privacidade · autoteste</span>
-                <h5 class="text-info mb-2 d-flex align-items-center gap-2">
+                <h2 class="h5 text-info mb-2 d-flex align-items-center gap-2">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">shield_person</span> Teste de vazamento de IP (o que o SEU navegador revela)
-                </h5>
+                </h2>
                 <p class="small text-secondary mb-3">
                     Roda inteiramente <strong>no seu navegador</strong>. Cruza o IP que o servidor enxerga, o IP público
                     (ip-api), os candidatos <strong>WebRTC/STUN</strong> e o <strong>fingerprint</strong> do navegador para mostrar
@@ -182,7 +182,7 @@
             <!-- Endereço por CEP (ViaCEP + geocoding OSM) -->
             <form id="form-loc-cep" class="aed-card card-tech loc-cep-form mb-4" autocomplete="off" onsubmit="return false;">
                 <span class="aed-eyebrow aed-eyebrow-indigo">Por CEP</span>
-                <h5 class="loc-form-title">Endereço no mapa (ViaCEP + OpenStreetMap)</h5>
+                <h2 class="h5 loc-form-title">Endereço no mapa (ViaCEP + OpenStreetMap)</h2>
                 <label class="form-label small text-secondary" for="loc-cep"><span class="material-symbols-outlined" aria-hidden="true" translate="no">markunread_mailbox</span> CEP</label>
                 <div class="loc-input-row">
                     <input type="text" id="loc-cep" class="form-control bg-dark text-light border-secondary"
@@ -201,7 +201,7 @@
             <!-- Localização exata via GPS do navegador (com consentimento) -->
             <div class="aed-card card-tech loc-cep-form mb-4">
                 <span class="aed-eyebrow aed-eyebrow-teal">Precisa · com sua permissão</span>
-                <h5 class="loc-form-title">Minha localização exata (GPS do navegador)</h5>
+                <h2 class="h5 loc-form-title">Minha localização exata (GPS do navegador)</h2>
                 <p class="small text-secondary mb-2">
                     Diferente do IP, o <strong>GPS/Wi-Fi do seu aparelho</strong> dá a posição real — o navegador
                     vai <strong>pedir sua permissão</strong>. Nada é enviado sem você autorizar.
@@ -228,10 +228,10 @@
 {#extraScripts}
 <script src="/web/vendor/leaflet-1.9.4/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script src="/web/js/aed-tabs.js?v=20260710"></script>
-<script src="/analiseDidatica/js/geo_report.js?v=20261002"></script>
-<script src="/localizacao/js/localizacao.js?v=20261022"></script>
+<script src="/analiseDidatica/js/geo_report.js?v=20261023"></script>
+<script src="/localizacao/js/localizacao.js?v=20261023"></script>
 <script src="/localizacao/js/geo-panel.js?v=20261022"></script>
-<script src="/localizacao/js/privacidade.js?v=20261002"></script>
+<script src="/localizacao/js/privacidade.js?v=20261023"></script>
 <script type="module" src="/localizacao/js/geo-globe.js?v=20261022"></script>
 {/extraScripts}
 {/include}

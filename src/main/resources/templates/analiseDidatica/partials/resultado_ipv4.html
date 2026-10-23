@@ -30,7 +30,7 @@
 
     {#if activeTabPre == 'wildcard'}
     <div class="card-tech p-4 shadow mb-3">
-        <h6 class="text-warning mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_view</span> Modo Wildcard — resumo limpo</h6>
+        <h2 class="h6 text-warning mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_view</span> Modo Wildcard — resumo limpo</h2>
         <table class="table table-dark table-bordered table-sm resultados-table mb-0">
             <tbody>
                 <tr><th>Wildcard informada</th><td class="fw-bold">{#if wildcardPre}{wildcardPre}{#else}{res.wildcard}{/if}</td></tr>
@@ -47,7 +47,7 @@
     </div>
     {#if res.and_table.size > 0}
     <div class="card-tech p-4 shadow mb-3">
-        <h6 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">123</span> Octetos e validação wildcard</h6>
+        <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">123</span> Octetos e validação wildcard</h2>
         <table class="table table-dark table-bordered table-sm regua-table mb-2">
             <thead><tr><th>Campo</th><th>1º</th><th>2º</th><th>3º</th><th>4º</th></tr></thead>
             <tbody>
@@ -90,7 +90,7 @@
         <div class="small text-secondary mt-3 pt-2 border-top border-secondary border-opacity-25">{res.classe_observacao}</div>
     </div>
     <div class="card-tech p-3 shadow mb-3 border border-secondary" style="border-left: 0.312% solid #1f6feb !important;">
-        <h6 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Explicação do cálculo da máscara</h6>
+        <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Explicação do cálculo da máscara</h2>
         <div class="small text-secondary">
             Máscara: <strong class="text-light">{res.mask}</strong> · Prefixo: <strong class="text-warning">/{res.cidr}</strong><br>
             Capacidade: <strong class="text-light">{res.total}</strong> IPs totais, <strong class="text-light">{res.uteis}</strong> hosts úteis.
@@ -184,7 +184,7 @@
 
     {#if wizardCalculo.size > 0}
     <div class="card-tech p-3 mb-3">
-        <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h6>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h2>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm wizard-table mb-0">
                 <thead><tr><th>Etapa</th><th>Ação</th><th>Resultado</th></tr></thead>
@@ -200,7 +200,7 @@
 
     {#if timelineBloco}
     <div class="card-tech p-3 mb-3">
-        <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Linha do tempo do bloco</h6>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Linha do tempo do bloco</h2>
         <div class="timeline-bloco">
             <div class="timeline-step {#if timelineBloco.posicao == 'rede'}is-active{/if}">
                 <div class="timeline-title">Rede</div>
@@ -222,7 +222,7 @@
     <div class="row g-3 mb-3">
         <div class="col-md-6">
             <div class="card-tech p-4 h-100 resumo-box">
-                <h6 class="text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resultados decimais</h6>
+                <h2 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resultados decimais</h2>
                 <div class="table-responsive">
                     <table class="table table-dark table-bordered table-sm resultados-table mb-2">
                         <tbody>
@@ -252,7 +252,7 @@
                 <p class="small">Gateway alternativo: <span class="text-success fw-bold">{res.gateway_alternativo}</span></p>
                 {#if res.resumo_prova_itens.size > 0}
                 <hr class="border-secondary">
-                <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">edit_note</span> Resumo rápido (modo prova)</h6>
+                <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">edit_note</span> Resumo rápido (modo prova)</h2>
                 <table class="table table-dark table-bordered table-sm resumo-table mb-0">
                     <tbody>{#for item in res.resumo_prova_itens}<tr><th>{item.campo}</th><td>{item.valor}</td></tr>{/for}</tbody>
                 </table>
@@ -262,13 +262,13 @@
         </div>
         <div class="col-md-6">
             <div class="card-tech p-4 h-100 resumo-box" style="border-left-color:#238636;">
-                <h6 class="text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Capacidade e hosts</h6>
+                <h2 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Capacidade e hosts</h2>
                 <p>Zeros (host bits): <span class="fw-bold">{res.zeros}</span></p>
                 <p>IPs no bloco: 2<sup>{res.zeros}</sup> = <span class="text-warning fw-bold">{res.total}</span></p>
                 <p>IPs úteis: <span class="text-success fw-bold" style="font-size:1.2rem;">{res.uteis}</span></p>
                 {#if !res.somente_mascara}
                 <hr class="border-secondary">
-                <h6 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Termos da rede</h6>
+                <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Termos da rede</h2>
                 <table class="table table-dark table-bordered table-sm termos-table mb-0">
                     <tbody>
                         <tr><td>DNS</td><td>{res.dns_info}</td></tr>
@@ -279,7 +279,7 @@
                     </tbody>
                 </table>
                 <hr class="border-secondary">
-                <h6 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco CLI</h6>
+                <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco CLI</h2>
                 <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{res.cisco_cli}</pre>
                 {/if}
             </div>
@@ -288,7 +288,7 @@
 
     {#if !res.somente_mascara && res.abertura_intervalos}
     <div class="card-tech p-3 mb-3">
-        <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Abertura dos intervalos</h6>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Abertura dos intervalos</h2>
         <table class="table table-dark table-bordered table-sm interval-table mb-2">
             <thead><tr><th>Tipo</th><th>Detalhe</th><th>Valor</th></tr></thead>
             <tbody>
@@ -315,7 +315,7 @@
 
     {#if !res.somente_mascara && res.proximas_subredes.size > 0}
     <div class="card-tech p-3 mb-3">
-        <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {res.regua_count})</h6>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {res.regua_count})</h2>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm regua-table mb-0">
                 <thead><tr><th>Subnet</th><th>Rede</th><th>1º host</th><th>Último host</th><th>Broadcast</th></tr></thead>
@@ -370,7 +370,7 @@
                 </table>
             </div>
             <div class="col-md-5">
-                <h6 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Aplicado ao cálculo atual</h6>
+                <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Aplicado ao cálculo atual</h2>
                 <table class="table table-dark table-bordered table-sm conv-table mb-0">
                     <tbody>
                     {#for item in res.conversao_atual}
@@ -385,13 +385,13 @@
 
     {#if res.grc_resumo || res.seguranca_dicas.size > 0}
     <div class="card-tech p-4 shadow mb-3">
-        <h6 class="text-danger mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> Cyber segurança (GRC + contexto)</h6>
+        <h2 class="h6 text-danger mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> Cyber segurança (GRC + contexto)</h2>
         {#if res.grc_resumo}
-        <h6 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h6>
+        <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h2>
         <ul class="small mb-3 grc-list">{#for linha in res.grc_resumo}<li>{linha}</li>{/for}</ul>
         {/if}
         {#if res.seguranca_dicas.size > 0}
-        <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span> Alertas e recomendações</h6>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span> Alertas e recomendações</h2>
         {#for dica in res.seguranca_dicas}
         <div class="alert alert-{dica.tipo} bg-dark border-{dica.tipo} text-light small py-2 mb-2">
             <span>{dica.icon}</span> {dica.texto}
@@ -403,7 +403,7 @@
 
     {#if !res.somente_mascara && res.cisco_eigrp_exemplo}
     <div class="card-tech p-4 shadow mb-3 border border-secondary" style="border-left:0.312% solid #d29922 !important;">
-        <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> EIGRP / OSPF — network com wildcard</h6>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> EIGRP / OSPF — network com wildcard</h2>
         <p class="small text-secondary mb-2">{res.cisco_roteamento_nota}</p>
         <div class="row g-3">
             <div class="col-md-6">
@@ -423,11 +423,11 @@
         <div class="p-3 small text-secondary">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <h6 class="text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Linux</h6>
+                    <h2 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Linux</h2>
                     <ul class="mb-0"><li><code translate="no">ip a</code> — IPs e máscaras</li><li><code translate="no">ip route</code> — rotas e gateway</li><li><code translate="no">ipcalc 172.19.0.0/20</code> — cálculo de sub-rede</li></ul>
                 </div>
                 <div class="col-md-6">
-                    <h6 class="text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">desktop_windows</span> Windows</h6>
+                    <h2 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">desktop_windows</span> Windows</h2>
                     <ul class="mb-0"><li><code translate="no">ipconfig /all</code> — configuração completa</li><li><code translate="no">arp -a</code> — tabela ARP</li><li><code translate="no">tracert 8.8.8.8</code> — caminho até destino</li></ul>
                 </div>
             </div>
@@ -437,7 +437,7 @@
     {#if res.banner_contexto}
     <div class="card-tech border border-info border-2 shadow mb-3 banner-contexto-didatico">
         <div class="p-3">
-            <h6 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> {res.banner_contexto.titulo}</h6>
+            <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> {res.banner_contexto.titulo}</h2>
             <p class="small text-secondary mb-3">{res.banner_contexto.subtitulo}</p>
             <ul class="list-unstyled mb-0">
             {#for it in res.banner_contexto.itens}
@@ -454,7 +454,7 @@
     {#if res.somente_mascara && res.enunciado_prova}
     <div class="card-tech border border-warning border-opacity-50 shadow mb-3 enunciado-prova-mascara">
         <div class="p-3">
-            <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resposta tipo prova (máscara / sub-rede) /{res.cidr}</h6>
+            <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resposta tipo prova (máscara / sub-rede) /{res.cidr}</h2>
             <p class="small text-secondary mb-2">Itens que costumam ser pedidos em lista quando só se dá a máscara (ou o prefixo):</p>
             {#if res.enunciado_prova.frase_estilo_quadro}
             <p class="frase-estilo-quadro p-3 rounded border border-info border-opacity-25 text-light small mb-3" style="background:rgba(31,111,235,0.08);">

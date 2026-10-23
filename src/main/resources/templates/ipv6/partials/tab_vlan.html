@@ -1,6 +1,6 @@
 {! Aba "VLANs": um /64 por VLAN + gateway + trunk + Cisco SVI. Form 100% / resultado 100% abaixo. !}
 <div class="calc-form-card mb-3">
-    <h6 class="calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span> Plano de VLANs IPv6</h6>
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span> Plano de VLANs IPv6</h2>
     <p class="calc-hint">Cada VLAN recebe uma LAN /64 contígua, gateway (::1), o SVI Cisco (<code translate="no">interface VlanN</code>) e o trunk 802.1Q. Adicione quantas VLANs quiser.</p>
     <form id="formVlan" hx-post="/ipv6/api/vlan" hx-target="#saidaVlan" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">

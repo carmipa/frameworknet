@@ -4,7 +4,7 @@
 > Migração do projeto original Python/Flask. Esta documentação é renderizada dentro da própria aplicação em `/documentacao`.
 
 <p align="center">
-  <img src="/icone.png?v=20260709d" alt="Framework de Redes — Análise Didática Avançada" width="420" />
+  <img src="/icone.png?v=20260709d" alt="Framework de Redes — Análise Didática Avançada" width="420" height="234" />
 </p>
 
 Aplicação didática para análise de redes IPv4/IPv6, com foco em ensino, laboratório e revisão técnica. Originalmente escrita em **Python/Flask**, foi **migrada para Java 25 + Quarkus** e reorganizada como um **monólito modular** (*modular monolith*): um único artefato de implantação com domínios autocontidos, prontos para evoluir para microserviços. Os módulos são agrupados no menu principal em dois menus suspensos — **Topologia**

@@ -1,9 +1,9 @@
 <div class="calc-resultado">
     <div class="calc-resumo-head">
-        <h5 class="mb-1">
+        <h3 class="h5 mb-1">
             <span class="material-symbols-outlined text-warning" aria-hidden="true" translate="no">grid_on</span>
             {plano.blocoBase}/{plano.prefixoBase} dividido em /{plano.prefixoAlvo}
-        </h5>
+        </h3>
         <a class="aed-btn aed-btn-json btn-sm"
            title="Baixar planilha CSV com a listagem de sub-redes geradas"
            href="/calculadora/export/divisao.csv?bloco={plano.blocoBase}&prefixoBase={plano.prefixoBase}&criterio=prefixo&prefixoAlvo={plano.prefixoAlvo}">
@@ -39,10 +39,10 @@
         {plano.explicacao}
     </p>
 
-    <h6 class="calc-secao-titulo">
+    <h4 class="h6 calc-secao-titulo">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span>
         Quantas cabem em cada prefixo — a partir de /{plano.prefixoBase}
-    </h6>
+    </h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
             <thead>
@@ -68,11 +68,11 @@
         </table>
     </div>
 
-    <h6 class="calc-secao-titulo mt-4">
+    <h4 class="h6 calc-secao-titulo mt-4">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span>
         Sub-redes geradas
         <span class="calc-contador">{plano.exibidos} de {plano.totalSubredes}</span>
-    </h6>
+    </h4>
 
     {#if plano.truncado}
     <div class="calc-aviso" role="status">

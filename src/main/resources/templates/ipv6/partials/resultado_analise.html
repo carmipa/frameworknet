@@ -86,7 +86,7 @@
 
     {! ---------- 8. Passo a passo ---------- !}
     <div class="card-tech p-3 mb-3">
-        <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h6>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h3>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm wizard-table mb-0">
                 <thead><tr><th>Etapa</th><th>Ação</th><th>Resultado</th></tr></thead>
@@ -101,7 +101,7 @@
 
     {! ---------- 9. Linha do tempo do bloco (sem broadcast) ---------- !}
     <div class="card-tech p-3 mb-3">
-        <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Linha do tempo do bloco</h6>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Linha do tempo do bloco</h3>
         <div class="timeline-bloco">
             <div class="timeline-step">
                 <div class="timeline-title">Rede</div>
@@ -123,7 +123,7 @@
     <div class="row g-3 mb-3">
         <div class="col-md-6">
             <div class="card-tech p-4 h-100 resumo-box">
-                <h6 class="text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resultados</h6>
+                <h3 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resultados</h3>
                 <div class="table-responsive">
                     <table class="table table-dark table-bordered table-sm resultados-table mb-2">
                         <tbody>
@@ -141,7 +141,7 @@
                 <p class="small">Gateway sugerido: <span class="text-success fw-bold font-monospace">{r.gateway}</span> <span class="text-secondary">(::1 do prefixo, convenção)</span></p>
                 {#if r.provaItens.size > 0}
                 <hr class="border-secondary">
-                <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">edit_note</span> Resumo rápido (modo prova)</h6>
+                <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">edit_note</span> Resumo rápido (modo prova)</h3>
                 <table class="table table-dark table-bordered table-sm resumo-table mb-0">
                     <tbody>{#for item in r.provaItens}<tr><th>{item.campo}</th><td class="font-monospace">{item.valor}</td></tr>{/for}</tbody>
                 </table>
@@ -150,12 +150,12 @@
         </div>
         <div class="col-md-6">
             <div class="card-tech p-4 h-100 resumo-box" style="border-left-color:#238636;">
-                <h6 class="text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Capacidade</h6>
+                <h3 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Capacidade</h3>
                 <p>Bits de interface: <span class="fw-bold">{r.bitsInterface}</span></p>
                 <p>Endereços no bloco: {r.totalPotencia} = <span class="text-warning fw-bold">{r.totalEnderecos}</span></p>
                 <p class="small text-secondary">Sem broadcast e sem "hosts úteis = total − 2"; só o anycast Subnet-Router (identificador todo zero) e os anycast reservados do topo do /64 ficam fora do uso em host.</p>
                 <hr class="border-secondary">
-                <h6 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Termos da rede (IPv6)</h6>
+                <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Termos da rede (IPv6)</h3>
                 <table class="table table-dark table-bordered table-sm termos-table mb-0">
                     <tbody>
                     {#for t in r.termos}
@@ -164,7 +164,7 @@
                     </tbody>
                 </table>
                 <hr class="border-secondary">
-                <h6 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco (IPv6 / OSPFv3)</h6>
+                <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco (IPv6 / OSPFv3)</h3>
                 <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{r.ciscoOspfv3}</pre>
             </div>
         </div>
@@ -172,7 +172,7 @@
 
     {! ---------- 11. Delegação de prefixo ---------- !}
     <div class="card-tech p-3 mb-3">
-        <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">account_tree</span> Delegação de prefixo — quantas sub-redes menores cabem</h6>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">account_tree</span> Delegação de prefixo — quantas sub-redes menores cabem</h3>
         <table class="table table-dark table-bordered table-sm interval-table mb-0">
             <thead><tr><th>Prefixo</th><th>Quantas cabem</th><th>Uso típico</th></tr></thead>
             <tbody>
@@ -186,7 +186,7 @@
     {! ---------- 12. Régua de sub-redes ---------- !}
     {#if r.regua.size > 0}
     <div class="card-tech p-3 mb-3">
-        <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {r.reguaCount} de /{r.base.prefixo})</h6>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {r.reguaCount} de /{r.base.prefixo})</h3>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm regua-table mb-0">
                 <thead><tr><th>#</th><th>Rede</th><th>1º endereço</th><th>Último endereço</th></tr></thead>
@@ -236,10 +236,10 @@
 
     {! ---------- 15. Cyber segurança (GRC) ---------- !}
     <div class="card-tech p-4 shadow mb-3">
-        <h6 class="text-danger mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> Cyber segurança (GRC + contexto)</h6>
-        <h6 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h6>
+        <h3 class="h6 text-danger mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> Cyber segurança (GRC + contexto)</h3>
+        <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h3>
         <ul class="small mb-3 grc-list">{#for linha in r.grcResumo}<li>{linha}</li>{/for}</ul>
-        <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span> Alertas e recomendações</h6>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span> Alertas e recomendações</h3>
         {#for dica in r.segurancaDicas}
         <div class="alert alert-{dica.tipo} bg-dark border-{dica.tipo} text-light small py-2 mb-2">
             <span>{dica.icon}</span> {dica.texto}
@@ -249,7 +249,7 @@
 
     {! ---------- 16. OSPFv3 / EIGRP IPv6 ---------- !}
     <div class="card-tech p-4 shadow mb-3 border border-secondary" style="border-left:0.312% solid #d29922 !important;">
-        <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> OSPFv3 / EIGRP (IPv6)</h6>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> OSPFv3 / EIGRP (IPv6)</h3>
         <p class="small text-secondary mb-2">{r.ciscoNota}</p>
         <div class="row g-3">
             <div class="col-md-6">
@@ -269,11 +269,11 @@
         <div class="p-3 small text-secondary">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <h6 class="text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Linux</h6>
+                    <h3 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Linux</h3>
                     <ul class="mb-0"><li><code translate="no">ip -6 addr</code> — endereços IPv6</li><li><code translate="no">ip -6 route</code> — rotas IPv6</li><li><code translate="no">ping6 2606:4700:4700::1111</code> — testar alcance</li></ul>
                 </div>
                 <div class="col-md-6">
-                    <h6 class="text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">desktop_windows</span> Windows</h6>
+                    <h3 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">desktop_windows</span> Windows</h3>
                     <ul class="mb-0"><li><code translate="no">netsh interface ipv6 show address</code></li><li><code translate="no">ping -6 ipv6.google.com</code></li><li><code translate="no">tracert -6 2606:4700:4700::1111</code></li></ul>
                 </div>
             </div>
@@ -283,7 +283,7 @@
     {! ---------- 18. Banner contextual didático ---------- !}
     <div class="card-tech border border-info border-2 shadow mb-3 banner-contexto-didatico">
         <div class="p-3">
-            <h6 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> {r.bannerTitulo}</h6>
+            <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> {r.bannerTitulo}</h3>
             <p class="small text-secondary mb-3">{r.bannerSubtitulo}</p>
             <ul class="list-unstyled mb-0">
             {#for it in r.bannerItens}
@@ -299,7 +299,7 @@
     {! ---------- 19. Resposta tipo prova ---------- !}
     <div class="card-tech border border-warning border-opacity-50 shadow mb-3 enunciado-prova-mascara">
         <div class="p-3">
-            <h6 class="text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resposta tipo prova (IPv6) /{r.base.prefixo}</h6>
+            <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resposta tipo prova (IPv6) /{r.base.prefixo}</h3>
             <p class="frase-estilo-quadro p-3 rounded border border-info border-opacity-25 text-light small mb-3" style="background:rgba(31,111,235,0.08);">
                 <span class="text-info text-uppercase small d-block mb-1" style="letter-spacing:0.04em;">Resumo estilo quadro (aula)</span>
                 {r.provaFrase}

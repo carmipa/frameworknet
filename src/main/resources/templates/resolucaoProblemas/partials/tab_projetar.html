@@ -47,9 +47,9 @@
 
     <div class="aed-card card-tech problem-box p-3 mb-3">
         <span class="aed-eyebrow">Cenário</span>
-        <h5 class="text-light mb-3 problem-title d-flex align-items-center gap-2">
+        <h2 class="h5 text-light mb-3 problem-title d-flex align-items-center gap-2">
             <span class="material-symbols-outlined text-info" translate="no" aria-hidden="true">input</span><span>Cenário de entrada</span>
-        </h5>
+        </h2>
         <form method="POST" action="/resolucao-problemas" id="resolucao-form">
             <div class="row g-3 align-items-end">
                 <div class="col-lg-4 col-md-6">
@@ -191,7 +191,7 @@
             </div>
             <hr class="border-secondary">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                <h6 class="text-warning mb-0 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">apartment</span><span>Localidades dinâmicas (N cenários)</span></h6>
+                <h3 class="h6 text-warning mb-0 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">apartment</span><span>Localidades dinâmicas (N cenários)</span></h3>
                 <button
                     type="button"
                     class="aed-btn aed-btn-indigo btn-sm"
@@ -277,9 +277,9 @@
 
     <div class="aed-card card-tech problem-box p-3 mb-3">
         <span class="aed-eyebrow aed-eyebrow-amber">Turma</span>
-        <h5 class="text-warning mb-2 problem-title d-flex align-items-center gap-2">
+        <h2 class="h5 text-warning mb-2 problem-title d-flex align-items-center gap-2">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">groups</span><span>Importar turma (Excel → ZIP por aluno)</span>
-        </h5>
+        </h2>
         <p class="small text-secondary mb-2">
             Cole dados da planilha FIAP (Ctrl+C no Excel → Ctrl+V). Cada linha vira um cenário independente:
             <strong class="text-light">Nome | Rede base | Hosts1 | Hosts2</strong> (separados por TAB).
@@ -361,7 +361,7 @@
     </div>
 
     <div class="problem-box p-3 mb-3">
-        <h5 class="text-warning mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span><span>Resumo do planejamento</span></h5>
+        <h2 class="h5 text-warning mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span><span>Resumo do planejamento</span></h2>
         <p class="mb-1 text-light">Rede base: <strong>{scenario.baseNetwork}</strong></p>
         <p class="mb-1 text-light">Total de hosts solicitados: <strong>{scenario.totalHostsRequested}</strong></p>
         <p class="mb-1 text-light">Total de hosts suportados (LANs): <strong>{scenario.totalHostsSupported}</strong> | Eficiência geral: <strong>{scenario.overallEfficiencyPct}%</strong></p>
@@ -394,7 +394,7 @@
     </div>
 
     <div class="problem-box p-3 mb-3">
-        <h5 class="text-info mb-3 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">memory</span><span>Explicação do cálculo VLSM</span></h5>
+        <h2 class="h5 text-info mb-3 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">memory</span><span>Explicação do cálculo VLSM</span></h2>
         <div class="row g-3">
             {#for lan in scenario.lanBlocks}
             <div class="col-12 col-lg-6">
@@ -412,7 +412,7 @@
     </div>
 
     <div class="problem-box p-3 mb-3">
-        <h5 class="text-info mb-3 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span><span>LANs (VLSM)</span></h5>
+        <h2 class="h5 text-info mb-3 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span><span>LANs (VLSM)</span></h2>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm mb-0">
                 <thead>
@@ -457,7 +457,7 @@
     </div>
 
     <div class="problem-box p-3 mb-3">
-        <h5 class="text-warning mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span><span>Sugestão de topologia WAN</span></h5>
+        <h2 class="h5 text-warning mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span><span>Sugestão de topologia WAN</span></h2>
         <p class="small text-secondary mb-2">{scenario.topologyInsights.recommendedReason}</p>
         <p class="small mb-2">
             Recomendação: <strong class="text-info">{scenario.topologyInsights.recommended.toUpperCase()}</strong> |
@@ -514,7 +514,7 @@
     </div>
 
     <div class="problem-box p-3 mb-3">
-        <h5 class="text-info mb-3 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">trending_up</span><span>Projeção de crescimento (25%, 50%, 100%)</span></h5>
+        <h2 class="h5 text-info mb-3 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">trending_up</span><span>Projeção de crescimento (25%, 50%, 100%)</span></h2>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm mb-0">
                 <thead>
@@ -549,7 +549,7 @@
     </div>
 
     <div class="problem-box p-3 mb-3">
-        <h5 class="text-info mb-3 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">link</span><span>Links WAN /{scenario.wanPrefix}</span></h5>
+        <h2 class="h5 text-info mb-3 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">link</span><span>Links WAN /{scenario.wanPrefix}</span></h2>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm mb-0">
                 <thead>
@@ -575,7 +575,7 @@
     </div>
 
     <div class="problem-box p-3 mb-3">
-        <h5 class="text-success mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span><span>Tabelas por roteador — Packet Tracer (IP e máscara)</span></h5>
+        <h2 class="h5 text-success mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span><span>Tabelas por roteador — Packet Tracer (IP e máscara)</span></h2>
         <p class="small text-secondary mb-3">
             Para cada <strong class="text-light">roteador</strong>, configure as interfaces com os valores abaixo (iguais ao script CLI).
             Os <strong class="text-light">PCs</strong> obtêm endereço por <strong class="text-light">DHCP</strong>; o gateway de cada LAN é o IP da linha <code class="text-info" translate="no">GigabitEthernet0/0</code>.
@@ -619,7 +619,7 @@
     </div>
 
     <div class="problem-box p-3 mb-3">
-        <h5 class="text-warning mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">map</span><span>Desenho da arquitetura (WAN + LAN)</span></h5>
+        <h2 class="h5 text-warning mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">map</span><span>Desenho da arquitetura (WAN + LAN)</span></h2>
         <div class="topology-card mb-2">
             <div class="mb-2">
                 <span class="section-chip chip-info"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> Diagrama lógico automático</span>
@@ -642,7 +642,7 @@
     </div>
 
     <div class="problem-box p-3 mb-3">
-        <h5 class="text-info mb-3 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">science</span><span>Sequência sugerida no Packet Tracer</span></h5>
+        <h2 class="h5 text-info mb-3 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">science</span><span>Sequência sugerida no Packet Tracer</span></h2>
         <ol class="mb-0">
             {#for step in scenario.packetTracerSteps}
             <li class="mb-1">{step}</li>
@@ -661,7 +661,7 @@
         {#for entry in scenario.routerCommands.entrySet()}
         <div class="col-12 col-md-6 col-xl-4">
             <div class="problem-box p-3 h-100 cli-box">
-                <h6 class="text-warning mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span><span>CLI {entry.key.toUpperCase()}</span></h6>
+                <h3 class="h6 text-warning mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span><span>CLI {entry.key.toUpperCase()}</span></h3>
                 <div class="mb-2">
                     <span class="section-chip chip-warning"><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Script pronto para copiar</span>
                 </div>
@@ -682,7 +682,7 @@
     </div>
 
     <div class="problem-box p-3 mb-3">
-        <h5 class="text-success mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">inventory_2</span><span>Área de Exportação do Laboratório</span></h5>
+        <h2 class="h5 text-success mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">inventory_2</span><span>Área de Exportação do Laboratório</span></h2>
         <p class="small text-secondary mb-2">
             Estas três exportações só aparecem <strong class="text-light">depois de Calcular cenário</strong> e usam exatamente os mesmos dados do resultado na tela
             (VLSM, WAN, EIGRP/OSPF, scripts CLI e topologia).

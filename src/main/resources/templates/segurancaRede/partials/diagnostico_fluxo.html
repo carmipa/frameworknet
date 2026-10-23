@@ -1,12 +1,12 @@
 <div class="w-100">
-    <h5 class="d-flex flex-wrap align-items-center gap-2 text-white mb-1">
+    <h3 class="h5 d-flex flex-wrap align-items-center gap-2 text-white mb-1">
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> {fluxo.titulo}
         {#if fluxo.alcanca}
         <span class="badge bg-success">alcança o destino</span>
         {#else}
         <span class="badge bg-danger">bloqueado em {fluxo.pontoBloqueio}</span>
         {/if}
-    </h5>
+    </h3>
     <p class="small text-secondary mb-3">
         Origem <code class="text-info" translate="no">{fluxo.origem}</code> &rarr;
         destino <code class="text-info" translate="no">{fluxo.destino}</code>. {fluxo.resumo}

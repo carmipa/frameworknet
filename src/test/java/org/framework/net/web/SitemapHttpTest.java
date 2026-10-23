@@ -117,14 +117,17 @@ class SitemapHttpTest {
     }
 
     @Test
-    @DisplayName("toda URL listada responde 200 — sitemap não aponta para página morta")
+    @DisplayName("toda URL listada responde 200 sem redirecionar — sitemap não aponta para página morta")
     void todaUrlDoSitemapResponde() {
         List<String> caminhos = caminhosDoSitemap();
         assertFalse(caminhos.isEmpty(), "O sitemap veio vazio — instrumento cego, não site vazio.");
 
         List<String> quebradas = new ArrayList<>();
         for (String caminho : caminhos) {
-            int status = given().when().get(caminho).then().extract().statusCode();
+            // Sem seguir redirecionamento: o cliente HTTP segue 301/302 por padrão, e uma URL do sitemap
+            // que redireciona chegaria aqui como 200 da página de destino. O buscador trata URL de
+            // sitemap com redirecionamento como erro de cobertura.
+            int status = given().redirects().follow(false).when().get(caminho).then().extract().statusCode();
             if (status != 200) {
                 quebradas.add(caminho + " respondeu " + status);
             }

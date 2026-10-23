@@ -40,15 +40,15 @@
     </nav>
 
     <section id="conceitos" class="dns-secao">
-        <h3 class="dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Como o DNS funciona</h3>
+        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Como o DNS funciona</h2>
         <div class="row g-3">
             {#for item in conteudo.conceitos}
             <div class="col-12 col-lg-6">
                 <article class="card-tech p-3 h-100 dns-conceito">
-                    <h4 class="dns-conceito-titulo">
+                    <h3 class="h4 dns-conceito-titulo">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">{item.icone}</span>
                         {item.titulo}
-                    </h4>
+                    </h3>
                     <p class="small text-light mb-2">{item.texto}</p>
                     <p class="dns-destaque mb-0">{item.destaque}</p>
                 </article>
@@ -60,7 +60,7 @@
     {#include protocolos/partials/diagrama.html diagrama=conteudo.diagrama /}
 
     <section id="resolucao" class="dns-secao">
-        <h3 class="dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Resolução recursiva, passo a passo</h3>
+        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Resolução recursiva, passo a passo</h2>
         <p class="small text-secondary">
             O cliente faz UMA pergunta recursiva ao resolver; o resolver faz VÁRIAS perguntas iterativas
             até o autoritativo. A raiz não resolve o nome inteiro — só diz para quem delegar.
@@ -83,7 +83,7 @@
     </section>
 
     <section id="registros" class="dns-secao">
-        <h3 class="dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span> Tipos de registro</h3>
+        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span> Tipos de registro</h2>
         <div class="table-responsive border border-secondary border-opacity-25 rounded">
             <table class="table table-dark table-sm align-middle mb-0 dns-tabela">
                 <thead>
@@ -111,7 +111,7 @@
     {#include protocolos/partials/cabecalho_bits.html cabecalho=conteudo.cabecalho /}
 
     <section id="ataques" class="dns-secao">
-        <h3 class="dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques contra o DNS</h3>
+        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques contra o DNS</h2>
         <p class="small text-secondary">
             Quase todos exploram a mesma raiz: o DNS sem DNSSEC não prova quem respondeu. Cada cartão traz
             o sinal observável e a gravidade.
@@ -121,10 +121,10 @@
             <div class="col-12 col-xl-6">
                 <article class="card-tech p-3 h-100 dns-ataque dns-ataque-{at.gravidadeCor}">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                        <h4 class="dns-ataque-titulo mb-0">
+                        <h3 class="h4 dns-ataque-titulo mb-0">
                             <span class="material-symbols-outlined" aria-hidden="true" translate="no">{#if at.gravidadeCor == 'danger'}local_fire_department{#else if at.gravidadeCor == 'warning'}warning{#else if at.gravidadeCor == 'info'}info{#else}report{/if}</span>
                             {at.nome}
-                        </h4>
+                        </h3>
                         <span class="badge bg-dark border border-{at.gravidadeCor} text-{at.gravidadeCor}">{at.gravidade}</span>
                     </div>
                     <p class="small text-light mb-2">{at.comoFunciona}</p>
@@ -139,7 +139,7 @@
     </section>
 
     <section id="mitigacoes" class="dns-secao">
-        <h3 class="dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</h3>
+        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</h2>
         <p class="small text-secondary">
             A coluna "não cobre" existe de propósito: nenhuma defesa resolve tudo, e tratar uma como bala de
             prata é como o furo entra.
@@ -169,7 +169,7 @@
     </section>
 
     <section id="dnssec" class="dns-secao">
-        <h3 class="dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">verified_user</span> DNSSEC: a cadeia de confiança</h3>
+        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">verified_user</span> DNSSEC: a cadeia de confiança</h2>
         <p class="small text-secondary">
             Cada elo assina o seguinte, da raiz até o seu registro. Zona sem cadeia (sem DS no pai) é entregue
             como não assinada, sem o bit AD; o resolver validante só recusa (SERVFAIL) quando a cadeia existe e não confere.
@@ -188,12 +188,12 @@
     </section>
 
     <section id="laboratorio" class="dns-secao">
-        <h3 class="dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</h3>
+        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</h2>
         <div class="row g-3">
             {#for lab in conteudo.laboratorios}
             <div class="col-12 col-xl-6">
                 <article class="card-tech p-3 h-100 dns-lab">
-                    <h4 class="dns-lab-titulo">{lab.titulo}</h4>
+                    <h3 class="h4 dns-lab-titulo">{lab.titulo}</h3>
                     <p class="small text-secondary mb-2">{lab.cenario}</p>
                     <pre class="dns-codigo" id="dns-lab-{lab_count}" translate="no">{lab.comandos}</pre>
                     <div class="d-flex justify-content-end mb-2">
@@ -210,15 +210,15 @@
     </section>
 
     <section id="troubleshooting" class="dns-secao">
-        <h3 class="dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</h3>
+        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</h2>
         <div class="row g-3">
             {#for diag in conteudo.diagnosticos}
             <div class="col-12 col-xl-6">
                 <article class="card-tech p-3 h-100 dns-diag">
-                    <h4 class="dns-diag-sintoma">
+                    <h3 class="h4 dns-diag-sintoma">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">bug_report</span>
                         {diag.sintoma}
-                    </h4>
+                    </h3>
                     <p class="small mb-2"><span class="dns-rotulo dns-rotulo-risco">Causa provável</span> {diag.causaProvavel}</p>
                     <pre class="dns-codigo" id="dns-diag-{diag_count}" translate="no">{diag.comando}</pre>
                     <div class="d-flex justify-content-end mb-2">

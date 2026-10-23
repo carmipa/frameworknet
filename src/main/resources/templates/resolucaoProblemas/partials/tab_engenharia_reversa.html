@@ -20,9 +20,9 @@
 <form method="post" action="/resolucao-problemas" class="aed-card card-tech problem-box p-3 mb-3">
     <input type="hidden" name="aba" value="reversa">
     <span class="aed-eyebrow">Entrada</span>
-    <h5 class="text-light mb-3 problem-title d-flex align-items-center gap-2">
+    <h2 class="h5 text-light mb-3 problem-title d-flex align-items-center gap-2">
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_paste</span><span>Configuração Cisco</span>
-    </h5>
+    </h2>
     <label for="config_paste" class="form-label small text-secondary">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> Scripts dos roteadores (separe-os com uma linha de traços, se quiser)
     </label>
@@ -96,9 +96,9 @@
 
 {#if cenario.achados.size > 0}
 <div class="aed-card card-tech problem-box p-3 mb-3">
-    <h5 class="text-warning mb-2 problem-title">
+    <h2 class="h5 text-warning mb-2 problem-title">
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">fact_check</span><span>Auditoria da configuração</span>
-    </h5>
+    </h2>
     <p class="small text-secondary mb-3">
         Erro corrigido traz sempre a evidência que sustenta a correção. Erro sem correção
         automática é apontado e não é consertado — escolher sem evidência seria adivinhar.
@@ -150,9 +150,9 @@
 
 {#if cenario.pendencias.size > 0}
 <div class="aed-card card-tech problem-box p-3 mb-3 border border-info border-opacity-50">
-    <h5 class="text-info mb-2 problem-title">
+    <h2 class="h5 text-info mb-2 problem-title">
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">help</span><span>O que falta para fechar o cenário</span>
-    </h5>
+    </h2>
     <p class="small text-secondary mb-2">
         A ferramenta não completa isto por conta própria — preencher a lacuna com convenção
         seria inventar dado que não estava no texto.
@@ -170,9 +170,9 @@
 
 {#if cenario.lans.size > 0}
 <div class="aed-card card-tech problem-box p-3 mb-3">
-    <h5 class="text-info mb-3 problem-title">
+    <h2 class="h5 text-info mb-3 problem-title">
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span><span>LANs reconstruídas</span>
-    </h5>
+    </h2>
     <div class="table-responsive border border-secondary border-opacity-25 rounded">
         <table class="table table-dark table-sm align-middle mb-0 reversa-tabela">
             <thead>
@@ -208,9 +208,9 @@
 
 {#if cenario.enlaces.size > 0}
 <div class="aed-card card-tech problem-box p-3 mb-3">
-    <h5 class="text-warning mb-3 problem-title">
+    <h2 class="h5 text-warning mb-3 problem-title">
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">link</span><span>Enlaces ponto a ponto</span>
-    </h5>
+    </h2>
     <div class="table-responsive border border-secondary border-opacity-25 rounded">
         <table class="table table-dark table-sm align-middle mb-0 reversa-tabela">
             <thead>
@@ -245,9 +245,9 @@
 
 {#if cenario.tabelas.size > 0}
 <div class="aed-card card-tech problem-box p-3 mb-3">
-    <h5 class="text-success mb-3 problem-title">
+    <h2 class="h5 text-success mb-3 problem-title">
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span><span>Tabelas por roteador</span>
-    </h5>
+    </h2>
     <div class="row g-3">
         {#for tabela in cenario.tabelas}
         <div class="col-12 col-xl-6">
@@ -284,9 +284,9 @@
 {#if cenario.mermaid.isEmpty()}
 {#else}
 <div class="aed-card card-tech problem-box p-3 mb-3">
-    <h5 class="text-warning mb-2 problem-title">
+    <h2 class="h5 text-warning mb-2 problem-title">
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">map</span><span>Desenho reconstruído</span>
-    </h5>
+    </h2>
     <div class="topology-wrap">
         <pre class="mermaid mb-0" translate="no">{cenario.mermaid}</pre>
     </div>
@@ -295,9 +295,9 @@
 
 {#if cenario.scripts.size > 0}
 <div class="aed-card card-tech problem-box p-3 mb-3">
-    <h5 class="text-success mb-2 problem-title">
+    <h2 class="h5 text-success mb-2 problem-title">
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span><span>Scripts corrigidos</span>
-    </h5>
+    </h2>
     <p class="small text-secondary mb-3">
         Cada linha alterada vem precedida de <code translate="no">! CORRIGIDO:</code> com o valor original e o
         motivo — script corrigido sem marca vira configuração aplicada às cegas.
@@ -328,9 +328,9 @@
 
 {#if cenario.linhasNaoInterpretadas.size > 0}
 <div class="aed-card card-tech problem-box p-3 mb-3">
-    <h5 class="text-secondary mb-2 problem-title">
+    <h2 class="h5 text-secondary mb-2 problem-title">
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">rule</span><span>Linhas que o interpretador não usou</span>
-    </h5>
+    </h2>
     <p class="small text-secondary mb-2">
         Listadas de propósito: interpretador que ignora linha em silêncio desenha errado com
         cara de certo.
@@ -353,9 +353,9 @@
 {/if}
 
 <div class="aed-card card-tech problem-box p-3 mb-3 reversa-exportacao">
-    <h5 class="text-success mb-2 problem-title">
+    <h2 class="h5 text-success mb-2 problem-title">
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">inventory_2</span><span>Exportação e impressão</span>
-    </h5>
+    </h2>
     <form method="post" action="/resolucao-problemas" class="d-flex flex-wrap gap-2 align-items-center">
         <input type="hidden" name="aba" value="reversa">
         <input type="hidden" name="config_paste" value="{configPaste}">

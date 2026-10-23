@@ -1,6 +1,6 @@
 {! Aba "Faixa → CIDR": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
 <div class="calc-form-card mb-3">
-    <h6 class="calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">linear_scale</span> Faixa → CIDR</h6>
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">linear_scale</span> Faixa → CIDR</h2>
     <p class="calc-hint">Decompõe uma faixa de endereços na menor lista de blocos CIDR que a cobre exatamente.</p>
     <form id="formFaixa" hx-post="/ipv6/api/faixa" hx-target="#saidaFaixa" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">

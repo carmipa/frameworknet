@@ -1,6 +1,6 @@
 {! Aba "Sub-redes": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
 <div class="calc-form-card mb-3">
-    <h6 class="calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_on</span> Dividir prefixo em sub-redes</h6>
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_on</span> Dividir prefixo em sub-redes</h2>
     <p class="calc-hint">Ex.: um <code translate="no">/48</code> em <code translate="no">/64</code> dá <strong>65.536</strong> LANs. Contagem 2^n exata.</p>
     <form id="formDiv" hx-post="/ipv6/api/dividir" hx-target="#saidaDiv" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">

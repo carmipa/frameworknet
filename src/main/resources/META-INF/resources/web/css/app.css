@@ -107,8 +107,8 @@ html {
             background-color: rgba(56, 139, 253, 0.12) !important;
             color: #e6edf3;
         }
-        .geo-report-root .card-body h5,
-        .geo-report-root .card-body h6 {
+        .geo-report-root .card-body :is(h5, .h5),
+        .geo-report-root .card-body :is(h6, .h6) {
             color: #e6edf3;
         }
         .geo-report-root .text-primary {

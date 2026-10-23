@@ -1,6 +1,6 @@
 {! Aba "Comparador": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
 <div class="calc-form-card mb-3">
-    <h6 class="calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">compare_arrows</span> Comparar dois endereços</h6>
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">compare_arrows</span> Comparar dois endereços</h2>
     <p class="calc-hint">Descobre se caem na mesma <code translate="no">/64</code>, se um contém o outro, o prefixo comum e a distância entre eles.</p>
     <form id="formComp" class="row g-3 align-items-end" hx-post="/ipv6/api/comparar" hx-target="#saidaComp" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">
