@@ -82,14 +82,25 @@ body.aed-app .aed-page {
     justify-content: space-between;
     gap: 0.75rem 1.25rem;
     padding: 0.75rem 1.25rem;
-    /* full-bleed até a borda do .container: a margem negativa = o padding do container, max(2%, .75rem).
-       O % da margem é medido sobre a largura de CONTEÚDO do container (96% da página), e o do padding sobre
-       a página inteira: 2% / 0,96 = 2,0833% devolve exatamente os mesmos 2% da página. */
-    margin: 0 calc(-1 * max(2.0833%, 0.75rem)) 1.5rem;
+    /* Filho direto do <body>, antes do <main>: já ocupa a largura inteira da página, sem a margem
+       negativa que o compensava quando ele morava dentro do .container de cada página. */
+    margin: 0 0 1.5rem;
     background: var(--aed-nav-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--aed-border);
+}
+
+/* O respiro de cima que o contêiner da página (py-4 / py-5) dava ANTES do menu passa para o <body>, e o
+   contêiner começa colado no menu: menu e conteúdo ficam na mesma posição de quando o menu morava dentro
+   do contêiner. Padding no <body>, e não margem no menu: margem atravessaria o <body> e, com o
+   min-height de 100vh, criaria rolagem vertical nas páginas curtas. Os valores são os do Bootstrap
+   (py-4 1,5rem, py-5 3rem) e o de py-5 abaixo de 62em, que o app.css reduz para 1,4rem. */
+body.aed-app > .aed-topnav + main > .container:first-child { padding-top: 0 !important; }
+body.aed-app:has(> .aed-topnav + main > .container.py-4:first-child) { padding-top: 1.5rem; }
+body.aed-app:has(> .aed-topnav + main > .container.py-5:first-child) { padding-top: 3rem; }
+@media (max-width: 62em) {
+    body.aed-app:has(> .aed-topnav + main > .container.py-5:first-child) { padding-top: 1.4rem; }
 }
 
 .aed-brand {

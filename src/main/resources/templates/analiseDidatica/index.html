@@ -4,9 +4,9 @@
 {#extraHead}
 <link rel="stylesheet" href="/calculadora/css/calculadora.css?v=20261023" />
 {/extraHead}
+{#menu}{#include shared/main_menu.html activeMainMenu='analise' /}{/menu}
 {#content}
 <div class="container py-5">
-    {#include shared/main_menu.html activeMainMenu='analise' /}
     {#include shared/project_header.html /}
 
     {#if erro}

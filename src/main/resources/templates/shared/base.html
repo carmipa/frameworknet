@@ -70,16 +70,19 @@
     <link href="/web/vendor/bootstrap-5.3.0/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
         crossorigin="anonymous">
-    <link rel="stylesheet" href="/web/css/app.css?v=20261023b">
-    <link rel="stylesheet" href="/web/css/aed-command-center.css?v=20261022">
+    <link rel="stylesheet" href="/web/css/app.css?v=20261024">
+    <link rel="stylesheet" href="/web/css/aed-command-center.css?v=20261024">
     <link rel="stylesheet" href="/web/css/dica-camada.css?v=20261022">
     {#insert extraHead}{/insert}
 </head>
 
 <body class="aed-app">
     {! FRONT-16: link de pular e região principal — quem navega por teclado ou leitor de tela atravessava o
-       menu inteiro (13 itens e dois suspensos) em toda página antes de chegar ao conteúdo. !}
-    <a class="visually-hidden-focusable aed-pular" href="#inicio-do-conteudo">Pular para o conteúdo</a>
+       menu inteiro (13 itens e dois suspensos) em toda página antes de chegar ao conteúdo.
+       O menu do site vem da seção "menu" de cada página e fica FORA do <main>: o <main> é só o conteúdo
+       da página, e o link de pular leva direto a ele. !}
+    <a class="visually-hidden-focusable aed-pular" href="#conteudo">Pular para o conteúdo</a>
+    {#insert menu}{/insert}
     <main id="conteudo" tabindex="-1">
     {#insert content}{/insert}
     </main>

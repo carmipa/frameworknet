@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * principal ({@code fetchpriority="high"}) nunca é {@code lazy}; (4) cada página tem título de aba
  * próprio; (5) {@code og:url} é o próprio canonical e {@code og:image} é absoluta; (6) a navegação direta
  * recebe documento completo, e a resposta que muda conforme {@code Accept}/{@code HX-Request} declara
- * {@code Vary}.</p>
+ * {@code Vary}; (7) o menu principal fica fora do {@code <main>}, antes dele.</p>
  *
  * <p><b>Comportamento em caso de falha:</b> cada teste nomeia a rota e o trecho ofensor. Falha
  * <b>fechada</b>: lista de páginas vazia, página que não renderizou o layout ou leitor que não passa na
@@ -258,6 +258,41 @@ class SemanticaPaginaPublicaHttpTest {
             }
         }
         assertTrue(defeitos.isEmpty(), () -> "Link de pular que devolve o foco ao menu (ou sem alvo): " + defeitos);
+    }
+
+    // O <main> é só o conteúdo da página: o menu do site fica antes dele, e não dentro.
+    @Test
+    @DisplayName("o menu principal fica fora do <main>, antes dele")
+    void menuPrincipalForaDoMain() {
+        assertTrue(menuForaDoMain("<nav class=\"aed-topnav\">m</nav><main id=\"c\"><p>x</p></main>"));
+        assertFalse(menuForaDoMain("<main id=\"c\"><nav class=\"aed-topnav\">m</nav><p>x</p></main>"),
+                "Menu dentro do <main> tem de reprovar.");
+        // Fronteira: outro <nav> dentro do <main> (a subnavegação de uma seção) é conteúdo da página e não
+        // pode ser confundido com o menu principal.
+        assertTrue(menuForaDoMain("<nav class=\"aed-topnav\">m</nav><main id=\"c\"><nav class=\"sub\">s</nav></main>"),
+                "Subnavegação dentro do <main> é legítima.");
+        assertFalse(menuForaDoMain("<main id=\"c\"><p>x</p></main>"), "Página sem menu tem de reprovar.");
+        assertFalse(menuForaDoMain("<nav class=\"aed-topnav\">m</nav><div>sem main</div>"),
+                "Página sem <main> tem de reprovar.");
+
+        List<String> defeitos = new ArrayList<>();
+        for (String rota : rotasComLayout()) {
+            if (!menuForaDoMain(corpo(rota))) {
+                defeitos.add(rota);
+            }
+        }
+        assertTrue(defeitos.isEmpty(), () -> "Menu principal dentro do <main> (ou ausente): " + defeitos);
+    }
+
+    private static boolean menuForaDoMain(String html) {
+        int menu = html.indexOf("<nav class=\"aed-topnav\"");
+        int abreMain = html.indexOf("<main");
+        int fechaMain = html.indexOf("</main>");
+        if (menu < 0 || abreMain < 0 || fechaMain < 0) {
+            return false;
+        }
+        int fimDoMenu = html.indexOf("</nav>", menu);
+        return fimDoMenu >= 0 && fimDoMenu < abreMain && fechaMain > fimDoMenu;
     }
 
     private static boolean alvoDoPularDepoisDoMenu(String html) {
