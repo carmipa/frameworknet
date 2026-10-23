@@ -59,6 +59,12 @@ compileTestJava {
     options.encoding = 'UTF-8'
 }
 
+// A suíte sobe o Quarkus várias vezes (um boot por perfil de teste) na mesma JVM de testes; com o
+// teto padrão do Gradle (512 MB) ela chegou a terminar os 921 testes e morrer por heap no encerramento.
+test {
+    maxHeapSize = '1g'
+}
+
 quarkusDev {
     jvmArgs = ['-Djava.awt.headless=false']
     dependsOn 'purgeStaleDevConfig'
