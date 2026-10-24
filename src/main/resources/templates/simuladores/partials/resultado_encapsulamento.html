@@ -6,7 +6,7 @@
         ({resultado.transporte} sobre IPv4).
     </p>
 
-    <h3 class="h4 encap-secao" title="Cada camada envolve a de cima com o próprio cabeçalho; a mais externa é o quadro Ethernet que vai para o fio">Encapsulamento no emissor</h3>
+    <h3 class="h4 encap-secao">Encapsulamento no emissor</h3>
     <div class="encap-nest">
         {! A pilha vem invertida (Enlace por fora, Aplicação por dentro): o primeiro laço
            abre as camadas aninhadas, a mensagem fica no miolo e o segundo laço fecha as
@@ -30,7 +30,7 @@
         {/for}
     </div>
 
-    <h3 class="h4 encap-secao" title="Os campos de cada cabeçalho com o valor usado neste exemplo e se ele foi informado, calculado ou só ilustrativo">Cabeçalhos, campo a campo</h3>
+    <h3 class="h4 encap-secao">Cabeçalhos, campo a campo</h3>
     <p class="small text-secondary">
         Cada valor traz sua natureza:
         <span class="badge bg-info text-dark">fornecido</span> (você informou),

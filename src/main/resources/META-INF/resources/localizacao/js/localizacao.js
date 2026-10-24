@@ -11,6 +11,8 @@
             return;
         }
         map = L.map("loc-map", { scrollWheelZoom: false }).setView([-14.235, -51.925], 4);
+        // Crédito do Leaflet sem o title de propaganda da biblioteca, que o adaptador viraria dica num link de destino óbvio.
+        map.attributionControl.setPrefix('<a href="https://leafletjs.com/">Leaflet</a>');
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

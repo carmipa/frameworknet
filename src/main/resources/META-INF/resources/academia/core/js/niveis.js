@@ -149,7 +149,6 @@
                 if (rotulo) {
                     rotulo.textContent = 'Ir para ' + req.titulo;
                 }
-                link.setAttribute('title', 'Abre o nível ' + req.titulo + ', que desbloqueia este');
             }
             aviso.hidden = false;
         });
@@ -218,7 +217,6 @@
                     link.removeAttribute('tabindex');
                     link.removeAttribute('role');
                     link.removeAttribute('aria-label');
-                    link.setAttribute('title', 'Abre o nível ' + (e.titulo || ''));
                 }
             });
         }

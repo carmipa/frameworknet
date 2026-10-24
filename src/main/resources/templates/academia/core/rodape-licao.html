@@ -1,17 +1,17 @@
 {! Rodapé comum das lições: próxima lição (vinda da trilha) e o caminho de volta ao nível.
    Variáveis: nivel, proxima (Licao ou nulo). !}
 <nav class="acad-licao-cabeca mt-4" aria-label="Continuar na trilha">
-    <a href="{nivel.rota}" class="aed-btn aed-btn-neutral" title="Volta para a lista de lições deste nível">
+    <a href="{nivel.rota}" class="aed-btn aed-btn-neutral">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_back</span>
         <span>Lições de {nivel.titulo}</span>
     </a>
     {#if proxima}
-    <a href="{proxima.rota}" class="aed-btn aed-btn-teal" title="Abre a próxima lição da trilha">
+    <a href="{proxima.rota}" class="aed-btn aed-btn-teal">
         <span>Próxima: {proxima.titulo}</span>
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_forward</span>
     </a>
     {#else}
-    <a href="/academia#trilha" class="aed-btn aed-btn-teal" title="Volta para os níveis da Academia, onde o próximo aparece desbloqueado">
+    <a href="/academia#trilha" class="aed-btn aed-btn-teal">
         <span>Fim do nível — ver os níveis</span>
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span>
     </a>

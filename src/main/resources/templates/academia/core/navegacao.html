@@ -5,7 +5,7 @@
    aberta ('' na página do nível). !}
 <nav class="acad-nav" aria-label="Níveis e lições da Academia" data-acad-nav>
     <div class="acad-nav-niveis">
-        <a href="/academia#trilha" class="aed-mode-btn acad-aba" title="Volta para a página inicial da Academia, com todos os níveis">
+        <a href="/academia#trilha" class="aed-mode-btn acad-aba">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span>
             <span>Academia</span>
             <span class="acad-aba-estado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_back</span><span>início</span></span>
@@ -13,7 +13,7 @@
         {#for n in niveis}
         {#if n.aberto}
         <a href="{n.rota}" class="aed-mode-btn acad-aba{#if n.id == nivel.id} active{/if}"{#if n.id == nivel.id} aria-current="{#if atual == ''}page{#else}true{/if}"{/if}
-           data-acad-nav-nivel="{n.id}" title="Abre o nível {n.titulo}">
+           data-acad-nav-nivel="{n.id}">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">{n.icone}</span>
             <span>{n.titulo}</span>
             <span class="acad-aba-estado" data-acad-aba-estado></span>
@@ -29,14 +29,12 @@
         {/for}
     </div>
     <div class="acad-nav-licoes" aria-label="Lições de {nivel.titulo}" role="group">
-        <a href="{nivel.rota}" class="acad-subaba{#if atual == ''} active{/if}"{#if atual == ''} aria-current="page"{/if}
-           title="Mostra a lista de lições do nível {nivel.titulo}">
+        <a href="{nivel.rota}" class="acad-subaba{#if atual == ''} active{/if}"{#if atual == ''} aria-current="page"{/if}>
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span>
             <span>Visão do nível</span>
         </a>
         {#for l in nivel.licoes}
-        <a href="{l.rota}" class="acad-subaba{#if l.id == atual} active{/if}"{#if l.id == atual} aria-current="page"{/if}
-           title="Abre a lição {l.titulo}">
+        <a href="{l.rota}" class="acad-subaba{#if l.id == atual} active{/if}"{#if l.id == atual} aria-current="page"{/if}>
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">{l.icone}</span>
             <span>{l.titulo}</span>
             <span class="acad-subaba-estado" data-acad-subaba-selo="{l.id}"></span>

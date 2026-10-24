@@ -262,7 +262,7 @@
             tbRot.innerHTML = rotas.length === 0
                 ? '<tr><td colspan="5" class="tele-empty">Sem dados no período.</td></tr>'
                 : rotas.map(e => '<tr><td>' + metodoBadge(e.metodo) + '</td>'
-                    + '<td class="col-endpoint" title="' + esc(e.endpoint) + '">' + esc(e.endpoint) + '</td>'
+                    + '<td class="col-endpoint">' + esc(e.endpoint) + '</td>'
                     + '<td class="num">' + e.chamadas + '</td>'
                     + '<td class="num ' + (e.erros > 0 ? 'txt-err' : '') + '">' + e.erros + '</td>'
                     + '<td class="num mono">' + ms(e.p95) + '</td></tr>').join('');
@@ -464,6 +464,7 @@
         if (pausar) pausar.addEventListener('click', () => {
             consolePausado = !consolePausado;
             pausar.classList.toggle('active', consolePausado);
+            pausar.setAttribute('aria-pressed', String(consolePausado));
             const icon = pausar.querySelector('.material-symbols-outlined');
             if (icon) icon.textContent = consolePausado ? 'play_arrow' : 'pause';
         });

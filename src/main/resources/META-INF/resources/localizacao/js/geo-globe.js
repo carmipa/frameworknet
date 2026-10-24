@@ -33,7 +33,6 @@ import { THREE, Globe } from "/localizacao/vendor/globo-three.mjs?v=20261002";
             var botao = document.createElement("button");
             botao.type = "button";
             botao.className = "aed-btn aed-btn-neutral btn-sm globo-pausa";
-            botao.setAttribute("title", "Liga ou desliga o giro automático do globo e das nuvens");
             function pintar() {
                 botao.setAttribute("aria-pressed", parado ? "true" : "false");
                 botao.innerHTML = '<span class="material-symbols-outlined" translate="no" aria-hidden="true">'

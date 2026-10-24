@@ -34,9 +34,7 @@
                     title="Localização geográfica por IP (país, região, ISP, risco) com globo 3D e histórico">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span><span>Por IP (GeoIP)</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="privacidade" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Autoteste: o que o SEU navegador revela (WebRTC, cabeçalhos de proxy, fingerprint)">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="privacidade" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">shield_person</span><span>Vazamento / Privacidade</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="cep" role="tab"
@@ -51,8 +49,7 @@
     <!-- GeoIP por IP (movido da aba "Região Geo" da Análise Didática) -->
     <div class="aed-card card-tech p-4 shadow border-start border-warning border-3 mb-4">
         <span class="aed-eyebrow aed-eyebrow-amber">GeoIP</span>
-        <h2 class="h5 text-warning mb-3 d-flex align-items-center gap-2"
-            title="Estimativa de país, região e provedor de um IP; aponta a área do provedor, não o endereço de quem usa">
+        <h2 class="h5 text-warning mb-3 d-flex align-items-center gap-2">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Região geográfica (GeoIP)
         </h2>
         <p class="small text-secondary mb-3">
@@ -74,8 +71,7 @@
                        data-bs-toggle="tooltip" data-bs-placement="top" title="Aceita IPv4 e IPv6.">
             </div>
             <div class="col-auto">
-                <button type="button" class="aed-btn aed-btn-amber btn-sm" id="btn-geo-localizar"
-                        data-bs-toggle="tooltip" data-bs-placement="top" title="Consulta geográfica do IP informado.">
+                <button type="button" class="aed-btn aed-btn-amber btn-sm" id="btn-geo-localizar">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Localizar
                 </button>
             </div>
@@ -114,7 +110,7 @@
             <!-- Histórico GeoIP (dentro da aba GeoIP) -->
             <div id="geo-historico-panel" class="card-tech p-3 shadow history-box">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                    <h3 class="h6 text-info mb-0 d-flex align-items-center gap-2" title="Consultas de localização feitas recentemente, com paginação"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico GeoIP</h3>
+                    <h3 class="h6 text-info mb-0 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico GeoIP</h3>
                     <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">public</span>Apenas consultas geográficas</span>
                 </div>
                 <div class="small text-secondary mb-2">Últimas consultas com localização, rede, tipo de conexão e risco GRC.</div>
@@ -124,8 +120,8 @@
                         <tr class="text-secondary small">
                             <th title="Data e hora em que a consulta foi feita">Timestamp</th>
                             <th title="Endereço que foi localizado">IP</th>
-                            <th title="Classificação estimada da conexão, ou Reservado quando o IP é de rede local">Tipo</th>
-                            <th title="País associado ao bloco de endereços na base de geolocalização">País</th>
+                            <th>Tipo</th>
+                            <th>País</th>
                             <th title="Estado e cidade aproximados, que costumam ser os do provedor">Região / Cidade</th>
                             <th title="Provedor de acesso ou organização dona do bloco de endereços">ISP</th>
                             <th title="Nível de risco de governança e segurança atribuído ao IP; N/A para endereços reservados">Risco</th>
@@ -152,8 +148,7 @@
         <div class="tab-panel" data-tab-panel="privacidade">
             <div class="aed-card card-tech p-4 shadow border-start border-info border-3 mb-4" id="privacidade-card">
                 <span class="aed-eyebrow aed-eyebrow-teal">Privacidade · autoteste</span>
-                <h2 class="h5 text-info mb-2 d-flex align-items-center gap-2"
-                    title="Autoteste que compara o IP visto pelo servidor, o IP público e os candidatos WebRTC para achar vazamentos">
+                <h2 class="h5 text-info mb-2 d-flex align-items-center gap-2">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">shield_person</span> Teste de vazamento de IP (o que o SEU navegador revela)
                 </h2>
                 <p class="small text-secondary mb-3">
@@ -162,8 +157,7 @@
                     o quanto você está exposto — mesmo atrás de VPN/proxy. Nada é enviado a terceiros nem armazenado.
                 </p>
                 <div class="d-flex flex-wrap align-items-center gap-2">
-                    <button type="button" class="aed-btn aed-btn-teal" id="btn-priv-testar"
-                            title="Executar bateria de testes de vazamento de IP e fingerprint do navegador">
+                    <button type="button" class="aed-btn aed-btn-teal" id="btn-priv-testar">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">radar</span> Rodar teste de vazamento
                     </button>
                     <span id="priv-status" class="small text-secondary d-none"></span>
@@ -184,14 +178,13 @@
             <!-- Endereço por CEP (ViaCEP + geocoding OSM) -->
             <form id="form-loc-cep" class="aed-card card-tech loc-cep-form mb-4" autocomplete="off" onsubmit="return false;">
                 <span class="aed-eyebrow aed-eyebrow-indigo">Por CEP</span>
-                <h2 class="h5 loc-form-title" title="Busca o logradouro do CEP no ViaCEP e marca o ponto aproximado no mapa">Endereço no mapa (ViaCEP + OpenStreetMap)</h2>
-                <label class="form-label small text-secondary" for="loc-cep" title="Código postal brasileiro que identifica a rua ou a faixa de endereços"><span class="material-symbols-outlined" aria-hidden="true" translate="no">markunread_mailbox</span> CEP</label>
+                <h2 class="h5 loc-form-title">Endereço no mapa (ViaCEP + OpenStreetMap)</h2>
+                <label class="form-label small text-secondary" for="loc-cep"><span class="material-symbols-outlined" aria-hidden="true" translate="no">markunread_mailbox</span> CEP</label>
                 <div class="loc-input-row">
                     <input type="text" id="loc-cep" class="form-control bg-dark text-light border-secondary"
                            title="Oito dígitos, com ou sem hífen, ex.: 01001-000"
                            placeholder="01001-000" inputmode="numeric" maxlength="9">
-                    <button type="submit" class="aed-btn aed-btn-teal"
-                            title="Consultar endereço completo e coordenadas pelo CEP informado">
+                    <button type="submit" class="aed-btn aed-btn-teal">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">pin_drop</span> Localizar CEP
                     </button>
                     <button type="button" class="aed-btn aed-btn-neutral" data-limpar
@@ -204,14 +197,13 @@
             <!-- Localização exata via GPS do navegador (com consentimento) -->
             <div class="aed-card card-tech loc-cep-form mb-4">
                 <span class="aed-eyebrow aed-eyebrow-teal">Precisa · com sua permissão</span>
-                <h2 class="h5 loc-form-title" title="Usa a geolocalização do aparelho, por GPS ou Wi-Fi, somente depois que você autorizar no navegador">Minha localização exata (GPS do navegador)</h2>
+                <h2 class="h5 loc-form-title">Minha localização exata (GPS do navegador)</h2>
                 <p class="small text-secondary mb-2">
                     Diferente do IP, o <strong>GPS/Wi-Fi do seu aparelho</strong> dá a posição real — o navegador
                     vai <strong>pedir sua permissão</strong>. Nada é enviado sem você autorizar.
                 </p>
                 <div class="d-flex flex-wrap align-items-center gap-2">
-                    <button type="button" id="btn-loc-gps" class="aed-btn aed-btn-teal"
-                            title="Obter coordenadas geográficas precisas via GPS/Wi-Fi do navegador">
+                    <button type="button" id="btn-loc-gps" class="aed-btn aed-btn-teal">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">my_location</span> Usar minha localização (GPS)
                     </button>
                     <span id="loc-gps-status" class="small text-secondary"></span>
@@ -221,7 +213,7 @@
             <div id="loc-resultado" class="aed-card card-tech loc-resultado d-none mb-4" aria-live="polite"></div>
 
             <div class="aed-card card-tech p-2 mb-4">
-                <div id="loc-map" class="loc-map" role="img" aria-label="Mapa de localização"></div>
+                <div id="loc-map" class="loc-map" role="region" aria-label="Mapa de localização"></div>
             </div>
         </div>
         <!-- /Aba CEP -->

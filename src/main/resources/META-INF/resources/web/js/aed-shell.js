@@ -83,13 +83,38 @@
             });
     }
     sincronizarAbas(document);
+
+    /**
+     * Bloco de código alcançável pelo teclado.
+     *
+     * PROPÓSITO DE NEGÓCIO: comando, script e saída de terminal ficam em elemento pre com rolagem horizontal; sem foco,
+     *   quem usa só o teclado não consegue rolar e perde o fim da linha (WCAG 2.1.1, axe scrollable-region-focusable).
+     * INVARIANTES: um mecanismo só, para os blocos de hoje e os que o htmx ou o JS de tela trouxerem depois: todo
+     *   elemento pre sem tabindex próprio ganha tabindex="0"; tabindex já definido no template não é tocado.
+     * FALHA: sem MutationObserver, vale só o que existia na carga.
+     */
+    function focarBlocosDeCodigo(raiz) {
+        (raiz.matches && raiz.matches("pre") ? [raiz] : [])
+            .concat(Array.from(raiz.querySelectorAll ? raiz.querySelectorAll("pre") : []))
+            .forEach((pre) => {
+                if (!pre.hasAttribute("tabindex")) {
+                    pre.setAttribute("tabindex", "0");
+                }
+            });
+    }
+    focarBlocosDeCodigo(document);
     if (window.MutationObserver) {
         new MutationObserver((mutacoes) => {
             mutacoes.forEach((m) => {
                 if (m.type === "attributes" && m.target.getAttribute && m.target.getAttribute("role") === "tab") {
                     sincronizarAbas(m.target);
                 }
-                m.addedNodes && m.addedNodes.forEach((n) => n.nodeType === 1 && sincronizarAbas(n));
+                m.addedNodes && m.addedNodes.forEach((n) => {
+                    if (n.nodeType === 1) {
+                        sincronizarAbas(n);
+                        focarBlocosDeCodigo(n);
+                    }
+                });
             });
         }).observe(document.body, { attributes: true, attributeFilter: ["class"], childList: true, subtree: true });
     }

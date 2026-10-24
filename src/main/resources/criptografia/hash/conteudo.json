@@ -73,7 +73,6 @@
   "tabelas": [
     {
       "titulo": "Famílias de hash: tamanho do digest e status de segurança",
-      "dica": "Lista funções de hash com o tamanho da saída e se ainda são seguras para uso criptográfico",
       "colunas": [
         "Algoritmo",
         "Tamanho do digest",
@@ -84,7 +83,7 @@
         "Nome da função de hash",
         "Comprimento fixo do resumo gerado, em bits, qualquer que seja o tamanho da entrada",
         "Padrão ou construção a que a função pertence",
-        "Situação atual de segurança, considerando os ataques de colisão conhecidos"
+        ""
       ],
       "linhas": [
         [
@@ -133,7 +132,6 @@
     },
     {
       "titulo": "Hash geral x hash de senha: propósito oposto",
-      "dica": "Mostra por que hash rápido serve para integridade e hash lento e com salt serve para guardar senhas",
       "colunas": [
         "Aspecto",
         "Hash geral (SHA-256, SHA-3)",
@@ -179,7 +177,6 @@
     },
     {
       "titulo": "Funções de derivação de senha: característica de defesa",
-      "dica": "Compara Argon2id, bcrypt e PBKDF2 pelo mecanismo de defesa e indica quando cada um é recomendado",
       "colunas": [
         "Função",
         "Defesa principal",
@@ -188,7 +185,7 @@
       "dicas_colunas": [
         "Algoritmo de derivação usado para armazenar senhas",
         "Mecanismo que encarece o ataque de força bruta ou de dicionário",
-        "Quando escolher a função e o cuidado de configuração mais importante"
+        ""
       ],
       "linhas": [
         [

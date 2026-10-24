@@ -56,7 +56,7 @@
             <div class="row g-2 align-items-end mb-2">
                 <div class="col-md-6 col-lg-4">
                     <label class="form-label small text-secondary d-flex align-items-center gap-1">Alcance (IGP / EGP)
-                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="IGP e EGP" data-bs-content="IGP troca rotas dentro de um Sistema Autônomo (AS); EGP, no uso atual, é o BGP entre AS. Protocolo que não é de roteamento aparece como N/A." aria-label="Ajuda: IGP e EGP"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
+                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="IGP troca rotas dentro de um Sistema Autônomo (AS); EGP, no uso atual, é o BGP entre AS. Protocolo que não é de roteamento aparece como N/A." aria-label="Ajuda: IGP e EGP"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
                     </label>
                     <select aria-label="Alcance (IGP / EGP)" class="form-select bg-dark text-light border-secondary" data-grid-alcance="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra por alcance didático: interior (IGP), exterior (EGP) ou não aplicável.">
                         <option value="all">Todos</option>
@@ -70,7 +70,7 @@
                 </div>
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-25">
-                <label for="protocolosLinhasPorPagina" class="small text-secondary mb-0 d-flex align-items-center gap-2" title="Quantas linhas da tabela aparecem de cada vez">
+                <label for="protocolosLinhasPorPagina" class="small text-secondary mb-0 d-flex align-items-center gap-2">
                     <span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> <span>Linhas por página</span>
                 </label>
                     <select id="protocolosLinhasPorPagina" aria-label="Linhas por página" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: auto; min-width: 12rem;" data-grid-page-size="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Escolha 10, 25, 50 ou 100 linhas por vez, ou todas sem paginar">
@@ -83,11 +83,11 @@
             </div>
             <div class="row g-2 align-items-end mb-3">
                 <div class="col-lg-3">
-                    <label class="form-label small text-secondary d-flex align-items-center gap-1" title="Procura o texto digitado em todas as colunas da tabela de uma vez"><span class="material-symbols-outlined" aria-hidden="true" translate="no">search</span> Busca geral</label>
-                    <input type="text" class="form-control bg-dark text-light border-secondary" data-grid-search="protocolos" placeholder="Protocolo, IGP, EGP, camada..." data-bs-toggle="tooltip" data-bs-placement="top" title="Busca geral: digite protocolo, camada, IGP/EGP, transporte ou função.">
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">search</span> Busca geral</label>
+                    <input type="text" class="form-control bg-dark text-light border-secondary" data-grid-search="protocolos" placeholder="Protocolo, IGP, EGP, camada..." data-bs-toggle="tooltip" data-bs-placement="top" title="Digite protocolo, camada, IGP/EGP, transporte ou função.">
                 </div>
                 <div class="col-lg-2">
-                    <label class="form-label small text-secondary" title="Separa os protocolos de roteamento dos demais"><span class="material-symbols-outlined" aria-hidden="true" translate="no">category</span> Categoria</label>
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">category</span> Categoria</label>
                     <select aria-label="Categoria" class="form-select bg-dark text-light border-secondary" data-grid-context="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra por categoria: protocolos de roteamento ou outros.">
                         <option value="all">Todas</option>
                         <option value="roteamento">Roteamento</option>
@@ -95,7 +95,7 @@
                     </select>
                 </div>
                 <div class="col-lg-2">
-                    <label class="form-label small text-secondary" title="Mostra só os protocolos de uma camada do modelo TCP/IP"><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Camada</label>
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Camada</label>
                     <select aria-label="Camada" class="form-select bg-dark text-light border-secondary" data-grid-category="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pela camada do modelo (aplicação, transporte, rede, enlace).">
                         <option value="all">Todas</option>
                         <option value="aplicação">Aplicação</option>
@@ -105,7 +105,7 @@
                     </select>
                 </div>
                 <div class="col-lg-1">
-                    <label class="form-label small text-secondary" title="Mostra só os protocolos que viajam sobre o transporte escolhido"><span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_horiz</span> Transporte</label>
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_horiz</span> Transporte</label>
                     <select aria-label="Transporte" class="form-select bg-dark text-light border-secondary" data-grid-transport="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelo protocolo de transporte (TCP, UDP, ICMP ou N/A).">
                         <option value="all">Todos</option>
                         <option value="tcp">TCP</option>
@@ -115,7 +115,7 @@
                     </select>
                 </div>
                 <div class="col-lg-1">
-                    <label class="form-label small text-secondary" title="Mostra só os protocolos de um nível da classificação didática de risco"><span class="material-symbols-outlined" aria-hidden="true" translate="no">equalizer</span> Nível</label>
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">equalizer</span> Nível</label>
                     <select aria-label="Nível" class="form-select bg-dark text-light border-secondary" data-grid-risk="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelo nível didático (crítico, atenção, seguro, didático).">
                         <option value="all">Todos</option>
                         <option value="crítico">Crítico</option>
@@ -143,7 +143,7 @@
                             <th class="sortable" data-sort-key="seguro" title="Se o protocolo cifra ou autentica o tráfego por padrão"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">shield</span>Seguro</th>
                             <th class="sortable" data-sort-key="nivel" title="Classificação didática de risco: crítico, atenção, seguro ou didático"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">equalizer</span>Nível</th>
                             <th title="Para que o protocolo serve na rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">functions</span>Função</th>
-                            <th class="text-center" style="width: 13.75rem;" title="Copiar linha, abrir detalhes ou aprofundar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
+                            <th class="text-center" style="width: 13.75rem;"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
                         </tr>
                     </thead>
                     <tbody data-grid-body="protocolos">
@@ -189,9 +189,9 @@
                             <td class="text-nowrap text-center">
                                 <div class="d-inline-flex align-items-center justify-content-center gap-1">
                                     <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-copy="protocolos" aria-label="Copiar linha" data-bs-toggle="tooltip" data-bs-placement="top" title="Copia os dados deste protocolo para a área de transferência, em formato JSON"><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span></button>
-                                    <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Abrir os detalhes deste protocolo."><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
+                                    <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="protocolos"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
                                     {#if item.temAprofundamento}
-                                    <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Abrir a página de aprofundamento deste protocolo."><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Aprofundar</a>
+                                    <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Aprofundar</a>
                                     {/if}
                                 </div>
                             </td>
@@ -261,7 +261,7 @@
                         </dl>
                         <div class="mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex flex-wrap gap-1">
                             <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-copy="protocolos" aria-label="Copiar linha" data-bs-toggle="tooltip" data-bs-placement="top" title="Copia os dados deste protocolo para a área de transferência, em formato JSON"><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span></button>
-                            <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Abrir os detalhes deste protocolo."><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
+                            <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="protocolos"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
                             {#if item.temAprofundamento}
                             <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Aprofundar</a>
                             {/if}
@@ -280,7 +280,7 @@
             </div>
 
             <div class="card-tech p-3 mb-0 mt-4 border border-warning border-opacity-25">
-                <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Comandos Cisco para conferir vizinhos e rotas de cada protocolo logo depois de configurar"><span class="material-symbols-outlined" translate="no" aria-hidden="true">build</span> Troubleshooting rápido (roteamento)</h2>
+                <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">build</span> Troubleshooting rápido (roteamento)</h2>
                 <p class="small text-secondary mb-3">
                     Comandos de validação imediata para laboratório Cisco. Use após aplicar configuração e antes de exportar evidências.
                 </p>
@@ -298,8 +298,7 @@
                                     class="aed-btn aed-btn-neutral btn-sm"
                                     data-copy-snippet
                                     data-copy-label="{item.nome}"
-                                    data-copy-text="{item.diagnosticoComandos}"
-                                    title="Copia os comandos de troubleshooting.">
+                                    data-copy-text="{item.diagnosticoComandos}">
                                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar comandos
                                 </button>
                             </div>

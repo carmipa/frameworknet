@@ -4,7 +4,7 @@
     Uso: {#include protocolos/partials/cabecalho_bits.html cabecalho=conteudo.cabecalho /} !}
 {#if cabecalho}
 <section id="cabecalho" class="aprof-secao">
-    <h2 class="aprof-secao-titulo" title="Os campos do cabeçalho na ordem em que vão no fio, cada um com largura proporcional ao seu número de bits"><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> {cabecalho.titulo}</h2>
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> {cabecalho.titulo}</h2>
     {#if cabecalho.nota}<p class="small text-secondary">{cabecalho.nota}</p>{/if}
     <div class="aprof-regua" role="list" aria-label="Campos do cabeçalho, largura proporcional aos bits">
         {#for campo in cabecalho.campos}
@@ -18,7 +18,7 @@
     </div>
     <div class="table-responsive border border-secondary border-opacity-25 rounded mt-3">
         <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
-            <thead><tr><th title="Nome do campo, na ordem em que aparece no cabeçalho">Campo</th><th class="text-nowrap" title="Tamanho do campo em bits; cada 8 bits formam 1 byte">Bits</th><th title="Para que o campo serve e que valores ele costuma levar">O que carrega</th></tr></thead>
+            <thead><tr><th>Campo</th><th class="text-nowrap" title="Tamanho do campo em bits; cada 8 bits formam 1 byte">Bits</th><th title="Para que o campo serve e que valores ele costuma levar">O que carrega</th></tr></thead>
             <tbody>
                 {#for campo in cabecalho.campos}
                 <tr>

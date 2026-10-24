@@ -79,7 +79,6 @@
   "tabelas": [
     {
       "titulo": "Comandos SMTP essenciais",
-      "dica": "Sequência de comandos que o cliente envia numa sessão SMTP, com exemplo e o código que o servidor costuma devolver",
       "colunas": [
         "Comando",
         "Função",
@@ -89,7 +88,7 @@
       "dicas_colunas": [
         "Verbo em texto que o cliente envia ao servidor de e-mail",
         "O que o comando faz na sessão e em que momento é usado",
-        "Linha exatamente como o cliente a envia, com endereços fictícios",
+        "",
         "Código de três dígitos e texto que o servidor costuma devolver ao comando"
       ],
       "linhas": [
@@ -139,7 +138,6 @@
     },
     {
       "titulo": "Códigos de resposta SMTP",
-      "dica": "Lista os códigos que o servidor devolve, para saber se a mensagem foi aceita, deve ser reenviada mais tarde ou foi recusada",
       "colunas": [
         "Código",
         "Classe",
@@ -148,7 +146,7 @@
       "dicas_colunas": [
         "Número de três dígitos; o primeiro indica a classe: 2 sucesso, 3 continue, 4 falha temporária, 5 falha permanente",
         "Gravidade do resultado: sucesso, intermediário, falha temporária ou falha permanente",
-        "Situação que o código descreve e em que momento da sessão costuma aparecer"
+        ""
       ],
       "linhas": [
         [
@@ -200,7 +198,6 @@
     },
     {
       "titulo": "Portas por protocolo",
-      "dica": "Portas de envio e leitura de e-mail separadas por modo de cifragem, para configurar um cliente ou liberar um firewall",
       "colunas": [
         "Protocolo",
         "Texto / STARTTLS",
@@ -211,7 +208,7 @@
         "Protocolo de e-mail e o papel dele: envio entre servidores, envio pelo cliente ou leitura da caixa",
         "Porta que começa sem cifragem e pode ser promovida a TLS por comando, indicado entre parênteses",
         "Porta em que a conexão já nasce cifrada com TLS; o hífen indica que não há porta padrão",
-        "Quem usa a porta e em qual etapa do caminho da mensagem"
+        ""
       ],
       "linhas": [
         [
@@ -242,7 +239,6 @@
     },
     {
       "titulo": "POP3 x IMAP",
-      "dica": "Compara os dois protocolos de leitura de e-mail, para escolher o adequado a quem usa um ou vários dispositivos",
       "colunas": [
         "Aspecto",
         "POP3 (RFC 1939)",

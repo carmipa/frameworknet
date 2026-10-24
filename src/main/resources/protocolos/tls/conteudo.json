@@ -280,7 +280,7 @@
       {
         "nome": "Legacy version",
         "bits": 16,
-        "descricao": "Versão legada, fixada em 0x0303 no TLS 1.3 por compatibilidade (o ClientHello inicial pode usar 0x0301); a versão verdadeira é negociada pela extensão supported_versions.",
+        "descricao": "Fixada em 0x0303 no TLS 1.3 por compatibilidade; a versão real é negociada pela extensão supported_versions.",
         "cor": "#7c3aed"
       },
       {

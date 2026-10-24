@@ -18,7 +18,9 @@
  *  - nada é embrulhado onde o embrulho quebraria o comportamento: menu suspenso (o Bootstrap acha o menu pelo
  *    irmão do botão), grupo de entrada/botões e item de lista recebem a classe .dica no próprio elemento;
  *    cabeçalho de coluna, rótulo e título recebem o gatilho "?" do canônico, porque não recebem foco;
- *  - texto copiado pela página (botões "Copiar") não leva o texto das dicas: use FieldTooltips.textoLimpo.
+ *  - texto copiado pela página (botões "Copiar") não leva o texto das dicas: use FieldTooltips.textoLimpo;
+ *  - título não ganha dica inventada: o "?" ao lado do h1 com a meta description saiu em 24/10/2026 (o título e o
+ *    texto visível já explicam a página; a dica repetia e punha uma parada a mais no Tab).
  *
  * COMPORTAMENTO EM CASO DE FALHA: elemento que não dá para converter com segurança (iframe, svg, abbr,
  * option, imagem) fica com o title nativo, que continua funcionando no mouse; conteúdo que chega depois
@@ -372,30 +374,6 @@
         descrever(el, balao.id);
     }
 
-    /**
-     * Título da página (h1) sem dica: o "?" ao lado dele explica o que a página contém com a descrição que a
-     * própria página já publica (meta description, única por página). O título diz o que a área contém.
-     * Acima de 160 caracteres, corta na última palavra inteira.
-     */
-    function dicaDoTitulo() {
-        const meta = document.querySelector('meta[name="description"]');
-        const texto = limpo(meta && meta.getAttribute("content"));
-        if (!texto) {
-            return;
-        }
-        document.querySelectorAll("h1").forEach((h1) => {
-            if (h1.querySelector(".dica") || h1.hasAttribute("data-dica-texto")) {
-                return;
-            }
-            let curto = texto;
-            if (curto.length > 160) {
-                curto = curto.slice(0, 159).replace(/\s+\S*$/, "") + "…";
-            }
-            h1.setAttribute("data-dica-texto", curto);
-            comGatilho(h1, curto);
-        });
-    }
-
     function init(raiz) {
         const escopo = raiz && raiz.querySelectorAll ? raiz : document;
         const alvos = [];
@@ -437,10 +415,9 @@
     // achar title sem converter) e de novo no DOMContentLoaded, quando o documento está inteiro.
     if (document.body) {
         init(document);
-        dicaDoTitulo();
     }
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => { init(document); dicaDoTitulo(); vigiar(); });
+        document.addEventListener("DOMContentLoaded", () => { init(document); vigiar(); });
     } else {
         vigiar();
     }

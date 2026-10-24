@@ -70,7 +70,6 @@
   "tabelas": [
     {
       "titulo": "PDU por camada e o que o cabeçalho adiciona",
-      "dica": "Mostra o nome do dado em cada camada, o que cada cabeçalho acrescenta e quem o interpreta no caminho",
       "colunas": [
         "Camada",
         "Nome da PDU",
@@ -118,7 +117,6 @@
     },
     {
       "titulo": "Overhead típico por cabeçalho (bytes de controle)",
-      "dica": "Lista quantos bytes cada cabeçalho consome, para estimar quanto do pacote não é dado útil",
       "colunas": [
         "Cabeçalho",
         "Tamanho típico",
@@ -127,7 +125,7 @@
       "dicas_colunas": [
         "Protocolo cujo cabeçalho acrescenta bytes de controle ao dado",
         "Tamanho em bytes do cabeçalho na forma mais comum, sem campos opcionais",
-        "Variações de tamanho e particularidades desse cabeçalho"
+        ""
       ],
       "linhas": [
         [
@@ -159,7 +157,6 @@
     },
     {
       "titulo": "MTU comum por tecnologia de Enlace",
-      "dica": "Compara o maior tamanho de carga por quadro em tecnologias de enlace comuns e o efeito disso",
       "colunas": [
         "Tecnologia",
         "MTU (payload)",

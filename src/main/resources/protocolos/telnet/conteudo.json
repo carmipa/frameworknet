@@ -73,7 +73,6 @@
   "tabelas": [
     {
       "titulo": "Comandos de controle IAC principais",
-      "dica": "Bytes especiais que o Telnet insere no fluxo para negociar opções, para decodificar uma sessão capturada",
       "colunas": [
         "Comando",
         "Decimal",
@@ -84,7 +83,7 @@
         "Nome simbólico do comando; exceto o próprio IAC, cada um vem logo após um byte IAC",
         "Valor do byte do comando em base 10, de 0 a 255",
         "Mesmo valor do byte em hexadecimal, como aparece numa captura",
-        "Efeito do comando na negociação entre as duas pontas"
+        ""
       ],
       "linhas": [
         [
@@ -133,7 +132,6 @@
     },
     {
       "titulo": "Telnet vs SSH lado a lado",
-      "dica": "Compara Telnet e SSH em segurança e recursos, para mostrar por que o acesso remoto migrou para o SSH",
       "colunas": [
         "Aspecto",
         "Telnet",
@@ -194,7 +192,6 @@
     },
     {
       "titulo": "Opções Telnet mais comuns",
-      "dica": "Opções negociadas com WILL, WONT, DO e DONT, com o número usado no byte e a RFC que define cada uma",
       "colunas": [
         "Código",
         "Opção",
@@ -205,7 +202,7 @@
         "Número da opção enviado logo após o comando de negociação",
         "Nome oficial da opção em inglês",
         "Documento do IETF que especifica a opção",
-        "Comportamento do terminal que a opção ativa ou ajusta"
+        ""
       ],
       "linhas": [
         [
@@ -248,7 +245,6 @@
     },
     {
       "titulo": "Portas relacionadas",
-      "dica": "Portas ligadas ao Telnet, seja o próprio serviço, o substituto seguro ou um alvo de teste manual com o cliente telnet",
       "colunas": [
         "Porta",
         "Protocolo",
@@ -257,7 +253,7 @@
       "dicas_colunas": [
         "Número da porta e protocolo de transporte em que o serviço escuta",
         "Serviço de aplicação que escuta na porta",
-        "Relação da porta com o Telnet: o próprio serviço, uma alternativa ou um teste feito com o cliente"
+        ""
       ],
       "linhas": [
         [

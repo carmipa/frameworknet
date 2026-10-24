@@ -12,26 +12,24 @@
     <div class="d-flex flex-wrap align-items-center gap-3">
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" role="switch" id="hs-dados" checked
-                   title="Ligado acrescenta à animação os segmentos de dados e as confirmações ACK">
-            <label class="form-check-label small text-secondary" for="hs-dados" title="Mostra o envio de dados depois da conexão aberta, com a sequência e o ack avançando pelo número de bytes">Incluir troca de dados</label>
+                   title="Ligado, a animação mostra o envio de dados após a conexão, com a sequência e o ack avançando pelo número de bytes">
+            <label class="form-check-label small text-secondary" for="hs-dados">Incluir troca de dados</label>
         </div>
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" role="switch" id="hs-encerramento" checked
-                   title="Ligado acrescenta à animação a troca FIN e ACK de cada lado">
-            <label class="form-check-label small text-secondary" for="hs-encerramento" title="Mostra o fechamento educado da conexão, em que cada lado envia FIN e confirma o FIN do outro">Incluir encerramento (4-way)</label>
+                   title="Ligado, a animação mostra o encerramento: cada lado envia FIN e confirma o FIN do outro com ACK">
+            <label class="form-check-label small text-secondary" for="hs-encerramento">Incluir encerramento (4-way)</label>
         </div>
     </div>
     <div class="d-flex flex-wrap gap-2 mt-3">
-        <button type="button" id="hs-play" class="aed-btn aed-btn-teal"
-                title="Executar a animação contínua da troca de segmentos do handshake TCP">
+        <button type="button" id="hs-play" class="aed-btn aed-btn-teal">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">play_arrow</span> Animar
         </button>
         <button type="button" id="hs-passo" class="aed-btn aed-btn-neutral"
                 title="Avançar um segmento por vez na sequência de handshake e troca de dados">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_next</span> Passo a passo
         </button>
-        <button type="button" id="hs-reiniciar" class="aed-btn aed-btn-danger"
-                title="Reiniciar a simulação para o estado inicial (CLOSED / LISTEN)">
+        <button type="button" id="hs-reiniciar" class="aed-btn aed-btn-danger">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">restart_alt</span> Reiniciar
         </button>
     </div>

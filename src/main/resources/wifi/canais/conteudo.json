@@ -73,7 +73,6 @@
   "tabelas": [
     {
       "titulo": "Banda 2.4 GHz - canais e sobreposição (20 MHz)",
-      "dica": "Canais de 2,4 GHz com frequência central e vizinhos sem sobreposição, para escolher um canal livre de interferência mútua",
       "colunas": [
         "Canal",
         "Frequência central",
@@ -84,7 +83,7 @@
         "Número do canal na banda de 2,4 GHz",
         "Frequência no centro do canal, em MHz; canais consecutivos ficam a 5 MHz um do outro",
         "Canais que podem operar ao lado deste sem dividir espectro",
-        "Recomendação de uso e canais com que este se sobrepõe"
+        ""
       ],
       "linhas": [
         [
@@ -133,7 +132,6 @@
     },
     {
       "titulo": "Comparação entre bandas",
-      "dica": "Compara as bandas de 2,4, 5 e 6 GHz em faixa, canais, alcance e interferência, para decidir qual usar",
       "colunas": [
         "Característica",
         "2.4 GHz",
@@ -193,7 +191,6 @@
     },
     {
       "titulo": "Largura de canal x quantos canais independentes cabem",
-      "dica": "Mostra quantos canais sem sobreposição cada largura permite por banda, para equilibrar velocidade e convivência entre redes",
       "colunas": [
         "Largura",
         "2.4 GHz",

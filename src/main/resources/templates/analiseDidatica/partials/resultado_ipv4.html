@@ -30,7 +30,7 @@
 
     {#if activeTabPre == 'wildcard'}
     <div class="card-tech p-4 shadow mb-3">
-        <h2 class="h6 text-warning mb-3 d-flex align-items-center gap-2" title="Só os valores essenciais do bloco descrito pela wildcard, para conferir a resposta sem as tabelas didáticas"><span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_view</span> Modo Wildcard — resumo limpo</h2>
+        <h2 class="h6 text-warning mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_view</span> Modo Wildcard — resumo limpo</h2>
         <table class="table table-dark table-bordered table-sm resultados-table mb-0">
             <tbody>
                 <tr><th title="A wildcard usada no cálculo: bits 0 precisam casar com o endereço, bits 1 podem variar">Wildcard informada</th><td class="fw-bold">{#if wildcardPre}{wildcardPre}{#else}{res.wildcard}{/if}</td></tr>
@@ -47,9 +47,9 @@
     </div>
     {#if res.and_table.size > 0}
     <div class="card-tech p-4 shadow mb-3">
-        <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Compara octeto a octeto a wildcard com a máscara equivalente, também em binário"><span class="material-symbols-outlined" translate="no" aria-hidden="true">123</span> Octetos e validação wildcard</h2>
+        <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">123</span> Octetos e validação wildcard</h2>
         <table class="table table-dark table-bordered table-sm regua-table mb-2">
-            <thead><tr><th title="O que cada linha mostra: a wildcard, a máscara ou a máscara em binário">Campo</th><th title="Primeiro octeto: os bits 1 a 8, da esquerda para a direita">1º</th><th title="Segundo octeto: os bits 9 a 16">2º</th><th title="Terceiro octeto: os bits 17 a 24">3º</th><th title="Quarto octeto: os bits 25 a 32, os mais à direita">4º</th></tr></thead>
+            <thead><tr><th>Campo</th><th title="Primeiro octeto: os bits 1 a 8, da esquerda para a direita">1º</th><th title="Segundo octeto: os bits 9 a 16">2º</th><th title="Terceiro octeto: os bits 17 a 24">3º</th><th title="Quarto octeto: os bits 25 a 32, os mais à direita">4º</th></tr></thead>
             <tbody>
                 <tr class="and-row-wild"><td>Wildcard</td>{#for col in res.and_table}<td>{col.wild_oct}</td>{/for}</tr>
                 <tr class="and-row-mask"><td>Máscara</td>{#for col in res.and_table}<td>{col.mask_oct}</td>{/for}</tr>
@@ -92,7 +92,7 @@
         <div class="small text-secondary mt-3 pt-2 border-top border-secondary border-opacity-25">{res.classe_observacao}</div>
     </div>
     <div class="card-tech p-3 shadow mb-3 border border-secondary" style="border-left: 0.312% solid #1f6feb !important;">
-        <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Como a máscara vira prefixo e quantos endereços o bloco comporta: 2 elevado aos bits de host"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Explicação do cálculo da máscara</h2>
+        <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Explicação do cálculo da máscara</h2>
         <div class="small text-secondary">
             Máscara: <strong class="text-light">{res.mask}</strong> · Prefixo: <strong class="text-warning">/{res.cidr}</strong><br>
             Capacidade: <strong class="text-light">{res.total}</strong> IPs totais, <strong class="text-light">{res.uteis}</strong> hosts úteis.
@@ -156,7 +156,7 @@
         <div class="p-3 and-table-wrap">
             <table class="table table-dark table-bordered align-middle and-table mb-2">
                 <thead>
-                    <tr><th title="O que cada linha mostra: IP, máscara, o AND entre eles ou a wildcard, em decimal e binário">Campo</th><th title="Primeiro octeto: os bits 1 a 8, da esquerda para a direita">Octeto 1</th><th title="Segundo octeto: os bits 9 a 16">Octeto 2</th><th title="Terceiro octeto: os bits 17 a 24">Octeto 3</th><th title="Quarto octeto: os bits 25 a 32, os mais à direita">Octeto 4</th></tr>
+                    <tr><th>Campo</th><th title="Primeiro octeto: os bits 1 a 8, da esquerda para a direita">Octeto 1</th><th title="Segundo octeto: os bits 9 a 16">Octeto 2</th><th title="Terceiro octeto: os bits 17 a 24">Octeto 3</th><th title="Quarto octeto: os bits 25 a 32, os mais à direita">Octeto 4</th></tr>
                 </thead>
                 <tbody>
                     <tr class="and-row-ip"><td>IP (DEC)</td>{#for col in res.and_table}<td>{col.ip_oct}</td>{/for}</tr>
@@ -186,10 +186,10 @@
 
     {#if wizardCalculo.size > 0}
     <div class="card-tech p-3 mb-3">
-        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="As etapas na ordem em que o cálculo é feito à mão, do IP digitado até a rede e o broadcast"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h2>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h2>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm wizard-table mb-0">
-                <thead><tr><th title="Nome do passo, na ordem em que deve ser feito">Etapa</th><th title="A operação feita neste passo, como converter para binário ou aplicar o AND">Ação</th><th title="O valor obtido ao fim do passo, usado no passo seguinte">Resultado</th></tr></thead>
+                <thead><tr><th title="Nome do passo, na ordem em que deve ser feito">Etapa</th><th>Ação</th><th>Resultado</th></tr></thead>
                 <tbody>
                 {#for passo in wizardCalculo}
                 <tr><td>{passo.icone} {passo.etapa}</td><td>{passo.acao}</td><td>{passo.resultado}</td></tr>
@@ -202,7 +202,7 @@
 
     {#if timelineBloco}
     <div class="card-tech p-3 mb-3">
-        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Onde o IP digitado cai dentro do bloco: no endereço de rede, na faixa de hosts ou no broadcast"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Linha do tempo do bloco</h2>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Linha do tempo do bloco</h2>
         <div class="timeline-bloco">
             <div class="timeline-step {#if timelineBloco.posicao == 'rede'}is-active{/if}">
                 <div class="timeline-title">Rede</div>
@@ -224,7 +224,7 @@
     <div class="row g-3 mb-3">
         <div class="col-md-6">
             <div class="card-tech p-4 h-100 resumo-box">
-                <h2 class="h6 text-info mb-3 d-flex align-items-center gap-2" title="Os endereços-chave da sub-rede em decimal pontuado, prontos para configurar ou conferir"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resultados decimais</h2>
+                <h2 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resultados decimais</h2>
                 <div class="table-responsive">
                     <table class="table table-dark table-bordered table-sm resultados-table mb-2">
                         <tbody>
@@ -254,7 +254,7 @@
                 <p class="small">Gateway alternativo: <span class="text-success fw-bold">{res.gateway_alternativo}</span></p>
                 {#if res.resumo_prova_itens.size > 0}
                 <hr class="border-secondary">
-                <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Os itens que uma questão de sub-rede costuma pedir, em formato curto para conferir a resposta"><span class="material-symbols-outlined" translate="no" aria-hidden="true">edit_note</span> Resumo rápido (modo prova)</h2>
+                <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">edit_note</span> Resumo rápido (modo prova)</h2>
                 <table class="table table-dark table-bordered table-sm resumo-table mb-0">
                     <tbody>{#for item in res.resumo_prova_itens}<tr><th title="{#if item.campo == '🌐 IP informado'}O endereço exatamente como foi analisado{#else if item.campo == '📏 Máscara/CIDR'}A máscara em decimal e o mesmo valor na notação de barra{#else if item.campo == '🧭 Rede'}Endereço que identifica a sub-rede: o IP com os bits de host zerados{#else if item.campo == '📣 Broadcast'}Endereço que alcança todos os hosts da sub-rede: os bits de host em 1{#else if item.campo == '🧩 Wildcard'}Máscara invertida, 255 menos cada octeto, usada em ACL, OSPF e EIGRP{#else if item.campo == '✅ Hosts úteis'}Quantos endereços desta sub-rede podem ser dados a máquinas{#else if item.campo == '🔐 Tipo de IP'}Se o endereço é privado, público ou de uso especial, conforme as RFCs{#else if item.campo == '📌 Papel do IP'}Se o endereço digitado é a rede, o broadcast ou um host comum do bloco{#else if item.campo == '🚪 Gateway sugerido'}Endereço comum para o roteador da sub-rede, em geral o primeiro host{#else}Item do resumo calculado para o endereço informado{/if}">{item.campo}</th><td>{item.valor}</td></tr>{/for}</tbody>
                 </table>
@@ -264,13 +264,13 @@
         </div>
         <div class="col-md-6">
             <div class="card-tech p-4 h-100 resumo-box" style="border-left-color:#238636;">
-                <h2 class="h6 text-info mb-3 d-flex align-items-center gap-2" title="Quantos bits sobram para host e quantos endereços isso dá: 2 elevado a esse número, menos rede e broadcast"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Capacidade e hosts</h2>
+                <h2 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Capacidade e hosts</h2>
                 <p>Zeros (host bits): <span class="fw-bold">{res.zeros}</span></p>
                 <p>IPs no bloco: 2<sup>{res.zeros}</sup> = <span class="text-warning fw-bold">{res.total}</span></p>
                 <p>IPs úteis: <span class="text-success fw-bold" style="font-size:1.2rem;">{res.uteis}</span></p>
                 {#if !res.somente_mascara}
                 <hr class="border-secondary">
-                <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Como DNS, DHCP, broadcast, VLAN e WAN se relacionam com esta sub-rede"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Termos da rede</h2>
+                <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Termos da rede</h2>
                 <table class="table table-dark table-bordered table-sm termos-table mb-0">
                     <tbody>
                         <tr><td>DNS</td><td>{res.dns_info}</td></tr>
@@ -281,7 +281,7 @@
                     </tbody>
                 </table>
                 <hr class="border-secondary">
-                <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Comandos de exemplo para configurar um endereço desta sub-rede numa interface de roteador Cisco"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco CLI</h2>
+                <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco CLI</h2>
                 <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{res.cisco_cli}</pre>
                 {/if}
             </div>
@@ -290,9 +290,9 @@
 
     {#if !res.somente_mascara && res.abertura_intervalos}
     <div class="card-tech p-3 mb-3">
-        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Como o octeto que varia se divide em blocos iguais e em qual deles o IP digitado está"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Abertura dos intervalos</h2>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Abertura dos intervalos</h2>
         <table class="table table-dark table-bordered table-sm interval-table mb-2">
-            <thead><tr><th title="Natureza da linha: o conceito do intervalo ou a faixa em que o IP está">Tipo</th><th title="Explicação curta do que a linha representa">Detalhe</th><th title="Tamanho de cada bloco em endereços, ou a faixa calculada do primeiro ao último">Valor</th></tr></thead>
+            <thead><tr><th>Tipo</th><th>Detalhe</th><th>Valor</th></tr></thead>
             <tbody>
                 <tr><td>Conceito</td><td>{res.abertura_intervalos.titulo}</td><td>{res.abertura_intervalos.ips_por_bloco} IPs ({res.abertura_intervalos.uteis_por_bloco} úteis)</td></tr>
                 <tr><td>Faixa atual</td><td>Base calculada</td><td class="text-info">{res.abertura_intervalos.faixa_atual}</td></tr>
@@ -300,7 +300,7 @@
         </table>
         {#if res.abertura_intervalos.exemplos.size > 0}
         <table class="table table-dark table-bordered table-sm interval-table mb-0">
-            <thead><tr><th title="Atual marca o bloco que contém o IP; Próxima marca os blocos seguintes">Status</th><th title="Número de ordem da sub-rede, a partir da que contém o IP">Subnet</th><th title="Do endereço de rede ao broadcast do bloco">Faixa</th></tr></thead>
+            <thead><tr><th>Status</th><th title="Número de ordem da sub-rede, a partir da que contém o IP">Subnet</th><th title="Do endereço de rede ao broadcast do bloco">Faixa</th></tr></thead>
             <tbody>
             {#for ex in res.abertura_intervalos.exemplos}
             <tr class="{#if ex_isFirst}is-faixa-atual{/if}">
@@ -317,7 +317,7 @@
 
     {#if !res.somente_mascara && res.proximas_subredes.size > 0}
     <div class="card-tech p-3 mb-3">
-        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Esta sub-rede e as seguintes de mesmo tamanho; a quantidade de linhas vem do campo Régua do formulário"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {res.regua_count})</h2>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {res.regua_count})</h2>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm regua-table mb-0">
                 <thead><tr><th title="Número de ordem da sub-rede; a primeira linha é a que contém o IP">Subnet</th><th title="Endereço que identifica cada sub-rede, com os bits de host em 0">Rede</th><th title="Primeiro endereço utilizável por uma máquina em cada sub-rede">1º host</th><th title="Último endereço utilizável por uma máquina em cada sub-rede">Último host</th><th title="Endereço que alcança todos os hosts de cada sub-rede, com os bits de host em 1">Broadcast</th></tr></thead>
@@ -372,7 +372,7 @@
                 </table>
             </div>
             <div class="col-md-5">
-                <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Bits de rede, bits de host e capacidade deste prefixo, nas unidades da tabela ao lado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Aplicado ao cálculo atual</h2>
+                <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Aplicado ao cálculo atual</h2>
                 <table class="table table-dark table-bordered table-sm conv-table mb-0">
                     <tbody>
                     {#for item in res.conversao_atual}
@@ -387,13 +387,13 @@
 
     {#if res.grc_resumo || res.seguranca_dicas.size > 0}
     <div class="card-tech p-4 shadow mb-3">
-        <h2 class="h6 text-danger mb-3 d-flex align-items-center gap-2" title="Leitura de governança, risco e conformidade sobre o bloco calculado, com cuidados práticos"><span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> Cyber segurança (GRC + contexto)</h2>
+        <h2 class="h6 text-danger mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> Cyber segurança (GRC + contexto)</h2>
         {#if res.grc_resumo}
-        <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Pontos de governança, risco e conformidade deste bloco resumidos em poucas linhas"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h2>
+        <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h2>
         <ul class="small mb-3 grc-list">{#for linha in res.grc_resumo}<li>{linha}</li>{/for}</ul>
         {/if}
         {#if res.seguranca_dicas.size > 0}
-        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Cuidados de segurança sugeridos para uma rede deste tamanho e deste tipo de endereço"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span> Alertas e recomendações</h2>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span> Alertas e recomendações</h2>
         {#for dica in res.seguranca_dicas}
         <div class="alert alert-{dica.tipo} bg-dark border-{dica.tipo} text-light small py-2 mb-2">
             <span>{dica.icon}</span> {dica.texto}
@@ -405,7 +405,7 @@
 
     {#if !res.somente_mascara && res.cisco_eigrp_exemplo}
     <div class="card-tech p-4 shadow mb-3 border border-secondary" style="border-left:0.312% solid #d29922 !important;">
-        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Como anunciar esta rede no roteamento Cisco, com a wildcard no lugar da máscara no comando network"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> EIGRP / OSPF — network com wildcard</h2>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> EIGRP / OSPF — network com wildcard</h2>
         <p class="small text-secondary mb-2">{res.cisco_roteamento_nota}</p>
         <div class="row g-3">
             <div class="col-md-6">
@@ -425,11 +425,11 @@
         <div class="p-3 small text-secondary">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <h2 class="h6 text-info d-flex align-items-center gap-2" title="Comandos do terminal Linux para ver endereços, rotas e calcular uma sub-rede"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Linux</h2>
+                    <h2 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Linux</h2>
                     <ul class="mb-0"><li><code translate="no">ip a</code> — IPs e máscaras</li><li><code translate="no">ip route</code> — rotas e gateway</li><li><code translate="no">ipcalc 172.19.0.0/20</code> — cálculo de sub-rede</li></ul>
                 </div>
                 <div class="col-md-6">
-                    <h2 class="h6 text-info d-flex align-items-center gap-2" title="Comandos do Prompt do Windows para ver a configuração IP, a tabela ARP e o caminho até um destino"><span class="material-symbols-outlined" translate="no" aria-hidden="true">desktop_windows</span> Windows</h2>
+                    <h2 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">desktop_windows</span> Windows</h2>
                     <ul class="mb-0"><li><code translate="no">ipconfig /all</code> — configuração completa</li><li><code translate="no">arp -a</code> — tabela ARP</li><li><code translate="no">tracert 8.8.8.8</code> — caminho até destino</li></ul>
                 </div>
             </div>
@@ -439,7 +439,7 @@
     {#if res.banner_contexto}
     <div class="card-tech border border-info border-2 shadow mb-3 banner-contexto-didatico">
         <div class="p-3">
-            <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Como os números calculados acima se aplicam ao endereço e ao prefixo que você informou"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> {res.banner_contexto.titulo}</h2>
+            <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> {res.banner_contexto.titulo}</h2>
             <p class="small text-secondary mb-3">{res.banner_contexto.subtitulo}</p>
             <ul class="list-unstyled mb-0">
             {#for it in res.banner_contexto.itens}
@@ -456,7 +456,7 @@
     {#if res.somente_mascara && res.enunciado_prova}
     <div class="card-tech border border-warning border-opacity-50 shadow mb-3 enunciado-prova-mascara">
         <div class="p-3">
-            <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Intervalos, variação e IPs por sub-rede no formato em que listas de exercício costumam pedir"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resposta tipo prova (máscara / sub-rede) /{res.cidr}</h2>
+            <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">list_alt</span> Resposta tipo prova (máscara / sub-rede) /{res.cidr}</h2>
             <p class="small text-secondary mb-2">Itens que costumam ser pedidos em lista quando só se dá a máscara (ou o prefixo):</p>
             {#if res.enunciado_prova.frase_estilo_quadro}
             <p class="frase-estilo-quadro p-3 rounded border border-info border-opacity-25 text-light small mb-3" style="background:rgba(31,111,235,0.08);">

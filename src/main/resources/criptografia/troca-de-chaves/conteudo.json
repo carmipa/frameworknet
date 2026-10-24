@@ -73,7 +73,6 @@
   "tabelas": [
     {
       "titulo": "Diffie-Hellman x ECDHE x RSA key transport",
-      "dica": "Compara os métodos de estabelecer a chave de sessão do TLS em forward secrecy, desempenho e status atual",
       "colunas": [
         "Aspecto",
         "DH clássico (grupo finito)",
@@ -121,7 +120,6 @@
     },
     {
       "titulo": "Efêmero x estático",
-      "dica": "Mostra como gerar um par de chaves novo a cada sessão, em vez de reaproveitá-lo, limita o dano de um vazamento",
       "colunas": [
         "Critério",
         "Efêmero (ECDHE/DHE)",

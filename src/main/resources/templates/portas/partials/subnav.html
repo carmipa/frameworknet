@@ -4,19 +4,17 @@
     PortaAprofundamento.disponiveis() — página nova aparece sozinha ao ser
     registrada. Variáveis: aprofundamentos, aprofundamentoAtivo. !}
 <nav class="protocolo-subnav" aria-label="Catálogo e aprofundamentos de portas">
-    <div class="protocolo-subnav-camadas" role="tablist" aria-label="Portas">
+    <div class="protocolo-subnav-camadas" role="group" aria-label="Portas">
         <a href="/portas"
            class="protocolo-subnav-item {#if aprofundamentoAtivo == 'geral'}is-active{/if}"
-           {#if aprofundamentoAtivo == 'geral'}aria-current="page"{/if}
-           title="Catálogo com todas as portas e seus riscos">
+           {#if aprofundamentoAtivo == 'geral'}aria-current="page"{/if}>
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_rows</span>
             <span>Geral</span>
         </a>
         {#for item in aprofundamentos}
         <a href="{item.rota}"
            class="protocolo-subnav-item {#if aprofundamentoAtivo == item.slug}is-active{/if}"
-           {#if aprofundamentoAtivo == item.slug}aria-current="page"{/if}
-           title="{item.chamada}">
+           {#if aprofundamentoAtivo == item.slug}aria-current="page"{/if}>
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">{item.icone}</span>
             <span>{item.rotuloMenu}</span>
         </a>

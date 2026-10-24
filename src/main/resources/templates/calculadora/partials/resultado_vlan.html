@@ -1,6 +1,6 @@
 <div class="calc-resultado">
     <div class="calc-resumo-head">
-        <h3 class="h5 mb-1" title="Resumo do plano gerado: quantas VLANs foram criadas e de qual bloco base saíram as sub-redes">
+        <h3 class="h5 mb-1">
             <span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">lan</span>
             {plano.totalVlans} VLAN(s) em {plano.blocoBase}/{plano.prefixoBase}
         </h3>
@@ -47,7 +47,7 @@
     </div>
     {/for}
 
-    <h4 class="h6 calc-secao-titulo" title="Uma linha por VLAN com a sub-rede, o gateway, a faixa DHCP e a wildcard atribuídos">
+    <h4 class="h6 calc-secao-titulo">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span>
         Mapa VLAN ↔ sub-rede
     </h4>
@@ -56,7 +56,7 @@
             <thead>
             <tr>
                 <th title="ID da VLAN (802.1Q)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">sell</span>VLAN</th>
-                <th title="Nome da VLAN"><span class="material-symbols-outlined" aria-hidden="true" translate="no">label</span>Nome</th>
+                <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">label</span>Nome</th>
                 <th title="Faixa de IDs: default (1), normal (2–1001) ou estendida (1006–4094)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">linear_scale</span>Faixa</th>
                 <th title="Sub-rede atribuída à VLAN"><span class="material-symbols-outlined" aria-hidden="true" translate="no">hub</span>Sub-rede</th>
                 <th title="Gateway da VLAN — o SVI no switch L3 (endereço .1)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">router</span>Gateway (SVI)</th>
@@ -85,9 +85,7 @@
     <h4 class="h6 calc-secao-titulo mt-4">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span>
         Configuração Cisco
-        <span class="dica"><button type="button" class="dica__gatilho" aria-label="Ajuda sobre Configuração Cisco" aria-describedby="d-calc-cli-vlan"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><span id="d-calc-cli-vlan" role="tooltip" class="dica__texto">Comandos para criar as VLANs, o tronco, as SVIs ou subinterfaces e o pool DHCP de cada VLAN</span></span>
-        <button type="button" class="aed-btn aed-btn-neutral btn-sm calc-copiar" data-alvo="cliVlan"
-                title="Copiar os comandos de configuração Cisco para a área de transferência">
+        <button type="button" class="aed-btn aed-btn-neutral btn-sm calc-copiar" data-alvo="cliVlan">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar
         </button>
     </h4>

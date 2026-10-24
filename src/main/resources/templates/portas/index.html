@@ -26,8 +26,8 @@
 
     <div class="card-tech p-3 mb-3 portas-faixas-bloco">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
-            <h2 class="h3 portas-faixas-titulo mb-0" title="A divisão oficial dos números de porta em três grupos, desenhada na proporção do tamanho de cada um"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> As três faixas de portas (16 bits)</h2>
-            <a href="/portas/anatomia" class="aed-btn aed-btn-teal btn-sm" title="Entender portas por dentro: 16 bits, socket, portas efêmeras e NAT/PAT">
+            <h2 class="h3 portas-faixas-titulo mb-0"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> As três faixas de portas (16 bits)</h2>
+            <a href="/portas/anatomia" class="aed-btn aed-btn-teal btn-sm">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span> Anatomia das portas
             </a>
         </div>
@@ -58,7 +58,7 @@
                 <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">content_copy</span>Copie ou abra detalhes por linha</span>
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-25">
-                <label for="portasLinhasPorPagina" class="small text-secondary mb-0 d-flex align-items-center gap-2" title="Quantas portas a tabela mostra de cada vez">
+                <label for="portasLinhasPorPagina" class="small text-secondary mb-0 d-flex align-items-center gap-2">
                     <span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> <span>Linhas por página</span>
                 </label>
                     <select id="portasLinhasPorPagina" aria-label="Linhas por página" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: auto; min-width: 12rem;" data-grid-page-size="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Paginação da tabela: escolha quantos registros ver de cada vez ou exiba todos de uma vez.">
@@ -73,13 +73,13 @@
             <div class="row g-2 align-items-end mb-3">
                 <div class="col-lg-3">
                     <label class="form-label small text-secondary d-flex align-items-center gap-1">Busca geral
-                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="Busca no DataGrid" data-bs-content="Digite porta, serviço, transporte, risco ou categoria para filtrar os registros em tempo real." aria-label="Ajuda: Busca no DataGrid"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
+                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Digite porta, serviço, transporte, risco ou categoria para filtrar os registros em tempo real." aria-label="Ajuda: Busca no DataGrid"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
                     </label>
-                    <input type="text" class="form-control bg-dark text-light border-secondary" data-grid-search="portas" placeholder="Porta, serviço, transporte..." data-bs-toggle="tooltip" data-bs-placement="top" title="Busca geral: digite porta, serviço, transporte, categoria ou risco.">
+                    <input type="text" class="form-control bg-dark text-light border-secondary" data-grid-search="portas" placeholder="Porta, serviço, transporte..." data-bs-toggle="tooltip" data-bs-placement="top" title="Digite porta, serviço, transporte, categoria ou risco.">
                 </div>
                 <div class="col-lg-2">
                     <label class="form-label small text-secondary d-flex align-items-center gap-1">Risco
-                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="Filtro de risco" data-bs-content="Mostra apenas portas com nível Crítico, Atenção, Seguro ou Didático." aria-label="Ajuda: Filtro de risco"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
+                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Mostra apenas portas com nível Crítico, Atenção, Seguro ou Didático." aria-label="Ajuda: Filtro de risco"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
                     </label>
                     <select aria-label="Risco" class="form-select bg-dark text-light border-secondary" data-grid-risk="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelas portas conforme nível de risco didático.">
                         <option value="all">Todos</option>
@@ -102,7 +102,7 @@
                 </div>
                 <div class="col-lg-2">
                     <label class="form-label small text-secondary d-flex align-items-center gap-1">Transporte
-                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="Filtro de transporte" data-bs-content="Filtra registros por TCP, UDP ou combinações TCP/UDP." aria-label="Ajuda: Filtro de transporte"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
+                        <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Filtra registros por TCP, UDP ou combinações TCP/UDP." aria-label="Ajuda: Filtro de transporte"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
                     </label>
                     <select aria-label="Transporte" class="form-select bg-dark text-light border-secondary" data-grid-transport="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelo protocolo de transporte (TCP, UDP, TCP/UDP).">
                         <option value="all">Todos</option>
@@ -126,11 +126,11 @@
                             <th class="sortable" data-sort-key="porta" title="Ordenar por número da porta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_ethernet</span>Porta</th>
                             <th class="sortable" data-sort-key="servico" title="Ordenar por serviço associado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">dns</span>Serviço</th>
                             <th class="sortable" data-sort-key="transporte" title="Ordenar por protocolo de transporte"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">swap_horiz</span>Transporte</th>
-                            <th class="sortable" data-sort-key="categoria" title="Ordenar por faixa de categoria"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Categoria</th>
+                            <th class="sortable" data-sort-key="categoria"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Categoria</th>
                             <th class="sortable" data-sort-key="risco" title="Ordenar por nível de risco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">warning</span>Risco</th>
-                            <th title="Ação recomendada para reduzir exposição"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tips_and_updates</span>Recomendação</th>
+                            <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tips_and_updates</span>Recomendação</th>
                             <th title="Alternativa mais segura para operação"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">verified_user</span>Alternativa segura</th>
-                            <th class="text-center" style="width: 8.75rem;" title="Copiar linha ou abrir detalhes"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
+                            <th class="text-center" style="width: 8.75rem;"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
                         </tr>
                     </thead>
                     <tbody data-grid-body="portas">
@@ -155,9 +155,9 @@
                             <td class="text-nowrap text-center">
                                 <div class="d-inline-flex align-items-center justify-content-center gap-1">
                                     <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-copy="portas" aria-label="Copiar linha" data-bs-toggle="tooltip" data-bs-placement="top" title="Copia os dados desta porta para a área de transferência, em formato JSON"><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span></button>
-                                    <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Abrir detalhes desta porta."><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
+                                    <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="portas"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
                                     {#if item.aprofundamentoRota}
-                                    <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Abrir o aprofundamento do protocolo desta porta"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span></a>
+                                    <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Aprofundamento" title="Abre a página de aprofundamento do protocolo desta porta"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span></a>
                                     {/if}
                                 </div>
                             </td>
@@ -204,7 +204,7 @@
                             <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-copy="portas" aria-label="Copiar linha" data-bs-toggle="tooltip" title="Copia os dados desta porta para a área de transferência, em formato JSON"><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span></button>
                             <button type="button" class="aed-btn aed-btn-indigo btn-sm" data-grid-details="portas" data-bs-toggle="tooltip" title="Detalhes"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span> Detalhes</button>
                             {#if item.aprofundamentoRota}
-                            <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm" data-bs-toggle="tooltip" title="Aprofundamento do protocolo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Aprofundar</a>
+                            <a href="{item.aprofundamentoRota}" class="aed-btn aed-btn-teal btn-sm"><span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span> Aprofundar</a>
                             {/if}
                         </div>
                     </div>

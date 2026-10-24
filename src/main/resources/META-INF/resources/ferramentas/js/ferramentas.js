@@ -126,8 +126,7 @@
             label.className = "form-check-label small";
             label.htmlFor = id;
             label.textContent = o.label;
-            label.title = o.exp;
-            input.title = "Marque para acrescentar " + o.flag + " ao comando; desmarque para retirar";
+            input.title = o.exp;
             wrap.appendChild(input);
             wrap.appendChild(label);
             box.appendChild(wrap);

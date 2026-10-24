@@ -3,8 +3,7 @@
   "ficha": [
     {
       "rotulo": "Grupo",
-      "valor": "Fundamentos -- Certificados / X.509 / PKI",
-      "dica": "Base conceitual antes de mergulhar em emissão, revogação e mTLS."
+      "valor": "Fundamentos -- Certificados / X.509 / PKI"
     },
     {
       "rotulo": "Modelo",
@@ -78,7 +77,6 @@
   "tabelas": [
     {
       "titulo": "Papéis na cadeia e onde cada um vive",
-      "dica": "Compara raiz, intermediária e folha quanto à assinatura, à guarda da chave e à função na cadeia",
       "colunas": [
         "Papel",
         "Autoassinado?",
@@ -119,7 +117,6 @@
     },
     {
       "titulo": "Trust stores mais comuns",
-      "dica": "Indica onde ficam as raízes confiáveis em cada plataforma e como consultá-las",
       "colunas": [
         "Trust store",
         "Quem usa",
@@ -160,7 +157,6 @@
     },
     {
       "titulo": "O que se confere na cadeia",
-      "dica": "Lista as checagens feitas em cada elo ao validar a cadeia e o erro que aparece quando uma falha",
       "colunas": [
         "Verificação",
         "O que confere",

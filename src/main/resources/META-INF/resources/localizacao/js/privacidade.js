@@ -113,9 +113,10 @@
     function bandeiraHtml(cc, emoji) {
         var iso = String(cc || "").replace(/\s+/g, "").toUpperCase();
         if (/^[A-Z]{2}$/.test(iso)) {
-            // FRONT-18: bandeira local (emoji pelo código ISO), nunca imagem de CDN.
+            // FRONT-18: bandeira local (emoji pelo código ISO), nunca imagem de CDN. O nome do país vem escrito ao lado
+            // nos dois lugares que a usam, então a bandeira é decorativa: sem dica e fora do leitor de tela.
             var flag = String.fromCodePoint.apply(null, iso.split("").map(function (c) { return 127397 + c.charCodeAt(0); }));
-            return '<span class="priv-flag-emoji" title="' + esc(iso) + '" aria-label="' + esc(iso) + '">' + flag + "</span>";
+            return '<span class="priv-flag-emoji" aria-hidden="true">' + flag + "</span>";
         }
         return '<span class="priv-flag-emoji">' + esc(emoji || "🌐") + "</span>";
     }

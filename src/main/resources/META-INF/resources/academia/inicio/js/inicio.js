@@ -33,13 +33,9 @@
             digito.className = 'acad-bit-valor';
             digito.setAttribute('translate', 'no');
             digito.setAttribute('aria-hidden', 'true');
-            var rotulo = document.createElement('span');
-            rotulo.className = 'acad-bit-peso';
-            rotulo.setAttribute('translate', 'no');
-            rotulo.setAttribute('aria-hidden', 'true');
-            rotulo.textContent = String(peso);
+            // Peso pelo CSS (::after com data-peso), como na lição de binário: fora do rótulo visível (WCAG 2.5.3).
+            botao.dataset.peso = String(peso);
             botao.appendChild(digito);
-            botao.appendChild(rotulo);
             botao.addEventListener('click', function () {
                 valor ^= peso;
                 pintar();
@@ -55,7 +51,7 @@
         Array.prototype.forEach.call(container.querySelectorAll('.acad-bit'), function (botao, i) {
             var aceso = (valor & PESOS[i]) !== 0;
             botao.setAttribute('aria-pressed', aceso ? 'true' : 'false');
-            botao.setAttribute('aria-label', 'peso ' + PESOS[i] + ', ' + (aceso ? 'aceso' : 'apagado'));
+            botao.setAttribute('aria-label', (aceso ? '1' : '0') + ', peso ' + PESOS[i] + ', ' + (aceso ? 'aceso' : 'apagado'));
             botao.querySelector('.acad-bit-valor').textContent = aceso ? '1' : '0';
         });
         saida.textContent = String(valor);

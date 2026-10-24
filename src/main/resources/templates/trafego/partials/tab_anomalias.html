@@ -12,32 +12,29 @@
 <form id="form-anom" class="anom-form" autocomplete="off" onsubmit="return false;">
     <div class="aed-mode-grid mb-3" role="tablist" aria-label="Cenário de anomalia">
         <button type="button" class="aed-mode-btn anom-cenario active" data-anom="syn-flood" role="tab"
-                title="SYN flood: inunda o servidor com SYNs forjados e enche a fila de conexões meio-abertas">
+                title="Inunda o servidor com SYNs forjados e enche a fila de conexões meio-abertas">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">waves</span><span>SYN Flood</span>
         </button>
-        <button type="button" class="aed-mode-btn anom-cenario" data-anom="sequence-hijack" role="tab"
-                title="Sequestro: prevê o número de sequência e injeta RST ou dados forjando uma das pontas">
+        <button type="button" class="aed-mode-btn anom-cenario" data-anom="sequence-hijack" role="tab">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">shuffle</span><span>Previsão de sequência</span>
         </button>
     </div>
 
     <div class="d-flex flex-wrap gap-2">
-        <button type="button" id="anom-play" class="aed-btn aed-btn-teal"
-                title="Executar a animação contínua dos passos do cenário selecionado">
+        <button type="button" id="anom-play" class="aed-btn aed-btn-teal">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">play_arrow</span> Animar
         </button>
         <button type="button" id="anom-passo" class="aed-btn aed-btn-neutral"
                 title="Avançar um passo por vez no cenário">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_next</span> Passo a passo
         </button>
-        <button type="button" id="anom-reiniciar" class="aed-btn aed-btn-danger"
-                title="Reiniciar a simulação para o estado inicial">
+        <button type="button" id="anom-reiniciar" class="aed-btn aed-btn-danger">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">restart_alt</span> Reiniciar
         </button>
     </div>
 </form>
 
-<h2 class="h3 anom-titulo mt-4" title="Cenário de abuso do TCP em exibição; os passos abaixo mostram como ele acontece"><span id="anom-titulo"></span></h2>
+<h2 class="h3 anom-titulo mt-4"><span id="anom-titulo"></span></h2>
 <p id="anom-resumo" class="small text-secondary"></p>
 
 <div id="anom-kpis" class="anom-kpis" aria-live="polite"></div>
@@ -46,7 +43,7 @@
 
 <div class="anom-rodape">
     <div class="anom-bloco">
-        <h3 class="h4 anom-bloco-titulo" title="Contramedidas que impedem ou reduzem o efeito do ataque mostrado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</h3>
+        <h3 class="h4 anom-bloco-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</h3>
         <ul id="anom-mitigacoes" class="anom-mitigacoes"></ul>
     </div>
     <div id="anom-licao" class="anom-licao" role="note"></div>

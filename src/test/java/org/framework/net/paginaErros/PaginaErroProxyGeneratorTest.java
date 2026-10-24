@@ -109,6 +109,15 @@ class PaginaErroProxyGeneratorTest {
             + "%3Ctext x='16' y='22' font-family='monospace' font-size='15' font-weight='bold'"
             + " fill='%23f0b429' text-anchor='middle'%3E!%3C/text%3E%3C/svg%3E\">";
 
+    /**
+     * Botão que guarda um title nativo (as bandeiras do idioma) numa página servida SEM a aplicação: o componente de
+     * dica não carrega, então o title é o único balão possível. A marca de exceção diz isso à varredura de dicas,
+     * que de outro modo acusaria "controle só com ícone sem dica". O nome do botão continua no aria-label.
+     */
+    private static final Pattern BOTAO_COM_TITLE = Pattern.compile("<button(?=[^>]*\\stitle=\")");
+    private static final String EXCECAO_SEM_APP = "<button data-dica-excecao=\"página servida sem a aplicação:"
+            + " o componente de dica não carrega e fica o title nativo\"";
+
     /** Scripts que só fazem sentido com a aplicação viva. */
     private static final List<Pattern> JS_DESCARTAVEIS = List.of(
             Pattern.compile("<script[^>]*src=\"/web/js/field-tooltips\\.js[^\"]*\"[^>]*></script>"),
@@ -171,6 +180,7 @@ class PaginaErroProxyGeneratorTest {
             for (Pattern descartavel : JS_DESCARTAVEIS) {
                 html = descartavel.matcher(html).replaceAll("");
             }
+            html = BOTAO_COM_TITLE.matcher(html).replaceAll(Matcher.quoteReplacement(EXCECAO_SEM_APP));
             html = html.replace("<head>", "<head>\n    " + avisoDeOrigem(codigo));
 
             Path arquivo = (REGENERAR ? DESTINO : GERADO).resolve(codigo + ".html");
@@ -235,6 +245,7 @@ class PaginaErroProxyGeneratorTest {
         for (Pattern descartavel : JS_DESCARTAVEIS) {
             html = descartavel.matcher(html).replaceAll("");
         }
+        html = BOTAO_COM_TITLE.matcher(html).replaceAll(Matcher.quoteReplacement(EXCECAO_SEM_APP));
         html = html.replace("<head>", "<head>\n    <!-- GERADO AUTOMATICAMENTE por PaginaErroProxyGeneratorTest a partir de\n"
                 + "     templates/paginaErros/erro.html + CatalogoErros.semConexao().\n"
                 + "     NAO EDITE ESTE ARQUIVO A MAO. Servido pelo service worker quando o aparelho\n"

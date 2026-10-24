@@ -1,8 +1,7 @@
 {! Controles da parte "Ver" de uma lição (INV-ACAD-007): tocar/pausar, passo, recomeçar e
    velocidade, mais a legenda que fala em aria-live. Ligados pelo motor.js por data-acad-*. !}
 <div class="acad-controles" role="group" aria-label="Controles da animação">
-    <button type="button" class="aed-btn aed-btn-teal btn-sm" data-acad-acao="tocar"
-            title="Toca a animação; toque de novo para pausar">
+    <button type="button" class="aed-btn aed-btn-teal btn-sm" data-acad-acao="tocar">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">play_arrow</span>
         <span data-acad-rotulo>Tocar</span>
     </button>
@@ -11,12 +10,11 @@
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_next</span>
         <span>Passo</span>
     </button>
-    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-acad-acao="reiniciar"
-            title="Volta a animação para o começo">
+    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-acad-acao="reiniciar">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">restart_alt</span>
         <span>Recomeçar</span>
     </button>
-    <label for="acad-velocidade" title="Muda o ritmo da animação">
+    <label for="acad-velocidade">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">speed</span>
         <span>Velocidade</span>
     </label>

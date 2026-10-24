@@ -29,7 +29,7 @@
     {
       "rotulo": "Defesa recomendada",
       "valor": "WPA3-SAE + senha forte, ou 802.1X/RADIUS",
-      "dica": "O SAE impede o brute force offline a partir da captura do handshake, desde que a implementação esteja corrigida contra o Dragonblood (Vanhoef e Ronen, 2019); no modo de transição WPA2/WPA3 o ataque volta pelo WPA2."
+      "dica": "O SAE impede quebrar a senha offline a partir do handshake capturado, se corrigido contra o Dragonblood; no modo misto WPA2/WPA3, o ataque volta."
     }
   ],
   "conceitos": [
@@ -78,7 +78,6 @@
   "tabelas": [
     {
       "titulo": "Evolução das gerações de segurança sem fio",
-      "dica": "Linha do tempo de WEP a WPA3 com cifra, autenticação e situação atual, para avaliar se uma rede usa proteção adequada",
       "colunas": [
         "Padrão",
         "Ano",
@@ -126,7 +125,6 @@
     },
     {
       "titulo": "Modo Pessoal x Modo Empresarial",
-      "dica": "Compara a autenticação por senha compartilhada com a autenticação individual via 802.1X, para escolher o modo de cada rede",
       "colunas": [
         "Aspecto",
         "Pessoal (PSK / SAE)",
@@ -167,7 +165,6 @@
     },
     {
       "titulo": "Cifras e chaves por padrão",
-      "dica": "Detalha, para cada geração, o algoritmo de cifra, a verificação de integridade e como a chave é estabelecida no modo Pessoal",
       "colunas": [
         "Padrão",
         "Algoritmo de cifra",

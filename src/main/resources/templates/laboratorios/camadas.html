@@ -30,7 +30,7 @@
         <summary><span class="material-symbols-outlined" aria-hidden="true" translate="no">tune</span> Cenário deste laboratório</summary>
         <div class="lab-cenario-corpo">
             <div class="lab-cenario-col">
-                <h2 class="h3" title="Os equipamentos, endereços e o protocolo de transporte usados na simulação">Como está montado</h2>
+                <h2 class="h3">Como está montado</h2>
                 <ul>
                     <li><strong>Host A</strong> — IP <code translate="no">192.168.1.10</code>, MAC <code translate="no">02:00:00:00:00:0A</code></li>
                     <li><strong>Host B</strong> — IP <code translate="no">192.168.1.20</code>, MAC <code translate="no">02:00:00:00:00:14</code> (unicast, localmente administrado)</li>
@@ -39,7 +39,7 @@
                 </ul>
             </div>
             <div class="lab-cenario-col">
-                <h2 class="h3" title="O que o Host A já sabe antes de enviar, e por isso não aparece nas etapas">O que já é conhecido</h2>
+                <h2 class="h3">O que já é conhecido</h2>
                 <ul>
                     <li>Os dois já estão na <strong>mesma sub-rede</strong> — não há gateway no caminho.</li>
                     <li>O Host A <strong>já sabe o MAC</strong> do Host B (o passo de ARP fica fora deste cenário).</li>
@@ -47,7 +47,7 @@
                 </ul>
             </div>
             <div class="lab-cenario-col">
-                <h2 class="h3" title="O que a simulação calcula de verdade, o que simplifica e o que deixa de fora">Real × didático</h2>
+                <h2 class="h3">Real × didático</h2>
                 <ul>
                     <li><strong>Real:</strong> o tamanho do payload é contado nos bytes UTF-8 da sua mensagem.</li>
                     <li><strong>Didático:</strong> os tamanhos de cabeçalho são os mínimos padrão (UDP 8 B, IP 20 B, Ethernet 14 B + 4 B de FCS) e os endereços são de demonstração.</li>
@@ -59,7 +59,7 @@
 
     {! Mensagem editável. !}
     <div class="lab-entrada">
-        <label for="lab-msg" class="form-label small text-secondary" title="O texto que vira a carga do datagrama UDP; o tamanho dele muda o de todas as camadas">
+        <label for="lab-msg" class="form-label small text-secondary">
             <span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">edit</span> Mensagem da aplicação (Host A → Host B)
         </label>
         <div class="lab-entrada-row">
@@ -75,18 +75,18 @@
 
     {! Controles da experiência — separados da navegação de páginas. !}
     <div class="lab-controles" role="group" aria-label="Controles da experiência">
-        <button type="button" class="aed-btn aed-btn-neutral" id="lab-reiniciar" data-bs-trigger="hover" title="Voltar à etapa inicial">
+        <button type="button" class="aed-btn aed-btn-neutral" id="lab-reiniciar" data-bs-trigger="hover">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">restart_alt</span> Reiniciar
         </button>
         <button type="button" class="aed-btn aed-btn-neutral" id="lab-prev" data-bs-trigger="hover" title="Etapa anterior">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_previous</span> Anterior
         </button>
         <button type="button" class="aed-btn aed-btn-teal" id="lab-play" aria-pressed="false"
-                data-bs-trigger="hover" title="Reproduzir / pausar">
+                data-bs-trigger="hover">
             <span class="material-symbols-outlined" aria-hidden="true" id="lab-play-icone" translate="no">play_arrow</span>
             <span id="lab-play-texto">Executar</span>
         </button>
-        <button type="button" class="aed-btn aed-btn-neutral" id="lab-next" data-bs-trigger="hover" title="Próxima etapa">
+        <button type="button" class="aed-btn aed-btn-neutral" id="lab-next" data-bs-trigger="hover">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_next</span> Próxima
         </button>
         <span class="lab-passo-indicador" aria-live="polite">
@@ -96,7 +96,7 @@
 
     <div class="lab-corpo">
         {! Cena: Host A — switch — Host B, com o pacote em trânsito. !}
-        <div class="lab-cena-wrap">
+        <div class="lab-cena-wrap" tabindex="0" role="region" aria-label="Cena animada do laboratório">
             <div id="lab-reproduzindo" class="lab-reproduzindo" role="status" aria-live="polite" hidden>
                 <span class="lab-rep-dot" aria-hidden="true"></span> Reproduzindo demonstração
             </div>
@@ -130,7 +130,7 @@
 
         {! Pilha de encapsulamento — cresce na origem e encolhe no destino. !}
         <div class="lab-lado">
-            <h2 class="lab-secao-titulo" title="Os cabeçalhos que envolvem a mensagem nesta etapa, com o tamanho de cada um"><span class="material-symbols-outlined" aria-hidden="true" translate="no">stacks</span> Pilha de encapsulamento</h2>
+            <h2 class="lab-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">stacks</span> Pilha de encapsulamento</h2>
             <div class="lab-pilha" id="lab-pilha" aria-hidden="true">
                 <div class="lab-camada" data-camada="eth">
                     <span class="lab-camada-nome">Ethernet · L2</span><span class="lab-camada-bytes">14 B + 4 B</span>
@@ -155,14 +155,14 @@
     <div class="lab-explica" aria-live="polite">
         <div class="lab-explica-cab">
             <span class="lab-explica-tag" id="lab-etapa-dispositivo">—</span>
-            <h2 class="lab-explica-titulo" title="O que acontece na etapa atual, explicado logo abaixo junto com os campos envolvidos"><span id="lab-etapa-titulo">—</span></h2>
+            <h2 class="lab-explica-titulo"><span id="lab-etapa-titulo">—</span></h2>
         </div>
         <p class="lab-explica-desc" id="lab-etapa-desc">Clique em <strong>Executar</strong> ou <strong>Próxima</strong> para começar.</p>
         <p class="lab-explica-porque" id="lab-etapa-porque"></p>
         <table class="lab-campos" id="lab-campos-tabela" hidden>
             <thead><tr>
-                <th title="Nome do campo de cabeçalho tratado nesta etapa"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span> Campo</th>
-                <th title="O que o equipamento faz com o campo nesta etapa: acrescenta, examina, confere, encaminha ou remove"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">sync_alt</span> Ação</th>
+                <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span> Campo</th>
+                <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">sync_alt</span> Ação</th>
                 <th title="O conteúdo do campo neste cenário, ou uma nota sobre ele"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">info</span> Valor / observação</th>
             </tr></thead>
             <tbody id="lab-campos"></tbody>
@@ -172,7 +172,7 @@
 
     {! Pergunta de previsão (aparece só nas etapas que têm). !}
     <div class="lab-pergunta" id="lab-pergunta-bloco" hidden>
-        <h2 class="lab-secao-titulo" title="Pergunta rápida sobre esta etapa: escolha uma opção para conferir se você sabe o que acontece antes de seguir."><span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span> Preveja antes de avançar</h2>
+        <h2 class="lab-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span> Preveja antes de avançar</h2>
         <p id="lab-pergunta-texto" class="mb-2"></p>
         <div class="lab-pergunta-opcoes" id="lab-pergunta-opcoes" role="group" aria-label="Opções da pergunta"></div>
         <p class="lab-pergunta-feedback" id="lab-pergunta-feedback" role="status" aria-live="polite" hidden></p>
@@ -181,7 +181,7 @@
     {! OSI × TCP/IP — explicação em níveis, sem forçar equivalência exata. !}
     <div class="lab-modelo">
         <div class="lab-modelo-cab">
-            <h2 class="lab-secao-titulo mb-0" title="Em que camada de cada modelo de referência fica cada parte desta simulação"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span> Este cenário nos modelos</h2>
+            <h2 class="lab-secao-titulo mb-0"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span> Este cenário nos modelos</h2>
             <div class="lab-modelo-toggle" role="group" aria-label="Escolher modelo de referência">
                 <button type="button" class="aed-btn aed-btn-neutral btn-sm is-active" id="lab-modelo-tcpip" aria-pressed="true" title="Explica o cenário nas quatro camadas do modelo TCP/IP"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span> TCP/IP</button>
                 <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="lab-modelo-osi" aria-pressed="false" title="Explica o cenário nas sete camadas do modelo OSI"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span> OSI</button>

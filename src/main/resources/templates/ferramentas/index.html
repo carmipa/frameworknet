@@ -20,21 +20,21 @@
         <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Ferramentas de rede (CLI)</h1>
         <p class="text-secondary small mx-auto aed-medida-leitura">{conteudo.resumo}</p>
         <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
-            <a href="/diagnostico" class="aed-btn aed-btn-neutral btn-sm" title="Rodar (simulado) ping, dns, traceroute, varredura"><span class="material-symbols-outlined" aria-hidden="true" translate="no">play_circle</span> Diagnóstico (simulado)</a>
+            <a href="/diagnostico" class="aed-btn aed-btn-neutral btn-sm"><span class="material-symbols-outlined" aria-hidden="true" translate="no">play_circle</span> Diagnóstico (simulado)</a>
         </div>
     </header>
 
     <section class="aprof-secao">
-        <h2 class="h3 aprof-secao-titulo" title="Monta a linha de comando a partir da ferramenta, do alvo e das opções, explicando cada flag; nada é executado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Construtor de comando</h2>
+        <h2 class="h3 aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Construtor de comando</h2>
         <p class="small text-secondary">Escolha a ferramenta e as opções: o comando é montado ao vivo e cada flag é explicada. (Educacional — rode só em redes próprias ou autorizadas.)</p>
         <div class="card-tech p-3">
             <div class="row g-2 align-items-end mb-3">
                 <div class="col-12 col-md-4">
-                    <label for="cmd-tool" class="form-label small text-secondary" title="Programa de linha de comando cujo uso será montado; trocar de ferramenta troca as opções disponíveis"><span class="material-symbols-outlined" aria-hidden="true" translate="no">construction</span> Ferramenta</label>
+                    <label for="cmd-tool" class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">construction</span> Ferramenta</label>
                     <select id="cmd-tool" class="form-select bg-dark text-light border-secondary" title="Escolha entre dig, nmap, tcpdump, curl e ping"></select>
                 </div>
                 <div class="col-12 col-md-8">
-                    <label for="cmd-alvo" class="form-label small text-secondary" title="Destino que o comando vai consultar, varrer, capturar ou acessar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">my_location</span> Alvo (host / IP / URL)</label>
+                    <label for="cmd-alvo" class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">my_location</span> Alvo (host / IP / URL)</label>
                     <input id="cmd-alvo" type="text" class="form-control bg-dark text-light border-secondary" value="example.com" spellcheck="false" autocomplete="off" aria-describedby="cmd-alvo-dica"
                            title="Digite um nome de host, um IP ou uma URL, ex.: example.com, 192.0.2.10 ou https://example.com">
                     <p id="cmd-alvo-dica" class="small text-secondary mt-1 mb-0"><span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span> <span id="cmd-alvo-dica-texto"><code translate="no">example.com</code> é reservado para exemplos (RFC 2606): troque pelo seu host.</span></p>
@@ -45,7 +45,7 @@
             <pre id="cmd-saida" class="aprof-codigo mb-2" translate="no"></pre>
             <div class="d-flex justify-content-end gap-2 mb-3">
                 <button type="button" id="cmd-limpar" class="aed-btn aed-btn-neutral btn-sm" title="Esvaziar o alvo e desmarcar as opções"><span class="material-symbols-outlined" aria-hidden="true" translate="no">delete_sweep</span> Limpar</button>
-                <button type="button" id="cmd-copiar" class="aed-btn aed-btn-neutral btn-sm" title="Copiar o comando"><span class="material-symbols-outlined" aria-hidden="true" translate="no">content_copy</span> Copiar</button>
+                <button type="button" id="cmd-copiar" class="aed-btn aed-btn-neutral btn-sm"><span class="material-symbols-outlined" aria-hidden="true" translate="no">content_copy</span> Copiar</button>
             </div>
             <div id="cmd-flags"></div>
         </div>

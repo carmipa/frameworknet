@@ -30,9 +30,7 @@
               class="form-control bg-dark text-light border-secondary reversa-entrada"
               placeholder="hostname SP&#10;int g0/0&#10;ip address 172.19.0.1 255.255.240.0&#10;no shut&#10;router bgp 37510&#10;neighbor 200.200.200.2 remote-as 48880">{configPaste}</textarea>
     <div class="d-flex flex-wrap gap-2 align-items-center mt-3">
-        <button type="submit" name="action_type" value="reverse" class="aed-btn aed-btn-execute"
-                data-bs-toggle="tooltip" data-bs-placement="top"
-                title="Lê o texto, audita a coerência entre os scripts e reconstrói o projeto.">
+        <button type="submit" name="action_type" value="reverse" class="aed-btn aed-btn-execute">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Executar
         </button>
         <button type="submit" name="action_type" value="reverse_limpar" class="aed-btn aed-btn-danger"
@@ -288,7 +286,7 @@
         <span class="material-symbols-outlined" translate="no" aria-hidden="true">map</span><span>Desenho reconstruído</span>
     </h2>
     <div class="topology-wrap">
-        <pre class="mermaid mb-0" translate="no">{cenario.mermaid}</pre>
+        <pre class="mermaid mb-0" translate="no" tabindex="0" role="region" aria-label="Diagrama da topologia">{cenario.mermaid}</pre>
     </div>
 </div>
 {/if}
@@ -369,9 +367,7 @@
                 title="Baixa um .txt com a auditoria, as LANs, os enlaces, as tabelas e a topologia.">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">description</span> Relatório (.txt)
         </button>
-        <button type="button" class="aed-btn aed-btn-indigo" data-imprimir-reversa
-                data-bs-toggle="tooltip" data-bs-placement="top"
-                title="Abre a janela de impressão do navegador com o resultado desta aba.">
+        <button type="button" class="aed-btn aed-btn-indigo" data-imprimir-reversa>
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">print</span> Imprimir
         </button>
         <span class="section-chip chip-success export-status-chip" role="status">

@@ -186,7 +186,6 @@
   "tabelas": [
     {
       "titulo": "Estados TCP durante abertura e fechamento",
-      "dica": "Segue a máquina de estados do TCP na abertura e no fechamento, útil para ler a saída de netstat ou ss",
       "colunas": [
         "Estado",
         "Quem",
@@ -194,9 +193,9 @@
         "Próximo evento típico"
       ],
       "dicas_colunas": [
-        "Nome do estado da conexão como aparece em netstat e ss",
+        "",
         "Lado da conexão em que esse estado ocorre",
-        "Situação da conexão enquanto ela permanece nesse estado",
+        "",
         "Segmento ou evento que normalmente tira a conexão desse estado, e para onde ela vai"
       ],
       "linhas": [
@@ -240,7 +239,6 @@
     },
     {
       "titulo": "Comparação: 3-way TCP x TLS x SSH",
-      "dica": "Coloca lado a lado os três apertos de mão para mostrar o que cada um garante e em que ordem acontecem numa conexão",
       "colunas": [
         "Aspecto",
         "TCP 3-way",
@@ -294,7 +292,6 @@
     },
     {
       "titulo": "Flags de controle e o papel no handshake",
-      "dica": "Explica os bits de controle do cabeçalho TCP e quais deles participam da abertura, do fechamento ou do fluxo de dados",
       "colunas": [
         "Flag",
         "Bits",

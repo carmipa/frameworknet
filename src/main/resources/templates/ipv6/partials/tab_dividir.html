@@ -1,18 +1,18 @@
 {! Aba "Sub-redes": form em largura total; resultado 100% abaixo (regra global de layout IPv6). !}
 <div class="calc-form-card mb-3">
-    <h2 class="h6 calc-form-title" title="Parte um prefixo IPv6 em sub-redes menores, conta quantas cabem e lista as primeiras"><span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_on</span> Dividir prefixo em sub-redes</h2>
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_on</span> Dividir prefixo em sub-redes</h2>
     <p class="calc-hint">Ex.: um <code translate="no">/48</code> em <code translate="no">/64</code> dá <strong>65.536</strong> LANs. Contagem 2^n exata.</p>
     <form id="formDiv" hx-post="/ipv6/api/dividir" hx-target="#saidaDiv" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">
         <div class="row g-3 align-items-start">
             <div class="col-lg-8 col-md-7">
-                <label for="ipv6Bloco" class="form-label text-secondary" title="O prefixo IPv6 que você recebeu do provedor ou planejou e quer repartir"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Rede base (CIDR)</label>
+                <label for="ipv6Bloco" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Rede base (CIDR)</label>
                 <input type="text" class="aed-input form-control" id="ipv6Bloco" name="bloco"
                        placeholder="2001:db8::/32" value="2001:db8::/32" autocomplete="off" spellcheck="false" required
                        title="Endereço IPv6 com a barra e o prefixo, por exemplo 2001:db8::/32; pode usar :: para abreviar zeros">
             </div>
             <div class="col-lg-4 col-md-5">
-                <label for="ipv6Alvo" class="form-label text-secondary" title="O tamanho de cada sub-rede resultante; precisa ser maior ou igual ao prefixo da rede base"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo alvo</label>
+                <label for="ipv6Alvo" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo alvo</label>
                 <input type="text" class="aed-input form-control input-cidr" id="ipv6Alvo" name="prefixoAlvo"
                        inputmode="numeric" maxlength="3" placeholder="48" value="48" required
                        title="Número sem a barra; a quantidade de sub-redes é 2 elevado à diferença entre os dois prefixos">
@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="d-flex gap-2 mt-2">
-            <button type="submit" class="aed-btn aed-btn-execute" title="Dividir a rede base no prefixo alvo informado"><span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span><span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Dividir</button>
+            <button type="submit" class="aed-btn aed-btn-execute"><span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span><span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Dividir</button>
             <button type="button" class="aed-btn aed-btn-neutral" data-limpar title="Esvaziar os campos e apagar o resultado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
         </div>
     </form>

@@ -320,27 +320,45 @@ class CssLarguraPorcentagemGuardTest {
     }
 
     /**
-     * O tooltip compartilhado é cópia SEM edição da fonte do componente: os 8px da ponte invisível e o
-     * calc(100vw - 1rem) do balão de posição fixa são dele, e não mexem no layout da página. Ele fica fora da
-     * varredura, e o teste abaixo garante que continua sendo a cópia fiel — editado no projeto, reprova.
+     * O tooltip compartilhado é cópia SEM edição da fonte do componente. Desde o dica.css 1.3 ele também segue a
+     * largura relativa (sem 100vw; px só em contorno), então passa pela mesma varredura do resto do CSS; o teste
+     * abaixo garante que as cópias continuam fiéis — editadas no projeto, reprovam.
      */
     private static final String CANONICO_CSS = "web/css/dica.css";
 
     private static boolean cssProprio(Path p) {
         String s = p.toString().replace('\\', '/');
-        return s.endsWith(".css") && !s.endsWith(".min.css") && !s.contains("/vendor/") && !s.endsWith("/" + CANONICO_CSS);
+        return s.endsWith(".css") && !s.endsWith(".min.css") && !s.contains("/vendor/");
     }
 
     @Test
     void tooltipCanonicoEhCopiaFiel() throws Exception {
+        conferirCopias(new String[][] {
+            {ESTATICOS.resolve(CANONICO_CSS).toString(), "8109340fdfda78a213d84b16c9415dd65f81761aec7e91406d348009c7f5a62f"},
+            {ESTATICOS.resolve("web/js/dica.js").toString(), "6b939bdcaaa594e3d1b1d771fdc4acd080b403df20009457fbb8d5ee9639ba38"},
+        });
+    }
+
+    /**
+     * A varredura e o teste de rotas do componente moram em scripts/, que o build da imagem não copia (só
+     * scripts/erro-proxy). O sinal de checkout de desenvolvimento é o .git, que também fica fora da imagem: sem ele
+     * este teste aparece como IGNORADO (não como aprovado); com ele, arquivo ausente ou editado reprova.
+     */
+    @Test
+    void varreduraDoTooltipEhCopiaFiel() throws Exception {
+        org.junit.jupiter.api.Assumptions.assumeTrue(Files.exists(Path.of(".git")),
+                "fora de um checkout (build da imagem): cópias da varredura não conferidas aqui");
+        conferirCopias(new String[][] {
+            {"scripts/dica-varredura.js", "892a8517e82bacf63dd3baa6d43833fb717a212bb3b3c4715b43165dcb6494dd"},
+            {"scripts/dica-rotas.spec.mjs", "69913c2fdea9e2a4b266311073e10ae20b78c8ae4933450bf4b358eb12ce91d8"},
+        });
+    }
+
+    private static void conferirCopias(String[][] esperados) throws Exception {
         java.security.MessageDigest sha = java.security.MessageDigest.getInstance("SHA-256");
-        String[][] esperados = {
-            {CANONICO_CSS, "22d076632c97848f0146c6bb2c3fedf9ebcb3de077cab691552885b0b285a2c4"},
-            {"web/js/dica.js", "6b939bdcaaa594e3d1b1d771fdc4acd080b403df20009457fbb8d5ee9639ba38"},
-        };
         for (String[] e : esperados) {
             // Quebra de linha normalizada para LF: o git do Windows pode entregar CRLF no checkout.
-            String conteudo = Files.readString(ESTATICOS.resolve(e[0]), StandardCharsets.UTF_8).replace("\r\n", "\n");
+            String conteudo = Files.readString(Path.of(e[0]), StandardCharsets.UTF_8).replace("\r\n", "\n");
             String h = java.util.HexFormat.of().formatHex(sha.digest(conteudo.getBytes(StandardCharsets.UTF_8)));
             assertEquals(e[1], h, e[0] + " foi editado no projeto: é cópia do componente canônico de tooltip, que se altera na fonte e se recopia");
         }

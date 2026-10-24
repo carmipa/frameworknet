@@ -78,7 +78,6 @@
   "tabelas": [
     {
       "titulo": "Portas web x uso pretendido",
-      "dica": "Para que serve cada porta web comum e se ela pode ou não ser alcançada pela internet",
       "colunas": [
         "Porta",
         "Protocolo/uso",
@@ -132,7 +131,6 @@
     },
     {
       "titulo": "Texto claro (80) x cifrado (443)",
-      "dica": "Comparação, ponto a ponto, do que muda quando o mesmo site passa de HTTP para HTTPS",
       "colunas": [
         "Aspecto",
         "HTTP na porta 80",
@@ -173,7 +171,6 @@
     },
     {
       "titulo": "Portas de dev que não podem ir a produção",
-      "dica": "Portas de servidores de desenvolvimento que aparecem expostas por engano e o que fazer com cada uma",
       "colunas": [
         "Porta",
         "Ferramenta comum",

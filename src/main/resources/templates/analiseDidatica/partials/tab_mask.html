@@ -17,12 +17,12 @@
 </div>
 
 <div class="card-tech p-3 mb-3">
-    <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Arraste a barra e veja o menor prefixo que comporta essa quantidade de máquinas"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Calculadora visual de hosts</h2>
+    <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Calculadora visual de hosts</h2>
     <div class="row g-2 align-items-center">
         <div class="col-lg-5">
-            <label for="mask_hosts_slider" class="form-label small text-secondary mb-1" title="Quantas máquinas a rede precisa acomodar; rede e broadcast são somados à parte"><span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> Hosts necessários</label>
+            <label for="mask_hosts_slider" class="form-label small text-secondary mb-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> Hosts necessários</label>
             <input id="mask_hosts_slider" type="range" class="form-range" min="1" max="4094" step="1" value="254"
-                   title="Arraste ou use as setas do teclado para escolher de 1 a 4094 hosts">
+                   title="De 1 a 4094 hosts, sem contar rede e broadcast; arraste ou use as setas do teclado">
         </div>
         <div class="col-lg-7 small text-secondary">
             <div>Hosts escolhidos: <strong id="mask_hosts_value" class="text-light">254</strong></div>
@@ -34,10 +34,10 @@
 </div>
 
 <div class="card-tech p-3 mb-3">
-    <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Mostra cada octeto da máscara em bits, separando os 1 de rede dos 0 de host"><span class="material-symbols-outlined" translate="no" aria-hidden="true">123</span> Visualizador binário da máscara</h2>
+    <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">123</span> Visualizador binário da máscara</h2>
     <div class="row g-2 mb-2">
         <div class="col-lg-4">
-            <label for="mask_binary_input" class="form-label small text-secondary mb-1" title="A máscara digitada aqui é desenhada em binário logo abaixo, sem enviar o formulário"><span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span> Máscara decimal</label>
+            <label for="mask_binary_input" class="form-label small text-secondary mb-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span> Máscara decimal</label>
             <input id="mask_binary_input" type="text" class="form-control input-ipv4 bg-dark text-light border-secondary" value="255.255.255.0" placeholder="Ex.: 255.255.255.240" autocomplete="off" spellcheck="false"
                    title="Quatro octetos de 0 a 255 com os bits 1 contíguos à esquerda, como 255.255.255.240">
         </div>
@@ -51,13 +51,13 @@
 <form method="POST" class="row g-3 calc-form" data-tab-form="mask">
     <input type="hidden" name="tab" value="mask">
     <div class="col-lg-6">
-        <label class="form-label small text-secondary" title="A máscara é convertida em prefixo, wildcard, salto entre redes e quantidade de hosts"><span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span> Máscara decimal</label>
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_alt</span> Máscara decimal</label>
         <input type="text" name="mask_decimal" class="form-control input-ipv4 bg-dark text-light border-secondary {#if invalidFields.contains('mask_decimal')}is-invalid{/if}"
                placeholder="Ex.: 255.255.255.0" value="{maskDecPre}"
                title="Quatro octetos de 0 a 255 com os bits 1 contíguos à esquerda, como 255.255.255.0" inputmode="text" autocomplete="off" spellcheck="false">
     </div>
     <div class="col-lg-3">
-        <label class="form-label small text-secondary" title="A régua mostra as sub-redes vizinhas de mesmo tamanho, a partir da rede analisada"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Régua</label>
+        <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Régua</label>
         <select aria-label="Régua" name="regua_count" class="form-select bg-dark text-light border-secondary"
                 title="Escolha quantas linhas a régua vai listar no resultado, contando a própria rede analisada">
             <option value="5" {#if reguaCountPre == '5'}selected{/if}>5</option>
@@ -69,9 +69,7 @@
         </select>
     </div>
     <div class="col-lg-3 tab-actions d-grid gap-2">
-        <button type="submit" name="modo" value="mask" class="aed-btn aed-btn-execute w-100"
-                data-bs-toggle="tooltip" data-bs-placement="top"
-                title="Executar: converter a máscara em CIDR, wildcard e número de hosts">
+        <button type="submit" name="modo" value="mask" class="aed-btn aed-btn-execute w-100">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Executar
         </button>
     </div>

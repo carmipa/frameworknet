@@ -28,7 +28,7 @@
 
     <header class="topbar">
         <div class="topbar-in">
-            <a class="brand" href="/" title="Ir para a página inicial do Framework de Redes">
+            <a class="brand" href="/">
                 <div class="brand-mark">A&amp;D</div>
                 <div class="brand-txt">
                     <span class="brand-kicker">MENU PRINCIPAL</span>
@@ -38,22 +38,22 @@
             <div class="topbar-right">
                 <div class="langs">
                     <button type="button" class="lang is-on" onclick="aedTranslate('pt')"
-                            title="Traduzir para Português (Brasil)" aria-label="Traduzir para Português">
+                            title="Traduzir para Português (Brasil)" aria-label="PT: traduzir para português">
                         <img class="flag" src="/web/img/bandeiras/br.png?v=20261001" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">PT</span>
                     </button>
                     <button type="button" class="lang" onclick="aedTranslate('en')"
-                            title="Traduzir para English (US)" lang="en" aria-label="Translate to English">
+                            title="Traduzir para English (US)" lang="en" aria-label="EN: translate to English">
                         <img class="flag" src="/web/img/bandeiras/us.png?v=20261001" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">EN</span>
                     </button>
                     <button type="button" class="lang" onclick="aedTranslate('es')"
-                            title="Traduzir para Español" lang="es" aria-label="Traducir al Español">
+                            title="Traduzir para Español" lang="es" aria-label="ES: traducir al español">
                         <img class="flag" src="/web/img/bandeiras/es.png?v=20261001" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">ES</span>
                     </button>
                 </div>
-                <div class="status-pill" role="status" title="{#if dados.semRede}Nenhuma resposta chegou: o aparelho está sem rede{#else}Código de status HTTP do erro{/if}">
+                <div class="status-pill" role="status"{#if !dados.semRede} title="Código de status HTTP do erro"{/if}>
                     <span class="dot" aria-hidden="true"></span>
                     <span class="status-txt">{dados.statusLinha}</span>
                 </div>
@@ -86,16 +86,16 @@
 
                         <div class="cta-row">
                             {#if dados.semRede}
-                            <button type="button" class="btn btn-primary" onclick="location.reload()" title="Recarrega esta página; funciona assim que a internet do aparelho voltar">
+                            <button type="button" class="btn btn-primary" onclick="location.reload()">
                                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">refresh</span>
                                 Tentar de novo
                             </button>
                             {/if}
-                            <a class="btn {#if dados.semRede}btn-ghost{#else}btn-primary{/if}" href="/" title="Retornar à página inicial da aplicação">
+                            <a class="btn {#if dados.semRede}btn-ghost{#else}btn-primary{/if}" href="/">
                                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">home</span>
                                 Voltar ao Início
                             </a>
-                            <a class="btn btn-ghost" href="/documentacao" title="Acessar o catálogo completo de documentação da aplicação">
+                            <a class="btn btn-ghost" href="/documentacao">
                                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
                                 Ver Documentação
                             </a>
@@ -163,7 +163,7 @@
                     <h2 class="sec-title">Talvez você queira ir para</h2>
                 </div>
                 <div class="links-grid">
-                    <a class="lk" style="--ac:#2dd4bf" href="/analise" title="Ir para Análise Didática: CIDR, máscara, wildcard e IPv6">
+                    <a class="lk" style="--ac:#2dd4bf" href="/analise">
                         <span class="lk-ic" style="--ic:#2dd4bf">
                             <span class="material-symbols-outlined" aria-hidden="true" translate="no">insights</span>
                         </span>
@@ -173,7 +173,7 @@
                         </span>
                         <span class="material-symbols-outlined lk-arrow" aria-hidden="true" translate="no">arrow_forward</span>
                     </a>
-                    <a class="lk" style="--ac:#818cf8" href="/resolucao-problemas" title="Ir para Resolução de Problemas: projetar cenários e engenharia reversa">
+                    <a class="lk" style="--ac:#818cf8" href="/resolucao-problemas">
                         <span class="lk-ic" style="--ic:#818cf8">
                             <span class="material-symbols-outlined" aria-hidden="true" translate="no">extension</span>
                         </span>
@@ -183,7 +183,7 @@
                         </span>
                         <span class="material-symbols-outlined lk-arrow" aria-hidden="true" translate="no">arrow_forward</span>
                     </a>
-                    <a class="lk" style="--ac:#f59e0b" href="/protocolos" title="Ir para Catálogo de Portas TCP/UDP e Protocolos">
+                    <a class="lk" style="--ac:#f59e0b" href="/protocolos">
                         <span class="lk-ic" style="--ic:#f59e0b">
                             <span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span>
                         </span>
@@ -193,7 +193,7 @@
                         </span>
                         <span class="material-symbols-outlined lk-arrow" aria-hidden="true" translate="no">arrow_forward</span>
                     </a>
-                    <a class="lk" style="--ac:#60a5fa" href="/documentacao" title="Ir para Central de Documentação técnica">
+                    <a class="lk" style="--ac:#60a5fa" href="/documentacao">
                         <span class="lk-ic" style="--ic:#60a5fa">
                             <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
                         </span>
@@ -211,11 +211,11 @@
 
     <footer class="footer">
         <div class="foot-1">
-            Desenvolvido por: <a class="foot-autor" href="https://carminati.dev.br/" target="_blank" rel="noopener noreferrer" title="Abre o site pessoal do autor, com os outros projetos dele, numa aba nova"><strong>Paulo André Carminati</strong></a>
+            Desenvolvido por: <a class="foot-autor" href="https://carminati.dev.br/" target="_blank" rel="noopener noreferrer"><strong>Paulo André Carminati</strong></a>
         </div>
         <div class="foot-2">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">code</span>
-            <a href="https://github.com/carmipa" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;" title="Ver perfil e repositórios do autor no GitHub">github.com/carmipa</a> · <span class="mono">Java + Quarkus</span>
+            <a href="https://github.com/carmipa" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">github.com/carmipa</a> · <span class="mono">Java + Quarkus</span>
         </div>
     </footer>
 </div>

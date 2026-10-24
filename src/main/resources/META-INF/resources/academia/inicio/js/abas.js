@@ -68,7 +68,6 @@
         N.iconeETexto(aba.querySelector('[data-acad-aba-estado]'), info.icone, info.texto);
         Object.keys(ESTADO).forEach(function (e) { aba.classList.remove('estado-' + e); });
         aba.classList.add('estado-' + estado.estado);
-        aba.setAttribute('title', titulo + ': ' + info.texto + ' — mostra as lições deste nível');
     }
 
     function pintarPainel(painel, estado, requisito) {

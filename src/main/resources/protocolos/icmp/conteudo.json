@@ -49,7 +49,7 @@
       {
         "nome": "Tipo",
         "bits": 8,
-        "descricao": "Identifica a categoria da mensagem (ex.: 8 = Echo Request, 0 = Echo Reply, 3 = Destino inalcançável, 11 = Tempo excedido). É o campo que define o significado de tudo o que vem depois.",
+        "descricao": "Categoria da mensagem, que define o resto: 8 Echo Request, 0 Echo Reply, 3 Destino inalcançável, 11 Tempo excedido.",
         "cor": "#2563eb"
       },
       {
@@ -67,7 +67,7 @@
       {
         "nome": "Resto do cabeçalho",
         "bits": 32,
-        "descricao": "Campo de conteúdo variável conforme o Tipo. No Echo (tipos 8/0) carrega Identificador (16 bits) + Número de sequência (16 bits); no tipo 3 código 4 carrega o MTU do próximo salto; em muitos erros vai zerado.",
+        "descricao": "Varia com o Tipo: no Echo (8/0), Identificador e Número de sequência, de 16 bits cada; no tipo 3 código 4, o MTU do próximo salto.",
         "cor": "#059669"
       }
     ],
@@ -76,16 +76,15 @@
   "tabelas": [
     {
       "titulo": "Principais tipos ICMPv4",
-      "dica": "Lista as mensagens ICMP do IPv4 mais vistas em diagnóstico, como as do ping e do traceroute",
       "colunas": [
         "Tipo",
         "Nome",
         "Para que serve"
       ],
       "dicas_colunas": [
-        "Valor do campo Tipo, primeiro byte do cabeçalho ICMP",
-        "Nome da mensagem como aparece em analisadores de pacotes",
-        "Situação em que a mensagem é gerada e como usá-la no diagnóstico"
+        "",
+        "",
+        ""
       ],
       "linhas": [
         [
@@ -117,15 +116,14 @@
     },
     {
       "titulo": "Principais tipos ICMPv6",
-      "dica": "Lista as mensagens ICMPv6 mais comuns, incluindo as do Neighbor Discovery, que no IPv6 substituem o ARP",
       "colunas": [
         "Tipo",
         "Nome",
         "Função"
       ],
       "dicas_colunas": [
-        "Valor do campo Tipo no ICMPv6; de 128 em diante são mensagens informativas",
-        "Nome da mensagem, com a sigla usada na documentação do Neighbor Discovery",
+        "",
+        "",
         "Papel da mensagem no ping, na autoconfiguração ou na descoberta de vizinhos"
       ],
       "linhas": [
@@ -168,7 +166,6 @@
     },
     {
       "titulo": "Códigos do Tipo 3 (Destination Unreachable)",
-      "dica": "Detalha o campo Código das mensagens de destino inalcançável, que indica onde e por que a entrega parou",
       "colunas": [
         "Código",
         "Significado",
@@ -176,7 +173,7 @@
       ],
       "dicas_colunas": [
         "Valor do campo Código, que refina o motivo dentro do Tipo 3",
-        "Motivo da falha de entrega que o código indica",
+        "",
         "Situação de rede que leva o roteador ou o host de destino a enviar esse código"
       ],
       "linhas": [
@@ -353,7 +350,7 @@
     {
       "rotulo": "Ferramentas clássicas",
       "valor": "ping, traceroute/tracert, mtr, tcpdump",
-      "dica": "O ping depende de Echo (8/0); traceroute/tracert e mtr, de Time Exceeded (11) (o traceroute do Linux usa UDP e termina em Port Unreachable, 3/3); o tcpdump só captura."
+      "dica": "O ping usa Echo (8/0); traceroute e mtr usam Time Exceeded (11), e o traceroute do Linux termina em Port Unreachable (3/3)."
     },
     {
       "rotulo": "Segurança",

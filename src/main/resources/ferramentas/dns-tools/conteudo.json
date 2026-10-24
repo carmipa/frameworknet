@@ -73,7 +73,6 @@
   "tabelas": [
     {
       "titulo": "dig x nslookup x host: quando usar cada um",
-      "dica": "Compara as três ferramentas de consulta DNS para escolher entre diagnóstico detalhado, checagem rápida ou uso em scripts",
       "colunas": [
         "Ferramenta",
         "Ponto forte",
@@ -104,15 +103,14 @@
     },
     {
       "titulo": "Tipos de registro DNS comuns",
-      "dica": "Registros que mais aparecem nas consultas, com o que cada um associa ao nome e um exemplo do valor retornado",
       "colunas": [
         "Tipo",
         "Significado",
         "Exemplo de conteúdo"
       ],
       "dicas_colunas": [
-        "Sigla do tipo de registro, a mesma usada para pedi-lo numa consulta, como em dig MX",
-        "Que informação o registro associa ao nome consultado",
+        "",
+        "",
         "Valor ilustrativo como aparece na resposta; o ponto final indica nome totalmente qualificado"
       ],
       "linhas": [

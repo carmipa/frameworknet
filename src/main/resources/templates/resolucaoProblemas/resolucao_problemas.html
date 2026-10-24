@@ -17,11 +17,10 @@
         projeto, a outra vai da configuração pronta de volta ao projeto. São links de
         verdade (e não abas de JavaScript) porque cada aba tem o próprio formulário
         POST e o resultado precisa voltar na aba certa, além de permitir link direto. !}
-    <nav class="reversa-abas" role="tablist" aria-label="Modos da Resolução de Problemas">
+    <nav class="reversa-abas" aria-label="Modos da Resolução de Problemas">
         <a href="/resolucao-problemas"
            class="reversa-aba {#if abaAtiva == 'projetar'}is-active{/if}"
-           {#if abaAtiva == 'projetar'}aria-current="page"{/if}
-           title="Dos requisitos (localidades e hosts) ao plano VLSM, WAN e roteamento">
+           {#if abaAtiva == 'projetar'}aria-current="page"{/if}>
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>
             <span class="reversa-aba-texto">
                 <strong>Projetar</strong>
@@ -30,8 +29,7 @@
         </a>
         <a href="/resolucao-problemas?aba=reversa"
            class="reversa-aba {#if abaAtiva == 'reversa'}is-active{/if}"
-           {#if abaAtiva == 'reversa'}aria-current="page"{/if}
-           title="Da configuração Cisco pronta de volta ao desenho, às tabelas e aos erros">
+           {#if abaAtiva == 'reversa'}aria-current="page"{/if}>
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span>
             <span class="reversa-aba-texto">
                 <strong>Engenharia reversa</strong>

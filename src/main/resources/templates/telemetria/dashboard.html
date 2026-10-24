@@ -36,19 +36,15 @@
                         <option value="60000">1 min</option>
                     </select>
                 </label>
-                <button type="button" class="aed-btn aed-btn-neutral" id="btn-refresh-telemetria"
-                        title="Recarregar métricas e gráficos de telemetria imediatamente">
+                <button type="button" class="aed-btn aed-btn-neutral" id="btn-refresh-telemetria">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">refresh</span> Atualizar
                 </button>
-                <button type="button" class="aed-btn aed-btn-neutral" id="btn-imprimir-telemetria"
-                        data-bs-toggle="tooltip" data-bs-placement="top"
-                        title="Abre a impressao do navegador com o painel: KPIs, graficos e tabelas.">
+                <button type="button" class="aed-btn aed-btn-neutral" id="btn-imprimir-telemetria">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">print</span> Imprimir
                 </button>
                 <div class="dropdown d-inline-block">
                     <button type="button" class="aed-btn aed-btn-json dropdown-toggle" data-bs-toggle="dropdown"
-                            aria-expanded="false" id="btn-exportar-telemetria"
-                            title="Exportar dados de telemetria em formato JSON, CSV, TXT ou HTML">
+                            aria-expanded="false" id="btn-exportar-telemetria">
                         <span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> Exportar
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end tele-export-menu" aria-labelledby="btn-exportar-telemetria">
@@ -237,7 +233,7 @@
                 <caption class="text-secondary small px-2">Top rotas por volume de chamadas</caption>
                 <thead>
                     <tr>
-                        <th title="Método HTTP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th>
+                        <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th>
                         <th title="Rota/endpoint acessado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">route</span>Rota</th>
                         <th class="text-end" title="Volume de chamadas no período"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Chamadas</th>
                         <th class="text-end" title="Chamadas que terminaram em erro"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">error</span>Erros</th>
@@ -259,7 +255,7 @@
                             medido não é medição.</caption>
                         <thead>
                             <tr>
-                                <th title="Código ISO do país informado pela borda, sem IP. ?? = sem fonte confiável (o padrão)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">public</span>País</th>
+                                <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">public</span>País</th>
                                 <th class="text-end" title="Acessos originados desse país"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Acessos</th>
                                 <th class="text-end" title="Participação no total de acessos"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">percent</span>%</th>
                             </tr>
@@ -291,7 +287,7 @@
                     <option value="ERROR">ERROR</option>
                 </select>
                 <input type="search" id="t-console-busca" class="form-control form-control-sm telemetry-search" placeholder="Filtrar console..." style="max-width:12.5rem;">
-                <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="t-console-pausar" data-bs-toggle="tooltip" data-bs-placement="top" title="Pausar/retomar rolagem automática">
+                <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="t-console-pausar" aria-pressed="false" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Pausar rolagem" title="Pausa a rolagem automática do console; clique de novo para retomar">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">pause</span>
                 </button>
                 <button type="button" class="aed-btn aed-btn-neutral btn-sm btn-copy-console" data-target="console-telemetria" aria-label="Copiar o console" data-bs-toggle="tooltip" data-bs-placement="top" title="Copiar o conteúdo do console">
@@ -301,7 +297,7 @@
                         title="Limpar todas as mensagens exibidas no console ao vivo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
             </div>
         </div>
-        <pre class="aed-console console-body" id="console-telemetria" translate="no">Aguardando eventos...</pre>
+        <pre class="aed-console console-body" id="console-telemetria" translate="no" tabindex="0" role="region" aria-label="Console de eventos">Aguardando eventos...</pre>
         <p class="telemetry-path small text-secondary mb-0 mt-2" id="t-pasta-logs"></p>
     </div>
 
@@ -331,11 +327,9 @@
             </table>
         </div>
         <div class="telemetry-pagination d-flex gap-2 align-items-center justify-content-center mt-2">
-            <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="t-page-prev"
-                    title="Página anterior da tabela de eventos de telemetria"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_left</span> Anterior</button>
+            <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="t-page-prev"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_left</span> Anterior</button>
             <span id="t-page-info" class="small text-secondary">Página 1</span>
-            <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="t-page-next"
-                    title="Próxima página da tabela de eventos de telemetria"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_right</span> Próxima</button>
+            <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="t-page-next"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_right</span> Próxima</button>
         </div>
     </div>
 </div>

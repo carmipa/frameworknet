@@ -449,7 +449,8 @@
     color: var(--aed-text);
 }
 
-.acad-bit .acad-bit-peso {
+.acad-bit[data-peso]::after {
+    content: attr(data-peso);
     font-size: .75rem;
 }
 

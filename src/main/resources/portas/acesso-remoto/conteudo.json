@@ -4,7 +4,7 @@
     {
       "rotulo": "Portas da família",
       "valor": "22 (SSH), 23 (Telnet), 3389 (RDP), 5900 (VNC)",
-      "dica": "Todas usam TCP; são os principais canais de administração remota. Quanto à faixa: 22 e 23 são portas conhecidas (0-1023); 3389 e 5900 são portas registradas (1024-49151)."
+      "dica": "Todas em TCP, canais de administração remota: 22 e 23 são portas conhecidas (0-1023); 3389 e 5900, registradas (1024-49151)."
     },
     {
       "rotulo": "Transporte",
@@ -78,7 +78,6 @@
   "tabelas": [
     {
       "titulo": "Porta x serviço x segurança",
-      "dica": "As portas de administração remota, se protegem o tráfego e como devem ser tratadas",
       "colunas": [
         "Porta",
         "Serviço",
@@ -120,7 +119,6 @@
     },
     {
       "titulo": "Expor direto na internet x atrás de VPN",
-      "dica": "Quanto risco cada forma de publicar o acesso remoto cria, do pior ao recomendado",
       "colunas": [
         "Cenário",
         "Superfície de ataque",
@@ -131,7 +129,7 @@
         "Como a porta está publicada",
         "Quanto do serviço fica ao alcance de qualquer um",
         "Se dá para tentar senhas em massa contra a porta",
-        "A ação indicada para esse cenário"
+        ""
       ],
       "linhas": [
         [
@@ -168,7 +166,6 @@
     },
     {
       "titulo": "Telnet x SSH lado a lado",
-      "dica": "O que muda na prática ao trocar Telnet por SSH",
       "colunas": [
         "Aspecto",
         "Telnet (23)",

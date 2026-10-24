@@ -3,8 +3,7 @@
   "ficha": [
     {
       "rotulo": "Grupo",
-      "valor": "Ciclo de vida do certificado",
-      "dica": "Emissão, renovação, revogação e expiração fazem parte do mesmo ciclo."
+      "valor": "Ciclo de vida do certificado"
     },
     {
       "rotulo": "Padrão base",
@@ -78,7 +77,6 @@
   "tabelas": [
     {
       "titulo": "CRL x OCSP x OCSP stapling",
-      "dica": "Compara os três mecanismos de consulta de revogação em latência, privacidade, atualidade e custo",
       "colunas": [
         "Aspecto",
         "CRL",
@@ -132,15 +130,14 @@
     },
     {
       "titulo": "Estados de resposta OCSP",
-      "dica": "Lista os três status que um responder OCSP pode devolver e como o cliente deve reagir a cada um",
       "colunas": [
         "Estado",
         "Significado",
         "O que o cliente deve fazer"
       ],
       "dicas_colunas": [
-        "Valor literal do campo de status na resposta OCSP assinada",
-        "O que o responder afirma sobre o certificado consultado",
+        "",
+        "",
         "Reação esperada do navegador ou da aplicação ao receber esse status"
       ],
       "linhas": [

@@ -73,7 +73,6 @@
   "tabelas": [
     {
       "titulo": "Mapeamento OSI <-> TCP/IP",
-      "dica": "Relaciona cada camada OSI à camada TCP/IP equivalente, com o nome do dado e a função",
       "colunas": [
         "Camada OSI",
         "Nº OSI",
@@ -142,7 +141,6 @@
     },
     {
       "titulo": "Camadas TCP/IP x protocolos e dispositivos",
-      "dica": "Aponta, para cada camada do TCP/IP, os protocolos, o tipo de endereço e o equipamento típico",
       "colunas": [
         "Camada TCP/IP",
         "Protocolos típicos",
@@ -184,7 +182,6 @@
     },
     {
       "titulo": "OSI vs. TCP/IP: por que TCP/IP venceu",
-      "dica": "Contrasta a origem e o uso dos dois modelos para explicar por que o TCP/IP virou o padrão real",
       "colunas": [
         "Critério",
         "OSI",

@@ -83,7 +83,6 @@
   "tabelas": [
     {
       "titulo": "Portas da família: serviço e risco",
-      "dica": "As portas de transferência e compartilhamento de arquivos e o principal risco de cada uma",
       "colunas": [
         "Porta",
         "Serviço",
@@ -131,7 +130,6 @@
     },
     {
       "titulo": "Em texto claro versus versão segura",
-      "dica": "Para cada protocolo inseguro, a alternativa segura e o que ela passa a proteger",
       "colunas": [
         "Inseguro (evitar)",
         "Seguro (usar)",
@@ -172,7 +170,6 @@
     },
     {
       "titulo": "O que fazer com cada porta na borda",
-      "dica": "A decisão de firewall para cada porta de arquivos na borda da rede",
       "colunas": [
         "Porta",
         "Expor na internet?",
@@ -181,7 +178,7 @@
       "dicas_colunas": [
         "Número da porta e o serviço",
         "Se a porta pode ser aberta para a internet",
-        "O que fazer em vez de expor"
+        ""
       ],
       "linhas": [
         [

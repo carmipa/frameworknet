@@ -96,7 +96,6 @@
   "tabelas": [
     {
       "titulo": "As três faixas de portas (RFC 6335)",
-      "dica": "Como os 65.536 números de porta se dividem entre serviços padronizados, aplicações registradas e portas temporárias de cliente",
       "colunas": [
         "Faixa",
         "Intervalo",
@@ -107,7 +106,7 @@
         "Nome oficial do grupo de portas",
         "Primeiro e último número de porta do grupo",
         "Quem reserva o número e quem costuma abrir portas nesse grupo",
-        "Portas conhecidas que caem nesse grupo, com o serviço de cada uma"
+        ""
       ],
       "linhas": [
         [
@@ -132,7 +131,6 @@
     },
     {
       "titulo": "Portas famosas x serviço x transporte",
-      "dica": "As portas mais vistas no dia a dia, o serviço por trás de cada uma e o cuidado de segurança que pedem",
       "colunas": [
         "Porta",
         "Serviço",
@@ -192,7 +190,6 @@
     },
     {
       "titulo": "A 5-tupla que identifica uma conexão (o socket completo)",
-      "dica": "Os cinco valores que, juntos, separam uma conexão de todas as outras no mesmo host",
       "colunas": [
         "Elemento",
         "Exemplo",
@@ -200,7 +197,7 @@
       ],
       "dicas_colunas": [
         "Qual dos cinco valores da tupla",
-        "Um valor ilustrativo, com endereços reservados para documentação",
+        "",
         "O que esse valor representa na conexão"
       ],
       "linhas": [

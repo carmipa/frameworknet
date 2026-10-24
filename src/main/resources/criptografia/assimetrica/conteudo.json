@@ -73,7 +73,6 @@
   "tabelas": [
     {
       "titulo": "RSA versus ECC (ECDSA / Ed25519)",
-      "dica": "Compara as duas famílias de criptografia assimétrica em base matemática, tamanho de chave, operações e uso",
       "colunas": [
         "Aspecto",
         "RSA",
@@ -119,7 +118,6 @@
     },
     {
       "titulo": "Força equivalente: tamanhos comparáveis",
-      "dica": "Mostra os tamanhos de chave RSA e ECC que oferecem a mesma segurança e a cifra simétrica de força equivalente",
       "colunas": [
         "Segurança (bits)",
         "RSA",
@@ -161,7 +159,6 @@
     },
     {
       "titulo": "Qual chave usar em cada objetivo",
-      "dica": "Indica, para cada objetivo, quem opera, com qual chave do par e como o outro lado lê ou verifica",
       "colunas": [
         "Objetivo",
         "Quem cifra/assina",

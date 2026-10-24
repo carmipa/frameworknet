@@ -79,7 +79,6 @@
   "tabelas": [
     {
       "titulo": "Métodos HTTP",
-      "dica": "Compara os verbos do HTTP pelas propriedades que definem se uma requisição pode ser repetida ou guardada em cache",
       "colunas": [
         "Método",
         "O que faz",
@@ -148,7 +147,6 @@
     },
     {
       "titulo": "Famílias de códigos de status",
-      "dica": "Agrupa os códigos de resposta HTTP pelo primeiro dígito, para saber de cara se a requisição deu certo e de quem é a falha",
       "colunas": [
         "Família",
         "Significado",
@@ -156,8 +154,8 @@
       ],
       "dicas_colunas": [
         "Faixa de códigos definida pelo primeiro dígito; xx indica qualquer número",
-        "Tipo de resultado que todos os códigos da faixa comunicam",
-        "Códigos frequentes da faixa, com o texto de motivo padrão"
+        "",
+        ""
       ],
       "linhas": [
         [
@@ -189,7 +187,6 @@
     },
     {
       "titulo": "Cabeçalhos importantes",
-      "dica": "Seleciona cabeçalhos HTTP comuns e mostra em que mensagem aparecem e o que controlam",
       "colunas": [
         "Cabeçalho",
         "Direção",
@@ -230,7 +227,6 @@
     },
     {
       "titulo": "Versões, portas e transporte",
-      "dica": "Relaciona cada versão do HTTP à porta padrão e ao transporte, ajudando a entender o que muda na rede entre elas",
       "colunas": [
         "Protocolo",
         "Porta",
@@ -241,7 +237,7 @@
         "Versão ou variante do HTTP comparada",
         "Porta padrão do servidor; sem indicação, TCP",
         "Protocolos abaixo do HTTP que carregam as mensagens",
-        "Diferença marcante da versão em formato, desempenho ou segurança"
+        ""
       ],
       "linhas": [
         [

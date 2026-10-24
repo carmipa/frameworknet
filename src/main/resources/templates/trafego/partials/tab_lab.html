@@ -12,8 +12,7 @@
     {#for c in cenariosLab}
     <button type="button" class="aed-mode-btn"
             hx-get="/trafego/api/lab?cenario={c.id}"
-            hx-target="#lab-resultado" hx-swap="innerHTML"
-            title="Analisar: {c.titulo}">
+            hx-target="#lab-resultado" hx-swap="innerHTML">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">biotech</span><span>{c.titulo}</span>
     </button>
     {/for}

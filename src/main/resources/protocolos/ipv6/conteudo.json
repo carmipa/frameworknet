@@ -137,16 +137,15 @@
   "tabelas": [
     {
       "titulo": "Tipos e faixas de endereço IPv6",
-      "dica": "Mostra cada categoria de endereço IPv6, o bloco que a identifica e o alcance de uso, para reconhecer um endereço pelo começo",
       "colunas": [
         "Tipo",
         "Prefixo",
         "Para que serve"
       ],
       "dicas_colunas": [
-        "Categoria do endereço conforme o alcance e o modo de entrega: local, global, grupo ou especial",
+        "",
         "Bloco ou endereço que identifica a categoria; o número após a barra diz quantos bits iniciais são fixos",
-        "Alcance e uso prático de cada categoria, com o equivalente no IPv4 quando existe"
+        ""
       ],
       "linhas": [
         [
@@ -183,7 +182,6 @@
     },
     {
       "titulo": "Regras de notação IPv6",
-      "dica": "Reúne as formas válidas de escrever e abreviar um endereço IPv6, com exemplo de cada uma, para ler e reduzir endereços sem erro",
       "colunas": [
         "Regra",
         "Exemplo",
@@ -191,7 +189,7 @@
       ],
       "dicas_colunas": [
         "Nome da convenção de escrita ou abreviação aplicada ao endereço",
-        "Endereço escrito seguindo a convenção da linha, para comparar com a forma completa",
+        "",
         "Como a convenção é aplicada e qual limite ela tem"
       ],
       "linhas": [
@@ -224,7 +222,6 @@
     },
     {
       "titulo": "IPv6 vs IPv4: o que mudou",
-      "dica": "Compara ponto a ponto o funcionamento do IPv4 e do IPv6, para entender o que muda ao migrar uma rede",
       "colunas": [
         "Aspecto",
         "IPv4",

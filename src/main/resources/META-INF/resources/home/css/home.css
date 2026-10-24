@@ -62,8 +62,8 @@
 }
 
 /* O cartão é um <article>; o link real é o título (h2 > a.home-module-link) e o ::after dele cobre o cartão
-   inteiro, então clicar em qualquer ponto do cartão continua abrindo a página. O "?" da dica do título fica ACIMA
-   dessa camada (z-index 2): tocar nele abre a dica e não navega. */
+   inteiro, então clicar em qualquer ponto do cartão continua abrindo a página. O cartão não leva dica: o título e
+   o texto visível já explicam o destino, e uma dica disputaria o toque com o próprio cartão. */
 .home-module {
     position: relative;
     top: 0;
@@ -101,6 +101,9 @@
 .home-module-link {
     color: inherit;
     text-decoration: none;
+    /* O alvo real é o cartão inteiro (::after), mas a medição de alvo mínimo (WCAG 2.5.8) olha a caixa do link. */
+    display: inline-block;
+    min-block-size: 1.5rem;
 }
 
 .home-module-link:focus-visible {
@@ -113,11 +116,6 @@
     position: absolute;
     inset: 0;
     z-index: 1;
-}
-
-.home-module .dica {
-    position: relative;
-    z-index: 2;
 }
 
 .home-module-icon {

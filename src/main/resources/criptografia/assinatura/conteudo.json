@@ -73,7 +73,6 @@
   "tabelas": [
     {
       "titulo": "Assinatura digital versus MAC (HMAC)",
-      "dica": "Compara assinatura digital e HMAC nas garantias oferecidas, no tipo de chave e no custo computacional",
       "colunas": [
         "Propriedade",
         "Assinatura digital",
@@ -124,7 +123,6 @@
     },
     {
       "titulo": "Algoritmos: assinatura (RSA/ECDSA/Ed25519) e MAC (HMAC)",
-      "dica": "Compara algoritmos de assinatura e de MAC quanto à dependência de aleatoriedade e aos cuidados de implementação",
       "colunas": [
         "Algoritmo",
         "Categoria",
@@ -133,7 +131,7 @@
       ],
       "dicas_colunas": [
         "Nome do algoritmo e, quando aplicável, a curva usada",
-        "Se o algoritmo produz assinatura assimétrica ou MAC simétrico",
+        "",
         "Como cada operação obtém o valor aleatório ou único que entra no cálculo, se houver",
         "Cuidado de uso ou propriedade de destaque do algoritmo"
       ],
@@ -166,7 +164,6 @@
     },
     {
       "titulo": "Quando usar cada um",
-      "dica": "Ajuda a escolher entre assinatura digital e HMAC conforme quem precisa verificar a mensagem",
       "colunas": [
         "Cenário",
         "Escolha",

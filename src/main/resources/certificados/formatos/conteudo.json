@@ -78,7 +78,6 @@
   "tabelas": [
     {
       "titulo": "Formato x codificação x conteúdo x extensão",
-      "dica": "Compara os formatos de arquivo de certificado pela codificação, conteúdo e extensões usuais",
       "colunas": [
         "Formato",
         "Codificação",
@@ -133,7 +132,6 @@
     },
     {
       "titulo": "Matriz de conversão (de / para) com a ferramenta principal",
-      "dica": "Mostra o comando OpenSSL que converte cada formato de origem em cada formato de destino",
       "colunas": [
         "De \\ Para",
         "PEM",
@@ -181,7 +179,6 @@
     },
     {
       "titulo": "Quando usar cada formato",
-      "dica": "Recomenda o formato adequado para cada situação comum de instalação ou distribuição",
       "colunas": [
         "Cenário",
         "Formato recomendado",

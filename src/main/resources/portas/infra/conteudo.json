@@ -78,7 +78,6 @@
   "tabelas": [
     {
       "titulo": "Porta x serviço x transporte x amplificação",
-      "dica": "Serviços de infraestrutura, o transporte de cada um e quanto a resposta pode ser maior que a pergunta",
       "colunas": [
         "Porta",
         "Serviço",
@@ -140,7 +139,6 @@
     },
     {
       "titulo": "Em claro versus variante segura",
-      "dica": "Para cada serviço, a versão em texto claro, a versão protegida e o que a troca garante",
       "colunas": [
         "Serviço",
         "Versão/porta em claro",
@@ -182,7 +180,6 @@
     },
     {
       "titulo": "O que expor, restringir ou nunca expor",
-      "dica": "Onde cada serviço de infraestrutura pode ficar visível e onde ele nunca deve aparecer",
       "colunas": [
         "Serviço",
         "Público",
@@ -190,7 +187,7 @@
         "Nunca na Internet"
       ],
       "dicas_colunas": [
-        "Serviço de infraestrutura",
+        "",
         "Se pode responder a qualquer endereço da internet, e com que limite",
         "Se deve ficar restrito à rede interna ou à de gerência",
         "A forma do serviço que jamais pode ficar exposta"

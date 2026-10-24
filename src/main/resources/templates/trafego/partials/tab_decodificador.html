@@ -14,9 +14,9 @@
       hx-swap="innerHTML"
       hx-disabled-elt="find button[type='submit']">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-        <label class="form-label small text-secondary mb-0" for="trafego-hex" title="Bytes brutos do quadro capturado, escritos em hexadecimal, que serão separados em cabeçalhos"><span class="material-symbols-outlined" aria-hidden="true" translate="no">data_object</span> Hex dump do pacote</label>
+        <label class="form-label small text-secondary mb-0" for="trafego-hex"><span class="material-symbols-outlined" aria-hidden="true" translate="no">data_object</span> Hex dump do pacote</label>
         <div class="d-flex flex-wrap align-items-center gap-2">
-            <label class="small text-secondary mb-0" for="trafego-camada" title="Diz em qual cabeçalho os primeiros bytes começam, útil quando a captura não inclui o quadro Ethernet"><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Camada inicial</label>
+            <label class="small text-secondary mb-0" for="trafego-camada"><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Camada inicial</label>
             <select id="trafego-camada" name="camada" class="form-select form-select-sm bg-dark text-light border-secondary" style="width:auto;"
                     title="Auto deduz pelo conteúdo; escolha IPv4, TCP e outros quando o dump começar direto nessa camada">
                 <option value="auto" selected>Auto</option>
@@ -43,13 +43,11 @@ d431 0050 0000 0000 0000 0000 5002 7210 e7fc 0000</textarea>
         que o decodificador descobre sozinho. Use <strong>Limpar</strong> para colar o seu próprio.</span>
     </div>
     <div class="d-flex flex-wrap gap-2 mt-3">
-        <button type="submit" class="aed-btn aed-btn-teal"
-                title="Decodificar o hex dump do pacote em cabeçalhos campo a campo">
+        <button type="submit" class="aed-btn aed-btn-teal">
             <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> Decodificar
         </button>
-        <button type="button" id="trafego-exemplo" class="aed-btn aed-btn-neutral"
-                title="Carregar um pacote de exemplo (IPv4/TCP SYN) para teste didático">
+        <button type="button" id="trafego-exemplo" class="aed-btn aed-btn-neutral">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Carregar exemplo (IPv4/TCP SYN)
         </button>
         <button type="button" id="trafego-limpar" class="aed-btn aed-btn-danger"

@@ -1,7 +1,7 @@
 <div class="calc-resultado card-tech shadow">
     <div class="calc-resumo-head">
         <span class="aed-eyebrow">Sumarização</span>
-        <h3 class="h5 mb-1" title="Menor prefixo único que contém todos os prefixos informados"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">merge</span> Supernet de {s.entradas} prefixo(s)</h3>
+        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">merge</span> Supernet de {s.entradas} prefixo(s)</h3>
         <span class="calc-badge {#if s.exata}calc-badge-ok{#else}calc-badge-atencao{/if}"
               title="{#if s.exata}O supernet contém só endereços das entradas{#else}O supernet inclui endereços que não pertencem a nenhuma entrada{/if}">
             {#if s.exata}Agregação exata{#else}Cobre espaço extra{/if}
@@ -35,7 +35,7 @@
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> {s.relacao}
     </p>
 
-    <h4 class="h6 calc-secao-titulo mt-3" title="Os prefixos depois de juntar vizinhos e descartar os contidos em outros, sem cobrir espaço extra">
+    <h4 class="h6 calc-secao-titulo mt-3">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">dataset</span>
         Blocos mesclados (conjunto mínimo) <span class="calc-contador">{s.blocosMesclados.size}</span>
     </h4>

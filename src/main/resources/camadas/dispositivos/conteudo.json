@@ -67,7 +67,6 @@
   "tabelas": [
     {
       "titulo": "Dispositivo x camada x o que decide",
-      "dica": "Compara cada equipamento pela camada em que atua e pelo efeito que tem sobre colisão e broadcast",
       "colunas": [
         "Dispositivo",
         "Camada OSI",
@@ -127,7 +126,6 @@
     },
     {
       "titulo": "Camadas TCP/IP x OSI x unidade de dados",
-      "dica": "Mostra, para cada camada do TCP/IP, as camadas OSI que ela agrupa, o nome do dado e o endereço usado",
       "colunas": [
         "Camada TCP/IP",
         "Equivale no OSI",
@@ -169,7 +167,6 @@
     },
     {
       "titulo": "Hub x Switch x Roteador lado a lado",
-      "dica": "Coloca os três equipamentos lado a lado para ajudar a escolher qual deles resolve cada necessidade",
       "colunas": [
         "Critério",
         "Hub",

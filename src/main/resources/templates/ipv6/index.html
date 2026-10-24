@@ -24,34 +24,30 @@
     <div class="aed-card card-tech p-4 shadow ipv6-wrap" data-active-tab="dividir">
         <span class="aed-eyebrow">Calculadora IPv6</span>
         <div class="aed-mode-grid tab-nav mb-3" role="tablist">
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dividir" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Sub-redes: divida um prefixo base no prefixo alvo e conte quantas cabem (2^n exato)">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dividir" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_on</span><span>Sub-redes</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="eui64" role="tab"
                     data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="EUI-64: derive o Interface ID e o endereço SLAAC a partir de um /64 + MAC">
+                    title="Deriva o Interface ID e o endereço SLAAC a partir de um /64 e do MAC">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">badge</span><span>EUI-64</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="ula" role="tab"
                     data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="ULA: gere um prefixo privado fd00::/8 pseudo-aleatório (RFC 4193)">
+                    title="Gera um prefixo privado pseudo-aleatório dentro de fd00::/8 (RFC 4193)">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">vpn_lock</span><span>ULA</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="sumarizar" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Sumarizar: supernet (menor prefixo comum), blocos mesclados e contenção">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="sumarizar" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">merge</span><span>Sumarizar</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="faixa" role="tab"
                     data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Faixa → CIDR: converte uma faixa de endereços na lista mínima de prefixos">
+                    title="Converte uma faixa de endereços na lista mínima de prefixos">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">linear_scale</span><span>Faixa → CIDR</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="vlan" role="tab"
                     data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="VLANs: uma LAN /64 por VLAN + gateway (SVI), trunk 802.1Q e CLI Cisco">
+                    title="Uma LAN /64 por VLAN, com gateway (SVI), trunk 802.1Q e CLI Cisco">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span><span>VLANs</span>
             </button>
         </div>

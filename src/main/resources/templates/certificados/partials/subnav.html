@@ -4,11 +4,10 @@
     CertificadoAprofundamento.agrupadoPorGrupo(). Reutiliza as classes de
     protocolos/css/subnav.css. Variáveis: grupos, grupoAtivo, aprofundamentoAtivo. !}
 <nav class="protocolo-subnav" aria-label="Grupos e aprofundamentos de certificados">
-    <div class="protocolo-subnav-camadas" role="tablist" aria-label="Grupos">
+    <div class="protocolo-subnav-camadas" role="group" aria-label="Grupos">
         <a href="/certificados"
            class="protocolo-subnav-item {#if grupoAtivo == 'geral'}is-active{/if}"
-           {#if grupoAtivo == 'geral'}aria-current="page"{/if}
-           title="Catálogo: formatos, campos do X.509 e tipos de certificado">
+           {#if grupoAtivo == 'geral'}aria-current="page"{/if}>
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_rows</span>
             <span>Geral</span>
         </a>
@@ -29,12 +28,11 @@
 
     {#for g in grupos}
     {#if grupoAtivo == g.nome}
-    <div class="protocolo-subnav-protos" role="tablist" aria-label="Aprofundamentos do grupo {g.nome}">
+    <div class="protocolo-subnav-protos" role="group" aria-label="Aprofundamentos do grupo {g.nome}">
         {#for item in g.itens}
         <a href="{item.rota}"
            class="protocolo-subproto {#if aprofundamentoAtivo == item.slug}is-active{/if}"
-           {#if aprofundamentoAtivo == item.slug}aria-current="page"{/if}
-           title="{item.chamada}">
+           {#if aprofundamentoAtivo == item.slug}aria-current="page"{/if}>
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">{item.icone}</span>
             <span>{item.rotuloMenu}</span>
         </a>

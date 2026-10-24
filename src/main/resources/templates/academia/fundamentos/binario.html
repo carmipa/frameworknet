@@ -14,21 +14,21 @@
 
     <div class="acad-etapas">
         <section class="acad-etapa acad-etapa-larga acad-leitura" id="ler" aria-labelledby="ler-titulo">
-            <h2 class="acad-etapa-titulo" id="ler-titulo" title="Texto sobre bits, bytes e pesos posicionais, para ler antes da animação">
+            <h2 class="acad-etapa-titulo" id="ler-titulo">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
                 Entenda
             </h2>
             <p class="acad-explica">Leia primeiro; depois a animação mostra a mesma ideia acontecendo, e o Mexer deixa você testar.</p>
             <div class="acad-leitura-texto">
                 <section class="acad-leitura-bloco">
-                    <h3 title="Onde o binário aparece em redes: endereços IP, máscaras, portas e o conteúdo dos pacotes"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
                     <p>Dentro do computador tudo vira <strong>bit</strong>: um sinal que só tem dois estados, desligado (<span class="acad-valor" translate="no">0</span>) ou
                     ligado (<span class="acad-valor" translate="no">1</span>). Oito bits formam um <strong>byte</strong>. Endereço IP, máscara de rede, porta e o próprio
                     conteúdo de um pacote são números guardados assim — por isso entender binário é a base para tudo o que
                     vem depois na trilha, principalmente máscara e sub-rede.</p>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3 title="Os pesos de cada posição e o método para converter nos dois sentidos, com exemplos resolvidos"><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
                     <p>O binário é <strong>posicional</strong>, como o decimal: a posição do algarismo diz quanto ele vale. No
                     decimal cada casa vale 10 vezes a anterior; no binário vale o <strong>dobro</strong>. Num byte, da direita
                     para a esquerda, os pesos são <span class="acad-valor" translate="no">1, 2, 4, 8, 16, 32, 64 e 128</span>. O valor do byte é a soma dos pesos dos
@@ -40,7 +40,7 @@
                     <span class="acad-valor" translate="no">2^8 − 1</span>).</p>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3 title="Enganos frequentes ao ler ou escrever um byte em binário"><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
                     <ul>
                         <li>Ler da esquerda para a direita como se o primeiro bit valesse 1 — o bit da <strong>direita</strong> é o de peso 1.</li>
                         <li>Esquecer os zeros à esquerda: <span class="acad-valor" translate="no">101</span> é <span class="acad-valor" translate="no">0000 0101</span>, que vale <span class="acad-valor" translate="no">5</span>, não um byte diferente.</li>
@@ -48,7 +48,7 @@
                     </ul>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3 title="Resumo dos pesos e da soma, para consultar nas próximas lições"><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
                     <ul>
                         <li>Pesos de um byte: <span class="acad-valor" translate="no">128 64 32 16 8 4 2 1</span>.</li>
                         <li>Valor = soma dos pesos acesos. Um bit a mais à esquerda dobra a quantidade de valores possíveis.</li>
@@ -58,7 +58,7 @@
         </section>
 
         <section class="acad-etapa" id="ver" aria-labelledby="ver-titulo">
-            <h2 class="acad-etapa-titulo" id="ver-titulo" title="Animação que acende os bits de um exemplo, do peso 128 ao 1, somando o valor do byte">
+            <h2 class="acad-etapa-titulo" id="ver-titulo">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span>
                 Ver
             </h2>
@@ -79,7 +79,7 @@
         </section>
 
         <section class="acad-etapa" id="mexer" aria-labelledby="mexer-titulo">
-            <h2 class="acad-etapa-titulo" id="mexer-titulo" title="Área livre: acenda bits e veja o decimal, ou digite um número e veja os bits">
+            <h2 class="acad-etapa-titulo" id="mexer-titulo">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">touch_app</span>
                 Mexer
             </h2>
@@ -87,7 +87,7 @@
             <div class="acad-bits" id="mexer-bits" role="group" aria-label="Bits do byte: clique para acender ou apagar"></div>
             <div class="row g-3 mt-2">
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="mexer-decimal" title="O valor do byte em base 10; muda junto com os bits clicados acima">
+                    <label for="mexer-decimal">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">pin</span>
                         Decimal (0 a 255)
                     </label>
@@ -97,7 +97,7 @@
                     <span class="acad-eco" id="mexer-decimal-eco"></span>
                 </div>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="mexer-binario" title="O mesmo byte em base 2, com o bit de peso 128 à esquerda">
+                    <label for="mexer-binario">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">toggle_on</span>
                         Binário (até 8 bits)
                     </label>
@@ -114,7 +114,7 @@
         </section>
 
         <section class="acad-etapa acad-etapa-larga" id="provar" aria-labelledby="provar-titulo">
-            <h2 class="acad-etapa-titulo" id="provar-titulo" title="Exercício sorteado de conversão entre decimal e binário, com correção bit a bit">
+            <h2 class="acad-etapa-titulo" id="provar-titulo">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span>
                 Provar
             </h2>
@@ -122,7 +122,7 @@
             <div class="acad-bits" id="provar-bits" aria-label="Correção bit a bit da sua resposta" hidden></div>
             <form id="provar-form" class="row g-3 align-items-end" novalidate>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="provar-resposta" title="Campo da resposta à pergunta sorteada acima; o rótulo diz o que é pedido">
+                    <label for="provar-resposta">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">edit</span>
                         <span id="provar-rotulo">Sua resposta</span>
                     </label>
@@ -130,7 +130,7 @@
                            maxlength="24" title="Escreva a resposta; o formato aceito aparece logo abaixo">
                 </div>
                 <div class="col-12 col-md-6 d-flex flex-wrap gap-2 align-items-center">
-                    <button type="submit" class="aed-btn aed-btn-teal" title="Confere a sua resposta">
+                    <button type="submit" class="aed-btn aed-btn-teal">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">check_circle</span>
                         <span>Conferir</span>
                     </button>

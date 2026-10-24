@@ -173,7 +173,6 @@
   "tabelas": [
     {
       "titulo": "Classes históricas de endereçamento (pré-CIDR)",
-      "dica": "Mostra como o primeiro octeto definia a classe e o tamanho da rede antes do CIDR, base de termos que ainda aparecem",
       "colunas": [
         "Classe",
         "Faixa do 1º octeto",
@@ -221,7 +220,6 @@
     },
     {
       "titulo": "Faixas especiais: privadas (RFC 1918), loopback e APIPA",
-      "dica": "Reúne os blocos de endereço reservados que não são roteados na internet, para reconhecer um IP interno ou autoconfigurado",
       "colunas": [
         "Faixa",
         "Prefixo CIDR",
@@ -262,7 +260,6 @@
     },
     {
       "titulo": "Números de protocolo comuns (campo Protocolo)",
-      "dica": "Associa os valores do campo Protocolo do cabeçalho IPv4 ao protocolo que vai dentro do pacote",
       "colunas": [
         "Número",
         "Protocolo",
@@ -303,7 +300,6 @@
     },
     {
       "titulo": "Campo Flags e fragmentação",
-      "dica": "Detalha os 3 bits de Flags e o deslocamento do fragmento, que controlam se e como o pacote é dividido no caminho",
       "colunas": [
         "Bit / campo",
         "Nome",
@@ -311,7 +307,7 @@
       ],
       "dicas_colunas": [
         "Posição do bit dentro do campo Flags ou tamanho do campo vizinho",
-        "Nome do bit ou do campo no cabeçalho IPv4",
+        "",
         "O que o bit sinaliza quando vale 1, ou o que o campo informa"
       ],
       "linhas": [

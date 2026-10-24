@@ -32,7 +32,7 @@
     <ol class="acad-licoes">
         {#for licao in nivel.licoes}
         <li>
-            <a href="{licao.rota}" class="acad-licao-link" title="Abre a lição {licao.titulo}">
+            <a href="{licao.rota}" class="acad-licao-link">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">{licao.icone}</span>
                 <span class="acad-licao-texto">{licao.titulo}<small>{licao.resumo} · cerca de <span translate="no">{licao.minutos}</span> min</small><span class="acad-selo mt-1" data-acad-selo="{licao.id}"></span></span>
             </a>

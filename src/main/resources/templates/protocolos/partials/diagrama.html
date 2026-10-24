@@ -5,9 +5,9 @@
     {#include protocolos/partials/diagrama.html diagrama=conteudo.diagrama /} !}
 {#if diagrama}
 <section id="diagrama" class="aprof-secao">
-    <h2 class="aprof-secao-titulo" title="{#if diagrama.definicao.contains('sequenceDiagram')}Troca de mensagens entre as partes envolvidas, de cima para baixo na ordem em que acontece{#else}Diagrama em blocos ligados por setas que mostra como as partes do tema se relacionam{/if}"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> {diagrama.titulo}</h2>
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> {diagrama.titulo}</h2>
     <div class="card-tech p-3 aprof-diagrama-caixa">
-        <pre class="mermaid aprof-mermaid" translate="no">{diagrama.definicao}</pre>
+        <pre class="mermaid aprof-mermaid" translate="no" tabindex="0" role="region" aria-label="Diagrama">{diagrama.definicao}</pre>
     </div>
     {#if diagrama.legenda}
     <p class="small text-secondary mt-2 mb-0 aprof-legenda">

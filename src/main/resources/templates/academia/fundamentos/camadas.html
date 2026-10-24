@@ -15,14 +15,14 @@
 
     <div class="acad-etapas">
         <section class="acad-etapa acad-etapa-larga acad-leitura" id="ler" aria-labelledby="ler-titulo">
-            <h2 class="acad-etapa-titulo" id="ler-titulo" title="Texto sobre camadas, cabeçalhos e encapsulamento, para ler antes da animação">
+            <h2 class="acad-etapa-titulo" id="ler-titulo">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
                 Entenda
             </h2>
             <p class="acad-explica">Leia primeiro; depois veja a mensagem descendo a pilha e calcule o tamanho de um quadro.</p>
             <div class="acad-leitura-texto">
                 <section class="acad-leitura-bloco">
-                    <h3 title="Por que a rede é dividida em camadas e o que cada uma resolve no envio de uma mensagem"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
                     <p>Mandar uma mensagem pela rede envolve problemas diferentes: entregar ao programa certo, achar o caminho até
                     o outro computador e passar o sinal pelo cabo ou pelo Wi-Fi. Cada problema é resolvido por uma
                     <strong>camada</strong>. No modelo TCP/IP elas são: <strong>aplicação</strong>, <strong>transporte</strong>,
@@ -30,7 +30,7 @@
                     <strong>cabeçalho</strong>, com o que ela precisa para trabalhar — isso se chama <strong>encapsulamento</strong>.</p>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3 title="Quantos bytes cada cabeçalho soma e quando entra o preenchimento, com um exemplo resolvido"><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
                     <p>A mensagem da aplicação vira a carga do <strong>segmento</strong> de transporte, que soma <span class="acad-valor" translate="no">20</span> bytes de
                     cabeçalho no TCP ou <span class="acad-valor" translate="no">8</span> no UDP. O segmento vira a carga do <strong>pacote</strong> IPv4, que soma
                     <span class="acad-valor" translate="no">20</span> bytes. O pacote vira a carga do <strong>quadro</strong> Ethernet, que soma <span class="acad-valor" translate="no">14</span> bytes na frente e
@@ -44,7 +44,7 @@
                     bytes em cada um, e aí o cabeçalho chega a 60 bytes), e o preâmbulo da Ethernet, que vem antes do quadro, não entra nessa conta.</p>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3 title="Enganos frequentes ao somar os tamanhos de segmento, pacote e quadro"><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
                     <ul>
                         <li>Esquecer os <span class="acad-valor" translate="no">4</span> bytes do FCS no fim do quadro.</li>
                         <li>Pôr preenchimento quando a carga já passa de 46 bytes — ele só existe para completar o mínimo.</li>
@@ -52,7 +52,7 @@
                     </ul>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3 title="Os tamanhos de cabeçalho e os mínimos do quadro, reunidos para consulta"><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
                     <ul>
                         <li>TCP <span class="acad-valor" translate="no">20</span> · UDP <span class="acad-valor" translate="no">8</span> · IPv4 <span class="acad-valor" translate="no">20</span> · Ethernet <span class="acad-valor" translate="no">14 + 4</span>.</li>
                         <li>Carga mínima do quadro <span class="acad-valor" translate="no">46</span>; quadro mínimo <span class="acad-valor" translate="no">64</span> bytes.</li>
@@ -62,7 +62,7 @@
         </section>
 
         <section class="acad-etapa" id="ver" aria-labelledby="ver-titulo">
-            <h2 class="acad-etapa-titulo" id="ver-titulo" title="Animação da mensagem descendo a pilha e ganhando um cabeçalho em cada camada">
+            <h2 class="acad-etapa-titulo" id="ver-titulo">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span>
                 Ver
             </h2>
@@ -81,12 +81,12 @@
         </section>
 
         <section class="acad-etapa" id="mexer" aria-labelledby="mexer-titulo">
-            <h2 class="acad-etapa-titulo" id="mexer-titulo" title="Área livre: escreva uma mensagem, escolha TCP ou UDP e veja o tamanho de cada camada">
+            <h2 class="acad-etapa-titulo" id="mexer-titulo">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">touch_app</span>
                 Mexer
             </h2>
             <div class="acad-campo">
-                <label for="mexer-mensagem" title="O texto que a aplicação quer enviar; o tamanho dele em bytes é a carga do segmento">
+                <label for="mexer-mensagem">
                     <span class="material-symbols-outlined" aria-hidden="true" translate="no">chat</span>
                     Mensagem da aplicação
                 </label>
@@ -95,7 +95,7 @@
                 <span class="acad-eco" id="mexer-mensagem-eco"></span>
             </div>
             <div class="acad-campo">
-                <label for="mexer-transporte" title="Protocolo que embrulha a mensagem primeiro: TCP soma 20 bytes de cabeçalho, UDP soma 8">
+                <label for="mexer-transporte">
                     <span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_horiz</span>
                     Transporte
                 </label>
@@ -115,14 +115,14 @@
         </section>
 
         <section class="acad-etapa acad-etapa-larga" id="provar" aria-labelledby="provar-titulo">
-            <h2 class="acad-etapa-titulo" id="provar-titulo" title="Exercício sorteado: calcule o tamanho do quadro Ethernet que leva a mensagem pedida">
+            <h2 class="acad-etapa-titulo" id="provar-titulo">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span>
                 Provar
             </h2>
             <p class="acad-pergunta" id="provar-pergunta"></p>
             <form id="provar-form" class="row g-3 align-items-end" novalidate>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="provar-resposta" title="Total do quadro Ethernet pedido, somando cabeçalhos, preenchimento e FCS">
+                    <label for="provar-resposta">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">edit</span>
                         <span>Tamanho do quadro, em bytes</span>
                     </label>
@@ -130,7 +130,7 @@
                            data-history="off" maxlength="16" title="Some todas as camadas, do cabeçalho Ethernet ao FCS">
                 </div>
                 <div class="col-12 col-md-6 d-flex flex-wrap gap-2 align-items-center">
-                    <button type="submit" class="aed-btn aed-btn-teal" title="Confere a sua resposta">
+                    <button type="submit" class="aed-btn aed-btn-teal">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">check_circle</span>
                         <span>Conferir</span>
                     </button>

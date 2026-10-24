@@ -14,7 +14,7 @@
             <input type="hidden" name="criterio" value="prefixo">
 
             <div class="mb-3">
-                <label for="calcAnaliseBloco" class="form-label small text-secondary" title="A rede maior que será fatiada em sub-redes de mesmo tamanho"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Bloco base</label>
+                <label for="calcAnaliseBloco" class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Bloco base</label>
                 <input type="text" name="bloco" id="calcAnaliseBloco"
                        class="form-control input-ipv4 bg-dark text-light border-secondary"
                        placeholder="Ex.: 192.168.0.0/21" value="192.168.0.0/21"
@@ -24,15 +24,14 @@
 
             <div class="row g-2 align-items-end">
                 <div class="col-6">
-                    <label for="calcAnalisePrefixo" class="form-label small text-secondary" title="Tamanho de cada sub-rede gerada; precisa ser maior que o prefixo do bloco base"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo alvo</label>
+                    <label for="calcAnalisePrefixo" class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo alvo</label>
                     <input type="text" name="prefixoAlvo" id="calcAnalisePrefixo"
                            class="form-control input-cidr bg-dark text-light border-secondary"
                            inputmode="numeric" maxlength="2" placeholder="24" value="24" required
-                           title="Número de 1 a 32, sem a barra; cada bit a mais dobra a quantidade de sub-redes">
+                           title="Número de 1 a 32, sem a barra, maior que o prefixo do bloco base; cada bit a mais dobra a quantidade de sub-redes">
                 </div>
                 <div class="col-6">
-                    <button type="submit" class="aed-btn aed-btn-execute w-100"
-                            title="Calcular quantas sub-redes cabem e listar cada uma">
+                    <button type="submit" class="aed-btn aed-btn-execute w-100">
                         <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                         <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Calcular
                     </button>

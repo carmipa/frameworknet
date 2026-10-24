@@ -4,7 +4,7 @@
             {#if tls.vereditoCor == 'success'}verified{#else if tls.vereditoCor == 'warning'}gpp_maybe{#else}gpp_bad{/if}
         </span>
         <div>
-            <h3 class="mb-1 text-{tls.vereditoCor}" title="Estado geral da conexão, igual ao pior resultado entre as checagens listadas abaixo">{tls.veredito}</h3>
+            <h3 class="mb-1 text-{tls.vereditoCor}">{tls.veredito}</h3>
             <p class="small text-secondary mb-0">{tls.resumo}</p>
         </div>
     </div>

@@ -73,7 +73,6 @@
   "tabelas": [
     {
       "titulo": "Filtros BPF comuns (sintaxe de captura tcpdump)",
-      "dica": "Expressões prontas para restringir, já na captura, quais pacotes o tcpdump grava, cada uma com o tráfego que seleciona e um caso de uso",
       "colunas": [
         "Filtro",
         "O que casa",
@@ -139,7 +138,6 @@
     },
     {
       "titulo": "tcpdump x tshark x Wireshark",
-      "dica": "Compara os três analisadores de pacotes em interface, filtros e recursos, para escolher o adequado ao ambiente e à análise",
       "colunas": [
         "Aspecto",
         "tcpdump",
@@ -193,7 +191,6 @@
     },
     {
       "titulo": "Flags essenciais do tcpdump",
-      "dica": "Opções de linha de comando mais usadas para escolher a interface, controlar a saída e gravar ou ler capturas",
       "colunas": [
         "Flag",
         "Efeito"

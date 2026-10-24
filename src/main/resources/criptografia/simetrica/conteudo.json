@@ -67,7 +67,6 @@
   "tabelas": [
     {
       "titulo": "Cifras simétricas: atuais versus obsoletas",
-      "dica": "Classifica as cifras simétricas por tipo, tamanho de chave e situação atual, separando as que ainda servem",
       "colunas": [
         "Cifra",
         "Tipo",
@@ -77,10 +76,10 @@
       ],
       "dicas_colunas": [
         "Nome do algoritmo de cifra simétrica",
-        "Se cifra em blocos de tamanho fixo, com o tamanho do bloco, ou como fluxo contínuo",
+        "",
         "Tamanhos de chave suportados, em bits",
         "Classificação atual: recomendada, obsoleta ou quebrada",
-        "Motivo técnico da classificação ou característica de destaque"
+        ""
       ],
       "linhas": [
         [
@@ -122,7 +121,6 @@
     },
     {
       "titulo": "Modos de operação de cifra de bloco",
-      "dica": "Compara os modos de operação quanto a integridade, padding e risco típico, para escolher o modo adequado",
       "colunas": [
         "Modo",
         "Integridade",
@@ -170,7 +168,6 @@
     },
     {
       "titulo": "Por que GCM (AEAD) é o padrão",
-      "dica": "Compara AES-GCM com AES-CBC sem MAC, propriedade a propriedade, mostrando o que a cifra autenticada acrescenta",
       "colunas": [
         "Propriedade",
         "AES-GCM (AEAD)",

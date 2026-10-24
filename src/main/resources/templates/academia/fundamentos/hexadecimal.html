@@ -14,21 +14,21 @@
 
     <div class="acad-etapas">
         <section class="acad-etapa acad-etapa-larga acad-leitura" id="ler" aria-labelledby="ler-titulo">
-            <h2 class="acad-etapa-titulo" id="ler-titulo" title="Texto sobre a base 16 e por que ela resume bytes, para ler antes da animação">
+            <h2 class="acad-etapa-titulo" id="ler-titulo">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
                 Entenda
             </h2>
             <p class="acad-explica">Leia primeiro; depois veja os bits se agruparem de quatro em quatro e converta você mesmo.</p>
             <div class="acad-leitura-texto">
                 <section class="acad-leitura-bloco">
-                    <h3 title="Onde o hexadecimal aparece em redes, como endereços MAC, IPv6 e capturas de pacotes"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">lightbulb</span>Por que importa</h3>
                     <p>Escrever bytes em binário é longo e fácil de errar. O <strong>hexadecimal</strong> (base 16) resolve isso:
                     cada algarismo hexadecimal representa <strong>exatamente quatro bits</strong>, então um byte inteiro cabe em
                     dois algarismos. Ele aparece o tempo todo em redes: endereço MAC (<span class="acad-valor" translate="no">00:1A:2B:3C:4D:5E</span>), endereço IPv6,
                     captura de pacotes e cores de páginas web.</p>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3 title="Os dígitos de 0 a F e o método para converter um byte nos dois sentidos, com exemplos"><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">calculate</span>Como funciona</h3>
                     <p>A base 16 precisa de 16 símbolos: <span class="acad-valor" translate="no">0 a 9</span> e depois <span class="acad-valor" translate="no">A=10, B=11, C=12, D=13, E=14, F=15</span>.</p>
                     <p>Para converter um byte, separe os 8 bits em duas metades de 4 (cada metade se chama <em>nibble</em>) e
                     troque cada metade pelo seu algarismo: <span class="acad-valor" translate="no">1010 0110</span> vira <span class="acad-valor" translate="no">A</span> (1010 = 10) e <span class="acad-valor" translate="no">6</span> (0110 = 6), ou
@@ -39,7 +39,7 @@
                     <p>O <span class="acad-valor" translate="no">0x</span> na frente é só uma marca para dizer "isto está em hexadecimal"; ele não muda o valor.</p>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3 title="Enganos frequentes ao converter entre decimal, binário e hexadecimal"><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">report</span>Onde se costuma errar</h3>
                     <ul>
                         <li>Ler <span class="acad-valor" translate="no">0x10</span> como dez: em hexadecimal ele vale <span class="acad-valor" translate="no">16</span>.</li>
                         <li>Esquecer quanto vale cada letra — <span class="acad-valor" translate="no">F</span> é o maior algarismo, <span class="acad-valor" translate="no">15</span>.</li>
@@ -47,7 +47,7 @@
                     </ul>
                 </section>
                 <section class="acad-leitura-bloco">
-                    <h3 title="Resumo da relação entre quatro bits e um dígito hexadecimal, para consultar depois"><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
+                    <h3><span class="material-symbols-outlined" aria-hidden="true" translate="no">bookmark</span>Para lembrar</h3>
                     <ul>
                         <li>1 algarismo hexadecimal = 4 bits; 1 byte = 2 algarismos.</li>
                         <li>Um endereço MAC tem 6 bytes, portanto 12 algarismos hexadecimais.</li>
@@ -57,7 +57,7 @@
         </section>
 
         <section class="acad-etapa" id="ver" aria-labelledby="ver-titulo">
-            <h2 class="acad-etapa-titulo" id="ver-titulo" title="Animação que separa o byte em duas metades de quatro bits e mostra o dígito de cada uma">
+            <h2 class="acad-etapa-titulo" id="ver-titulo">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">visibility</span>
                 Ver
             </h2>
@@ -79,7 +79,7 @@
         </section>
 
         <section class="acad-etapa" id="mexer" aria-labelledby="mexer-titulo">
-            <h2 class="acad-etapa-titulo" id="mexer-titulo" title="Área livre: mude bits, decimal ou hexadecimal e veja os outros dois acompanharem">
+            <h2 class="acad-etapa-titulo" id="mexer-titulo">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">touch_app</span>
                 Mexer
             </h2>
@@ -87,7 +87,7 @@
             <div class="acad-bits com-nibbles" id="mexer-bits" role="group" aria-label="Bits do byte: clique para acender ou apagar"></div>
             <div class="row g-3 mt-2">
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="mexer-decimal" title="O valor do byte em base 10; muda junto com os bits e o hexadecimal">
+                    <label for="mexer-decimal">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">pin</span>
                         Decimal (0 a 255)
                     </label>
@@ -97,7 +97,7 @@
                     <span class="acad-eco" id="mexer-decimal-eco"></span>
                 </div>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="mexer-hex" title="O mesmo byte em base 16: um dígito para cada metade de quatro bits">
+                    <label for="mexer-hex">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">hexagon</span>
                         Hexadecimal (00 a FF)
                     </label>
@@ -127,14 +127,14 @@
         </section>
 
         <section class="acad-etapa acad-etapa-larga" id="provar" aria-labelledby="provar-titulo">
-            <h2 class="acad-etapa-titulo" id="provar-titulo" title="Exercício sorteado de conversão com hexadecimal, corrigido dígito por dígito">
+            <h2 class="acad-etapa-titulo" id="provar-titulo">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span>
                 Provar
             </h2>
             <p class="acad-pergunta" id="provar-pergunta"></p>
             <form id="provar-form" class="row g-3 align-items-end" novalidate>
                 <div class="col-12 col-md-6 acad-campo">
-                    <label for="provar-resposta" title="Campo da resposta à pergunta sorteada acima; o rótulo diz o que é pedido">
+                    <label for="provar-resposta">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">edit</span>
                         <span id="provar-rotulo">Sua resposta</span>
                     </label>
@@ -142,7 +142,7 @@
                            maxlength="16" title="Escreva a resposta; o formato aceito aparece logo abaixo">
                 </div>
                 <div class="col-12 col-md-6 d-flex flex-wrap gap-2 align-items-center">
-                    <button type="submit" class="aed-btn aed-btn-teal" title="Confere a sua resposta">
+                    <button type="submit" class="aed-btn aed-btn-teal">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">check_circle</span>
                         <span>Conferir</span>
                     </button>

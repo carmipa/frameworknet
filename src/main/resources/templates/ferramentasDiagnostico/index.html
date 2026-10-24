@@ -26,19 +26,17 @@
         <span class="aed-eyebrow">Ferramenta</span>
         <div class="aed-mode-grid tab-nav mb-3" role="tablist">
             <button type="button" class="aed-mode-btn tab-trigger active" data-tab="ping" role="tab"
-                    title="Ping (ICMP): dispara Echo Requests simulados para testar conectividade e latência">
+                    title="Dispara Echo Requests simulados para testar conectividade e latência">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span><span>Ping (ICMP)</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="dns" role="tab"
-                    title="DNS (dig): resolve um domínio e mostra a resposta no formato do dig">
+                    title="Resolve um domínio e mostra a resposta no formato do dig">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span><span>DNS (dig)</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="traceroute" role="tab"
-                    title="Traceroute: revela os saltos da rota manipulando o TTL do pacote IP">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="traceroute" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span><span>Traceroute</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="sweep" role="tab"
-                    title="Ping Sweep: descobre quais hosts de uma faixa respondem ao ICMP">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="sweep" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span><span>Ping Sweep</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="scan" role="tab"
@@ -46,7 +44,7 @@
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span><span>Varredura (SYN)</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="spoofing" role="tab"
-                    title="DNS Spoofing: a corrida entre a resposta legítima e a forjada na porta 53/UDP">
+                    title="Mostra a corrida entre a resposta legítima e a forjada na porta 53/UDP">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">gpp_bad</span><span>DNS Spoofing</span>
             </button>
         </div>
@@ -64,7 +62,7 @@
                   hx-trigger="submit delay:1.2s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="pingHost" class="form-label text-secondary" title="Máquina que vai receber os pedidos ICMP Echo para medir se responde e em quanto tempo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio de destino</label>
+                    <label for="pingHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio de destino</label>
                     <input type="text" class="aed-input form-control" id="pingHost" name="host"
                            title="Endereço IPv4 ou nome de domínio, ex.: 8.8.8.8 ou google.com"
                            value="8.8.8.8" placeholder="8.8.8.8" required>
@@ -74,8 +72,7 @@
                         <code translate="no">1.1.1.1</code> (Cloudflare) ou <code translate="no">google.com</code>.
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-execute w-100" id="btnPing"
-                        title="Disparar pacotes ICMP Echo Request simulados para testar conectividade e latência">
+                <button type="submit" class="aed-btn aed-btn-execute w-100" id="btnPing">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">network_ping</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     Disparar Ping Simulado
                 </button>
@@ -100,7 +97,7 @@
                   hx-trigger="submit delay:1s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="dnsDominio" class="form-label text-secondary" title="Nome cujos registros DNS serão consultados para descobrir os endereços IP ligados a ele"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio para resolver</label>
+                    <label for="dnsDominio" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio para resolver</label>
                     <input type="text" class="aed-input form-control" id="dnsDominio" name="dominio"
                            title="Nome de domínio sem http://, ex.: google.com ou fiap.com.br"
                            value="google.com" placeholder="exemplo.com.br" required>
@@ -110,8 +107,7 @@
                         <code translate="no">google.com</code>, <code translate="no">fiap.com.br</code>, <code translate="no">carminati.dev.br</code>.
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-indigo w-100" id="btnDns"
-                        title="Consultar registros DNS e IPs associados ao domínio informado">
+                <button type="submit" class="aed-btn aed-btn-indigo w-100" id="btnDns">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     Resolver Nome Simulado
                 </button>
@@ -136,7 +132,7 @@
                   hx-trigger="submit delay:1s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="traceHost" class="form-label text-secondary" title="Ponto final da rota; cada roteador no caminho até ele aparece como um salto"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio de destino</label>
+                    <label for="traceHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio de destino</label>
                     <input type="text" class="aed-input form-control" id="traceHost" name="host"
                            title="Endereço IPv4 ou nome de domínio, ex.: 1.1.1.1 ou github.com"
                            value="1.1.1.1" placeholder="1.1.1.1" required>
@@ -146,8 +142,7 @@
                         <code translate="no">8.8.8.8</code> ou <code translate="no">github.com</code>.
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-teal w-100"
-                        title="Traçar a rota até o destino, salto a salto, via TTL crescente (simulado)">
+                <button type="submit" class="aed-btn aed-btn-teal w-100">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     Traçar Rota Simulada
                 </button>
@@ -172,7 +167,7 @@
                   hx-trigger="submit delay:1s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="sweepRede" class="form-label text-secondary" title="Bloco de endereços cujos hosts recebem um ping cada, para mapear quem está ligado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Faixa / rede a varrer (CIDR)</label>
+                    <label for="sweepRede" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> Faixa / rede a varrer (CIDR)</label>
                     <input type="text" class="aed-input form-control" id="sweepRede" name="rede"
                            title="Rede no formato endereço/prefixo, ex.: 192.168.1.0/24"
                            value="192.168.1.0/24" placeholder="192.168.1.0/24" required>
@@ -182,8 +177,7 @@
                         <code translate="no">192.168.1.0/24</code> (256 endereços domésticos), <code translate="no">10.0.0.0/24</code>.
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-teal w-100"
-                        title="Varrer a faixa e listar os hosts que respondem ao ICMP (simulado)">
+                <button type="submit" class="aed-btn aed-btn-teal w-100">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     Varrer Faixa Simulada
                 </button>
@@ -208,7 +202,7 @@
                   hx-trigger="submit delay:1.2s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="scanHost" class="form-label text-secondary" title="Máquina cujas portas TCP serão sondadas com SYN para ver quais estão abertas, fechadas ou filtradas"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio alvo</label>
+                    <label for="scanHost" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Host ou domínio alvo</label>
                     <input type="text" class="aed-input form-control" id="scanHost" name="host"
                            title="Endereço IPv4 ou nome de domínio, ex.: scanme.nmap.org"
                            value="scanme.nmap.org" placeholder="scanme.nmap.org" required>
@@ -218,8 +212,7 @@
                         <code translate="no">scanme.nmap.org</code> (o nmap mantém esse host para praticar).
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-amber w-100"
-                        title="Executar uma varredura SYN stealth simulada e classificar as portas">
+                <button type="submit" class="aed-btn aed-btn-amber w-100">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     Varrer Portas (Simulado)
                 </button>
@@ -244,7 +237,7 @@
                   hx-trigger="submit delay:1s"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="spoofDominio" class="form-label text-secondary" title="Nome que a vítima tenta resolver e para o qual o atacante forja a resposta falsa"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio alvo da consulta</label>
+                    <label for="spoofDominio" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> Domínio alvo da consulta</label>
                     <input type="text" class="aed-input form-control" id="spoofDominio" name="dominio"
                            title="Nome de domínio sem http://, ex.: banco.example.com"
                            value="banco.example.com" placeholder="banco.example.com" required>
@@ -254,8 +247,7 @@
                         <code translate="no">banco.example.com</code>, <code translate="no">login.example.com</code> — alvos típicos de phishing.
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-amber w-100"
-                        title="Simular a corrida entre a resposta DNS legítima e a forjada">
+                <button type="submit" class="aed-btn aed-btn-amber w-100">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">gpp_maybe</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     Simular Spoofing (Didático)
                 </button>

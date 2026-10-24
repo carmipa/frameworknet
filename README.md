@@ -170,9 +170,10 @@ Desde 22/10/2026:
   `gradlew test`) reprova contêiner de página com `max-width` centralizado, `px` fora de
   borda/sombra, `100vw`, espaço entre linhas de grade em `%` e fonte abaixo de `.75rem`.
 - **Dicas (tooltip acessível)** — `node scripts/verificar-dicas.mjs [base]` varre todas as
-  páginas com a varredura do componente de tooltip e compara com
-  `scripts/dicas-linha-base.json`: elemento novo sem dica reprova; quando a dívida descer,
-  regrave com `--gravar`.
+  páginas, abas e painéis de resultado com a varredura do componente de tooltip. Dica só onde
+  há o que explicar: reprova a que falta (botão só com ícone, campo com formato, desabilitado)
+  e a que sobra (em título, card clicável ou texto corrido). Para cada rota, com axe WCAG 2.2 AA:
+  `cd scripts && BASE_URL=http://localhost:8081 ROTAS=/,/calculadora npx playwright test dica-rotas.spec.mjs`.
 - **Bibliotecas de terceiros** (Bootstrap, mermaid, Chart.js, Leaflet) são servidas por
   `/web/vendor/`, com os mesmos `integrity` de antes; o `.gitattributes` impede o git de
   trocar as quebras de linha desses arquivos.

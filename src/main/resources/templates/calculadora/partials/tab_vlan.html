@@ -1,7 +1,7 @@
 <div class="row g-4">
     <div class="col-lg-4">
         <div class="calc-form-card">
-            <h2 class="h6 calc-form-title" title="Distribui um bloco IPv4 entre várias VLANs, uma sub-rede por VLAN, com gateway e configuração Cisco">
+            <h2 class="h6 calc-form-title">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> Plano de VLANs
             </h2>
             <p class="calc-hint">
@@ -16,7 +16,7 @@
                   hx-disabled-elt="find button[type='submit']">
 
                 <div class="mb-3">
-                    <label for="vlanBloco" class="form-label text-secondary" title="A rede maior de onde sai a sub-rede de cada VLAN"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Bloco base</label>
+                    <label for="vlanBloco" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Bloco base</label>
                     <input type="text" class="aed-input form-control input-ipv4" id="vlanBloco" name="bloco"
                            title="Endereço com prefixo, por exemplo 192.168.0.0/16"
                            placeholder="192.168.0.0/16" value="192.168.0.0/16"
@@ -25,13 +25,13 @@
 
                 <div class="row g-2 mb-3">
                     <div class="col-6">
-                        <label for="vlanPrefixo" class="form-label text-secondary" title="Tamanho da sub-rede entregue a cada VLAN"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo por VLAN</label>
+                        <label for="vlanPrefixo" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo por VLAN</label>
                         <input type="text" class="aed-input form-control input-cidr" id="vlanPrefixo"
                                name="prefixoPorVlan" inputmode="numeric" maxlength="2" value="24"
                                title="Número sem a barra, maior que o prefixo do bloco base; 24 dá 254 hosts por VLAN">
                     </div>
                     <div class="col-6">
-                        <label for="vlanQtd" class="form-label text-secondary" title="Número de VLANs que o plano vai criar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> Quantas VLANs</label>
+                        <label for="vlanQtd" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> Quantas VLANs</label>
                         <input type="text" class="aed-input form-control input-numeric" id="vlanQtd"
                                name="quantidade" inputmode="numeric" value="4" required
                                title="Número inteiro maior que zero; precisa caber no bloco base com o prefixo escolhido">
@@ -40,13 +40,13 @@
 
                 <div class="row g-2 mb-3">
                     <div class="col-6">
-                        <label for="vlanInicial" class="form-label text-secondary" title="Número da primeira VLAN do plano; as demais seguem pelo passo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">sell</span> VLAN ID inicial</label>
+                        <label for="vlanInicial" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">sell</span> VLAN ID inicial</label>
                         <input type="text" class="aed-input form-control input-numeric" id="vlanInicial"
                                name="vlanInicial" inputmode="numeric" value="10"
                                title="ID de 1 a 4094; evite a 1, que é a VLAN padrão, e a faixa 1002 a 1005, reservada">
                     </div>
                     <div class="col-6">
-                        <label for="vlanPasso" class="form-label text-secondary" title="Intervalo numérico entre um VLAN ID e o seguinte"><span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_next</span> Passo entre IDs</label>
+                        <label for="vlanPasso" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_next</span> Passo entre IDs</label>
                         <input type="text" class="aed-input form-control input-numeric" id="vlanPasso"
                                name="passoVlan" inputmode="numeric" value="10"
                                title="Número inteiro, por exemplo 10 para gerar 10, 20, 30; use 1 para IDs consecutivos">
@@ -54,7 +54,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="vlanEstrategia" class="form-label text-secondary" title="Define como cada VLAN recebe a sua sub-rede dentro do bloco base"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Como mapear a sub-rede</label>
+                    <label for="vlanEstrategia" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Como mapear a sub-rede</label>
                     <select class="aed-input form-select" id="vlanEstrategia" name="estrategia"
                             title="Sequencial ocupa blocos em ordem; 3º octeto faz o número da VLAN aparecer no endereço">
                         <option value="sequencial" selected>Sequencial — blocos consecutivos do bloco base</option>
@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="vlanNomes" class="form-label text-secondary" title="Nomes usados no comando name de cada VLAN, na mesma ordem dos IDs">
+                    <label for="vlanNomes" class="form-label text-secondary">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> Nomes das VLANs <span class="text-muted">(opcional)</span>
                     </label>
                     <input type="text" class="aed-input form-control" id="vlanNomes" name="nomes"
@@ -75,8 +75,7 @@
                     <div class="form-text text-muted">Separe por vírgula. Sem nome, vira VLAN_10, VLAN_20…</div>
                 </div>
 
-                <button type="submit" class="aed-btn aed-btn-teal w-100"
-                        title="Gerar plano de endereçamento de VLANs e scripts de configuração Cisco">
+                <button type="submit" class="aed-btn aed-btn-teal w-100">
                     <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Gerar plano
                 </button>
@@ -88,7 +87,7 @@
         </div>
 
         <div class="calc-form-card mt-3">
-            <h2 class="h6 calc-form-title" title="Mostra em que faixa um VLAN ID cai, normal, estendida ou reservada, e o que isso muda no switch">
+            <h2 class="h6 calc-form-title">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">fact_check</span> Validar um VLAN ID
             </h2>
             <p class="calc-hint">

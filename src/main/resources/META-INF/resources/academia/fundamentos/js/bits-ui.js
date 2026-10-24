@@ -44,13 +44,10 @@
             valor.setAttribute('translate', 'no');
             valor.setAttribute('aria-hidden', 'true');
             valor.textContent = '0';
-            var rotuloPeso = document.createElement('span');
-            rotuloPeso.className = 'acad-bit-peso';
-            rotuloPeso.setAttribute('translate', 'no');
-            rotuloPeso.setAttribute('aria-hidden', 'true');
-            rotuloPeso.textContent = String(peso);
+            // O peso aparece pelo CSS (::after com data-peso): é anotação do bit, não parte do rótulo que se fala.
+            // Como texto no botão, ele entrava no rótulo visível ("0128") e o nome acessível não o continha (WCAG 2.5.3).
+            botao.dataset.peso = String(peso);
             botao.appendChild(valor);
-            botao.appendChild(rotuloPeso);
             if (interativo) {
                 botao.title = 'Acende ou apaga o bit de peso ' + peso;
                 botao.addEventListener('click', function () {
@@ -74,7 +71,7 @@
                 var aceso = (valorAtual & PESOS[posicao]) !== 0;
                 botao.setAttribute('aria-pressed', aceso ? 'true' : 'false');
                 botao.querySelector('.acad-bit-valor').textContent = aceso ? '1' : '0';
-                botao.setAttribute('aria-label', 'peso ' + PESOS[posicao] + ', ' + (aceso ? 'aceso' : 'apagado'));
+                botao.setAttribute('aria-label', (aceso ? '1' : '0') + ', peso ' + PESOS[posicao] + ', ' + (aceso ? 'aceso' : 'apagado'));
             });
         }
 

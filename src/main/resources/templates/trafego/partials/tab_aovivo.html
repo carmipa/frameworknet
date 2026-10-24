@@ -11,8 +11,7 @@
 
 <div class="trafego-live">
     <div class="trafego-live-bar">
-        <button type="button" class="aed-btn aed-btn-teal btn-sm" id="live-start"
-                title="Iniciar a captura simulada de tráfego de rede">
+        <button type="button" class="aed-btn aed-btn-teal btn-sm" id="live-start">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">play_arrow</span> Iniciar
         </button>
         <button type="button" class="aed-btn aed-btn-danger btn-sm" id="live-stop"
@@ -46,30 +45,30 @@
 
     <div class="trafego-redes">
         <div class="trafego-rede-card">
-            <h2 class="h3 loc-form-title" title="Redes sem fio simuladas ao alcance, com o tipo de proteção e a força do sinal de cada uma"><span class="material-symbols-outlined" aria-hidden="true" translate="no">wifi</span> Redes Wi-Fi</h2>
+            <h2 class="h3 loc-form-title"><span class="material-symbols-outlined" aria-hidden="true" translate="no">wifi</span> Redes Wi-Fi</h2>
             <div class="table-responsive">
                 <table class="table table-dark table-sm table-bordered align-middle mb-0">
-                    <thead><tr class="text-secondary small"><th title="Nome que a rede sem fio anuncia para os dispositivos próximos">SSID</th><th title="Protocolo de proteção da rede: aberta, WEP, WPA2 ou WPA3">Segurança</th><th title="Intensidade do sinal recebido; quanto mais perto de zero em dBm, mais forte">Sinal</th><th title="Avaliação da rede: protegida ou com alerta por estar aberta ou usar proteção fraca">Status</th></tr></thead>
+                    <thead><tr class="text-secondary small"><th title="Nome que a rede sem fio anuncia para os dispositivos próximos">SSID</th><th title="Protocolo de proteção da rede: aberta, WEP, WPA2 ou WPA3">Segurança</th><th title="Intensidade do sinal recebido; quanto mais perto de zero em dBm, mais forte">Sinal</th><th>Status</th></tr></thead>
                     <tbody id="wifi-body"><tr><td colspan="4" class="text-secondary">—</td></tr></tbody>
                 </table>
             </div>
         </div>
         <div class="trafego-rede-card">
-            <h2 class="h3 loc-form-title" title="Dispositivos Bluetooth simulados detectados nas proximidades"><span class="material-symbols-outlined" aria-hidden="true" translate="no">bluetooth</span> Bluetooth</h2>
+            <h2 class="h3 loc-form-title"><span class="material-symbols-outlined" aria-hidden="true" translate="no">bluetooth</span> Bluetooth</h2>
             <div class="table-responsive">
                 <table class="table table-dark table-sm table-bordered align-middle mb-0">
-                    <thead><tr class="text-secondary small"><th title="Nome amigável que o dispositivo anuncia">Nome</th><th title="Endereço físico do rádio Bluetooth, de 48 bits, no formato XX:XX:XX:XX:XX:XX">Endereço</th><th title="Categoria do aparelho, como fone, teclado, celular ou relógio">Tipo</th><th title="Situação do dispositivo em relação à máquina, como pareado ou apenas visível">Estado</th></tr></thead>
+                    <thead><tr class="text-secondary small"><th>Nome</th><th title="Endereço físico do rádio Bluetooth, de 48 bits, no formato XX:XX:XX:XX:XX:XX">Endereço</th><th>Tipo</th><th>Estado</th></tr></thead>
                     <tbody id="bt-body"><tr><td colspan="4" class="text-secondary">—</td></tr></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <h2 class="h3 loc-form-title mt-3" title="Lista dos pacotes simulados à medida que chegam, no estilo da janela principal do Wireshark"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> Pacotes ao vivo</h2>
+    <h2 class="h3 loc-form-title mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> Pacotes ao vivo</h2>
     <div class="table-responsive">
         <table class="table table-dark table-sm table-hover align-middle mb-0 trafego-pacotes">
             <thead><tr class="text-secondary small">
-                <th title="Número de ordem do pacote na captura">#</th><th title="Momento em que o pacote foi capturado">Hora</th><th title="Protocolo identificado no pacote, como TCP, UDP, DNS ou HTTP">Proto</th><th title="Endereço IP de quem enviou o pacote">Origem</th><th title="Endereço IP para onde o pacote vai">Destino</th><th title="Porta de origem e porta de destino da camada de transporte">Portas</th><th title="Tamanho do pacote em bytes">Tam</th><th title="Resumo do conteúdo, como flags TCP ou o nome consultado no DNS">Info</th>
+                <th title="Número de ordem do pacote na captura">#</th><th>Hora</th><th title="Protocolo identificado no pacote, como TCP, UDP, DNS ou HTTP">Proto</th><th>Origem</th><th>Destino</th><th title="Porta de origem e porta de destino da camada de transporte">Portas</th><th title="Tamanho do pacote em bytes">Tam</th><th title="Resumo do conteúdo, como flags TCP ou o nome consultado no DNS">Info</th>
             </tr></thead>
             <tbody id="pacotes-body"><tr><td colspan="8" class="text-secondary">Clique em Iniciar.</td></tr></tbody>
         </table>

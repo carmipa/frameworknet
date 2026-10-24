@@ -33,16 +33,16 @@
                    placeholder="Busque por tarefa: ver meu ip, quem usa esta porta, o nome não resolve…"
                    autocomplete="off" aria-label="Buscar tarefa ou comando"
                    title="Digite uma tarefa ou um comando, ex.: ver meu ip, ss, quem usa esta porta; acentos e maiúsculas são ignorados">
-            <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="rede-limpar-busca" data-bs-trigger="hover" title="Limpar a busca">
+            <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="rede-limpar-busca" data-bs-trigger="hover">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">delete_sweep</span> Limpar
             </button>
         </div>
         <div class="rede-chips" role="group" aria-label="Filtrar por categoria">
-            <button type="button" class="rede-chip is-active" data-cat="todas" aria-pressed="true" title="Remover o filtro de categoria e mostrar todas as tarefas da lista">
+            <button type="button" class="rede-chip is-active" data-cat="todas" aria-pressed="true">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">apps</span> Todas
             </button>
             {#for cat in categorias}
-            <button type="button" class="rede-chip rede-cat-{cat.id}" data-cat="{cat.id}" aria-pressed="false" title="Filtrar a lista: mostra só as tarefas desta categoria e esconde as demais">
+            <button type="button" class="rede-chip rede-cat-{cat.id}" data-cat="{cat.id}" aria-pressed="false">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">{cat.icone}</span> {cat.rotulo}
             </button>
             {/for}
@@ -65,7 +65,7 @@
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">{#for cat in categorias}{#if cat.id == c.categoria}{cat.icone}{/if}{/for}</span>
                 </span>
                 <div>
-                    <h2 class="rede-cmd-titulo" title="Tarefa comparada lado a lado: comando de cada sistema, parâmetros, saída simulada e o que ela não prova">{c.intencao}</h2>
+                    <h2 class="rede-cmd-titulo">{c.intencao}</h2>
                     <p class="rede-cmd-pergunta">{c.pergunta}</p>
                 </div>
             </header>
@@ -127,7 +127,7 @@
 
     {! Investigacoes guiadas. !}
     <section class="rede-guias" aria-labelledby="rede-guias-tit">
-        <h2 id="rede-guias-tit" class="rede-secao-titulo" title="Roteiros passo a passo para diagnosticar problemas comuns, indicando qual comando rodar em cada etapa"><span class="material-symbols-outlined" aria-hidden="true" translate="no">troubleshoot</span> Investigações guiadas</h2>
+        <h2 id="rede-guias-tit" class="rede-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">troubleshoot</span> Investigações guiadas</h2>
         <p class="text-secondary small mb-3">Roteiros de raciocínio — sugerem comandos e explicam a decisão. O framework não executa nada nem conhece a sua máquina.</p>
         <div class="rede-guias-grid">
             <details class="rede-guia">
@@ -169,7 +169,7 @@
 
     {! Perguntas de interpretacao. !}
     <section class="rede-quiz" aria-labelledby="rede-quiz-tit">
-        <h2 id="rede-quiz-tit" class="rede-secao-titulo" title="Perguntas rápidas sobre como ler a saída dos comandos; escolha uma opção para ver a explicação"><span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span> Teste sua interpretação</h2>
+        <h2 id="rede-quiz-tit" class="rede-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span> Teste sua interpretação</h2>
         <div class="rede-quiz-grid" id="rede-quiz"></div>
     </section>
 

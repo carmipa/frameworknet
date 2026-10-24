@@ -1,7 +1,7 @@
 <div class="row g-4">
     <div class="col-lg-4">
         <div class="calc-form-card">
-            <h2 class="h6 calc-form-title" title="Parte um bloco IPv4 em sub-redes menores de mesmo tamanho e lista rede, broadcast e faixa de hosts de cada uma">
+            <h2 class="h6 calc-form-title">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_on</span> Dividir um bloco
             </h2>
             <p class="calc-hint">
@@ -16,7 +16,7 @@
                   hx-disabled-elt="find button[type='submit']">
 
                 <div class="mb-3">
-                    <label for="divBloco" class="form-label text-secondary" title="A rede IPv4 inteira que você tem disponível e quer repartir em sub-redes"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Bloco base</label>
+                    <label for="divBloco" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Bloco base</label>
                     <input type="text" class="aed-input form-control input-ipv4" id="divBloco" name="bloco"
                            title="Digite o endereço da rede com o prefixo, por exemplo 192.168.0.0/21, ou com a máscara em decimal"
                            placeholder="192.168.0.0/21" value="192.168.0.0/21"
@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="divPrefixoBase" class="form-label text-secondary" title="Tamanho da máscara do bloco base, usado quando o campo acima traz só o endereço">
+                    <label for="divPrefixoBase" class="form-label text-secondary">
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Prefixo do bloco base <span class="text-muted">(opcional)</span>
                     </label>
                     <input type="text" class="aed-input form-control input-cidr" id="divPrefixoBase"
@@ -64,15 +64,15 @@
                 </div>
 
                 <div class="mb-3 calc-criterio" id="grupo-prefixo">
-                    <label for="divPrefixoAlvo" class="form-label text-secondary" title="O tamanho que cada sub-rede resultante vai ter; precisa ser maior ou igual ao prefixo do bloco base"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo alvo</label>
+                    <label for="divPrefixoAlvo" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> Prefixo alvo</label>
                     <input type="text" class="aed-input form-control input-cidr" id="divPrefixoAlvo"
                            name="prefixoAlvo" inputmode="numeric" maxlength="2" placeholder="24" value="24"
-                           title="Número sem a barra, por exemplo 24; cada bit a mais no prefixo dobra a quantidade de sub-redes">
+                           title="Número sem a barra, maior que o prefixo do bloco base, por exemplo 24; cada bit a mais dobra a quantidade de sub-redes">
                     <div class="form-text text-muted">O prefixo de cada sub-rede resultante (0 a 32).</div>
                 </div>
 
                 <div class="mb-3 calc-criterio d-none" id="grupo-quantidade">
-                    <label for="divQuantidade" class="form-label text-secondary" title="O número mínimo de sub-redes que o projeto exige, por exemplo uma por setor ou VLAN"><span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span> Quantas sub-redes você precisa</label>
+                    <label for="divQuantidade" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span> Quantas sub-redes você precisa</label>
                     <input type="text" class="aed-input form-control input-numeric" id="divQuantidade"
                            name="quantidade" inputmode="numeric" placeholder="6" value="6"
                            title="Número inteiro maior que zero; o resultado sobe para a próxima potência de 2">
@@ -82,7 +82,7 @@
                 </div>
 
                 <div class="mb-3 calc-criterio d-none" id="grupo-hosts">
-                    <label for="divHosts" class="form-label text-secondary" title="Quantos dispositivos com IP cada sub-rede precisa acomodar, sem contar rede e broadcast"><span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> Hosts por sub-rede</label>
+                    <label for="divHosts" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> Hosts por sub-rede</label>
                     <input type="text" class="aed-input form-control input-numeric" id="divHosts"
                            name="hosts" inputmode="numeric" placeholder="500" value="500"
                            title="Número inteiro de hosts, por exemplo 500; inclua o gateway na conta">
@@ -91,8 +91,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="aed-btn aed-btn-execute w-100"
-                        title="Calcular a divisão do bloco em sub-redes conforme o critério selecionado">
+                <button type="submit" class="aed-btn aed-btn-execute w-100">
                     <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Calcular
                 </button>

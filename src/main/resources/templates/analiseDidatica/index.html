@@ -26,42 +26,32 @@
         <div class="aed-mode-grid tab-nav mb-3" role="tablist">
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="cidr" role="tab"
                     data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="CIDR: calcule rede, broadcast, faixa de hosts e máscara a partir de um IPv4 + prefixo">
+                    title="Calcula rede, broadcast, faixa de hosts e máscara a partir de um IPv4 e do prefixo">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span><span>CIDR</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="mask" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Máscara: converta máscara decimal ↔ CIDR e visualize os bits de rede/host">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="mask" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span><span>Máscara</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="wildcard" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Wildcard: calcule/valide a máscara curinga usada em ACL, OSPF e EIGRP">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="wildcard" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_view</span><span>Wildcard</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="autoip" role="tab"
                     data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Auto CIDR: descubra automaticamente o melhor prefixo para um endereço IPv4">
+                    title="Descobre automaticamente o melhor prefixo para um endereço IPv4">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">auto_fix_high</span><span>Auto CIDR</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dominio" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Domínio: resolva um domínio/hostname para IP e analise a rede resultante">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dominio" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">language</span><span>Domínio</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="ipv6" role="tab"
                     data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="IPv6: expanda, comprima e analise endereços IPv6">
+                    title="Expande, comprime e analisa endereços IPv6">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">filter_6</span><span>IPv6</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="comparador" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Comparador: compare o mesmo IP sob dois prefixos CIDR lado a lado">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="comparador" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">compare_arrows</span><span>Comparador</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="calculadora" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Calculadora: divida um bloco em sub-redes e veja quantas redes cabem (ex.: /21 em /24 = 8)">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="calculadora" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span><span>Calculadora</span>
             </button>
         </div>
@@ -80,24 +70,16 @@
             Exportar em JSON ou PDF exige login de administrador; copiar o resultado não exige.
         </p>
         <div class="aed-action-row action-buttons mt-2">
-            <a href="/export/json" class="aed-btn aed-btn-json" target="_blank" rel="noopener nofollow"
-               data-bs-toggle="tooltip" data-bs-placement="top"
-               title="Baixe o resultado da análise em formato JSON (requer login admin)">
+            <a href="/export/json" class="aed-btn aed-btn-json" target="_blank" rel="noopener nofollow">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> Exportar JSON
             </a>
-            <a href="/export/pdf" rel="nofollow" class="aed-btn aed-btn-pdf"
-               data-bs-toggle="tooltip" data-bs-placement="top"
-               title="Gere um PDF com o resultado da análise (requer login admin)">
+            <a href="/export/pdf" rel="nofollow" class="aed-btn aed-btn-pdf">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">picture_as_pdf</span> Exportar PDF
             </a>
-            <button type="button" class="aed-btn aed-btn-neutral" id="btn-copiar-resultado"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Copie o resultado em texto para a área de transferência">
+            <button type="button" class="aed-btn aed-btn-neutral" id="btn-copiar-resultado">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar resultado
             </button>
-            <a id="btn-limpar-tela" href="/analise?tab={activeTabPre}" class="aed-btn aed-btn-danger"
-               data-bs-toggle="tooltip" data-bs-placement="top"
-               title="Limpe os resultados e recomece a análise nesta aba">
+            <a id="btn-limpar-tela" href="/analise?tab={activeTabPre}" class="aed-btn aed-btn-danger">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar Tela
             </a>
         </div>
@@ -109,8 +91,7 @@
     {#if comparadorOnly && comparadorCards}
     <div class="aed-card card-tech p-4 shadow mt-4">
         <span class="aed-eyebrow">Comparador</span>
-        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);"
-            title="O mesmo endereço recortado pelos dois prefixos, lado a lado, para ver o efeito de mudar a máscara">
+        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);">
             <span class="material-symbols-outlined text-warning" translate="no" aria-hidden="true">compare_arrows</span>
             Comparador — IP {comparadorIp}
         </h2>
@@ -142,8 +123,7 @@
     {#if ipv6Res}
     <div class="aed-card card-tech p-4 shadow mt-4">
         <span class="aed-eyebrow aed-eyebrow-indigo">IPv6</span>
-        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);"
-            title="Forma completa e abreviada do endereço IPv6 informado, com tipo, faixa, prefixo e reverso DNS">
+        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);">
             <span class="material-symbols-outlined text-info" translate="no" aria-hidden="true">public</span>
             Resultado IPv6
         </h2>
@@ -164,10 +144,10 @@
 
     <div class="card-tech p-3 shadow mt-4 history-box">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-            <h2 class="h6 text-info mb-0 d-flex align-items-center gap-2" title="Suas consultas ficam só neste navegador e somem ao fechá-lo; outras pessoas não as veem"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico deste navegador</h2>
+            <h2 class="h6 text-info mb-0 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico deste navegador</h2>
             <form method="GET" action="/analise" class="d-flex flex-wrap align-items-center gap-2 small">
                 <input type="hidden" name="tab" value="{activeTabPre}">
-                <label class="text-secondary" title="Define quantas consultas do histórico aparecem de cada vez na tabela abaixo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> Por página</label>
+                <label class="text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> Por página</label>
                 <select aria-label="Por página" name="history_limit" class="form-select form-select-sm bg-dark text-light border-secondary" style="width:auto;"
                         title="Escolha 5, 10 ou 20 linhas e clique em Aplicar para recarregar a lista">
                     <option value="5" {#if historyLimitPre == '5'}selected{/if}>5</option>
@@ -175,7 +155,7 @@
                     <option value="20" {#if historyLimitPre == '20'}selected{/if}>20</option>
                 </select>
                 <input type="hidden" name="history_page" value="{historyPage}">
-                <button type="submit" class="btn btn-sm btn-outline-info" title="Recarrega a tabela do histórico mostrando a quantidade de linhas escolhida ao lado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">check</span> Aplicar</button>
+                <button type="submit" class="btn btn-sm btn-outline-info"><span class="material-symbols-outlined" translate="no" aria-hidden="true">check</span> Aplicar</button>
             </form>
         </div>
         <p class="small text-secondary mb-2">Página {historyPage} de {totalHistoryPages} · {historyPageItems.size} registro(s) nesta página</p>
@@ -183,7 +163,7 @@
             <table class="table table-dark table-sm table-bordered mb-0">
                 <thead>
                 <tr class="small text-secondary">
-                    <th title="Botão que reabre a análise daquela linha com os mesmos dados"><span class="visually-hidden">Ação</span></th><th title="Dia e hora da consulta, no fuso UTC (3 horas à frente do horário de Brasília)">Data</th><th title="Qual aba da análise foi usada na consulta, como CIDR, máscara ou wildcard">Modo</th><th title="O endereço IPv4 ou IPv6 que foi digitado na consulta">Entrada</th><th title="O endereço de rede calculado a partir da entrada e do prefixo">Rede</th><th title="Nível de risco do tamanho do bloco: quanto menor o prefixo, maior a rede e o risco">Tema</th>
+                    <th><span class="visually-hidden">Ação</span></th><th>Data</th><th title="Qual aba da análise foi usada na consulta, como CIDR, máscara ou wildcard">Modo</th><th title="O endereço IPv4 ou IPv6 que foi digitado na consulta">Entrada</th><th title="O endereço de rede calculado a partir da entrada e do prefixo">Rede</th><th title="Nível de risco do tamanho do bloco: quanto menor o prefixo, maior a rede e o risco">Tema</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -192,7 +172,7 @@
                 {#else}
                 {#for item in historyPageItems}
                 <tr class="small">
-                    <td class="text-nowrap"><a href="/analise?replay={item.id}&tab={item.modo}" class="btn btn-sm btn-outline-info" title="Abrir de novo esta análise, com os mesmos dados"><span class="material-symbols-outlined align-middle" style="font-size:1rem;" translate="no" aria-hidden="true">replay</span> Replay</a></td>
+                    <td class="text-nowrap"><a href="/analise?replay={item.id}&tab={item.modo}" class="btn btn-sm btn-outline-info"><span class="material-symbols-outlined align-middle" style="font-size:1rem;" translate="no" aria-hidden="true">replay</span> Replay</a></td>
                     <td>{item.timestamp_utc}</td>
                     <td>{item.modo}</td>
                     <td>{item.ip_entrada}{item.ipv6_entrada}</td>

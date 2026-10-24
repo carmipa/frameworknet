@@ -27,7 +27,7 @@
 
     <header class="topbar">
         <div class="topbar-in">
-            <a class="brand" href="/" title="Ir para a página inicial do Framework de Redes">
+            <a class="brand" href="/">
                 <div class="brand-mark">A&amp;D</div>
                 <div class="brand-txt">
                     <span class="brand-kicker">MENU PRINCIPAL</span>
@@ -37,17 +37,17 @@
             <div class="topbar-right">
                 <div class="langs">
                     <button type="button" class="lang is-on" onclick="aedTranslate('pt')"
-                            title="Traduzir para Português (Brasil)" aria-label="Traduzir para Português">
+                            title="Traduzir para Português (Brasil)" aria-label="PT: traduzir para português">
                         <img class="flag" src="/web/img/bandeiras/br.png?v=20261001" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">PT</span>
                     </button>
                     <button type="button" class="lang" onclick="aedTranslate('en')"
-                            title="Traduzir para English (US)" lang="en" aria-label="Translate to English">
+                            title="Traduzir para English (US)" lang="en" aria-label="EN: translate to English">
                         <img class="flag" src="/web/img/bandeiras/us.png?v=20261001" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">EN</span>
                     </button>
                     <button type="button" class="lang" onclick="aedTranslate('es')"
-                            title="Traduzir para Español" lang="es" aria-label="Traducir al Español">
+                            title="Traduzir para Español" lang="es" aria-label="ES: traducir al español">
                         <img class="flag" src="/web/img/bandeiras/es.png?v=20261001" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">ES</span>
                     </button>
@@ -101,8 +101,7 @@
                                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">visibility</span>
                                 </button>
                             </div>
-                            <button class="btn btn-amber" type="submit"
-                                    title="Validar chave e acessar o painel de telemetria">
+                            <button class="btn btn-amber" type="submit">
                                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">login</span>
                                 Acessar Telemetria
                             </button>
@@ -115,8 +114,7 @@
                         </div>
 
                         <div class="foot-links foot-center">
-                            <a class="flink" href="/login"
-                               title="Alternar para o método de login padrão via GitHub OAuth">
+                            <a class="flink" href="/login">
                                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_back</span>
                                 Voltar ao login com GitHub
                             </a>
@@ -140,7 +138,7 @@
                             <span>ACESSO À TELEMETRIA</span>
                         </div>
 
-                        <h1 class="title" title="Entrada do painel de telemetria, restrita a administradores autorizados; a identidade é confirmada pelo GitHub">Autenticação<br>Administrativa</h1>
+                        <h1 class="title">Autenticação<br>Administrativa</h1>
                         <p class="lede">
                             O painel de Telemetria expõe eventos, rotas e endereços de quem usou o
                             sistema. Entre com sua identidade <strong>GitHub</strong> — quem confirma
@@ -155,8 +153,7 @@
                         {/if}
 
                         {#if oauthConfigurado}
-                        <a class="btn btn-github" href="/login/github"
-                           title="Iniciar autenticação segura via conta GitHub autorizada">
+                        <a class="btn btn-github" href="/login/github">
                             <span class="material-symbols-outlined" translate="no" aria-hidden="true">login</span> <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                                 <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path>
                             </svg>
@@ -177,13 +174,12 @@
                         {/if}
 
                         <div class="foot-links">
-                            <a class="flink" href="/" title="Retornar à página inicial da aplicação">
+                            <a class="flink" href="/">
                                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_back</span>
                                 Voltar ao Framework
                             </a>
                             <span class="fsep" aria-hidden="true"></span>
-                            <a class="flink flink-dim" href="/login/?modo=contingencia"
-                               title="Alternar para acesso emergencial via chave de API administrativa">
+                            <a class="flink flink-dim" href="/login/?modo=contingencia">
                                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">vpn_key</span>
                                 Acesso de contingência
                             </a>
@@ -232,11 +228,11 @@
 
     <footer class="footer">
         <div class="foot-1">
-            Desenvolvido por: <a class="foot-autor" href="https://carminati.dev.br/" target="_blank" rel="noopener noreferrer" title="Abre o site pessoal do autor, com os outros projetos dele, numa aba nova"><strong>Paulo André Carminati</strong></a>
+            Desenvolvido por: <a class="foot-autor" href="https://carminati.dev.br/" target="_blank" rel="noopener noreferrer"><strong>Paulo André Carminati</strong></a>
         </div>
         <div class="foot-2">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">code</span>
-            <a href="https://github.com/carmipa" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;" title="Ver perfil e repositórios do autor no GitHub">github.com/carmipa</a> · <span class="mono">Java + Quarkus</span>
+            <a href="https://github.com/carmipa" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">github.com/carmipa</a> · <span class="mono">Java + Quarkus</span>
         </div>
     </footer>
 </div>

@@ -88,7 +88,7 @@
       {
         "nome": "Número do bloco / Código",
         "bits": 16,
-        "descricao": "Nos pacotes DATA e ACK, numera o bloco: os DATA começam em 1 e o ACK devolve o mesmo número (num upload/WRQ o primeiro ACK é de bloco 0, confirmando o pedido) — é assim que o UDP vira confiável. No pacote ERROR, este campo é o código do erro. Em seguida vem o payload: 0 a 512 bytes de dados.",
+        "descricao": "Em DATA e ACK, numera o bloco (DATA começa em 1; no upload o primeiro ACK é o bloco 0). Em ERROR, guarda o código do erro.",
         "cor": "#7c3aed"
       }
     ]
@@ -96,7 +96,6 @@
   "tabelas": [
     {
       "titulo": "Comandos FTP essenciais",
-      "dica": "Reúne os comandos que o cliente envia ao servidor numa sessão típica, útil para ler um log ou uma captura de FTP",
       "colunas": [
         "Comando",
         "Função",
@@ -157,7 +156,6 @@
     },
     {
       "titulo": "Códigos de resposta FTP",
-      "dica": "Explica as respostas numéricas de três dígitos do servidor FTP, primeiro por classe e depois os códigos mais vistos",
       "colunas": [
         "Código",
         "Classe (1º dígito)",
@@ -238,7 +236,6 @@
     },
     {
       "titulo": "FTP x FTPS x SFTP x TFTP",
-      "dica": "Compara os quatro protocolos de transferência de arquivos para escolher o adequado conforme porta, transporte e proteção",
       "colunas": [
         "Protocolo",
         "Porta",
@@ -286,7 +283,6 @@
     },
     {
       "titulo": "Opcodes do TFTP (RFC 1350)",
-      "dica": "Lista os tipos de pacote do TFTP, identificados pelo campo opcode, para reconhecer cada etapa de uma transferência",
       "colunas": [
         "Opcode",
         "Nome",
@@ -294,7 +290,7 @@
       ],
       "dicas_colunas": [
         "Valor numérico de 2 bytes no início do pacote que identifica seu tipo",
-        "Sigla do tipo de pacote como aparece na especificação e em analisadores",
+        "",
         "Papel desse pacote na transferência"
       ],
       "linhas": [

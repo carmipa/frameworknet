@@ -24,11 +24,11 @@
         <form method="POST" action="/admin/login" class="problem-box p-3 border border-secondary rounded">
             <input type="hidden" name="redirect" value="{redirect}">
             <div class="mb-3">
-                <label class="form-label text-secondary small" for="admin-api-key" title="Chave secreta que libera as rotas de exportação de dados sensíveis (/export/*) nesta sessão"><span class="material-symbols-outlined" aria-hidden="true" translate="no">vpn_key</span> API key administrativa</label>
+                <label class="form-label text-secondary small" for="admin-api-key"><span class="material-symbols-outlined" aria-hidden="true" translate="no">vpn_key</span> API key administrativa</label>
                 <input type="password" id="admin-api-key" name="api_key" class="form-control font-monospace"
                        autocomplete="current-password" required {#if !enforcementActive}disabled title="Campo desativado: a proteção por API key está desligada neste ambiente"{#else}title="Cole a chave fornecida pelo administrador do servidor; o texto fica oculto enquanto você digita"{/if}>
             </div>
-            <button type="submit" class="aed-btn aed-btn-amber w-100" {#if !enforcementActive}disabled title="Botão desativado: a proteção por API key está desligada neste ambiente, então não há chave a validar"{#else}title="Valida a chave e, se estiver correta, volta para a página que pediu o acesso"{/if}>
+            <button type="submit" class="aed-btn aed-btn-amber w-100" {#if !enforcementActive}disabled title="Botão desativado: a proteção por API key está desligada neste ambiente, então não há chave a validar"{/if}>
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">login</span> Entrar
             </button>
         </form>

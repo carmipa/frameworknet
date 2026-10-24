@@ -1,12 +1,12 @@
 {! Aba "Análise": normaliza (RFC 5952), classifica (IANA) e decompõe os 128 bits — resultado em
    largura total abaixo do formulário, como a Análise Didática IPv4. !}
 <div class="calc-form-card mb-3">
-    <h2 class="h6 calc-form-title" title="Mostra o tipo do endereço, a forma abreviada correta e o papel de cada um dos 128 bits"><span class="material-symbols-outlined" translate="no" aria-hidden="true">tag</span> Analisar endereço ou prefixo</h2>
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">tag</span> Analisar endereço ou prefixo</h2>
     <p class="calc-hint">Ex.: <code translate="no">2001:db8::1</code>, <code translate="no">2001:db8::/48</code> ou <code translate="no">fe80::1%eth0</code>. O resultado abre embaixo com a decomposição completa dos 128 bits.</p>
     <form id="formCalc" class="row g-2 align-items-end" hx-post="/ipv6/api/calcular" hx-target="#saidaCalc" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">
         <div class="col-lg-8">
-            <label for="ipv6Endereco" class="form-label text-secondary" title="Um endereço IPv6 único ou um prefixo de rede que você quer entender">
+            <label for="ipv6Endereco" class="form-label text-secondary">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Endereço / prefixo IPv6
             </label>
             <input type="text" class="aed-input form-control" id="ipv6Endereco" name="endereco"
@@ -14,8 +14,7 @@
                    title="Digite o endereço, com /n opcional para prefixo, por exemplo 2001:db8::1 ou 2001:db8::/48">
         </div>
         <div class="col-lg-4 d-flex gap-2">
-            <button type="submit" class="aed-btn aed-btn-execute flex-fill"
-                    title="Analisar o endereço ou prefixo IPv6 informado">
+            <button type="submit" class="aed-btn aed-btn-execute flex-fill">
                 <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Analisar
             </button>

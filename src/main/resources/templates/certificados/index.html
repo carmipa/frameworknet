@@ -24,20 +24,20 @@
             certificado (qual eu preciso?). Os aprofundamentos por grupo estão no submenu acima.
         </p>
         <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
-            <a href="/certificados/x509" class="aed-btn aed-btn-teal btn-sm" title="O certificado por dentro: TBSCertificate e a estrutura binária ASN.1/DER">
+            <a href="/certificados/x509" class="aed-btn aed-btn-teal btn-sm">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">badge</span> Anatomia do X.509
             </a>
-            <a href="/protocolos/tls" class="aed-btn aed-btn-neutral btn-sm" title="O protocolo que usa os certificados">
+            <a href="/protocolos/tls" class="aed-btn aed-btn-neutral btn-sm">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> Protocolo TLS
             </a>
-            <a href="/seguranca" class="aed-btn aed-btn-neutral btn-sm" title="Inspetor TLS: teste você mesmo a validação de um certificado">
+            <a href="/seguranca" class="aed-btn aed-btn-neutral btn-sm">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">policy</span> Inspetor TLS
             </a>
         </div>
     </header>
 
     <section id="formatos" class="aprof-secao">
-        <h2 class="h3 aprof-secao-titulo" title="Ajuda a identificar o que há num arquivo de certificado pela extensão, a codificação usada e a ferramenta que o abre"><span class="material-symbols-outlined" aria-hidden="true" translate="no">description</span> Formatos e extensões de arquivo</h2>
+        <h2 class="h3 aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">description</span> Formatos e extensões de arquivo</h2>
         <p class="small text-secondary">A "chave decodificadora": qual arquivo guarda o quê, em que codificação e com qual ferramenta.</p>
         <div class="table-responsive border border-secondary border-opacity-25 rounded">
             <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
@@ -58,11 +58,11 @@
     </section>
 
     <section id="campos" class="aprof-secao">
-        <h2 class="h3 aprof-secao-titulo" title="Lista os campos que existem dentro de um certificado X.509, com exemplo de valor e o cuidado que cada um pede"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span> Campos de um certificado X.509</h2>
+        <h2 class="h3 aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span> Campos de um certificado X.509</h2>
         <p class="small text-secondary">O que existe dentro de um certificado — do serial às extensões v3. A régua binária (ASN.1/DER) está na <a href="/certificados/x509" class="text-info">Anatomia do X.509</a>.</p>
         <div class="table-responsive border border-secondary border-opacity-25 rounded">
             <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
-                <thead><tr><th title="Nome do campo como aparece na saída do openssl x509 -text e nos visualizadores de certificado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span>Campo</th><th title="Explicação do papel desse campo no certificado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">help</span>O que é</th><th title="Valor ilustrativo, no formato em que as ferramentas costumam exibi-lo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">terminal</span>Exemplo</th><th title="Detalhe prático ou armadilha comum relacionada a esse campo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Nota</th></tr></thead>
+                <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span>Campo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">help</span>O que é</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">terminal</span>Exemplo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Nota</th></tr></thead>
                 <tbody>
                     {#for c in catalogo.campos}
                     <tr>
@@ -78,11 +78,11 @@
     </section>
 
     <section id="tipos" class="aprof-secao">
-        <h2 class="h3 aprof-secao-titulo" title="Compara os tipos de certificado pelo que a autoridade verifica antes de emitir e pelo uso a que cada um se destina"><span class="material-symbols-outlined" aria-hidden="true" translate="no">category</span> Tipos de certificado</h2>
+        <h2 class="h3 aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">category</span> Tipos de certificado</h2>
         <p class="small text-secondary">Por validação (DV/OV/EV) e por uso (servidor, cliente, code signing, S/MIME). Detalhe em <a href="/certificados/tipos" class="text-info">Tipos de certificado</a>.</p>
         <div class="table-responsive border border-secondary border-opacity-25 rounded">
             <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
-                <thead><tr><th title="Classe do certificado, pelo nível de validação ou pela finalidade"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo</th><th title="O que a autoridade certificadora confere antes de emitir esse certificado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">verified</span>O que valida</th><th title="Situações em que esse tipo de certificado costuma ser escolhido"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">task_alt</span>Uso</th><th title="Limitação ou cuidado importante ao usar esse tipo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Observação</th></tr></thead>
+                <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo</th><th title="O que a autoridade certificadora confere antes de emitir esse certificado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">verified</span>O que valida</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">task_alt</span>Uso</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Observação</th></tr></thead>
                 <tbody>
                     {#for t in catalogo.tipos}
                     <tr>

@@ -270,7 +270,6 @@
             b.textContent = o[0];
             // Dica de ação igual para todas as opções: dizer algo sobre o conteúdo de cada uma entregaria a resposta.
             // O adaptador de dicas (field-tooltips.js) converte o title quando o botão entra na página.
-            b.title = "Escolhe esta resposta como sua previsão; logo abaixo aparece se ela está certa e por quê.";
             b.addEventListener("click", function () {
                 var certa = o[1];
                 fb.hidden = false;

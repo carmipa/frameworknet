@@ -78,7 +78,6 @@
   "tabelas": [
     {
       "titulo": "Erros de certificado no navegador: causa e correção",
-      "dica": "Relaciona os códigos de erro de certificado do Chrome ao motivo técnico e ao que fazer para resolver cada um",
       "colunas": [
         "Erro (Chrome/Chromium)",
         "O que significa",
@@ -126,7 +125,6 @@
     },
     {
       "titulo": "Sinais no cadeado x realidade da conexão",
-      "dica": "Mostra o que os indicadores visuais do navegador não provam e onde conferir para não confiar só no cadeado",
       "colunas": [
         "Sinal visto",
         "O que NÃO garante",
@@ -157,7 +155,6 @@
     },
     {
       "titulo": "Formatos e artefatos que você vai encontrar",
-      "dica": "Compara os formatos de arquivo de certificado e chave para reconhecer cada um e saber como abri-lo",
       "colunas": [
         "Formato",
         "O que é",
@@ -165,7 +162,7 @@
       ],
       "dicas_colunas": [
         "Nome do formato e extensões de arquivo usuais",
-        "Codificação usada e o que o arquivo carrega: só certificado, cadeia ou também chave privada",
+        "",
         "Marcador visível no arquivo ou comando openssl/keytool para inspecionar o conteúdo"
       ],
       "linhas": [
