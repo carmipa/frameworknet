@@ -12,8 +12,8 @@
     {#include protocolos/partials/subnav.html /}
 
     <header class="text-center mb-4">
-        <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">hub</span></div>
         <span class="aed-eyebrow aed-eyebrow-indigo">Aprofundamento · Camada de Aplicação</span>
+        <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">hub</span></div>
         <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">BGP-4 — Border Gateway Protocol</h1>
         <p class="text-secondary small mx-auto aed-medida-leitura">{conteudo.resumo}</p>
         <div class="bgp-ficha" role="list">
@@ -71,11 +71,11 @@
             <table class="table table-dark table-sm align-middle mb-0 bgp-tabela">
                 <thead>
                     <tr>
-                        <th>Atributo</th>
-                        <th>Tipo</th>
-                        <th title="Até onde o atributo viaja: só no roteador, dentro do AS ou entre AS">Escopo</th>
-                        <th title="Qual valor vence a comparação">Preferência</th>
-                        <th title="O efeito do atributo na escolha da rota e o valor padrão">O que faz</th>
+                        <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tune</span>Atributo</th>
+                        <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo</th>
+                        <th title="Até onde o atributo viaja: só no roteador, dentro do AS ou entre AS"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">public</span>Escopo</th>
+                        <th title="Qual valor vence a comparação"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">priority_high</span>Preferência</th>
+                        <th title="O efeito do atributo na escolha da rota e o valor padrão"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">task_alt</span>O que faz</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,7 +116,7 @@
     <section id="sessao" class="bgp-secao">
         <h2 class="h3 bgp-secao-titulo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">cable</span> A sessão: estados, mensagens e temporizadores</h2>
 
-        <h3 class="h4 bgp-subtitulo">Máquina de estados finita</h3>
+        <h3 class="h4 bgp-subtitulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">schema</span> Máquina de estados finita</h3>
         <div class="bgp-estados">
             {#for estado in conteudo.estados}
             <div class="bgp-estado">
@@ -135,15 +135,15 @@
 
         <div class="row g-3 mt-1">
             <div class="col-12 col-xl-7">
-                <h3 class="h4 bgp-subtitulo">Mensagens do protocolo</h3>
+                <h3 class="h4 bgp-subtitulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">chat</span> Mensagens do protocolo</h3>
                 <div class="table-responsive border border-secondary border-opacity-25 rounded">
                     <table class="table table-dark table-sm align-middle mb-0 bgp-tabela">
                         <thead>
                             <tr>
-                                <th>Tipo</th>
-                                <th title="Valor do campo Type no cabeçalho da mensagem">Cód.</th>
-                                <th title="Em que momento da sessão a mensagem é enviada">Quando</th>
-                                <th title="O que a mensagem carrega">Conteúdo</th>
+                                <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo</th>
+                                <th title="Valor do campo Type no cabeçalho da mensagem"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Cód.</th>
+                                <th title="Em que momento da sessão a mensagem é enviada"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">schedule</span>Quando</th>
+                                <th title="O que a mensagem carrega"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">article</span>Conteúdo</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -160,14 +160,14 @@
                 </div>
             </div>
             <div class="col-12 col-xl-5">
-                <h3 class="h4 bgp-subtitulo">Temporizadores</h3>
+                <h3 class="h4 bgp-subtitulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">timer</span> Temporizadores</h3>
                 <div class="table-responsive border border-secondary border-opacity-25 rounded">
                     <table class="table table-dark table-sm align-middle mb-0 bgp-tabela">
                         <thead>
                             <tr>
-                                <th title="Nome do temporizador da sessão">Timer</th>
-                                <th title="Valor de fábrica; alguns mudam conforme o fabricante">Padrão</th>
-                                <th title="O que o temporizador controla">Função</th>
+                                <th title="Nome do temporizador da sessão"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">timer</span>Timer</th>
+                                <th title="Valor de fábrica; alguns mudam conforme o fabricante"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span>Padrão</th>
+                                <th title="O que o temporizador controla"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">data_object</span>Função</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -191,7 +191,7 @@
             {#for topo in conteudo.topologias}
             <div class="col-12 col-lg-4">
                 <article class="card-tech p-3 h-100 bgp-topologia">
-                    <h3 class="h4 bgp-topologia-titulo">{topo.nome}</h3>
+                    <h3 class="h4 bgp-topologia-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> {topo.nome}</h3>
                     <dl class="small mb-0">
                         <dt class="text-danger">Problema</dt>
                         <dd class="text-light">{topo.problema}</dd>
@@ -240,7 +240,7 @@
             {#for lab in conteudo.laboratorios}
             <div class="col-12 col-xl-6">
                 <article class="card-tech p-3 h-100 bgp-lab">
-                    <h3 class="h4 bgp-lab-titulo">{lab.titulo}</h3>
+                    <h3 class="h4 bgp-lab-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> {lab.titulo}</h3>
                     <p class="small text-secondary mb-2">{lab.cenario}</p>
                     <pre class="bgp-codigo" id="bgp-lab-{lab_count}" translate="no">{lab.comandos}</pre>
                     <div class="d-flex justify-content-end mb-2">

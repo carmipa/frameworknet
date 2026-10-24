@@ -34,7 +34,7 @@
     </div>
 </form>
 
-<h2 class="h3 anom-titulo mt-4"><span id="anom-titulo"></span></h2>
+<h2 class="h3 anom-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> <span id="anom-titulo"></span></h2>
 <p id="anom-resumo" class="small text-secondary"></p>
 
 <div id="anom-kpis" class="anom-kpis" aria-live="polite"></div>
@@ -50,7 +50,7 @@
 </div>
 
 <details class="anom-glossario mt-3">
-    <summary>Glossário: estados e termos do TCP que aparecem nos passos</summary>
+    <summary><span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span> Glossário: estados e termos do TCP que aparecem nos passos</summary>
     <dl class="anom-termos">
         <div><dt>backlog</dt><dd>Fila de conexões em <code translate="no">SYN_RECV</code> (meio-abertas) que o servidor guarda entre o SYN e o ACK final. Cheia, novos SYNs são descartados.</dd></div>
         <div><dt>meio-aberta (half-open)</dt><dd>Conexão que recebeu SYN e mandou SYN-ACK, mas ainda não recebeu o ACK. Consome um slot do backlog.</dd></div>

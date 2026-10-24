@@ -11,7 +11,7 @@
     {#include portas/partials/subnav.html /}
     <div class="text-center mb-4">
         <span class="aed-eyebrow aed-eyebrow-indigo">Catálogo</span>
-        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Catálogo de Portas TCP/UDP</h1>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);"><span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">settings_ethernet</span> Catálogo de Portas TCP/UDP</h1>
         <p class="text-secondary small mx-auto aed-medida-leitura">
             DataGrid técnico com busca em tempo real, filtros por risco e paginação.
         </p>
@@ -72,13 +72,13 @@
             </div>
             <div class="row g-2 align-items-end mb-3">
                 <div class="col-lg-3">
-                    <label class="form-label small text-secondary d-flex align-items-center gap-1">Busca geral
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">search</span> Busca geral
                         <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Digite porta, serviço, transporte, risco ou categoria para filtrar os registros em tempo real." aria-label="Ajuda: Busca no DataGrid"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
                     </label>
                     <input type="text" class="form-control bg-dark text-light border-secondary" data-grid-search="portas" placeholder="Porta, serviço, transporte..." data-bs-toggle="tooltip" data-bs-placement="top" title="Digite porta, serviço, transporte, categoria ou risco.">
                 </div>
                 <div class="col-lg-2">
-                    <label class="form-label small text-secondary d-flex align-items-center gap-1">Risco
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">priority_high</span> Risco
                         <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Mostra apenas portas com nível Crítico, Atenção, Seguro ou Didático." aria-label="Ajuda: Filtro de risco"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
                     </label>
                     <select aria-label="Risco" class="form-select bg-dark text-light border-secondary" data-grid-risk="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelas portas conforme nível de risco didático.">
@@ -90,7 +90,7 @@
                     </select>
                 </div>
                 <div class="col-lg-2">
-                    <label class="form-label small text-secondary d-flex align-items-center gap-1">Categoria
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">category</span> Categoria
                         <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="Faixa de portas" data-bs-content="Filtra por Well-known, Registered ou Dynamic/Private conforme o intervalo da porta." aria-label="Ajuda: Faixa de portas"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
                     </label>
                     <select aria-label="Categoria" class="form-select bg-dark text-light border-secondary" data-grid-category="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pela faixa de portas: Well-known, Registered ou Dynamic/Private.">
@@ -101,7 +101,7 @@
                     </select>
                 </div>
                 <div class="col-lg-2">
-                    <label class="form-label small text-secondary d-flex align-items-center gap-1">Transporte
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">swap_calls</span> Transporte
                         <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Filtra registros por TCP, UDP ou combinações TCP/UDP." aria-label="Ajuda: Filtro de transporte"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
                     </label>
                     <select aria-label="Transporte" class="form-select bg-dark text-light border-secondary" data-grid-transport="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelo protocolo de transporte (TCP, UDP, TCP/UDP).">
@@ -123,11 +123,11 @@
                 <table class="table table-dark table-hover table-bordered align-middle mb-2 datagrid-table" data-grid-table="portas">
                     <thead class="table-dark-header">
                         <tr>
-                            <th class="sortable" data-sort-key="porta" title="Ordenar por número da porta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_ethernet</span>Porta</th>
-                            <th class="sortable" data-sort-key="servico" title="Ordenar por serviço associado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">dns</span>Serviço</th>
-                            <th class="sortable" data-sort-key="transporte" title="Ordenar por protocolo de transporte"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">swap_horiz</span>Transporte</th>
+                            <th class="sortable" data-sort-key="porta" title="Ordenar por número da porta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">door_open</span>Porta</th>
+                            <th class="sortable" data-sort-key="servico" title="Ordenar por serviço associado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">door_open</span>Serviço</th>
+                            <th class="sortable" data-sort-key="transporte" title="Ordenar por protocolo de transporte"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">swap_calls</span>Transporte</th>
                             <th class="sortable" data-sort-key="categoria"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Categoria</th>
-                            <th class="sortable" data-sort-key="risco" title="Ordenar por nível de risco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">warning</span>Risco</th>
+                            <th class="sortable" data-sort-key="risco" title="Ordenar por nível de risco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">priority_high</span>Risco</th>
                             <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tips_and_updates</span>Recomendação</th>
                             <th title="Alternativa mais segura para operação"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">verified_user</span>Alternativa segura</th>
                             <th class="text-center" style="width: 8.75rem;"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
@@ -227,8 +227,8 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content bg-dark text-light border border-secondary">
             <div class="modal-header border-secondary">
-                <h2 class="h5 modal-title" id="commDetailsModalLabel">Detalhes</h2>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar" data-bs-toggle="tooltip" data-bs-placement="top" title="Fecha a janela de detalhes."></button>
+                <h2 class="h5 modal-title" id="commDetailsModalLabel"><span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span> Detalhes</h2>
+                <button type="button" class="btn-close btn-close-white" data-icone-excecao="fechar do Bootstrap: o X é desenhado pelo CSS" data-bs-dismiss="modal" aria-label="Fechar" data-bs-toggle="tooltip" data-bs-placement="top" title="Fecha a janela de detalhes."></button>
             </div>
             <div class="modal-body" id="commDetailsModalBody"></div>
         </div>

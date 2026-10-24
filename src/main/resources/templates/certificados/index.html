@@ -15,8 +15,8 @@
     {#include certificados/partials/subnav.html /}
 
     <header class="text-center mb-4">
-        <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">workspace_premium</span></div>
         <span class="aed-eyebrow aed-eyebrow-teal">Catálogo</span>
+        <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">workspace_premium</span></div>
         <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Certificados Digitais (X.509 / PKI)</h1>
         <p class="text-secondary small mx-auto aed-medida-leitura">
             Três tabelas de referência: os <strong>formatos</strong> de arquivo (que arquivo é esse?),
@@ -41,7 +41,7 @@
         <p class="small text-secondary">A "chave decodificadora": qual arquivo guarda o quê, em que codificação e com qual ferramenta.</p>
         <div class="table-responsive border border-secondary border-opacity-25 rounded">
             <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
-                <thead><tr><th title="Final do nome do arquivo; é só uma convenção e não garante qual codificação há dentro"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">description</span>Extensão</th><th title="Como os bytes estão gravados: texto Base64 (PEM) legível ou binário (DER), entre outros"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">code</span>Codificação</th><th title="O que o arquivo pode guardar: certificado, chave privada, cadeia ou pedido de assinatura (CSR)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">article</span>Conteúdo</th><th title="Onde esse formato costuma aparecer na prática, como servidores web, Java ou Windows"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">task_alt</span>Uso típico</th><th title="Comando ou programa usado para ler ou converter esse formato"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">build</span>Ferramenta</th></tr></thead>
+                <thead><tr><th title="Final do nome do arquivo; é só uma convenção e não garante qual codificação há dentro"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">extension</span>Extensão</th><th title="Como os bytes estão gravados: texto Base64 (PEM) legível ou binário (DER), entre outros"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">code</span>Codificação</th><th title="O que o arquivo pode guardar: certificado, chave privada, cadeia ou pedido de assinatura (CSR)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">article</span>Conteúdo</th><th title="Onde esse formato costuma aparecer na prática, como servidores web, Java ou Windows"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">task_alt</span>Uso típico</th><th title="Comando ou programa usado para ler ou converter esse formato"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">build</span>Ferramenta</th></tr></thead>
                 <tbody>
                     {#for f in catalogo.formatos}
                     <tr>
@@ -62,7 +62,7 @@
         <p class="small text-secondary">O que existe dentro de um certificado — do serial às extensões v3. A régua binária (ASN.1/DER) está na <a href="/certificados/x509" class="text-info">Anatomia do X.509</a>.</p>
         <div class="table-responsive border border-secondary border-opacity-25 rounded">
             <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
-                <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span>Campo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">help</span>O que é</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">terminal</span>Exemplo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Nota</th></tr></thead>
+                <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span>Campo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>O que é</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lightbulb</span>Exemplo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Nota</th></tr></thead>
                 <tbody>
                     {#for c in catalogo.campos}
                     <tr>
@@ -82,7 +82,7 @@
         <p class="small text-secondary">Por validação (DV/OV/EV) e por uso (servidor, cliente, code signing, S/MIME). Detalhe em <a href="/certificados/tipos" class="text-info">Tipos de certificado</a>.</p>
         <div class="table-responsive border border-secondary border-opacity-25 rounded">
             <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
-                <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo</th><th title="O que a autoridade certificadora confere antes de emitir esse certificado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">verified</span>O que valida</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">task_alt</span>Uso</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Observação</th></tr></thead>
+                <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo</th><th title="O que a autoridade certificadora confere antes de emitir esse certificado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">fact_check</span>O que valida</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">task_alt</span>Uso</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Observação</th></tr></thead>
                 <tbody>
                     {#for t in catalogo.tipos}
                     <tr>

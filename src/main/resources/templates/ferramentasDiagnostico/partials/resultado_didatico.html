@@ -29,7 +29,7 @@
     <div class="table-responsive">
         <table class="table table-dark table-sm table-bordered mb-0 diag-tabela">
             <thead>
-                <tr>{#for col in r.tabela.colunas}<th>{col}</th>{/for}</tr>
+                <tr>{#for col in r.tabela.colunas}<th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">{col.iconeColuna}</span>{col}</th>{/for}</tr>
             </thead>
             <tbody>
                 {#for lin in r.tabela.linhas}
@@ -76,7 +76,7 @@
     {/if}
 
     <details class="diag-bruta" open>
-        <summary>Saída bruta — como a ferramenta real imprime</summary>
+        <summary><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> Saída bruta — como a ferramenta real imprime</summary>
         <div class="terminal mt-2">
             <pre translate="no"><code translate="no">{r.saidaBruta}</code></pre>
         </div>

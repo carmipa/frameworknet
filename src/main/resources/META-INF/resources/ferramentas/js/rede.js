@@ -132,7 +132,13 @@
                 var b = document.createElement("button");
                 b.type = "button";
                 b.className = "rede-q-opcao";
-                b.textContent = o[0];
+                var ico = document.createElement("span");
+                ico.className = "material-symbols-outlined";
+                ico.setAttribute("aria-hidden", "true");
+                ico.setAttribute("translate", "no");
+                ico.textContent = "arrow_right";
+                b.appendChild(ico);
+                b.appendChild(document.createTextNode(" " + o[0]));
                 b.addEventListener("click", function () {
                     var certa = o[1];
                     fb.hidden = false;

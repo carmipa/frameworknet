@@ -12,8 +12,8 @@
     {#include protocolos/partials/subnav.html /}
 
     <header class="text-center mb-4">
-        <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span></div>
         <span class="aed-eyebrow aed-eyebrow-teal">Aprofundamento · Camada de Aplicação</span>
+        <div class="aprof-hero-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span></div>
         <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">TLS — Transport Layer Security</h1>
         <p class="text-secondary small mx-auto aed-medida-leitura">{conteudo.resumo}</p>
         <div class="tls-ficha" role="list">
@@ -106,9 +106,9 @@
             <table class="table table-dark table-sm align-middle mb-0 tls-tabela">
                 <thead>
                     <tr>
-                        <th title="Nome da combinação de algoritmos ou da família, com a versão do TLS em que vale">Suite</th>
-                        <th title="Se a combinação é recomendada, aceitável, a evitar ou proibida">Avaliação</th>
-                        <th>Nota</th>
+                        <th title="Nome da combinação de algoritmos ou da família, com a versão do TLS em que vale"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lock</span>Suite</th>
+                        <th title="Se a combinação é recomendada, aceitável, a evitar ou proibida"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">grade</span>Avaliação</th>
+                        <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Nota</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -160,10 +160,10 @@
             <table class="table table-dark table-sm align-middle mb-0 tls-tabela">
                 <thead>
                     <tr>
-                        <th title="Nome da proteção ou da boa prática">Defesa</th>
-                        <th>Como funciona</th>
-                        <th title="Os ataques ou riscos que a proteção de fato bloqueia">Cobre</th>
-                        <th title="O que continua possível mesmo com a proteção ativa: é o limite dela">Não cobre</th>
+                        <th title="Nome da proteção ou da boa prática"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lock</span>Defesa</th>
+                        <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">menu_book</span>Como funciona</th>
+                        <th title="Os ataques ou riscos que a proteção de fato bloqueia"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">check_circle</span>Cobre</th>
+                        <th title="O que continua possível mesmo com a proteção ativa: é o limite dela"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">cancel</span>Não cobre</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -186,7 +186,7 @@
             {#for lab in conteudo.laboratorios}
             <div class="col-12 col-xl-6">
                 <article class="card-tech p-3 h-100 tls-lab">
-                    <h3 class="h4 tls-lab-titulo">{lab.titulo}</h3>
+                    <h3 class="h4 tls-lab-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> {lab.titulo}</h3>
                     <p class="small text-secondary mb-2">{lab.cenario}</p>
                     <pre class="tls-codigo" id="tls-lab-{lab_count}" translate="no">{lab.comandos}</pre>
                     <div class="d-flex justify-content-end mb-2">

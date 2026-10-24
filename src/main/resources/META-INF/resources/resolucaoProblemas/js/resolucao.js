@@ -87,6 +87,7 @@
             node.style.cursor = "pointer";
             node.setAttribute("tabindex", "0");
             node.setAttribute("role", "button");
+            node.setAttribute("data-icone-excecao", "nó do diagrama de topologia: a forma desenhada do equipamento é o ícone");
             // O nome começa pelo texto que o nó mostra (WCAG 2.5.3: quem fala o rótulo visível aciona o nó).
             // innerText respeita as quebras de linha do rótulo (textContent colava "R-MATRIZGi0/0").
             const rotulo = node.querySelector("foreignObject div, .nodeLabel");
@@ -147,11 +148,11 @@
         row.className = "row g-2 align-items-end location-row mb-2";
         row.innerHTML =
             '<div class="col-lg-7 col-md-12">' +
-            '<label class="form-label text-secondary">Nome da localidade</label>' +
+            '<label class="form-label text-secondary"><span class="material-symbols-outlined" translate="no" aria-hidden="true">location_on</span> Nome da localidade</label>' +
             '<input type="text" name="loc_name" aria-label="Nome da localidade" class="form-control" value="' + (defaultName || "") + '" data-bs-toggle="tooltip" data-bs-placement="top" title="Nome da unidade (ex.: Matriz, Filial I, CPD)." required>' +
             '</div>' +
             '<div class="col-lg-3 col-md-6">' +
-            '<label class="form-label text-secondary">Qtd. hosts <span class="text-secondary">(inteiro)</span></label>' +
+            '<label class="form-label text-secondary"><span class="material-symbols-outlined" translate="no" aria-hidden="true">group</span> Qtd. hosts <span class="text-secondary">(inteiro)</span></label>' +
             '<input type="text" name="loc_hosts" aria-label="Qtd. hosts (inteiro)" class="form-control input-numeric" inputmode="numeric" maxlength="6" value="' + (defaultHosts || "") + '" placeholder="ex.: 400" data-bs-toggle="tooltip" data-bs-placement="top" title="Quantidade de hosts necessária (número inteiro). Não use endereço IP aqui." required>' +
             '</div>' +
             '<div class="col-lg-2 col-md-6 d-grid">' +

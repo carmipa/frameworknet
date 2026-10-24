@@ -27,6 +27,7 @@
             var botao = document.createElement('button');
             botao.type = 'button';
             botao.className = 'acad-regua-bit';
+            botao.setAttribute('data-icone-excecao', 'bit do endereço: o valor 0 ou 1 é o próprio rótulo');
             botao.setAttribute('translate', 'no');
             botao.textContent = '0';
             if (interativa) {

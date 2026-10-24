@@ -42,11 +42,11 @@
     <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_view</span> Tabelas de referência</h2>
     {#for tab in conteudo.tabelas}
     <div class="aprof-tabela-bloco">
-        <h3 class="aprof-tabela-titulo">{tab.titulo}</h3>
+        <h3 class="aprof-tabela-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span> {tab.titulo}</h3>
         <div class="table-responsive border border-secondary border-opacity-25 rounded">
             <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
                 <thead>
-                    <tr>{#for col in tab.colunas}<th{#if tab.dicasColunas && tab.dicasColunas.get(col_index)} title="{tab.dicasColunas.get(col_index)}"{/if}>{col}</th>{/for}</tr>
+                    <tr>{#for col in tab.colunas}<th{#if tab.dicasColunas && tab.dicasColunas.get(col_index)} title="{tab.dicasColunas.get(col_index)}"{/if}><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">{col.iconeColuna}</span>{col}</th>{/for}</tr>
                 </thead>
                 <tbody>
                     {#for linha in tab.linhas}
@@ -94,7 +94,7 @@
     <div class="table-responsive border border-secondary border-opacity-25 rounded">
         <table class="table table-dark table-sm align-middle mb-0 aprof-tabela">
             <thead>
-                <tr><th title="Nome da proteção ou da boa prática">Defesa</th><th>Como funciona</th><th title="Os ataques ou riscos que a proteção de fato bloqueia">Cobre</th><th title="O que continua possível mesmo com a proteção ativa: é o limite dela">Não cobre</th></tr>
+                <tr><th title="Nome da proteção ou da boa prática"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lock</span>Defesa</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">menu_book</span>Como funciona</th><th title="Os ataques ou riscos que a proteção de fato bloqueia"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">check_circle</span>Cobre</th><th title="O que continua possível mesmo com a proteção ativa: é o limite dela"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">cancel</span>Não cobre</th></tr>
             </thead>
             <tbody>
                 {#for mit in conteudo.mitigacoes}
@@ -118,7 +118,7 @@
         {#for lab in conteudo.laboratorios}
         <div class="col-12 col-xl-6">
             <article class="card-tech p-3 h-100 aprof-lab">
-                <h3 class="aprof-lab-titulo">{lab.titulo}</h3>
+                <h3 class="aprof-lab-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> {lab.titulo}</h3>
                 <p class="small text-secondary mb-2">{lab.cenario}</p>
                 <pre class="aprof-codigo" id="aprof-lab-{lab_count}" translate="no">{lab.comandos}</pre>
                 <div class="d-flex justify-content-end mb-2">

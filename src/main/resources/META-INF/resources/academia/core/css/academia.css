@@ -331,6 +331,11 @@
     color: var(--aed-text-secondary);
 }
 
+.acad-trilha-caminho .material-symbols-outlined {
+    font-size: 1rem;
+    vertical-align: middle;
+}
+
 /* Flex e não grid: com grid auto-fit, a etapa "larga" (1 / -1) segurava uma terceira coluna vazia
    ao lado de Ver e Mexer. Assim as duas dividem a linha e a larga ocupa a linha inteira. */
 .acad-etapas {

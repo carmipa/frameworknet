@@ -11,7 +11,7 @@
     {#include protocolos/partials/subnav.html /}
     <div class="text-center mb-4">
         <span class="aed-eyebrow aed-eyebrow-indigo">Catálogo</span>
-        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Catálogo de Protocolos de Rede</h1>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);"><span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">lan</span> Catálogo de Protocolos de Rede</h1>
         <p class="text-secondary small mx-auto aed-medida-leitura">
             DataGrid didático: camada, transporte, segurança, função e classificação IGP/EGP para roteamento.
         </p>
@@ -30,7 +30,7 @@
                 <table class="table table-dark table-bordered table-sm mb-0">
                     <thead>
                         <tr>
-                            <th title="Protocolo de roteamento comparado na linha"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Protocolo</th>
+                            <th title="Protocolo de roteamento comparado na linha"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">conversion_path</span>Protocolo</th>
                             <th title="O que o protocolo mede para escolher o melhor caminho"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">straighten</span>Métrica</th>
                             <th title="Distância administrativa na Cisco: quanto menor, mais confiável é a fonte da rota"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">low_priority</span>AD</th>
                             <th title="Quanto tempo a rede leva para se ajustar depois de uma mudança"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">update</span>Convergência</th>
@@ -55,7 +55,7 @@
             </div>
             <div class="row g-2 align-items-end mb-2">
                 <div class="col-md-6 col-lg-4">
-                    <label class="form-label small text-secondary d-flex align-items-center gap-1">Alcance (IGP / EGP)
+                    <label class="form-label small text-secondary d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">public</span> Alcance (IGP / EGP)
                         <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="IGP troca rotas dentro de um Sistema Autônomo (AS); EGP, no uso atual, é o BGP entre AS. Protocolo que não é de roteamento aparece como N/A." aria-label="Ajuda: IGP e EGP"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
                     </label>
                     <select aria-label="Alcance (IGP / EGP)" class="form-select bg-dark text-light border-secondary" data-grid-alcance="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra por alcance didático: interior (IGP), exterior (EGP) ou não aplicável.">
@@ -135,14 +135,14 @@
                 <table class="table table-dark table-hover table-bordered align-middle mb-2 datagrid-table" data-grid-table="protocolos">
                     <thead class="table-dark-header">
                         <tr>
-                            <th class="sortable" data-sort-key="nome" title="Nome do protocolo; clique no cabeçalho para ordenar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Protocolo</th>
+                            <th class="sortable" data-sort-key="nome" title="Nome do protocolo; clique no cabeçalho para ordenar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">conversion_path</span>Protocolo</th>
                             <th class="sortable" data-sort-key="camada" title="Camada do modelo TCP/IP em que o protocolo atua"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">layers</span>Camada</th>
                             <th class="sortable" data-sort-key="alcance" title="Se o protocolo roteia dentro de um AS (IGP), entre AS (EGP) ou não é de roteamento (N/A)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">public</span>IGP/EGP</th>
-                            <th class="sortable" data-sort-key="transporte" title="Como as mensagens do protocolo viajam: sobre TCP, UDP, ICMP ou nenhum deles"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">swap_horiz</span>Transporte</th>
-                            <th class="sortable" data-sort-key="porta" title="Porta TCP ou UDP em que o serviço costuma escutar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_ethernet</span>Porta comum</th>
-                            <th class="sortable" data-sort-key="seguro" title="Se o protocolo cifra ou autentica o tráfego por padrão"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">shield</span>Seguro</th>
+                            <th class="sortable" data-sort-key="transporte" title="Como as mensagens do protocolo viajam: sobre TCP, UDP, ICMP ou nenhum deles"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">swap_calls</span>Transporte</th>
+                            <th class="sortable" data-sort-key="porta" title="Porta TCP ou UDP em que o serviço costuma escutar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">door_open</span>Porta comum</th>
+                            <th class="sortable" data-sort-key="seguro" title="Se o protocolo cifra ou autentica o tráfego por padrão"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lock</span>Seguro</th>
                             <th class="sortable" data-sort-key="nivel" title="Classificação didática de risco: crítico, atenção, seguro ou didático"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">equalizer</span>Nível</th>
-                            <th title="Para que o protocolo serve na rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">functions</span>Função</th>
+                            <th title="Para que o protocolo serve na rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">data_object</span>Função</th>
                             <th class="text-center" style="width: 13.75rem;"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
                         </tr>
                     </thead>
@@ -315,8 +315,8 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content bg-dark text-light border border-secondary">
             <div class="modal-header border-secondary">
-                <h2 class="h5 modal-title" id="commDetailsModalLabel">Detalhes</h2>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <h2 class="h5 modal-title" id="commDetailsModalLabel"><span class="material-symbols-outlined" aria-hidden="true" translate="no">info</span> Detalhes</h2>
+                <button type="button" class="btn-close btn-close-white" data-icone-excecao="fechar do Bootstrap: o X é desenhado pelo CSS" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body" id="commDetailsModalBody"></div>
         </div>

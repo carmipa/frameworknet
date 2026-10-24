@@ -11,6 +11,9 @@
             return;
         }
         map = L.map("loc-map", { scrollWheelZoom: false }).setView([-14.235, -51.925], 4);
+        document.querySelectorAll("#loc-map .leaflet-control-zoom a").forEach(function (a) {
+            a.setAttribute("data-icone-excecao", "zoom do mapa (Leaflet): o + e o − desenhados no botão são o ícone");
+        });
         // Crédito do Leaflet sem o title de propaganda da biblioteca, que o adaptador viraria dica num link de destino óbvio.
         map.attributionControl.setPrefix('<a href="https://leafletjs.com/">Leaflet</a>');
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -73,10 +76,16 @@
         return el;
     }
 
-    function titulo(el, texto) {
+    function titulo(el, texto, icone) {
         var h = document.createElement("h3");
         h.className = "h5 loc-form-title";
-        h.textContent = texto;
+        var ic = document.createElement("span");
+        ic.className = "material-symbols-outlined";
+        ic.setAttribute("aria-hidden", "true");
+        ic.setAttribute("translate", "no");
+        ic.textContent = icone;
+        h.appendChild(ic);
+        h.appendChild(document.createTextNode(" " + texto));
         el.appendChild(h);
     }
 
@@ -108,12 +117,12 @@
     function renderCep(data) {
         if (!data || data.ok === false) {
             var e = painel();
-            titulo(e, "CEP não localizado");
+            titulo(e, "CEP não localizado", "error");
             aviso(e, (data && data.mensagem) || "Verifique o CEP informado.", "loc-alerta loc-erro");
             return;
         }
         var el = painel();
-        titulo(el, "Endereço por CEP");
+        titulo(el, "Endereço por CEP", "map");
         var g = grid(el);
         g.appendChild(item("CEP", data.cep));
         g.appendChild(item("Logradouro", data.logradouro));
@@ -133,7 +142,7 @@
 
     function renderGps(data, coords) {
         var el = painel();
-        titulo(el, "Minha localização (GPS)");
+        titulo(el, "Minha localização (GPS)", "my_location");
         var g = grid(el);
         g.appendChild(item("Latitude", coords.latitude.toFixed(6)));
         g.appendChild(item("Longitude", coords.longitude.toFixed(6)));
@@ -178,7 +187,7 @@
             .then(renderCep)
             .catch(function () {
                 var e = painel();
-                titulo(e, "Falha na consulta");
+                titulo(e, "Falha na consulta", "error");
                 aviso(e, "Falha de rede ao consultar o CEP.", "loc-alerta loc-erro");
             });
     }

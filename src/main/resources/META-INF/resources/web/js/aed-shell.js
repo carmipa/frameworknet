@@ -103,6 +103,42 @@
             });
     }
     focarBlocosDeCodigo(document);
+
+    /**
+     * Tabela com rolagem lateral alcançável pelo teclado.
+     *
+     * PROPÓSITO DE NEGÓCIO: tabela larga dentro de .table-responsive rola para o lado; sem foco, quem usa só o teclado
+     *   não alcança as colunas da direita (WCAG 2.1.1, axe scrollable-region-focusable).
+     * INVARIANTES: só a tabela que de fato rola nesta largura de janela ganha tabindex="0", papel de região e nome
+     *   ("Tabela com rolagem lateral") — a que cabe inteira não vira parada de Tab à toa; o que o template já define não
+     *   é tocado; a marca data-foco-rolagem identifica o que este mecanismo pôs, para tirar quando a tabela passar a caber.
+     * FALHA: sem MutationObserver, vale o que existia na carga e o que muda no redimensionamento.
+     */
+    function focarTabelasRolaveis() {
+        document.querySelectorAll(".table-responsive").forEach((caixa) => {
+            const rola = caixa.scrollWidth > caixa.clientWidth + 1;
+            const nossa = caixa.hasAttribute("data-foco-rolagem");
+            if (rola && !caixa.hasAttribute("tabindex")) {
+                caixa.setAttribute("tabindex", "0");
+                caixa.setAttribute("data-foco-rolagem", "");
+                if (!caixa.hasAttribute("role")) {
+                    caixa.setAttribute("role", "region");
+                    caixa.setAttribute("aria-label", "Tabela com rolagem lateral");
+                }
+            } else if (!rola && nossa) {
+                ["tabindex", "data-foco-rolagem", "role", "aria-label"].forEach((a) => caixa.removeAttribute(a));
+            }
+        });
+    }
+    focarTabelasRolaveis();
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(focarTabelasRolaveis); // a fonte dos ícones muda a largura das colunas
+    }
+    let esperaRolagem;
+    window.addEventListener("resize", () => {
+        clearTimeout(esperaRolagem);
+        esperaRolagem = setTimeout(focarTabelasRolaveis, 150);
+    });
     if (window.MutationObserver) {
         new MutationObserver((mutacoes) => {
             mutacoes.forEach((m) => {
@@ -116,6 +152,10 @@
                     }
                 });
             });
+            if (mutacoes.some((m) => m.addedNodes && m.addedNodes.length)) {
+                clearTimeout(esperaRolagem);
+                esperaRolagem = setTimeout(focarTabelasRolaveis, 150);
+            }
         }).observe(document.body, { attributes: true, attributeFilter: ["class"], childList: true, subtree: true });
     }
 

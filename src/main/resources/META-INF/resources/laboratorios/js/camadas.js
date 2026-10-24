@@ -267,7 +267,13 @@
             var b = document.createElement("button");
             b.type = "button";
             b.className = "aed-btn aed-btn-neutral btn-sm lab-opcao";
-            b.textContent = o[0];
+            var ico = document.createElement("span");
+            ico.className = "material-symbols-outlined";
+            ico.setAttribute("aria-hidden", "true");
+            ico.setAttribute("translate", "no");
+            ico.textContent = "arrow_right";
+            b.appendChild(ico);
+            b.appendChild(document.createTextNode(" " + o[0]));
             // Dica de ação igual para todas as opções: dizer algo sobre o conteúdo de cada uma entregaria a resposta.
             // O adaptador de dicas (field-tooltips.js) converte o title quando o botão entra na página.
             b.addEventListener("click", function () {

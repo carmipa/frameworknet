@@ -89,7 +89,7 @@
         <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h3>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm wizard-table mb-0">
-                <thead><tr><th title="Nome do passo do cálculo">Etapa</th><th>Ação</th><th>Resultado</th></tr></thead>
+                <thead><tr><th title="Nome do passo do cálculo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">format_list_numbered</span>Etapa</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ação</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">output</span>Resultado</th></tr></thead>
                 <tbody>
                 {#for passo in r.wizard}
                 <tr><td>{passo.icone} {passo.etapa}</td><td>{passo.acao}</td><td class="font-monospace">{passo.resultado}</td></tr>
@@ -127,14 +127,14 @@
                 <div class="table-responsive">
                     <table class="table table-dark table-bordered table-sm resultados-table mb-2">
                         <tbody>
-                            <tr><th title="Forma curta canônica: sem zeros à esquerda e com :: no maior bloco de zeros">Comprimido (RFC 5952)</th><td class="font-monospace text-warning fw-bold">{r.base.comprimido}</td></tr>
-                            <tr><th title="Os 8 hextetos completos, com 4 dígitos hexadecimais cada">Expandido</th><td class="font-monospace">{r.base.expandido}</td></tr>
-                            <tr><th title="Endereço com todos os bits de interface zerados">Rede (/{r.base.prefixo})</th><td class="font-monospace">{r.base.rede}</td></tr>
-                            <tr><th title="Menor endereço do bloco, igual ao endereço de rede">1º endereço</th><td class="font-monospace text-success">{r.base.primeiro}</td></tr>
-                            <tr><th title="Maior endereço do bloco, com todos os bits de interface em 1">Último endereço</th><td class="font-monospace text-success">{r.base.ultimo}</td></tr>
-                            <tr><th title="Parte do endereço depois do prefixo, que identifica a interface">Interface ID</th><td class="font-monospace">{r.base.interfaceId}</td></tr>
-                            <tr><th title="Grupo multicast ff02::1:ff mais os 24 bits finais, usado pelo NDP no lugar do ARP">Solicited-node</th><td class="font-monospace">{r.base.solicitedNode}</td></tr>
-                            <tr><th title="Nome PTR do DNS reverso: os 32 nibbles invertidos seguidos de ip6.arpa">Reverso (ip6.arpa)</th><td class="font-monospace" style="word-break:break-all;">{r.base.reversePtr}</td></tr>
+                            <tr><th title="Forma curta canônica: sem zeros à esquerda e com :: no maior bloco de zeros"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">compress</span>Comprimido (RFC 5952)</th><td class="font-monospace text-warning fw-bold">{r.base.comprimido}</td></tr>
+                            <tr><th title="Os 8 hextetos completos, com 4 dígitos hexadecimais cada"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">expand</span>Expandido</th><td class="font-monospace">{r.base.expandido}</td></tr>
+                            <tr><th title="Endereço com todos os bits de interface zerados"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede (/{r.base.prefixo})</th><td class="font-monospace">{r.base.rede}</td></tr>
+                            <tr><th title="Menor endereço do bloco, igual ao endereço de rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">first_page</span>1º endereço</th><td class="font-monospace text-success">{r.base.primeiro}</td></tr>
+                            <tr><th title="Maior endereço do bloco, com todos os bits de interface em 1"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">last_page</span>Último endereço</th><td class="font-monospace text-success">{r.base.ultimo}</td></tr>
+                            <tr><th title="Parte do endereço depois do prefixo, que identifica a interface"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">fingerprint</span>Interface ID</th><td class="font-monospace">{r.base.interfaceId}</td></tr>
+                            <tr><th title="Grupo multicast ff02::1:ff mais os 24 bits finais, usado pelo NDP no lugar do ARP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">groups</span>Solicited-node</th><td class="font-monospace">{r.base.solicitedNode}</td></tr>
+                            <tr><th title="Nome PTR do DNS reverso: os 32 nibbles invertidos seguidos de ip6.arpa"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">dns</span>Reverso (ip6.arpa)</th><td class="font-monospace" style="word-break:break-all;">{r.base.reversePtr}</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -174,7 +174,7 @@
     <div class="card-tech p-3 mb-3">
         <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">account_tree</span> Delegação de prefixo — quantas sub-redes menores cabem</h3>
         <table class="table table-dark table-bordered table-sm interval-table mb-0">
-            <thead><tr><th title="Tamanho do bloco menor a delegar">Prefixo</th><th title="Número de blocos desse tamanho dentro do prefixo analisado">Quantas cabem</th><th title="Para quem esse tamanho costuma ser entregue">Uso típico</th></tr></thead>
+            <thead><tr><th title="Tamanho do bloco menor a delegar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Prefixo</th><th title="Número de blocos desse tamanho dentro do prefixo analisado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">grid_on</span>Quantas cabem</th><th title="Para quem esse tamanho costuma ser entregue"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">task_alt</span>Uso típico</th></tr></thead>
             <tbody>
             {#for l in r.delegacao}
                 <tr><td class="font-monospace">{l.prefixo}</td><td class="fw-bold">{l.quantidade}</td><td class="small text-secondary">{l.uso}</td></tr>
@@ -189,7 +189,7 @@
         <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {r.reguaCount} de /{r.base.prefixo})</h3>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm regua-table mb-0">
-                <thead><tr><th title="Posição na régua; a primeira linha é o bloco analisado">#</th><th title="Prefixo do bloco em notação CIDR">Rede</th><th title="Primeiro endereço do bloco">1º endereço</th><th>Último endereço</th></tr></thead>
+                <thead><tr><th title="Posição na régua; a primeira linha é o bloco analisado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>#</th><th title="Prefixo do bloco em notação CIDR"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede</th><th title="Primeiro endereço do bloco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">first_page</span>1º endereço</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">last_page</span>Último endereço</th></tr></thead>
                 <tbody>
                 {#for s in r.regua}
                 <tr class="{#if s_isFirst}regua-current{/if}">
@@ -207,7 +207,7 @@
         <div class="p-3 border-bottom border-secondary text-info fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">table_chart</span> Tabela de referência de prefixos IPv6</div>
         <div class="p-3 table-responsive">
             <table class="table table-dark table-bordered table-sm ref-table mb-0">
-                <thead><tr><th title="Tamanho do prefixo de referência">Prefixo</th><th title="Quantas LANs /64 cabem num bloco desse tamanho">Sub-redes /64</th><th title="Total de endereços do bloco">Endereços</th><th title="Se o prefixo termina num múltiplo de 4 bits, alinhado a um nibble, ou no meio de um">Fronteira</th></tr></thead>
+                <thead><tr><th title="Tamanho do prefixo de referência"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Prefixo</th><th title="Quantas LANs /64 cabem num bloco desse tamanho"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">grid_on</span>Sub-redes /64</th><th title="Total de endereços do bloco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Endereços</th><th title="Se o prefixo termina num múltiplo de 4 bits, alinhado a um nibble, ou no meio de um"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">border_vertical</span>Fronteira</th></tr></thead>
                 <tbody>
                 {#for row in r.referencia}
                 <tr class="{#if row.atual}is-current{/if}">
@@ -224,7 +224,7 @@
         <div class="p-3 border-bottom border-secondary text-warning fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_horiz</span> Conversão (bits, nibbles, hextetos, hex)</div>
         <div class="p-3 table-responsive">
             <table class="table table-dark table-bordered table-sm conv-table mb-0">
-                <thead><tr><th title="A unidade de medida da linha">Referência</th><th title="Quantidade de bits da unidade">Bits</th><th title="Quantos grupos de 4 bits a unidade tem">Nibbles</th><th title="Quantos grupos de 16 bits a unidade tem">Hextetos</th><th title="Como a unidade aparece escrita em hexadecimal">Hex</th></tr></thead>
+                <thead><tr><th title="A unidade de medida da linha"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">menu_book</span>Referência</th><th title="Quantidade de bits da unidade"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">memory</span>Bits</th><th title="Quantos grupos de 4 bits a unidade tem"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">memory</span>Nibbles</th><th title="Quantos grupos de 16 bits a unidade tem"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">memory</span>Hextetos</th><th title="Como a unidade aparece escrita em hexadecimal"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">hexagon</span>Hex</th></tr></thead>
                 <tbody>
                 {#for row in r.conversao}
                 <tr><td>{row.referencia}</td><td>{row.bits}</td><td>{row.nibbles}</td><td>{row.hextetos}</td><td>{row.hex}</td></tr>

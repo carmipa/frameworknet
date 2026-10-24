@@ -1,0 +1,6 @@
+{! coluna v1.0 (2026-10-24) — componente compartilhado: não editar no projeto; mudança só na origem.
+   Cabeçalho de coluna com ícone obrigatório. Parâmetros OBRIGATÓRIOS: icone (nome do glifo Material Symbols, fonte
+   servida local) e texto (já traduzido). O conteúdo aninhado é opcional e serve para o "?" da dica, quando a coluna
+   tem sigla, unidade ou métrica a explicar. Uso: {#coluna icone='calendar_month' texto=msg:data /}
+   ou {#coluna icone='memory' texto=msg:hosts}{#dicaAjuda ref='d-hosts' rotulo=msg:hosts texto=msg:hosts_dica /}{/coluna} !}
+<th scope="col"><span class="material-symbols-outlined" aria-hidden="true" translate="no">{icone}</span> {texto}{nested-content}</th>

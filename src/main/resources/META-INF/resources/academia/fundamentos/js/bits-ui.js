@@ -38,6 +38,7 @@
             var botao = document.createElement('button');
             botao.type = 'button';
             botao.className = 'acad-bit';
+            botao.setAttribute('data-icone-excecao', 'bit do byte: o valor 0 ou 1 é o próprio rótulo');
             botao.setAttribute('aria-pressed', 'false');
             var valor = document.createElement('span');
             valor.className = 'acad-bit-valor';

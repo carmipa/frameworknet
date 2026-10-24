@@ -22,7 +22,8 @@ class MarkdownRendererTest {
         String html = renderer.render(markdown).html();
 
         assertTrue(html.contains("<table>"));
-        assertTrue(html.contains("<th>Modulo</th>"));
+        assertTrue(html.contains("<th><span class=\"material-symbols-outlined aed-inline-icon\" aria-hidden=\"true\" translate=\"no\">category</span>Modulo</th>"), html);
+        assertTrue(html.contains(">route</span>Rota</th>"), html);
         assertTrue(html.contains("<td><code>/documentacao</code></td>"));
         assertFalse(html.contains("<p>| Modulo | Rota |</p>"));
     }
@@ -36,6 +37,17 @@ class MarkdownRendererTest {
         assertTrue(html.contains("<h2 id=\"framework\" class=\"md-h1\">"), html);
         assertTrue(html.contains("<h3 id=\"secao\" class=\"md-h2\">"), html);
         assertTrue(html.contains("<h6 id=\"fundo\" class=\"md-h6\">"), html);
+    }
+
+    /** Título do README ganha o glifo do sumário; o emoji que abria o título sai, para não haver dois ícones. */
+    @Test
+    void tituloGanhaGlifoDoSumario() {
+        String html = renderer.render("## Telemetria\n\n## ▶️ Execução\n").html();
+
+        assertTrue(html.contains("class=\"md-h2\"><span class=\"material-symbols-outlined aed-inline-icon\" "
+                + "aria-hidden=\"true\" translate=\"no\">monitoring</span> Telemetria</h3>"), html);
+        assertTrue(html.contains("class=\"md-h2\"><span class=\"material-symbols-outlined aed-inline-icon\" "
+                + "aria-hidden=\"true\" translate=\"no\">terminal</span> Execução</h3>"), html);
     }
 
     @Test

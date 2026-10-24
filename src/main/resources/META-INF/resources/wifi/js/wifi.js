@@ -26,6 +26,7 @@
             b.type = "button";
             b.className = "wifi-canal" + (selecionados.has(c) ? " is-on" : "") + (NAO_SOBREPOEM.indexOf(c) >= 0 ? " wifi-canal-limpo" : "");
             b.textContent = c;
+            b.setAttribute("data-icone-excecao", "canal do mapa de frequências: o número é o próprio rótulo");
             b.setAttribute("aria-pressed", selecionados.has(c) ? "true" : "false");
             b.title = "Canal " + c + (NAO_SOBREPOEM.indexOf(c) >= 0 ? " (não sobrepõe 1/6/11)" : "");
             b.addEventListener("click", function () {

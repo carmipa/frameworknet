@@ -415,6 +415,7 @@ body.aed-app .header-tech {
 .aed-eyebrow-indigo { color: #a5b4fc; }
 .aed-eyebrow-amber { color: var(--aed-risk-attention); }
 .aed-eyebrow-teal { color: var(--aed-teal); }
+.aed-title-icon { font-size: 1em; vertical-align: -0.15em; margin-right: 0.15em; }
 
 /* --- Mode selector grid --- */
 .aed-mode-grid {

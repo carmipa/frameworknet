@@ -11,7 +11,7 @@
 
     <div class="text-center mb-4">
         <span class="aed-eyebrow aed-eyebrow-teal">Localização</span>
-        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);">Localização por IP (GeoIP) e por CEP</h1>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);"><span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">pin_drop</span> Localização por IP (GeoIP) e por CEP</h1>
         <p class="text-secondary small mx-auto aed-medida-leitura">
             Localize a região de um IP público (GeoIP) e o endereço de um CEP, plotados no mapa (OpenStreetMap).
         </p>
@@ -60,7 +60,7 @@
         <form class="row g-2 align-items-end mb-3" id="form-geo-ip" onsubmit="return false;" autocomplete="off">
             <div class="col-12 col-md-6 col-lg-5">
                 <label for="geo-ip-digitar" class="form-label text-secondary small mb-1 d-flex align-items-center gap-1">
-                    IP a localizar (opcional)
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> IP a localizar (opcional)
                     <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top"
                             title="Entrada de IP"
                             data-bs-content="Digite um IPv4 ou IPv6 público para localizar país e região. Se vazio, será usado o IP da conexão atual." aria-label="Ajuda: Entrada de IP"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
@@ -118,13 +118,13 @@
                     <table class="table table-dark table-bordered table-sm table-hover align-middle mb-0">
                         <thead>
                         <tr class="text-secondary small">
-                            <th title="Data e hora em que a consulta foi feita">Timestamp</th>
-                            <th title="Endereço que foi localizado">IP</th>
-                            <th>Tipo</th>
-                            <th>País</th>
-                            <th title="Estado e cidade aproximados, que costumam ser os do provedor">Região / Cidade</th>
-                            <th title="Provedor de acesso ou organização dona do bloco de endereços">ISP</th>
-                            <th title="Nível de risco de governança e segurança atribuído ao IP; N/A para endereços reservados">Risco</th>
+                            <th title="Data e hora em que a consulta foi feita"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">schedule</span>Timestamp</th>
+                            <th title="Endereço que foi localizado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">dns</span>IP</th>
+                            <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo</th>
+                            <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">public</span>País</th>
+                            <th title="Estado e cidade aproximados, que costumam ser os do provedor"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">location_on</span>Região / Cidade</th>
+                            <th title="Provedor de acesso ou organização dona do bloco de endereços"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">apartment</span>ISP</th>
+                            <th title="Nível de risco de governança e segurança atribuído ao IP; N/A para endereços reservados"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">priority_high</span>Risco</th>
                         </tr>
                         </thead>
                         <tbody id="geo-history-body">
@@ -178,7 +178,7 @@
             <!-- Endereço por CEP (ViaCEP + geocoding OSM) -->
             <form id="form-loc-cep" class="aed-card card-tech loc-cep-form mb-4" autocomplete="off" onsubmit="return false;">
                 <span class="aed-eyebrow aed-eyebrow-indigo">Por CEP</span>
-                <h2 class="h5 loc-form-title">Endereço no mapa (ViaCEP + OpenStreetMap)</h2>
+                <h2 class="h5 loc-form-title">Endereço no mapa<span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">map</span>  (ViaCEP + OpenStreetMap)</h2>
                 <label class="form-label small text-secondary" for="loc-cep"><span class="material-symbols-outlined" aria-hidden="true" translate="no">markunread_mailbox</span> CEP</label>
                 <div class="loc-input-row">
                     <input type="text" id="loc-cep" class="form-control bg-dark text-light border-secondary"
@@ -197,7 +197,7 @@
             <!-- Localização exata via GPS do navegador (com consentimento) -->
             <div class="aed-card card-tech loc-cep-form mb-4">
                 <span class="aed-eyebrow aed-eyebrow-teal">Precisa · com sua permissão</span>
-                <h2 class="h5 loc-form-title">Minha localização exata (GPS do navegador)</h2>
+                <h2 class="h5 loc-form-title">Minha localização exata<span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">my_location</span>  (GPS do navegador)</h2>
                 <p class="small text-secondary mb-2">
                     Diferente do IP, o <strong>GPS/Wi-Fi do seu aparelho</strong> dá a posição real — o navegador
                     vai <strong>pedir sua permissão</strong>. Nada é enviado sem você autorizar.

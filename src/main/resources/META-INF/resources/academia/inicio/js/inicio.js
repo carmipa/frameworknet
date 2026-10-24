@@ -28,6 +28,7 @@
             var botao = document.createElement('button');
             botao.type = 'button';
             botao.className = 'acad-bit';
+            botao.setAttribute('data-icone-excecao', 'bit do byte: o valor 0 ou 1 é o próprio rótulo');
             botao.title = 'Acende ou apaga o bit de peso ' + peso;
             var digito = document.createElement('span');
             digito.className = 'acad-bit-valor';

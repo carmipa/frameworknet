@@ -99,9 +99,9 @@
             <table class="table table-dark table-bordered table-sm mb-0">
                 <thead>
                 <tr>
-                    <th title="Grandeza calculada em cada linha: máscara, salto entre redes, hosts, rede, broadcast e risco">Métrica</th>
+                    <th title="Grandeza calculada em cada linha: máscara, salto entre redes, hosts, rede, broadcast e risco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">straighten</span>Métrica</th>
                     {#for card in comparadorCards}
-                    <th title="Valores calculados para o mesmo IP usando este prefixo">/{card.cidr}</th>
+                    <th title="Valores calculados para o mesmo IP usando este prefixo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>/{card.cidr}</th>
                     {/for}
                 </tr>
                 </thead>
@@ -163,7 +163,7 @@
             <table class="table table-dark table-sm table-bordered mb-0">
                 <thead>
                 <tr class="small text-secondary">
-                    <th><span class="visually-hidden">Ação</span></th><th>Data</th><th title="Qual aba da análise foi usada na consulta, como CIDR, máscara ou wildcard">Modo</th><th title="O endereço IPv4 ou IPv6 que foi digitado na consulta">Entrada</th><th title="O endereço de rede calculado a partir da entrada e do prefixo">Rede</th><th title="Nível de risco do tamanho do bloco: quanto menor o prefixo, maior a rede e o risco">Tema</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span><span class="visually-hidden">Ação</span></th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">calendar_month</span>Data</th><th title="Qual aba da análise foi usada na consulta, como CIDR, máscara ou wildcard"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tune</span>Modo</th><th title="O endereço IPv4 ou IPv6 que foi digitado na consulta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">input</span>Entrada</th><th title="O endereço de rede calculado a partir da entrada e do prefixo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede</th><th title="Nível de risco do tamanho do bloco: quanto menor o prefixo, maior a rede e o risco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">topic</span>Tema</th>
                 </tr>
                 </thead>
                 <tbody>

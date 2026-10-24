@@ -174,6 +174,12 @@ Desde 22/10/2026:
   há o que explicar: reprova a que falta (botão só com ícone, campo com formato, desabilitado)
   e a que sobra (em título, card clicável ou texto corrido). Para cada rota, com axe WCAG 2.2 AA:
   `cd scripts && BASE_URL=http://localhost:8081 ROTAS=/,/calculadora npx playwright test dica-rotas.spec.mjs`.
+- **Ícones** — `node scripts/verificar-icones.mjs [base]` percorre as mesmas páginas, abas e
+  painéis de resultado e reprova rótulo sem ícone (coluna, campo, título de área, botão, aba, menu,
+  legenda de tabela, bloco expansível) e glifo que não desenha (a fonte escreveu o nome dele).
+  Exceção só com `data-icone-excecao="motivo"`. Os ícones de coluna saem de um mapa só,
+  `IconesColuna` (mesmo rótulo, mesmo glifo): `IconesColunaTest` reprova coluna dos JSON ou do
+  diagnóstico sem glifo próprio e cabeçalho fixo com glifo diferente do mapa.
 - **Bibliotecas de terceiros** (Bootstrap, mermaid, Chart.js, Leaflet) são servidas por
   `/web/vendor/`, com os mesmos `integrity` de antes; o `.gitattributes` impede o git de
   trocar as quebras de linha desses arquivos.

@@ -11,7 +11,7 @@
         <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
             <div>
                 <span class="aed-eyebrow">Observabilidade</span>
-                <h1 class="h2 mb-1" style="font-family:var(--aed-font-display);">Telemetria do Framework</h1>
+                <h1 class="h2 mb-1" style="font-family:var(--aed-font-display);"><span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">monitoring</span> Telemetria do Framework</h1>
                 <p class="text-secondary small mb-0">Saúde HTTP, latência (percentis), endpoints e console em tempo real.</p>
             </div>
             <div class="tele-controls d-flex flex-wrap align-items-end gap-2">
@@ -173,7 +173,7 @@
             <div class="table-responsive">
                 <table class="table table-dark table-sm telemetry-table tele-endpoints mb-0">
                     <thead>
-                    <tr><th>Método</th><th>Endpoint</th><th class="num">Chamadas</th><th class="num">P95</th><th class="num">Erros</th></tr>
+                    <tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">link</span>Endpoint</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Chamadas</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">query_stats</span>P95</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">error</span>Erros</th></tr>
                     </thead>
                     <tbody id="t-top-lentos">
                     <tr><td colspan="5" class="tele-empty">Sem dados no período.</td></tr>
@@ -186,7 +186,7 @@
             <div class="table-responsive">
                 <table class="table table-dark table-sm telemetry-table tele-endpoints mb-0">
                     <thead>
-                    <tr><th>Método</th><th>Endpoint</th><th class="num">4xx</th><th class="num">5xx</th><th class="num">Chamadas</th></tr>
+                    <tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">link</span>Endpoint</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">warning</span>4xx</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">error</span>5xx</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Chamadas</th></tr>
                     </thead>
                     <tbody id="t-top-erros">
                     <tr><td colspan="5" class="tele-empty">Nenhum erro no período.</td></tr>
@@ -210,7 +210,7 @@
             <div class="col-lg-7">
                 <div class="table-responsive">
                     <table class="table table-dark table-sm telemetry-table mb-0">
-                        <caption class="text-secondary small px-2">Requisições por módulo</caption>
+                        <caption class="text-secondary small px-2"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span> Requisições por módulo</caption>
                         <thead>
                             <tr>
                                 <th title="Módulo da aplicação (alvo interno da requisição)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Módulo</th>
@@ -230,7 +230,7 @@
         </div>
         <div class="table-responsive mt-3">
             <table class="table table-dark table-sm telemetry-table tele-endpoints mb-0">
-                <caption class="text-secondary small px-2">Top rotas por volume de chamadas</caption>
+                <caption class="text-secondary small px-2"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span> Top rotas por volume de chamadas</caption>
                 <thead>
                     <tr>
                         <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th>
@@ -249,7 +249,7 @@
             <div class="col-lg-7">
                 <div class="table-responsive">
                     <table class="table table-dark table-sm telemetry-table mb-0">
-                        <caption class="text-secondary small px-2">Acessos por país (código ISO informado pela borda — sem IP).
+                        <caption class="text-secondary small px-2"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span> Acessos por país (código ISO informado pela borda — sem IP).
                             Aparece <code translate="no">??</code> enquanto não houver borda que <strong>sobrescreva</strong> o
                             cabeçalho: sem isso ele é escolhido por quem visita, e métrica ditada por quem é
                             medido não é medição.</caption>
@@ -311,14 +311,14 @@
             <table class="table table-dark table-sm table-hover telemetry-table mb-2">
                 <thead>
                 <tr>
-                    <th>Horário</th>
-                    <th>Nível</th>
-                    <th>Módulo</th>
-                    <th>Método</th>
-                    <th>Endpoint</th>
-                    <th>Status</th>
-                    <th class="num">Duração</th>
-                    <th>Mensagem</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">schedule</span>Horário</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">equalizer</span>Nível</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Módulo</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">link</span>Endpoint</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">flag</span>Status</th>
+                    <th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">timer</span>Duração</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">chat</span>Mensagem</th>
                 </tr>
                 </thead>
                 <tbody id="t-table-body">

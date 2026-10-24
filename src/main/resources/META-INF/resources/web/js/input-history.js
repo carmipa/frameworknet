@@ -113,6 +113,7 @@
             const label = document.createElement("button");
             label.type = "button";
             label.className = "fn-ih-label";
+            label.setAttribute("data-icone-excecao", "valor digitado antes: o texto é o próprio dado");
             label.textContent = value;
             label.addEventListener("mousedown", (ev) => {
                 ev.preventDefault();
@@ -140,7 +141,7 @@
         const footer = document.createElement("button");
         footer.type = "button";
         footer.className = "fn-ih-clear";
-        footer.textContent = "Limpar histórico";
+        footer.innerHTML = '<span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar histórico';
         footer.addEventListener("mousedown", (ev) => {
             ev.preventDefault();
             clearHistory(input);

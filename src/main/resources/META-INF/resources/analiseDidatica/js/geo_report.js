@@ -38,6 +38,7 @@
                 "</span></div>" +
                 '<div class="card-body"><div class="row mb-3"><div class="col-12">' +
                 '<h3 class="h5 font-monospace geo-ip-readout mb-2">' +
+                '<span class="material-symbols-outlined" aria-hidden="true" translate="no">dns</span> ' +
                 esc(j.ip) +
                 "</h3>" +
                 '<span class="badge bg-secondary me-1">' +

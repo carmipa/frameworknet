@@ -117,6 +117,7 @@
 .rede-q-texto { font-weight: 600; color: #eef2f8; margin: 0 0 0.5rem; }
 .rede-q-opcoes { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .rede-q-opcao { border: 1px solid rgba(148,163,184,0.3); background: rgba(148,163,184,0.08); color: #cbd5e1; border-radius: .5rem; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.85rem; }
+.rede-q-opcao .material-symbols-outlined { font-size: 1.1rem; vertical-align: middle; }
 .rede-q-fb { margin: 0.6rem 0 0; font-size: 0.85rem; padding: 0.4rem 0.6rem; border-radius: .5rem; }
 .rede-q-fb.acertou { background: rgba(52,211,153,0.12); color: #6ee7b7; }
 .rede-q-fb.errou { background: rgba(245,158,11,0.12); color: #fcd34d; }

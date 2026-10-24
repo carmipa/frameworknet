@@ -33,15 +33,15 @@
         <h2 class="h6 text-warning mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_view</span> Modo Wildcard — resumo limpo</h2>
         <table class="table table-dark table-bordered table-sm resultados-table mb-0">
             <tbody>
-                <tr><th title="A wildcard usada no cálculo: bits 0 precisam casar com o endereço, bits 1 podem variar">Wildcard informada</th><td class="fw-bold">{#if wildcardPre}{wildcardPre}{#else}{res.wildcard}{/if}</td></tr>
-                <tr><th title="255 menos cada octeto da wildcard: a máscara de sub-rede que descreve o mesmo bloco">Máscara equivalente</th><td>{res.mask}</td></tr>
-                <tr><th title="Quantidade de bits 1 da máscara equivalente, escrita na notação de barra">CIDR equivalente</th><td>/{res.cidr}</td></tr>
-                <tr><th title="Primeiro endereço do bloco, com todos os bits de host em 0; identifica a sub-rede">Rede</th><td>{res.rede}</td></tr>
-                <tr><th title="Primeiro endereço que pode ser dado a uma máquina: o endereço de rede mais um">1º host</th><td>{res.primeiro_host}</td></tr>
-                <tr><th title="Último endereço que pode ser dado a uma máquina: o broadcast menos um">Último host</th><td>{res.ultimo_host}</td></tr>
-                <tr><th title="Último endereço do bloco, com os bits de host em 1; o que é enviado a ele chega a toda a sub-rede">Broadcast</th><td>{res.broad}</td></tr>
-                <tr><th title="Tamanho do bloco no octeto que varia: a próxima sub-rede começa este valor adiante">Pulo</th><td><span class="highlight-pulo">{res.pulo}</span></td></tr>
-                <tr><th title="Total de endereços do bloco e, entre parênteses, quantos sobram para máquinas">Capacidade</th><td>{res.total} IPs ({res.uteis} úteis)</td></tr>
+                <tr><th title="A wildcard usada no cálculo: bits 0 precisam casar com o endereço, bits 1 podem variar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">filter_alt</span>Wildcard informada</th><td class="fw-bold">{#if wildcardPre}{wildcardPre}{#else}{res.wildcard}{/if}</td></tr>
+                <tr><th title="255 menos cada octeto da wildcard: a máscara de sub-rede que descreve o mesmo bloco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">filter_alt</span>Máscara equivalente</th><td>{res.mask}</td></tr>
+                <tr><th title="Quantidade de bits 1 da máscara equivalente, escrita na notação de barra"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>CIDR equivalente</th><td>/{res.cidr}</td></tr>
+                <tr><th title="Primeiro endereço do bloco, com todos os bits de host em 0; identifica a sub-rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede</th><td>{res.rede}</td></tr>
+                <tr><th title="Primeiro endereço que pode ser dado a uma máquina: o endereço de rede mais um"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">first_page</span>1º host</th><td>{res.primeiro_host}</td></tr>
+                <tr><th title="Último endereço que pode ser dado a uma máquina: o broadcast menos um"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">last_page</span>Último host</th><td>{res.ultimo_host}</td></tr>
+                <tr><th title="Último endereço do bloco, com os bits de host em 1; o que é enviado a ele chega a toda a sub-rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">campaign</span>Broadcast</th><td>{res.broad}</td></tr>
+                <tr><th title="Tamanho do bloco no octeto que varia: a próxima sub-rede começa este valor adiante"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">redo</span>Pulo</th><td><span class="highlight-pulo">{res.pulo}</span></td></tr>
+                <tr><th title="Total de endereços do bloco e, entre parênteses, quantos sobram para máquinas"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">memory</span>Capacidade</th><td>{res.total} IPs ({res.uteis} úteis)</td></tr>
             </tbody>
         </table>
     </div>
@@ -49,7 +49,7 @@
     <div class="card-tech p-4 shadow mb-3">
         <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">123</span> Octetos e validação wildcard</h2>
         <table class="table table-dark table-bordered table-sm regua-table mb-2">
-            <thead><tr><th>Campo</th><th title="Primeiro octeto: os bits 1 a 8, da esquerda para a direita">1º</th><th title="Segundo octeto: os bits 9 a 16">2º</th><th title="Terceiro octeto: os bits 17 a 24">3º</th><th title="Quarto octeto: os bits 25 a 32, os mais à direita">4º</th></tr></thead>
+            <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span>Campo</th><th title="Primeiro octeto: os bits 1 a 8, da esquerda para a direita"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">looks_one</span>1º</th><th title="Segundo octeto: os bits 9 a 16"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">looks_two</span>2º</th><th title="Terceiro octeto: os bits 17 a 24"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">looks_3</span>3º</th><th title="Quarto octeto: os bits 25 a 32, os mais à direita"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">looks_4</span>4º</th></tr></thead>
             <tbody>
                 <tr class="and-row-wild"><td>Wildcard</td>{#for col in res.and_table}<td>{col.wild_oct}</td>{/for}</tr>
                 <tr class="and-row-mask"><td>Máscara</td>{#for col in res.and_table}<td>{col.mask_oct}</td>{/for}</tr>
@@ -58,7 +58,7 @@
         </table>
         <div class="small text-secondary">Regra: em cada octeto, wildcard + máscara = 255.</div>
         <details class="mt-3">
-            <summary class="text-info small">Laboratório visual (resultado)</summary>
+            <summary class="text-info small"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório visual (resultado)</summary>
             <div class="row g-2 mt-2">
                 <div class="col-lg-6"><input id="wild_result_mask" type="text" class="form-control input-ipv4 bg-dark text-light border-secondary" value="{res.mask}" autocomplete="off" spellcheck="false"
                     title="Máscara para testar, como 255.255.240.0; a wildcard ao lado é recalculada enquanto você digita"></div>
@@ -156,7 +156,7 @@
         <div class="p-3 and-table-wrap">
             <table class="table table-dark table-bordered align-middle and-table mb-2">
                 <thead>
-                    <tr><th>Campo</th><th title="Primeiro octeto: os bits 1 a 8, da esquerda para a direita">Octeto 1</th><th title="Segundo octeto: os bits 9 a 16">Octeto 2</th><th title="Terceiro octeto: os bits 17 a 24">Octeto 3</th><th title="Quarto octeto: os bits 25 a 32, os mais à direita">Octeto 4</th></tr>
+                    <tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span>Campo</th><th title="Primeiro octeto: os bits 1 a 8, da esquerda para a direita"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">looks_one</span>Octeto 1</th><th title="Segundo octeto: os bits 9 a 16"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">looks_two</span>Octeto 2</th><th title="Terceiro octeto: os bits 17 a 24"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">looks_3</span>Octeto 3</th><th title="Quarto octeto: os bits 25 a 32, os mais à direita"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">looks_4</span>Octeto 4</th></tr>
                 </thead>
                 <tbody>
                     <tr class="and-row-ip"><td>IP (DEC)</td>{#for col in res.and_table}<td>{col.ip_oct}</td>{/for}</tr>
@@ -189,7 +189,7 @@
         <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h2>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm wizard-table mb-0">
-                <thead><tr><th title="Nome do passo, na ordem em que deve ser feito">Etapa</th><th>Ação</th><th>Resultado</th></tr></thead>
+                <thead><tr><th title="Nome do passo, na ordem em que deve ser feito"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">format_list_numbered</span>Etapa</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ação</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">output</span>Resultado</th></tr></thead>
                 <tbody>
                 {#for passo in wizardCalculo}
                 <tr><td>{passo.icone} {passo.etapa}</td><td>{passo.acao}</td><td>{passo.resultado}</td></tr>
@@ -228,19 +228,19 @@
                 <div class="table-responsive">
                     <table class="table table-dark table-bordered table-sm resultados-table mb-2">
                         <tbody>
-                            <tr><th title="Máscara de sub-rede em decimal pontuado, seguida do prefixo equivalente">Máscara</th><td><span class="text-warning fw-bold">{res.mask}</span> <span class="text-secondary small">/ {res.cidr}</span></td></tr>
-                            {#if res.cidr_origem}<tr><th title="De onde veio o prefixo usado: digitado por você ou deduzido pela classe do endereço">CIDR origem</th><td class="text-info">{res.cidr_origem}</td></tr>{/if}
-                            <tr><th title="Máscara invertida, 255 menos cada octeto, usada em ACL, OSPF e EIGRP">Wildcard</th><td>{res.wildcard}</td></tr>
+                            <tr><th title="Máscara de sub-rede em decimal pontuado, seguida do prefixo equivalente"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">filter_alt</span>Máscara</th><td><span class="text-warning fw-bold">{res.mask}</span> <span class="text-secondary small">/ {res.cidr}</span></td></tr>
+                            {#if res.cidr_origem}<tr><th title="De onde veio o prefixo usado: digitado por você ou deduzido pela classe do endereço"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>CIDR origem</th><td class="text-info">{res.cidr_origem}</td></tr>{/if}
+                            <tr><th title="Máscara invertida, 255 menos cada octeto, usada em ACL, OSPF e EIGRP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">filter_alt</span>Wildcard</th><td>{res.wildcard}</td></tr>
                             {#if res.somente_mascara}
-                            <tr><th title="Endereço que identifica a sub-rede; só a máscara não basta, é preciso um IP">Rede</th><td class="text-secondary">— (informe um IP)</td></tr>
+                            <tr><th title="Endereço que identifica a sub-rede; só a máscara não basta, é preciso um IP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede</th><td class="text-secondary">— (informe um IP)</td></tr>
                             {#else}
-                            <tr><th title="Primeiro endereço do bloco, com todos os bits de host em 0; identifica a sub-rede">Rede</th><td>{res.rede}</td></tr>
-                            <tr><th title="Primeiro endereço que pode ser dado a uma máquina: o endereço de rede mais um">1º host</th><td class="text-success">{res.primeiro_host}</td></tr>
-                            <tr><th title="Último endereço que pode ser dado a uma máquina: o broadcast menos um">Último host</th><td class="text-success">{res.ultimo_host}</td></tr>
-                            <tr><th title="Último endereço do bloco, com os bits de host em 1; o que é enviado a ele chega a toda a sub-rede">Broadcast</th><td>{res.broad}</td></tr>
-                            <tr><th title="O IP digitado escrito nos 32 bits, octeto por octeto">IP (BIN)</th><td class="fw-bold">{res.ip_binario_completo}</td></tr>
+                            <tr><th title="Primeiro endereço do bloco, com todos os bits de host em 0; identifica a sub-rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede</th><td>{res.rede}</td></tr>
+                            <tr><th title="Primeiro endereço que pode ser dado a uma máquina: o endereço de rede mais um"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">first_page</span>1º host</th><td class="text-success">{res.primeiro_host}</td></tr>
+                            <tr><th title="Último endereço que pode ser dado a uma máquina: o broadcast menos um"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">last_page</span>Último host</th><td class="text-success">{res.ultimo_host}</td></tr>
+                            <tr><th title="Último endereço do bloco, com os bits de host em 1; o que é enviado a ele chega a toda a sub-rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">campaign</span>Broadcast</th><td>{res.broad}</td></tr>
+                            <tr><th title="O IP digitado escrito nos 32 bits, octeto por octeto"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">data_array</span>IP (BIN)</th><td class="fw-bold">{res.ip_binario_completo}</td></tr>
                             {/if}
-                            <tr><th title="Tamanho do bloco no octeto que varia: a próxima sub-rede começa este valor adiante">Pulo</th><td><span class="highlight-pulo">{res.pulo}</span></td></tr>
+                            <tr><th title="Tamanho do bloco no octeto que varia: a próxima sub-rede começa este valor adiante"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">redo</span>Pulo</th><td><span class="highlight-pulo">{res.pulo}</span></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -292,7 +292,7 @@
     <div class="card-tech p-3 mb-3">
         <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Abertura dos intervalos</h2>
         <table class="table table-dark table-bordered table-sm interval-table mb-2">
-            <thead><tr><th>Tipo</th><th>Detalhe</th><th>Valor</th></tr></thead>
+            <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">info</span>Detalhe</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">text_snippet</span>Valor</th></tr></thead>
             <tbody>
                 <tr><td>Conceito</td><td>{res.abertura_intervalos.titulo}</td><td>{res.abertura_intervalos.ips_por_bloco} IPs ({res.abertura_intervalos.uteis_por_bloco} úteis)</td></tr>
                 <tr><td>Faixa atual</td><td>Base calculada</td><td class="text-info">{res.abertura_intervalos.faixa_atual}</td></tr>
@@ -300,7 +300,7 @@
         </table>
         {#if res.abertura_intervalos.exemplos.size > 0}
         <table class="table table-dark table-bordered table-sm interval-table mb-0">
-            <thead><tr><th>Status</th><th title="Número de ordem da sub-rede, a partir da que contém o IP">Subnet</th><th title="Do endereço de rede ao broadcast do bloco">Faixa</th></tr></thead>
+            <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">flag</span>Status</th><th title="Número de ordem da sub-rede, a partir da que contém o IP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Subnet</th><th title="Do endereço de rede ao broadcast do bloco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">linear_scale</span>Faixa</th></tr></thead>
             <tbody>
             {#for ex in res.abertura_intervalos.exemplos}
             <tr class="{#if ex_isFirst}is-faixa-atual{/if}">
@@ -320,7 +320,7 @@
         <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {res.regua_count})</h2>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm regua-table mb-0">
-                <thead><tr><th title="Número de ordem da sub-rede; a primeira linha é a que contém o IP">Subnet</th><th title="Endereço que identifica cada sub-rede, com os bits de host em 0">Rede</th><th title="Primeiro endereço utilizável por uma máquina em cada sub-rede">1º host</th><th title="Último endereço utilizável por uma máquina em cada sub-rede">Último host</th><th title="Endereço que alcança todos os hosts de cada sub-rede, com os bits de host em 1">Broadcast</th></tr></thead>
+                <thead><tr><th title="Número de ordem da sub-rede; a primeira linha é a que contém o IP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Subnet</th><th title="Endereço que identifica cada sub-rede, com os bits de host em 0"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede</th><th title="Primeiro endereço utilizável por uma máquina em cada sub-rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">first_page</span>1º host</th><th title="Último endereço utilizável por uma máquina em cada sub-rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">last_page</span>Último host</th><th title="Endereço que alcança todos os hosts de cada sub-rede, com os bits de host em 1"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">campaign</span>Broadcast</th></tr></thead>
                 <tbody>
                 {#for s in res.proximas_subredes}
                 <tr class="{#if s_isFirst}regua-current{/if}">
@@ -342,7 +342,7 @@
         <div class="p-3 table-responsive">
             <table class="table table-dark table-bordered table-sm ref-table mb-0">
                 <thead>
-                    <tr><th title="Bit de peso 128 do octeto, o mais à esquerda: 1 é bit de rede, 0 é bit de host">128</th><th title="Bit de peso 64 do octeto: 1 é bit de rede, 0 é bit de host">64</th><th title="Bit de peso 32 do octeto: 1 é bit de rede, 0 é bit de host">32</th><th title="Bit de peso 16 do octeto: 1 é bit de rede, 0 é bit de host">16</th><th title="Bit de peso 8 do octeto: 1 é bit de rede, 0 é bit de host">8</th><th title="Bit de peso 4 do octeto: 1 é bit de rede, 0 é bit de host">4</th><th title="Bit de peso 2 do octeto: 1 é bit de rede, 0 é bit de host">2</th><th title="Bit de peso 1 do octeto, o mais à direita: 1 é bit de rede, 0 é bit de host">1</th><th title="Intervalos: quantas sub-redes cabem neste octeto com o prefixo da linha">Int</th><th title="Tamanho de cada intervalo no octeto: 256 dividido pela quantidade de intervalos">Variação</th><th title="Total de endereços de cada sub-rede com este prefixo, incluindo rede e broadcast">IPs</th><th title="Valor decimal do octeto da máscara: a soma dos pesos dos bits 1">Máscara</th><th title="Prefixo CIDR que corresponde a esta linha">Barra</th></tr>
+                    <tr><th title="Bit de peso 128 do octeto, o mais à esquerda: 1 é bit de rede, 0 é bit de host" data-icone-excecao="peso do bit no octeto; o número é o próprio rótulo da coluna">128</th><th title="Bit de peso 64 do octeto: 1 é bit de rede, 0 é bit de host" data-icone-excecao="peso do bit no octeto; o número é o próprio rótulo da coluna">64</th><th title="Bit de peso 32 do octeto: 1 é bit de rede, 0 é bit de host" data-icone-excecao="peso do bit no octeto; o número é o próprio rótulo da coluna">32</th><th title="Bit de peso 16 do octeto: 1 é bit de rede, 0 é bit de host" data-icone-excecao="peso do bit no octeto; o número é o próprio rótulo da coluna">16</th><th title="Bit de peso 8 do octeto: 1 é bit de rede, 0 é bit de host" data-icone-excecao="peso do bit no octeto; o número é o próprio rótulo da coluna">8</th><th title="Bit de peso 4 do octeto: 1 é bit de rede, 0 é bit de host" data-icone-excecao="peso do bit no octeto; o número é o próprio rótulo da coluna">4</th><th title="Bit de peso 2 do octeto: 1 é bit de rede, 0 é bit de host" data-icone-excecao="peso do bit no octeto; o número é o próprio rótulo da coluna">2</th><th title="Bit de peso 1 do octeto, o mais à direita: 1 é bit de rede, 0 é bit de host" data-icone-excecao="peso do bit no octeto; o número é o próprio rótulo da coluna">1</th><th title="Intervalos: quantas sub-redes cabem neste octeto com o prefixo da linha"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">pin</span>Int</th><th title="Tamanho de cada intervalo no octeto: 256 dividido pela quantidade de intervalos"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">swap_vert</span>Variação</th><th title="Total de endereços de cada sub-rede com este prefixo, incluindo rede e broadcast"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">memory</span>IPs</th><th title="Valor decimal do octeto da máscara: a soma dos pesos dos bits 1"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">filter_alt</span>Máscara</th><th title="Prefixo CIDR que corresponde a esta linha"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Barra</th></tr>
                 </thead>
                 <tbody>
                 {#for row in res.tabela_referencia}
@@ -363,7 +363,7 @@
         <div class="p-3 row g-3">
             <div class="col-md-7">
                 <table class="table table-dark table-bordered table-sm conv-table mb-0">
-                    <thead><tr><th title="Unidade de medida da linha, de 1 bit até 1 MiB">Referência</th><th title="Quantos bits a unidade tem">Bits</th><th title="Quantos bytes a unidade tem, sendo 1 byte igual a 8 bits">Bytes</th><th title="A unidade com todos os bits em 1, ou a potência de 2 equivalente">Binário</th><th title="O valor da coluna Binário escrito em base 10">Decimal</th></tr></thead>
+                    <thead><tr><th title="Unidade de medida da linha, de 1 bit até 1 MiB"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">menu_book</span>Referência</th><th title="Quantos bits a unidade tem"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">memory</span>Bits</th><th title="Quantos bytes a unidade tem, sendo 1 byte igual a 8 bits"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">memory</span>Bytes</th><th title="A unidade com todos os bits em 1, ou a potência de 2 equivalente"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">data_array</span>Binário</th><th title="O valor da coluna Binário escrito em base 10"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">pin</span>Decimal</th></tr></thead>
                     <tbody>
                     {#for row in res.tabela_conversao_bits}
                     <tr><td>{row.referencia}</td><td>{row.bits}</td><td>{row.bytes}</td><td>{row.binario}</td><td>{row.decimal}</td></tr>

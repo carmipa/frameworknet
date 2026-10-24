@@ -21,44 +21,44 @@
         dig: {
             base: "dig", alvoPos: "fim", alvoPadrao: "example.com",
             opcoes: [
-                { flag: "+short", label: "Resposta curta", exp: "+short mostra só a resposta, sem a seção completa." },
-                { flag: "MX", label: "Registro MX", exp: "Consulta os servidores de e-mail do domínio." },
-                { flag: "+trace", label: "Rastrear da raiz", exp: "+trace resolve passo a passo, da raiz ao autoritativo." },
-                { flag: "@1.1.1.1", label: "Usar 1.1.1.1", exp: "@servidor força qual resolvedor DNS consultar." }
+                { flag: "+short", icone: "short_text", label: "Resposta curta", exp: "+short mostra só a resposta, sem a seção completa." },
+                { flag: "MX", icone: "mail", label: "Registro MX", exp: "Consulta os servidores de e-mail do domínio." },
+                { flag: "+trace", icone: "account_tree", label: "Rastrear da raiz", exp: "+trace resolve passo a passo, da raiz ao autoritativo." },
+                { flag: "@1.1.1.1", icone: "dns", label: "Usar 1.1.1.1", exp: "@servidor força qual resolvedor DNS consultar." }
             ]
         },
         nmap: {
             base: "nmap", alvoPos: "fim", alvoPadrao: "scanme.nmap.org",
             opcoes: [
-                { flag: "-sS", label: "SYN scan", exp: "-sS é o scan SYN (meio-aberto), rápido e discreto (requer root)." },
-                { flag: "-sV", label: "Versão do serviço", exp: "-sV tenta identificar o software e a versão de cada porta." },
-                { flag: "-p 1-1000", label: "Portas 1-1000", exp: "-p define quais portas varrer." },
-                { flag: "-Pn", label: "Sem ping", exp: "-Pn pula a descoberta por ping e trata o host como ativo." }
+                { flag: "-sS", icone: "radar", label: "SYN scan", exp: "-sS é o scan SYN (meio-aberto), rápido e discreto (requer root)." },
+                { flag: "-sV", icone: "manage_search", label: "Versão do serviço", exp: "-sV tenta identificar o software e a versão de cada porta." },
+                { flag: "-p 1-1000", icone: "door_open", label: "Portas 1-1000", exp: "-p define quais portas varrer." },
+                { flag: "-Pn", icone: "block", label: "Sem ping", exp: "-Pn pula a descoberta por ping e trata o host como ativo." }
             ]
         },
         tcpdump: {
             base: "tcpdump", alvoPos: "filtro", alvoPadrao: "example.com",
             opcoes: [
-                { flag: "-i eth0", label: "Interface eth0", exp: "-i escolhe a interface de captura." },
-                { flag: "-nn", label: "Sem resolver nomes", exp: "-nn não resolve hosts nem portas (mais rápido, IPs crus)." },
-                { flag: "-c 50", label: "Parar em 50", exp: "-c limita a quantidade de pacotes capturados." },
-                { flag: "-w captura.pcap", label: "Salvar em arquivo", exp: "-w grava a captura para abrir depois no Wireshark." }
+                { flag: "-i eth0", icone: "settings_input_component", label: "Interface eth0", exp: "-i escolhe a interface de captura." },
+                { flag: "-nn", icone: "pin", label: "Sem resolver nomes", exp: "-nn não resolve hosts nem portas (mais rápido, IPs crus)." },
+                { flag: "-c 50", icone: "stop_circle", label: "Parar em 50", exp: "-c limita a quantidade de pacotes capturados." },
+                { flag: "-w captura.pcap", icone: "save", label: "Salvar em arquivo", exp: "-w grava a captura para abrir depois no Wireshark." }
             ]
         },
         curl: {
             base: "curl", alvoPos: "fim", alvoPrefixo: "https://", alvoPadrao: "example.com",
             opcoes: [
-                { flag: "-v", label: "Verboso", exp: "-v mostra o handshake, os cabeçalhos e o passo a passo." },
-                { flag: "-I", label: "Só cabeçalhos", exp: "-I faz um HEAD: só os cabeçalhos de resposta." },
-                { flag: "-L", label: "Seguir redirects", exp: "-L segue redirecionamentos 3xx até o destino final." },
-                { flag: "-k", label: "Ignorar TLS (perigoso)", exp: "-k aceita certificado inválido — só para teste, nunca em produção." }
+                { flag: "-v", icone: "subject", label: "Verboso", exp: "-v mostra o handshake, os cabeçalhos e o passo a passo." },
+                { flag: "-I", icone: "title", label: "Só cabeçalhos", exp: "-I faz um HEAD: só os cabeçalhos de resposta." },
+                { flag: "-L", icone: "turn_right", label: "Seguir redirects", exp: "-L segue redirecionamentos 3xx até o destino final." },
+                { flag: "-k", icone: "warning", label: "Ignorar TLS (perigoso)", exp: "-k aceita certificado inválido — só para teste, nunca em produção." }
             ]
         },
         ping: {
             base: "ping", alvoPos: "fim", alvoPadrao: "example.com",
             opcoes: [
-                { flag: "-c 4", label: "4 pacotes", exp: "-c limita quantos pacotes enviar (senão roda sem parar no Linux)." },
-                { flag: "-M do -s 1472", label: "Testar MTU", exp: "Não fragmentar com payload 1472 testa a MTU do caminho." }
+                { flag: "-c 4", icone: "tag", label: "4 pacotes", exp: "-c limita quantos pacotes enviar (senão roda sem parar no Linux)." },
+                { flag: "-M do -s 1472", icone: "straighten", label: "Testar MTU", exp: "Não fragmentar com payload 1472 testa a MTU do caminho." }
             ]
         }
     };
@@ -125,7 +125,13 @@
             var label = document.createElement("label");
             label.className = "form-check-label small";
             label.htmlFor = id;
-            label.textContent = o.label;
+            var icone = document.createElement("span");
+            icone.className = "material-symbols-outlined";
+            icone.setAttribute("aria-hidden", "true");
+            icone.setAttribute("translate", "no");
+            icone.textContent = o.icone;
+            label.appendChild(icone);
+            label.appendChild(document.createTextNode(" " + o.label));
             input.title = o.exp;
             wrap.appendChild(input);
             wrap.appendChild(label);

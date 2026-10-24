@@ -133,7 +133,10 @@ public class MarkdownRenderer {
                 // A página já tem o seu h1 ("Central de Documentação"): o "#" do README desce um nível,
                 // senão a página fica com dois h1 (FRONT-16). A classe guarda o nível do Markdown para o CSS.
                 int tag = Math.min(nivel + 1, 6);
-                blocos.add("<h" + tag + " id=\"" + slug + "\" class=\"md-h" + nivel + "\">" + inline(titulo) + "</h" + tag + ">");
+                // Todo título ganha o mesmo glifo do sumário; o emoji que abria o título no README sai (o sumário
+                // já o tira), para não haver dois ícones nem um emoji que a tela trate como texto.
+                String icone = glifo(iconeToc(titulo)) + " ";
+                blocos.add("<h" + tag + " id=\"" + slug + "\" class=\"md-h" + nivel + "\">" + icone + inline(semSimboloInicial(titulo)) + "</h" + tag + ">");
                 continue;
             }
             Matcher ol = OL.matcher(stripped);
@@ -207,7 +210,8 @@ public class MarkdownRenderer {
         html.append("<div class=\"table-responsive\"><table>");
         html.append("<thead><tr>");
         for (String cell : cabecalho) {
-            html.append("<th>").append(inline(cell)).append("</th>");
+            String rotulo = cell.replace("`", "").replace("*", "").strip();
+            html.append("<th>").append(glifo(IconesColuna.iconeColuna(rotulo))).append(inline(cell)).append("</th>");
         }
         html.append("</tr></thead>");
         html.append("<tbody>");
@@ -284,6 +288,15 @@ public class MarkdownRenderer {
             return "PROJETO";
         }
         return nivel >= 3 ? "DIAGRAMAS" : "SUMÁRIO";
+    }
+
+    private static String glifo(String nome) {
+        return "<span class=\"material-symbols-outlined aed-inline-icon\" aria-hidden=\"true\" translate=\"no\">" + nome + "</span>";
+    }
+
+    /** O título sem o emoji ou símbolo do começo (o glifo do sumário toma o lugar dele). */
+    private static String semSimboloInicial(String titulo) {
+        return titulo.replaceAll("^[^\\p{L}\\p{N}`]+\\s*", "");
     }
 
     private static String iconeToc(String titulo) {

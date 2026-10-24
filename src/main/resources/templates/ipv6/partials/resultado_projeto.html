@@ -36,7 +36,7 @@
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
             <thead><tr>
-                <th title="Ordem da localidade no projeto">#</th><th title="Nome do site informado no formulário">Localidade</th><th title="Prefixo da LAN em notação CIDR">Rede</th><th title="Endereço ::1 da LAN, configurado na interface do roteador local">Gateway</th><th title="Menor endereço da LAN">Primeiro</th><th title="Maior endereço da LAN">Último</th>
+                <th title="Ordem da localidade no projeto"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>#</th><th title="Nome do site informado no formulário"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">location_on</span>Localidade</th><th title="Prefixo da LAN em notação CIDR"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede</th><th title="Endereço ::1 da LAN, configurado na interface do roteador local"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">router</span>Gateway</th><th title="Menor endereço da LAN"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">first_page</span>Primeiro</th><th title="Maior endereço da LAN"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">last_page</span>Último</th>
             </tr></thead>
             <tbody>
             {#for l in p.lans}
@@ -57,7 +57,7 @@
     <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">cable</span> Enlaces WAN (/{p.prefixoWan}, RFC 6164)</h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
-            <thead><tr><th title="Ordem do enlace no projeto">#</th><th title="Quais localidades o enlace liga">Enlace</th><th title="Prefixo do enlace ponto a ponto">Rede</th><th title="Roteador e endereço de uma ponta do enlace">Lado A</th><th title="Roteador e endereço da outra ponta do enlace">Lado B</th></tr></thead>
+            <thead><tr><th title="Ordem do enlace no projeto"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>#</th><th title="Quais localidades o enlace liga"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">cable</span>Enlace</th><th title="Prefixo do enlace ponto a ponto"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede</th><th title="Roteador e endereço de uma ponta do enlace"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_input_component</span>Lado A</th><th title="Roteador e endereço da outra ponta do enlace"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_input_component</span>Lado B</th></tr></thead>
             <tbody>
             {#for w in p.wans}
                 <tr>

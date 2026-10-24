@@ -76,10 +76,21 @@ function aedTranslate(lang) {
             && !/^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h);
     }
 
-    function botao(rotulo, acao) {
+    function glifo(nome) {
+        var s = document.createElement('span');
+        s.className = 'material-symbols-outlined';
+        s.setAttribute('aria-hidden', 'true');
+        s.setAttribute('translate', 'no');
+        s.style.cssText = 'font-size:1.1rem;vertical-align:middle';
+        s.textContent = nome;
+        return s;
+    }
+
+    function botao(rotulo, acao, icone) {
         var b = document.createElement('button');
         b.type = 'button';
-        b.textContent = rotulo;
+        b.appendChild(glifo(icone));
+        if (rotulo) { b.appendChild(document.createTextNode(' ' + rotulo)); }
         b.style.cssText = 'font:inherit;font-size:.85rem;padding:.35rem .75rem;border-radius:.5rem;cursor:pointer;'
             + 'border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit';
         b.addEventListener('click', acao);
@@ -106,10 +117,11 @@ function aedTranslate(lang) {
         texto.style.cssText = 'margin:0;flex:1 1 18rem;min-width:0';
         var acoes = document.createElement('div');
         acoes.style.cssText = 'display:flex;flex-wrap:wrap;gap:.5rem';
-        acoes.appendChild(botao(t.denovo, function () { window.location.reload(); }));
+        acoes.appendChild(botao(t.denovo, function () { window.location.reload(); }, 'refresh'));
         if (enderecoPublico()) {
             var abrir = document.createElement('a');
-            abrir.textContent = t.abrir;
+            abrir.appendChild(glifo('open_in_new'));
+            abrir.appendChild(document.createTextNode(' ' + t.abrir));
             abrir.href = 'https://translate.google.com/translate?sl=pt&tl=' + encodeURIComponent(lang)
                 + '&u=' + encodeURIComponent(window.location.href);
             abrir.rel = 'noopener';
@@ -117,8 +129,8 @@ function aedTranslate(lang) {
                 + 'border:1px solid #2dd4bf;color:#2dd4bf;text-decoration:none';
             acoes.appendChild(abrir);
         }
-        acoes.appendChild(botao(t.voltar, function () { aedTranslate('pt'); }));
-        var fechar = botao('×', function () { remover(); });
+        acoes.appendChild(botao(t.voltar, function () { aedTranslate('pt'); }, 'translate'));
+        var fechar = botao('', function () { remover(); }, 'close');
         fechar.setAttribute('aria-label', t.fechar);
         fechar.title = t.fechar;
         acoes.appendChild(fechar);

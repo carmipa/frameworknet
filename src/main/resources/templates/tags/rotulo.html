@@ -1,0 +1,5 @@
+{! rotulo v1.0 (2026-10-24) — componente compartilhado: não editar no projeto; mudança só na origem.
+   Rótulo de campo com ícone obrigatório. Parâmetros OBRIGATÓRIOS: for (id do campo), icone (nome do glifo Material
+   Symbols, fonte servida local), texto (já traduzido). Sem um deles o template falha na renderização estrita.
+   A dica (se houver) vai fora, ao lado, no padrão da tag dica. Uso: {#rotulo for='ip' icone='dns' texto=msg:ip /} !}
+<label for="{for}"><span class="material-symbols-outlined" aria-hidden="true" translate="no">{icone}</span> {texto}</label>
