@@ -5,7 +5,7 @@
 {#title}Camadas em ação — Laboratórios Interativos | Framework de Redes A&D{/title}
 {#description}Laboratório interativo Camadas em ação: veja passo a passo uma mensagem ganhar cabeçalhos (UDP, IP, Ethernet), atravessar um switch e ser desencapsulada no destino, na mesma rede.{/description}
 {#extraHead}
-<link rel="stylesheet" href="/laboratorios/css/laboratorios.css?v=20261023">
+<link rel="stylesheet" href="/laboratorios/css/laboratorios.css?v=20261025b">
 {/extraHead}
 {#menu}{#include shared/main_menu.html activeMainMenu='laboratorios' /}{/menu}
 {#content}
@@ -172,7 +172,7 @@
 
     {! Pergunta de previsão (aparece só nas etapas que têm). !}
     <div class="lab-pergunta" id="lab-pergunta-bloco" hidden>
-        <h2 class="lab-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span> Preveja antes de avançar</h2>
+        <h2 class="lab-secao-titulo" title="Pergunta rápida sobre esta etapa: escolha uma opção para conferir se você sabe o que acontece antes de seguir."><span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span> Preveja antes de avançar</h2>
         <p id="lab-pergunta-texto" class="mb-2"></p>
         <div class="lab-pergunta-opcoes" id="lab-pergunta-opcoes" role="group" aria-label="Opções da pergunta"></div>
         <p class="lab-pergunta-feedback" id="lab-pergunta-feedback" role="status" aria-live="polite" hidden></p>
@@ -210,6 +210,6 @@
 </div>
 {/content}
 {#extraScripts}
-<script src="/laboratorios/js/camadas.js?v=20260909d"></script>
+<script src="/laboratorios/js/camadas.js?v=20261025b"></script>
 {/extraScripts}
 {/include}

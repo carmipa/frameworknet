@@ -247,6 +247,13 @@
         return "exam";
     }
 
+    /**
+     * Mostra a pergunta "Preveja antes de avançar" da etapa, com um botão por opção.
+     * Propósito de negócio: a pessoa testa a própria previsão antes de ver a etapa seguinte.
+     * Invariantes: as opções são recriadas a cada render (nunca acumulam); a dica de cada botão descreve a AÇÃO e é
+     * igual para todas, para não entregar a resposta; o retorno (certo/errado + explicação) fica visível na tela.
+     * Falha: etapa sem pergunta esconde o bloco e não cria botão; sem o adaptador de dicas, o title nativo continua.
+     */
     function renderPergunta(etapa) {
         var bloco = $("lab-pergunta-bloco");
         var fb = $("lab-pergunta-feedback");
@@ -261,6 +268,9 @@
             b.type = "button";
             b.className = "aed-btn aed-btn-neutral btn-sm lab-opcao";
             b.textContent = o[0];
+            // Dica de ação igual para todas as opções: dizer algo sobre o conteúdo de cada uma entregaria a resposta.
+            // O adaptador de dicas (field-tooltips.js) converte o title quando o botão entra na página.
+            b.title = "Escolhe esta resposta como sua previsão; logo abaixo aparece se ela está certa e por quê.";
             b.addEventListener("click", function () {
                 var certa = o[1];
                 fb.hidden = false;

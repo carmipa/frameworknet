@@ -9,7 +9,9 @@
  * DOIS UNIVERSOS (24/10/2026). Ate 23/10 a catraca so via o estado inicial de cada pagina; o que mora em aba oculta
  * e em painel de resultado nunca era medido. Desde 24/10 ela tambem mede, por pagina:
  *  - cada aba (role=tab, data-bs-toggle=tab/pill), clicada em ordem de documento, inclusive aba dentro de aba;
- *  - o painel de resultado de UM calculo realista nas calculadoras (lista ACOES abaixo).
+ *  - o painel de resultado de UM calculo realista nas calculadoras (lista ACOES abaixo);
+ *  - desde 25/10, a etapa de laboratorio que so aparece avancando a experiencia (tipo 'etapa' em ACOES: as opcoes de
+ *    "Preveja antes de avancar" criadas pelo JS), com a identidade prefixada por "etapa:<nome>".
  * Isso nao e divida "nova": e universo novo. Fica numa secao separada da linha de base (SECAO_AMPLIADA), com a
  * identidade prefixada pelo estado ("aba:vlan|th|...", "resultado:dividir|h3|..."), e e contado a parte.
  * Estado que depende de servico externo (DNS real, geolocalizacao) ou de dado ao vivo NAO e medido e aparece
@@ -57,6 +59,8 @@ const ABAS = '[role=tab], [data-bs-toggle=tab], [data-bs-toggle=pill]';
  * Um calculo realista por painel de resultado. Os campos ja vem com exemplo na maioria das telas; onde o campo vem
  * vazio (so placeholder), o valor preenchido e um exemplo didatico privado ou de documentacao (RFC 5737/3849).
  * botao: nome acessivel do botao (o rotulo visivel; o texto da dica nao entra no nome).
+ * tipo: prefixo do estado na identidade ('resultado' quando omitido; 'etapa' para passo de laboratorio).
+ * cliques: quantas vezes clicar no botao antes de medir (1 quando omitido); acumula com a acao anterior da mesma pagina.
  */
 const ACOES = {
   '/calculadora': [
@@ -114,6 +118,12 @@ const ACOES = {
     { estado: 'handshake', aba: 'handshake', botao: /^Handshake completo/ },
     { estado: 'fluxo', aba: 'fluxo', botao: /^Fluxo permitido/ },
     { estado: 'topologia', aba: 'topologia', botao: /^Testar fluxo/ },
+  ],
+  // Laboratorio: as opcoes de "Preveja antes de avancar" so existem nas etapas com pergunta (UDP = 2a etapa, switch =
+  // 6a). Os cliques sao cumulativos na mesma pagina: 1 clique em "Proxima" leva a etapa 2; mais 4, a etapa 6.
+  '/laboratorios/camadas': [
+    { tipo: 'etapa', estado: 'udp-pergunta', botao: /^Próxima/, cliques: 1 },
+    { tipo: 'etapa', estado: 'switch-pergunta', botao: /^Próxima/, cliques: 4 },
   ],
   '/diagnostico': [
     { estado: 'ping', aba: 'ping', botao: /^Disparar Ping/ },
@@ -242,8 +252,10 @@ async function medirAcao(pagina, a) {
     const alvo = /^#[\w-]+$/.test(sel) ? `${sel}, [name="${sel.slice(1)}"]` : sel;
     await pagina.locator(alvo).filter({ visible: true }).first().fill(valor, { timeout: 8000 });
   }
-  await pagina.getByRole('button', { name: a.botao }).filter({ visible: true }).first().click({ timeout: 8000 });
-  await pagina.aguardarRede();
+  for (let i = 0; i < (a.cliques || 1); i++) {
+    await pagina.getByRole('button', { name: a.botao }).filter({ visible: true }).first().click({ timeout: 8000 });
+    await pagina.aguardarRede();
+  }
   return varrer(pagina);
 }
 
@@ -278,7 +290,7 @@ async function medirRota(rota, preparar) {
       ampliado.push(...identidades(rota, lista, estado));
     }
     for (const a of ACOES[rota] || []) {
-      const estado = 'resultado:' + a.estado;
+      const estado = (a.tipo || 'resultado') + ':' + a.estado;
       try {
         ampliado.push(...identidades(rota, await medirAcao(pagina, a), estado));
       } catch (e) {

@@ -32,12 +32,25 @@
 .lab-secao-titulo { display: flex; align-items: center; gap: 0.45rem; font-size: 1.05rem; font-weight: 700; margin-bottom: 0.75rem; color: #eef2f8; }
 .lab-secao-titulo .material-symbols-outlined { color: #2dd4bf; }
 .lab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr)); gap: 1rem; }
+/* Cartão = <article>; o link real é o título (h3 > a.lab-card-link) e o ::after dele cobre o cartão inteiro. O "?" da
+   dica do título fica acima dessa camada: tocar nele abre a dica e não navega. Sobe com "top" (não transform) para o
+   balão da dica, que é position:fixed, continuar em coordenadas da janela. */
 .lab-card {
+    position: relative; top: 0;
     display: flex; gap: 0.9rem; padding: 1rem; text-decoration: none;
     border: 1px solid rgba(148, 163, 184, 0.25); border-radius: .875rem;
-    background: rgba(15, 22, 34, 0.6); color: inherit; transition: border-color 0.15s ease, transform 0.15s ease;
+    background: rgba(15, 22, 34, 0.6); color: inherit; transition: border-color 0.15s ease, top 0.15s ease;
 }
-.lab-card:hover { border-color: #2dd4bf; transform: translateY(-.125rem); }
+.lab-card:hover { border-color: #2dd4bf; top: -.125rem; z-index: 2; }
+.lab-card:focus-within { z-index: 2; }
+/* O anel de foco do teclado continua no cartão inteiro, como quando o cartão era o próprio link. */
+.lab-card:has(.lab-card-link:focus-visible) {
+    outline: 2px solid #79c0ff; outline-offset: 2px; box-shadow: 0 0 0 0.2rem rgba(121, 192, 255, 0.25);
+}
+.lab-card-link { color: inherit; text-decoration: none; }
+.lab-card-link:focus-visible { outline: none !important; box-shadow: none !important; }
+.lab-card-link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.lab-card .dica { position: relative; z-index: 2; }
 .lab-card-icone { flex: 0 0 auto; width: 3rem; height: 3rem; border-radius: .75rem; display: grid; place-items: center; background: rgba(56, 189, 248, 0.14); color: #38bdf8; }
 .lab-card-titulo { font-size: 1.1rem; font-weight: 700; margin: 0 0 0.25rem; color: #eef2f8; }
 .lab-card-desc { font-size: 0.9rem; color: #94a3b8; margin: 0 0 0.5rem; }

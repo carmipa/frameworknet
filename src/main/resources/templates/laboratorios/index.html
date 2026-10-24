@@ -4,7 +4,7 @@
 {#title}Laboratórios Interativos | Framework de Redes A&D{/title}
 {#description}Laboratórios interativos de redes: acompanhe passo a passo, com animação e explicações, o que acontece numa comunicação — começando por Camadas em ação, o encapsulamento entre dois hosts e um switch na mesma rede.{/description}
 {#extraHead}
-<link rel="stylesheet" href="/laboratorios/css/laboratorios.css?v=20261023">
+<link rel="stylesheet" href="/laboratorios/css/laboratorios.css?v=20261025b">
 {/extraHead}
 {#menu}{#include shared/main_menu.html activeMainMenu='laboratorios' /}{/menu}
 {#content}
@@ -27,10 +27,10 @@
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">play_circle</span> Disponível agora
         </h2>
         <div class="lab-grid">
-            <a href="/laboratorios/camadas" class="lab-card" aria-label="Abrir a experiência Camadas em ação">
+            <article class="lab-card">
                 <div class="lab-card-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span></div>
                 <div class="lab-card-corpo">
-                    <h3 class="lab-card-titulo">Camadas em ação</h3>
+                    <h3 class="lab-card-titulo" title="Experiência guiada: você avança etapa por etapa, prevê o que vem a seguir e inspeciona cada campo dos cabeçalhos UDP, IP e Ethernet."><a href="/laboratorios/camadas" class="lab-card-link">Camadas em ação</a></h3>
                     <p class="lab-card-desc">
                         Uma mensagem sai de um host, ganha os cabeçalhos camada a camada, atravessa um switch e
                         chega ao outro host, onde os cabeçalhos são retirados. Você controla o ritmo e inspeciona
@@ -40,13 +40,13 @@
                         <span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_forward</span> Abrir experiência
                     </span>
                 </div>
-            </a>
-            <a href="/laboratorios/aneis-e-rede" class="lab-card" aria-label="Abrir Aplicação até a rede">
+            </article>
+            <article class="lab-card">
                 <div class="lab-card-icone" aria-hidden="true"><span class="material-symbols-outlined" translate="no" aria-hidden="true">memory</span></div>
-                <div class="lab-card-corpo"><h3 class="lab-card-titulo">Aplicação → Kernel → Rede</h3>
+                <div class="lab-card-corpo"><h3 class="lab-card-titulo" title="Mostra o caminho de uma chamada de rede do programa ao sistema operacional e à placa, com as trocas entre modo usuário e modo núcleo."><a href="/laboratorios/aneis-e-rede" class="lab-card-link">Aplicação → Kernel → Rede</a></h3>
                     <p class="lab-card-desc">Escolha uma operação de socket e siga seus dados, permissões e transições até a placa de rede.</p>
                     <span class="lab-card-cta"><span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_forward</span> Abrir experiência</span></div>
-            </a>
+            </article>
         </div>
     </section>
 

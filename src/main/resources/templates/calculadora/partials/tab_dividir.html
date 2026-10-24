@@ -39,21 +39,27 @@
                 <div class="mb-3">
                     <label class="form-label text-secondary" title="Escolha o que você já sabe: o tamanho de cada sub-rede, quantas sub-redes quer ou quantos hosts cada uma precisa"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tune</span> Critério da divisão</label>
                     <div class="calc-radio-group" role="radiogroup">
-                        <label class="calc-radio campo">
-                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> <input type="radio" name="criterio" value="prefixo" checked data-alvo="grupo-prefixo" aria-describedby="d-calc-criterio-prefixo">
-                            <span>Por prefixo alvo</span>
+                        <div class="calc-radio campo">
+                            <label class="calc-radio-rotulo">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> <input type="radio" name="criterio" value="prefixo" checked data-alvo="grupo-prefixo" aria-describedby="d-calc-criterio-prefixo">
+                                <span>Por prefixo alvo</span>
+                            </label>
                             <span class="dica"><button type="button" class="dica__gatilho" aria-label="Ajuda sobre Por prefixo alvo" aria-describedby="d-calc-criterio-prefixo"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><span id="d-calc-criterio-prefixo" role="tooltip" class="dica__texto">Você informa o prefixo de cada sub-rede (ex.: /24) e a calculadora diz quantas cabem; o campo Prefixo alvo aparece abaixo</span></span>
-                        </label>
-                        <label class="calc-radio campo">
-                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span> <input type="radio" name="criterio" value="quantidade" data-alvo="grupo-quantidade" aria-describedby="d-calc-criterio-quantidade">
-                            <span>Por nº de sub-redes</span>
+                        </div>
+                        <div class="calc-radio campo">
+                            <label class="calc-radio-rotulo">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span> <input type="radio" name="criterio" value="quantidade" data-alvo="grupo-quantidade" aria-describedby="d-calc-criterio-quantidade">
+                                <span>Por nº de sub-redes</span>
+                            </label>
                             <span class="dica"><button type="button" class="dica__gatilho" aria-label="Ajuda sobre Por nº de sub-redes" aria-describedby="d-calc-criterio-quantidade"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><span id="d-calc-criterio-quantidade" role="tooltip" class="dica__texto">Você informa quantas sub-redes precisa e a calculadora acha o prefixo, arredondando para potência de 2</span></span>
-                        </label>
-                        <label class="calc-radio campo">
-                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> <input type="radio" name="criterio" value="hosts" data-alvo="grupo-hosts" aria-describedby="d-calc-criterio-hosts">
-                            <span>Por hosts necessários</span>
+                        </div>
+                        <div class="calc-radio campo">
+                            <label class="calc-radio-rotulo">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> <input type="radio" name="criterio" value="hosts" data-alvo="grupo-hosts" aria-describedby="d-calc-criterio-hosts">
+                                <span>Por hosts necessários</span>
+                            </label>
                             <span class="dica"><button type="button" class="dica__gatilho" aria-label="Ajuda sobre Por hosts necessários" aria-describedby="d-calc-criterio-hosts"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><span id="d-calc-criterio-hosts" role="tooltip" class="dica__texto">Você informa quantos hosts cada sub-rede precisa e a calculadora acha o menor prefixo que os comporta</span></span>
-                        </label>
+                        </div>
                     </div>
                 </div>
 

@@ -312,7 +312,8 @@ try {
 // tem de estar lá antes, durante e depois do foco, e o foco não pode mudar a lista.
 for (const caso of [
   { rota: '/ferramentas', campo: '#cmd-alvo', descr: 'cmd-alvo-dica' },
-  { rota: '/laboratorios/camadas', campo: '[aria-describedby="lab-msg-ajuda"]', descr: 'lab-msg-ajuda' },
+  // Pelo id: desde que o campo ganhou dica própria, o aria-describedby tem dois ids e o seletor de valor exato não casava.
+  { rota: '/laboratorios/camadas', campo: '#lab-msg', descr: 'lab-msg-ajuda' },
 ]) {
   const page = await novaPagina(browser);
   await page.goto(BASE + caso.rota, { waitUntil: 'load', timeout: 45000 });
@@ -361,7 +362,10 @@ for (const caso of [
   await page.goto(BASE + '/', { waitUntil: 'load', timeout: 45000 });
   await assentar(page);
   const medir = () => page.evaluate(() => {
-    const el = document.activeElement;
+    // Desde 25/10/2026 o cartão é um <article> e o foco vai para o link do título (a.home-module-link); o contorno
+    // continua desenhado no cartão inteiro, então mede-se o cartão que contém o link focado.
+    const foco = document.activeElement;
+    const el = foco && foco.matches('.home-module-link') ? foco.closest('.home-module') : foco;
     const cs = el ? getComputedStyle(el) : null;
     return el ? { cartao: el.classList.contains('home-module'), nav: el.classList.contains('aed-nav-link'),
       estilo: cs.outlineStyle, largura: parseFloat(cs.outlineWidth) || 0 } : {};
