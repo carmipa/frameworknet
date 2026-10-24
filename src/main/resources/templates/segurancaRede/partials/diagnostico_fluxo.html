@@ -18,9 +18,9 @@
              style="background-color: rgba(0,0,0,0.2);{#if !s.ok} border-left: 3px solid #f87171;{/if}">
             <span class="text-muted small">{s.ordem}</span>
             {#if s.ok}
-            <span class="material-symbols-outlined resultado-permit" title="passou" translate="no" aria-hidden="true">check_circle</span>
+            <span class="material-symbols-outlined resultado-permit" translate="no" aria-hidden="true">check_circle</span><span class="visually-hidden">passou</span>
             {#else}
-            <span class="material-symbols-outlined resultado-deny" title="bloqueado aqui" translate="no" aria-hidden="true">block</span>
+            <span class="material-symbols-outlined resultado-deny" translate="no" aria-hidden="true">block</span><span class="visually-hidden">bloqueado aqui</span>
             {/if}
             <strong class="text-white">{s.no}</strong>
             <span class="badge bg-secondary">{s.camada}</span>

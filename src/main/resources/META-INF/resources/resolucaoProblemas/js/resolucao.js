@@ -87,7 +87,11 @@
             node.style.cursor = "pointer";
             node.setAttribute("tabindex", "0");
             node.setAttribute("role", "button");
-            node.setAttribute("aria-label", "Detalhes de " + bruto);
+            // O nome começa pelo texto que o nó mostra (WCAG 2.5.3: quem fala o rótulo visível aciona o nó).
+            // innerText respeita as quebras de linha do rótulo (textContent colava "R-MATRIZGi0/0").
+            const rotulo = node.querySelector("foreignObject div, .nodeLabel");
+            const visivel = ((rotulo ? rotulo.innerText : node.textContent) || "").replace(/\s+/g, " ").trim() || bruto;
+            node.setAttribute("aria-label", visivel + ": detalhes");
             node.setAttribute("aria-describedby", descricaoDoNo());
             const balaoNativo = document.createElementNS("http://www.w3.org/2000/svg", "title");
             balaoNativo.textContent = DICA_NO_TOPOLOGIA;
