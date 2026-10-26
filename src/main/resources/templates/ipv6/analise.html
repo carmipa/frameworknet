@@ -11,7 +11,7 @@
 
     <header class="mb-4">
         <h1 class="aed-title">
-            <span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">insights</span>
+            <span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">bar_chart</span>
             Análise Didática IPv6
         </h1>
         <p class="aed-subtitle">
@@ -24,19 +24,29 @@
     <div class="aed-card card-tech p-4 shadow ipv6-wrap" data-active-tab="analise">
         <span class="aed-eyebrow">Análise IPv6</span>
         <div class="aed-mode-grid tab-nav mb-3" role="tablist">
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="analise" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="analise" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Normalização RFC 5952, tipo IANA, rede, Interface ID e os 128 bits por hexteto">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">tag</span><span>Análise</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="comparador" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="comparador" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Dois endereços lado a lado — mesma /64, contenção e distância">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">compare_arrows</span><span>Comparador</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dominio" role="tab">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">language</span><span>Domínio</span>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dominio" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Resolva o registro AAAA (IPv6) de um domínio e analise o endereço">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">translate</span><span>Domínio</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="nibbles" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="nibbles" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Expansão/compressão (RFC 4291/5952) e os 32 nibbles de 4 bits">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">expand</span><span>Nibbles</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="conceitos" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="conceitos" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="O que do IPv4 não se aplica ao IPv6 (máscara, wildcard, broadcast, hosts) e o equivalente correto">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">menu_book</span><span>Conceitos</span>
             </button>
         </div>
@@ -62,7 +72,7 @@
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar resultado
             </button>
             <a id="btn-limpar-tela" href="/ipv6/analise" class="aed-btn aed-btn-danger">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar Tela
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar Tela
             </a>
         </div>
     </div>
@@ -71,15 +81,15 @@
         do IPv4, mas sem guardar endereços no servidor (privacidade). Replay refaz a análise. !}
     <div class="card-tech p-3 shadow mt-4 history-box">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-            <h2 class="h6 text-info mb-0 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico (neste navegador)</h2>
+            <h2 class="h6 text-info mb-0 d-flex align-items-center gap-2" title="As últimas 20 análises ficam guardadas só neste navegador; nada é enviado ao servidor"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico (neste navegador)</h2>
             <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="ipv6-hist-limpar"
                     data-bs-toggle="tooltip" data-bs-placement="top" title="Apagar o histórico deste navegador">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar histórico
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar histórico
             </button>
         </div>
         <div class="table-responsive">
             <table class="table table-dark table-sm table-bordered mb-0">
-                <thead><tr class="small text-secondary"><th title="Data e hora da análise, no horário deste computador"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">schedule</span>Quando</th><th title="O endereço ou prefixo IPv6 que foi analisado, do jeito que foi digitado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">dns</span>Endereço / prefixo</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span><span class="visually-hidden">Ação</span></th></tr></thead>
+                <thead><tr class="small text-secondary"><th title="Data e hora da análise, no horário deste computador"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">schedule</span>Quando</th><th title="O endereço ou prefixo IPv6 que foi analisado, do jeito que foi digitado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">dns</span>Endereço / prefixo</th><th title="Botão que refaz a análise daquela linha na aba Análise"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span><span class="visually-hidden">Ação</span></th></tr></thead>
                 <tbody id="ipv6-hist-body">
                     <tr><td colspan="3" class="text-secondary small">Sem histórico ainda — faça uma análise.</td></tr>
                 </tbody>

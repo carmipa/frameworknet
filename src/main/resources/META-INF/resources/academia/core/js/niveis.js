@@ -155,7 +155,7 @@
     }
 
     var ESTADO = {
-        concluido: { icone: 'task_alt', texto: 'concluído' },
+        concluido: { icone: 'check_circle', texto: 'concluído' },
         liberado: { icone: 'lock_open', texto: 'liberado' },
         bloqueado: { icone: 'lock', texto: 'bloqueado' },
         'em-breve': { icone: 'schedule', texto: 'em breve' }

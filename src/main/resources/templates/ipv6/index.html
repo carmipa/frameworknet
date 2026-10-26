@@ -24,8 +24,10 @@
     <div class="aed-card card-tech p-4 shadow ipv6-wrap" data-active-tab="dividir">
         <span class="aed-eyebrow">Calculadora IPv6</span>
         <div class="aed-mode-grid tab-nav mb-3" role="tablist">
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dividir" role="tab">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_on</span><span>Sub-redes</span>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dividir" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Divida um prefixo base no prefixo alvo e conte quantas cabem (2^n exato)">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">table_chart</span><span>Sub-redes</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="eui64" role="tab"
                     data-bs-toggle="tooltip" data-bs-placement="top"
@@ -37,7 +39,9 @@
                     title="Gera um prefixo privado pseudo-aleatório dentro de fd00::/8 (RFC 4193)">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">vpn_lock</span><span>ULA</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="sumarizar" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="sumarizar" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Supernet (menor prefixo comum), blocos mesclados e contenção">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">merge</span><span>Sumarizar</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="faixa" role="tab"

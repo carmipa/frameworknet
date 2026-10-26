@@ -7,8 +7,9 @@
     <div class="protocolo-subnav-camadas" role="group" aria-label="Camadas">
         <a href="/protocolos"
            class="protocolo-subnav-item {#if camadaAtiva == 'geral'}is-active{/if}"
-           {#if camadaAtiva == 'geral'}aria-current="page"{/if}>
-            <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_rows</span>
+           {#if camadaAtiva == 'geral'}aria-current="page"{/if}
+           title="Catálogo comparativo com todos os protocolos">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span>
             <span>Geral</span>
         </a>
         {#for cam in camadas}
@@ -31,7 +32,8 @@
         {#for item in cam.itens}
         <a href="{item.rota}"
            class="protocolo-subproto {#if aprofundamentoAtivo == item.slug}is-active{/if}"
-           {#if aprofundamentoAtivo == item.slug}aria-current="page"{/if}>
+           {#if aprofundamentoAtivo == item.slug}aria-current="page"{/if}
+           title="{item.chamada}">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">{item.icone}</span>
             <span>{item.rotuloMenu}</span>
         </a>

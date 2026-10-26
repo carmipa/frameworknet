@@ -1,7 +1,7 @@
 <div class="calc-resultado card-tech shadow">
     <div class="calc-resumo-head">
         <span class="aed-eyebrow">Engenharia reversa</span>
-        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">manage_search</span> {#if e.hostname}{e.hostname}{#else}Configuração Cisco IPv6{/if}</h3>
+        <h3 class="h5 mb-1"><span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">search</span> {#if e.hostname}{e.hostname}{#else}Configuração Cisco IPv6{/if}</h3>
     </div>
 
     <div class="calc-kpis">
@@ -21,10 +21,10 @@
         </div>
     </div>
 
-    <h4 class="h6 calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">settings_ethernet</span> Interfaces e endereços</h4>
+    <h4 class="h6 calc-secao-titulo mt-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">door_open</span> Interfaces e endereços</h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
-            <thead><tr><th title="Nome da porta do roteador onde o endereço está configurado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_input_component</span>Interface</th><th title="Endereço configurado no comando ipv6 address"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">dns</span>Endereço IPv6</th><th title="Tamanho do prefixo informado junto com o endereço"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Prefixo</th><th title="Classificação do endereço pelas faixas da IANA, como global unicast ou link-local"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo (IANA)</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Descrição</th></tr></thead>
+            <thead><tr><th title="Nome da porta do roteador onde o endereço está configurado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">settings_input_component</span>Interface</th><th title="Endereço configurado no comando ipv6 address"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">dns</span>Endereço IPv6</th><th title="Tamanho do prefixo informado junto com o endereço"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Prefixo</th><th title="Classificação do endereço pelas faixas da IANA, como global unicast ou link-local"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo (IANA)</th><th title="Texto do comando description da interface, quando existe"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Descrição</th></tr></thead>
             <tbody>
             {#for ende in e.enderecos}
                 <tr>
@@ -48,10 +48,10 @@
     {/if}
 
     {#if e.rotas.size > 0}
-    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">alt_route</span> Rotas estáticas</h4>
+    <h4 class="h6 calc-secao-titulo mt-4" title="Rotas configuradas à mão com o comando ipv6 route"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Rotas estáticas</h4>
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
-            <thead><tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">near_me</span>Destino</th><th title="Endereço do vizinho ou interface para onde o tráfego é enviado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">alt_route</span>Próximo salto</th></tr></thead>
+            <thead><tr><th title="Prefixo que a rota alcança; ::/0 é a rota padrão"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">near_me</span>Destino</th><th title="Endereço do vizinho ou interface para onde o tráfego é enviado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">route</span>Próximo salto</th></tr></thead>
             <tbody>
             {#for r in e.rotas}<tr><td class="font-monospace">{r.destino}</td><td class="font-monospace">{r.proximoSalto}</td></tr>{/for}
             </tbody>

@@ -3,8 +3,8 @@
 {#description}TLS em profundidade: handshake, conjuntos de cifras, certificados e cadeia de confiança, e o que muda de verdade entre as versões 1.2 e 1.3.{/description}
 {#extraHead}
 <link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
-<link rel="stylesheet" href="/protocolos/tls/css/tls.css?v=20261022">
-<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261022">
+<link rel="stylesheet" href="/protocolos/tls/css/tls.css?v=20261026">
+<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261025">
 {/extraHead}
 {#menu}{#include shared/main_menu.html activeMainMenu='protocolos' /}{/menu}
 {#content}
@@ -20,23 +20,23 @@
             <span class="tls-ficha-item" role="listitem" title="Documento base do TLS 1.3"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">menu_book</span><strong>RFC</strong> 8446 (TLS 1.3)</span>
             <span class="tls-ficha-item" role="listitem" title="TLS assume qualquer transporte confiável; HTTPS usa TCP 443"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">lan</span><strong>Sobre</strong> TCP 443 (HTTPS)</span>
             <span class="tls-ficha-item" role="listitem" title="Fica entre a aplicação e o transporte"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">layers</span><strong>Camada</strong> Aplicação (no TCP/IP; no OSI, sessão/apresentação)</span>
-            <span class="tls-ficha-item" role="listitem" title="Confidencialidade, integridade e autenticação do servidor"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">shield</span><strong>Garante</strong> Sigilo + integridade + identidade</span>
+            <span class="tls-ficha-item" role="listitem" title="Confidencialidade, integridade e autenticação do servidor"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">lock</span><strong>Garante</strong> Sigilo + integridade + identidade</span>
             <span class="tls-ficha-item" role="listitem" title="TLS 1.3 obtém forward secrecy com (EC)DHE; também prevê modos PSK e PSK+(EC)DHE (RFC 8446 §2)"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">key</span><strong>PFS</strong> via (EC)DHE no 1.3 (também há PSK)</span>
-            <span class="tls-ficha-item" role="listitem" title="A infraestrutura de chaves públicas e autoridades certificadoras"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">verified_user</span><strong>Confiança</strong> PKI / CAs</span>
+            <span class="tls-ficha-item" role="listitem" title="A infraestrutura de chaves públicas e autoridades certificadoras"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">lock</span><strong>Confiança</strong> PKI / CAs</span>
         </div>
     </header>
 
     <nav class="tls-indice" aria-label="Índice da página">
-        <a href="#conceitos" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Conceitos</a>
-        <a href="#diagrama" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama</a>
-        <a href="#cabecalho" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> Cabeçalho (bits)</a>
-        <a href="#handshake" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">handshake</span> Handshake</a>
-        <a href="#cadeia" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">workspace_premium</span> Cadeia</a>
-        <a href="#ciphers" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">enhanced_encryption</span> Ciphers</a>
-        <a href="#ataques" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques</a>
-        <a href="#mitigacoes" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</a>
-        <a href="#laboratorio" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</a>
-        <a href="#troubleshooting" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</a>
+        <a href="#conceitos" data-indice-link title="O que o TLS garante — e o que não garante"><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Conceitos</a>
+        <a href="#diagrama" data-indice-link title="Diagrama do handshake TLS 1.3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama</a>
+        <a href="#cabecalho" data-indice-link title="Decomposição binária do TLS Record"><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> Cabeçalho (bits)</a>
+        <a href="#handshake" data-indice-link title="O handshake TLS 1.3, passo a passo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">handshake</span> Handshake</a>
+        <a href="#cadeia" data-indice-link title="Raiz, intermediária e folha"><span class="material-symbols-outlined" aria-hidden="true" translate="no">verified</span> Cadeia</a>
+        <a href="#ciphers" data-indice-link title="Cipher suites e o que evitar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> Ciphers</a>
+        <a href="#ataques" data-indice-link title="MITM, stripping, downgrade"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques</a>
+        <a href="#mitigacoes" data-indice-link title="HSTS, CT, CAA, pinning"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_good</span> Defesas</a>
+        <a href="#laboratorio" data-indice-link title="openssl e testssl para praticar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</a>
+        <a href="#troubleshooting" data-indice-link title="Erros de certificado e como ler"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</a>
     </nav>
 
     <section id="conceitos" class="tls-secao">
@@ -81,7 +81,7 @@
     </section>
 
     <section id="cadeia" class="tls-secao">
-        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">workspace_premium</span> A cadeia de certificados</h2>
+        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">verified</span> A cadeia de certificados</h2>
         <p class="small text-secondary">
             O navegador confia na CA raiz; a raiz assina a intermediária; a intermediária assina o seu site.
             O servidor precisa enviar a folha <em>e</em> a intermediária — esquecer a segunda é o erro clássico.
@@ -101,14 +101,14 @@
     </section>
 
     <section id="ciphers" class="tls-secao">
-        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">enhanced_encryption</span> Cipher suites</h2>
+        <h2 class="h3 tls-secao-titulo" title="Combinações de algoritmos negociadas no handshake, com a avaliação de cada uma"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> Cipher suites</h2>
         <div class="table-responsive border border-secondary border-opacity-25 rounded">
             <table class="table table-dark table-sm align-middle mb-0 tls-tabela">
                 <thead>
                     <tr>
                         <th title="Nome da combinação de algoritmos ou da família, com a versão do TLS em que vale"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lock</span>Suite</th>
                         <th title="Se a combinação é recomendada, aceitável, a evitar ou proibida"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">grade</span>Avaliação</th>
-                        <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Nota</th>
+                        <th title="O motivo da avaliação"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Nota</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -134,7 +134,7 @@
                 <article class="card-tech p-3 h-100 tls-ataque tls-ataque-{at.gravidadeCor}">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                         <h3 class="h4 tls-ataque-titulo mb-0">
-                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">{#if at.gravidadeCor == 'danger'}local_fire_department{#else if at.gravidadeCor == 'warning'}warning{#else if at.gravidadeCor == 'info'}info{#else}report{/if}</span>
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">{#if at.gravidadeCor == 'danger'}gpp_bad{#else if at.gravidadeCor == 'warning'}warning{#else if at.gravidadeCor == 'info'}info{#else}bug_report{/if}</span>
                             {at.nome}
                         </h3>
                         <span class="badge bg-dark border border-{at.gravidadeCor} text-{at.gravidadeCor}">{at.gravidade}</span>
@@ -151,7 +151,7 @@
     </section>
 
     <section id="mitigacoes" class="tls-secao">
-        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</h2>
+        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_good</span> Defesas</h2>
         <p class="small text-secondary">
             A coluna "não cobre" existe de propósito: pinning mal feito trava o app, CT só detecta depois,
             HSTS não protege o primeiro acesso sem preload.
@@ -161,7 +161,7 @@
                 <thead>
                     <tr>
                         <th title="Nome da proteção ou da boa prática"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lock</span>Defesa</th>
-                        <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">menu_book</span>Como funciona</th>
+                        <th title="O mecanismo que faz a proteção funcionar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">menu_book</span>Como funciona</th>
                         <th title="Os ataques ou riscos que a proteção de fato bloqueia"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">check_circle</span>Cobre</th>
                         <th title="O que continua possível mesmo com a proteção ativa: é o limite dela"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">cancel</span>Não cobre</th>
                     </tr>
@@ -181,7 +181,7 @@
     </section>
 
     <section id="laboratorio" class="tls-secao">
-        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</h2>
+        <h2 class="h3 tls-secao-titulo" title="Exercícios para ver o handshake e a cadeia, ler o certificado, testar versões aceitas e consultar o CT"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</h2>
         <div class="row g-3">
             {#for lab in conteudo.laboratorios}
             <div class="col-12 col-xl-6">
@@ -202,7 +202,7 @@
     </section>
 
     <section id="troubleshooting" class="tls-secao">
-        <h2 class="h3 tls-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</h2>
+        <h2 class="h3 tls-secao-titulo" title="Erros comuns de certificado e de handshake, a causa provável e como confirmar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</h2>
         <div class="row g-3">
             {#for diag in conteudo.diagnosticos}
             <div class="col-12 col-xl-6">
@@ -214,7 +214,8 @@
                     <p class="small mb-2"><span class="tls-rotulo tls-rotulo-risco">Causa provável</span> {diag.causaProvavel}</p>
                     <pre class="tls-codigo" id="tls-diag-{diag_count}" translate="no">{diag.comando}</pre>
                     <div class="d-flex justify-content-end mb-2">
-                        <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-copiar="tls-diag-{diag_count}">
+                        <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-copiar="tls-diag-{diag_count}"
+                                title="Copiar comando de diagnóstico para a área de transferência">
                             <span class="material-symbols-outlined" aria-hidden="true" translate="no">content_copy</span> Copiar
                         </button>
                     </div>

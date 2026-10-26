@@ -47,13 +47,13 @@
     },
     {
       "titulo": "Validação e emissão pela CA",
-      "icone": "verified_user",
+      "icone": "lock",
       "texto": "A CA valida antes de emitir. Para certificados DV (Domain Validation), prova-se controle do domínio (desafio HTTP-01 ou DNS-01 no ACME). Para OV/EV, valida-se a organização. Só depois a CA copia a chave pública do CSR para um certificado X.509, adiciona validade, serial, extensões e SAN, e assina com a chave privada da CA. O Subject vem do que a CA aceitou validar, não necessariamente do que o CSR pediu.",
       "destaque": "A CA não confia cegamente no CSR: valida a identidade e só então assina."
     },
     {
       "titulo": "Validade curta e automação (ACME)",
-      "icone": "autorenew",
+      "icone": "refresh",
       "texto": "Validades de 90 dias reduzem o tempo em que uma chave comprometida ou um certificado emitido por engano permanecem úteis, e diminuem a dependência de listas de revogação. Como renovar a cada 90 dias na mão não escala, o ACME automatiza: o agente (certbot, acme.sh, Caddy) gera o par, monta o CSR, resolve o desafio, baixa e instala o certificado, e reexecuta tudo periodicamente.",
       "destaque": "Validade curta só é viável porque o ACME automatiza a renovação."
     },
@@ -149,7 +149,7 @@
         "No certificado (CA decide)"
       ],
       "dicas_colunas": [
-        "",
+        "Informação ou elemento comparado entre o pedido e o certificado",
         "Se esse elemento vai no pedido de assinatura e quem o define",
         "Se esse elemento aparece no certificado emitido e como a CA o define"
       ],

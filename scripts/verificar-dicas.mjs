@@ -8,10 +8,12 @@
  * acrescentar nada. Esta catraca mede o site inteiro com a varredura do componente compartilhado e reprova as duas
  * direcoes do erro:
  *  - FALHA: dica que falta onde ha o que explicar (controle so com icone sem nome ou sem dica, desabilitado sem
- *    motivo, campo com formato ou limite declarado sem dica) e dica de ma qualidade (vazia, acima de 160
- *    caracteres, repetindo o rotulo, gatilho "?" sem nome);
- *  - AVISO: dica onde nao se usa (em titulo, em card clicavel, em texto corrido). Aqui o aviso tambem reprova: a
- *    revisao de 24/10 removeu todos, e um novo so entra com exceção registrada (data-dica-excecao="motivo").
+ *    motivo, campo com formato ou limite declarado sem dica), dica de ma qualidade (vazia, acima de 160
+ *    caracteres, repetindo o rotulo, gatilho "?" sem nome), dica sem "?" a vista, dica dentro do proprio controle e
+ *    texto de dica fora da .dica;
+ *  - AVISO: dica onde nao se usa (em card clicavel, em texto corrido, repetindo o texto visivel). Aqui o aviso
+ *    tambem reprova: um novo so entra com exceção registrada (data-dica-excecao="motivo"). Dica em titulo que
+ *    acrescenta o que o texto abaixo dele nao diz e permitida, com o "?" a vista.
  *
  * UNIVERSO: cada pagina do inventario (node scripts/inventario.mjs) e as variantes, no estado inicial, em cada aba
  * (role=tab, data-bs-toggle=tab/pill, clicada em ordem de documento, inclusive aba dentro de aba), no painel de
@@ -97,22 +99,41 @@ const { navegador, abrir, medirRota } = percurso;
       + `<span class="dica"><button type="button" aria-label="CalibracaoComDica" aria-describedby="d-calib">${svg}</button>`
       + '<span id="d-calib" role="tooltip" class="dica__texto">Explica o que o botao de calibracao faz.</span></span>'
       + '<h2>CalibracaoTitulo <span class="dica"><button type="button" class="dica__gatilho" aria-label="Ajuda sobre o titulo" aria-describedby="d-calib-t">?</button>'
-      + '<span id="d-calib-t" role="tooltip" class="dica__texto">Dica que nao devia estar no titulo.</span></span></h2>'
+      + '<span id="d-calib-t" role="tooltip" class="dica__texto">Repete a explicacao escrita logo abaixo deste titulo.</span></span></h2>'
+      + '<p>Esta explicacao esta escrita logo abaixo deste titulo e a dica repete.</p>'
+      + '<span class="dica"><button type="button" aria-describedby="d-calib-m">CalibracaoComMarca</button><span class="dica__marca" aria-hidden="true">?</span>'
+      + '<span id="d-calib-m" role="tooltip" class="dica__texto">Grava a calibracao e volta para a lista.</span></span>'
+      + '<span class="dica"><button type="button" aria-describedby="d-calib-s">CalibracaoSemMarca</button>'
+      + '<span id="d-calib-s" role="tooltip" class="dica__texto">Grava a calibracao e volta para a lista.</span></span>'
+      + '<button type="button" class="dica" aria-describedby="d-calib-in">CalibracaoDentro'
+      + '<span class="dica__marca" aria-hidden="true">?</span><span id="d-calib-in" role="tooltip" class="dica__texto">Grava a calibracao.</span></button>'
+      + '<button type="button" aria-describedby="d-calib-f">CalibracaoFora</button>'
+      + '<span id="d-calib-f" role="tooltip" class="dica__texto">Salva a calibracao.</span>'
+      + '<div data-dica-excecao="calibracao: grupo com um so &quot;?&quot;"><button type="button" aria-describedby="d-calib-x">CalibracaoExcecao</button>'
+      + '<span id="d-calib-x" role="tooltip" class="dica__texto">Envia a calibracao.</span></div>'
       + '<div class="card"><div class="campo"><label for="calib-cep">CalibracaoCampo</label>'
-      + '<input id="calib-cep" pattern="\\d{8}" aria-describedby="d-calib-c">'
-      + '<span id="d-calib-c" role="tooltip" class="dica__texto">Oito numeros, sem o hifen.</span></div></div>';
+      + '<span class="dica"><button type="button" class="dica__gatilho" aria-label="Ajuda sobre CalibracaoCampo" aria-describedby="d-calib-c">?</button>'
+      + '<span id="d-calib-c" role="tooltip" class="dica__texto">Oito numeros, sem o hifen.</span></span>'
+      + '<input id="calib-cep" pattern="\\d{8}" aria-describedby="d-calib-c"></div></div>';
     document.body.appendChild(caixa);
   });
   const achados = await varrer(pagina);
   await contexto.close();
   const tem = (s) => achados.some((a) => a.includes(s));
-  const ok = tem('CalibracaoSemDica') && !tem('CalibracaoComDica') && tem('CalibracaoTitulo') && !tem('CalibracaoCampo');
+  const ok = tem('CalibracaoSemDica') && !tem('CalibracaoComDica') && tem('CalibracaoTitulo') && !tem('CalibracaoCampo')
+    && tem('CalibracaoSemMarca') && !tem('CalibracaoComMarca')
+    && tem('CalibracaoDentro') && tem('CalibracaoFora') && !tem('CalibracaoExcecao');
   if (!ok) {
     console.log(`NAO VERIFICOU: calibracao falhou (sem dica acusado=${tem('CalibracaoSemDica')}, com dica poupado=${!tem('CalibracaoComDica')}, `
-      + `titulo avisado=${tem('CalibracaoTitulo')}, campo em painel poupado=${!tem('CalibracaoCampo')})`);
+      + `titulo que repete avisado=${tem('CalibracaoTitulo')}, campo em painel poupado=${!tem('CalibracaoCampo')}, `
+      + `botao sem "?" acusado=${tem('CalibracaoSemMarca')}, botao com "?" poupado=${!tem('CalibracaoComMarca')}, `
+      + `dica dentro do controle acusada=${tem('CalibracaoDentro')}, dica fora da .dica acusada=${tem('CalibracaoFora')}, `
+      + `fora da .dica com excecao poupada=${!tem('CalibracaoExcecao')})`);
     process.exit(2);
   }
-  console.log('calibracao: icone sem dica acusado e com dica aceito; dica em titulo avisada e dica de campo em painel "card" aceita');
+  console.log('calibracao: icone sem dica acusado e com dica aceito; dica de titulo que repete o texto abaixo avisada e dica de '
+    + 'campo em painel "card" aceita; botao com dica sem "?" acusado e com a marca "?" aceito; dica dentro do controle e '
+    + 'texto fora da .dica acusados, o mesmo com excecao registrada aceito');
 }
 
 // Calibracao do universo ampliado: dentro da aba OCULTA "vlan" da calculadora, o botao so com icone sem dica tem de

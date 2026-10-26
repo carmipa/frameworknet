@@ -35,13 +35,13 @@
   "conceitos": [
     {
       "titulo": "Dois canais: controle e dados",
-      "icone": "swap_vert",
+      "icone": "sort",
       "texto": "O FTP é o único protocolo comum que usa DUAS conexões TCP. Uma, na porta 21, carrega os comandos e as respostas (USER, PASS, RETR, os códigos 220/331/...). A outra carrega o conteúdo dos arquivos e as listagens. Elas nascem e morrem em momentos diferentes, e é essa separação que torna o FTP tão difícil de passar por NAT e firewall.",
       "destaque": "Liberar 'a porta do FTP' no firewall nunca é liberar só a 21: a conexão de dados usa outra porta, e onde ela vai depende do modo (ativo ou passivo)."
     },
     {
       "titulo": "Modo ativo x modo passivo",
-      "icone": "sync",
+      "icone": "refresh",
       "texto": "A pergunta é sempre a mesma: quem ABRE a conexão de dados? No modo ATIVO, o cliente manda PORT dizendo seu IP e porta, e o SERVIDOR conecta de volta (origem porta 20) — o que costuma esbarrar no firewall do cliente. No modo PASSIVO, o cliente manda PASV, o servidor responde 227 com uma porta efêmera própria, e o CLIENTE é quem conecta. Por isso o passivo é o padrão atrás de NAT.",
       "destaque": "227 Entering Passive Mode (h1,h2,h3,h4,p1,p2): a porta é p1*256+p2. Todo o desafio de firewall do FTP mora nesse detalhe."
     },
@@ -53,7 +53,7 @@
     },
     {
       "titulo": "FTPS não é SFTP",
-      "icone": "enhanced_encryption",
+      "icone": "lock",
       "texto": "Os nomes parecem irmãos, mas são protocolos sem parentesco. FTPS é o PROTOCOLO FTP embrulhado em TLS (AUTH TLS explícito na 21, ou implícito na 990): mantém os dois canais e toda a dor de firewall. SFTP é um SUBSISTEMA do SSH, um protocolo totalmente diferente, com um único canal cifrado na porta 22. SFTP não tem nada de FTP além das três letras no fim.",
       "destaque": "Regra prática: SFTP = SSH (22, um canal). FTPS = FTP + TLS (21/990, dois canais). Trocar um pelo outro na configuração quebra a conexão."
     },
@@ -290,7 +290,7 @@
       ],
       "dicas_colunas": [
         "Valor numérico de 2 bytes no início do pacote que identifica seu tipo",
-        "",
+        "Sigla do tipo de pacote como aparece na especificação e em analisadores",
         "Papel desse pacote na transferência"
       ],
       "linhas": [

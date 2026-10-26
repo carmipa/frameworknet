@@ -141,7 +141,7 @@
         const footer = document.createElement("button");
         footer.type = "button";
         footer.className = "fn-ih-clear";
-        footer.innerHTML = '<span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar histórico';
+        footer.innerHTML = '<span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar histórico';
         footer.addEventListener("mousedown", (ev) => {
             ev.preventDefault();
             clearHistory(input);

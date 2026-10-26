@@ -70,7 +70,7 @@
     },
     {
       "titulo": "TIME_WAIT no encerramento",
-      "icone": "hourglass_top",
+      "icone": "pending",
       "texto": "Quem fecha a conexão ativamente entra em TIME_WAIT e espera cerca de 2x o tempo máximo de vida do segmento (2*MSL). Isso garante que o ACK final chegue e que segmentos atrasados da conexão antiga não contaminem uma conexão nova com o mesmo par de portas.",
       "destaque": "Espera calculada para não confundir uma conexão velha com a nova."
     }
@@ -162,8 +162,8 @@
       ],
       "dicas_colunas": [
         "Sigla do bit como aparece em ferramentas de captura, como Wireshark e tcpdump",
-        "",
-        ""
+        "Nome por extenso em inglês, do qual a sigla deriva",
+        "O que acontece na conexão quando o bit está ligado (valor 1)"
       ],
       "linhas": [
         [
@@ -221,7 +221,7 @@
         "Quando ocorre"
       ],
       "dicas_colunas": [
-        "",
+        "Nome do estado definido no TCP, mostrado com pequenas variações por netstat e ss",
         "Ponta da conexão, cliente ou servidor, em que o estado normalmente aparece",
         "Evento que leva a conexão a esse estado e o que ela aguarda para sair dele"
       ],
@@ -328,7 +328,7 @@
       "dicas_colunas": [
         "Número da porta em que o serviço escuta por padrão; a barra separa portas de funções distintas",
         "Protocolo de aplicação associado à porta",
-        ""
+        "Para que o serviço é usado, com observações sobre segurança ou faixa da porta"
       ],
       "linhas": [
         [

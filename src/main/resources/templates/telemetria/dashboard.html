@@ -27,7 +27,7 @@
                     </select>
                 </label>
                 <label class="tele-field">
-                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">autorenew</span> <span>Autoatualização</span>
+                    <span class="material-symbols-outlined" aria-hidden="true" translate="no">refresh</span> <span>Autoatualização</span>
                     <select id="t-autorefresh" class="form-select form-select-sm">
                         <option value="0">Desativada</option>
                         <option value="5000">5 s</option>
@@ -36,15 +36,19 @@
                         <option value="60000">1 min</option>
                     </select>
                 </label>
-                <button type="button" class="aed-btn aed-btn-neutral" id="btn-refresh-telemetria">
+                <button type="button" class="aed-btn aed-btn-neutral" id="btn-refresh-telemetria"
+                        title="Recarregar métricas e gráficos de telemetria imediatamente">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">refresh</span> Atualizar
                 </button>
-                <button type="button" class="aed-btn aed-btn-neutral" id="btn-imprimir-telemetria">
+                <button type="button" class="aed-btn aed-btn-neutral" id="btn-imprimir-telemetria"
+                        data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="Abre a impressao do navegador com o painel: KPIs, graficos e tabelas.">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">print</span> Imprimir
                 </button>
                 <div class="dropdown d-inline-block">
                     <button type="button" class="aed-btn aed-btn-json dropdown-toggle" data-bs-toggle="dropdown"
-                            aria-expanded="false" id="btn-exportar-telemetria">
+                            aria-expanded="false" id="btn-exportar-telemetria"
+                            title="Exportar dados de telemetria em formato JSON, CSV, TXT ou HTML">
                         <span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> Exportar
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end tele-export-menu" aria-labelledby="btn-exportar-telemetria">
@@ -72,7 +76,7 @@
                 <button type="button" class="aed-btn aed-btn-neutral" id="btn-sincronizar-dataset" disabled
                         data-bs-toggle="tooltip" data-bs-placement="top"
                         title="Falta GITHUB_DATASET_TOKEN no .env do servidor.">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">cloud_off</span> Sincronizar dataset
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">refresh</span> Sincronizar dataset
                 </button>
                 {/if}
             </div>
@@ -88,7 +92,7 @@
 
     <div class="aed-kpi-grid tele-kpi-6">
         <article class="aed-kpi-card">
-            <div class="aed-kpi-icon blue"><span class="material-symbols-outlined" translate="no" aria-hidden="true">swap_vert</span></div>
+            <div class="aed-kpi-icon blue"><span class="material-symbols-outlined" translate="no" aria-hidden="true">sort</span></div>
             <div>
                 <div class="aed-kpi-label">Requisições</div>
                 <div class="aed-kpi-value" id="t-http-total">0</div>
@@ -109,7 +113,7 @@
             </div>
         </article>
         <article class="aed-kpi-card">
-            <div class="aed-kpi-icon rose"><span class="material-symbols-outlined" translate="no" aria-hidden="true">dangerous</span></div>
+            <div class="aed-kpi-icon rose"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span></div>
             <div>
                 <div class="aed-kpi-label">Erros 5xx (servidor)</div>
                 <div class="aed-kpi-value" id="t-http-5xx">0</div>
@@ -136,14 +140,14 @@
     <div class="tele-grid-2 mb-1">
         <div class="aed-card card-tech p-3">
             <span class="aed-eyebrow aed-eyebrow-amber">Tempo real</span>
-            <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Requisições e erros ao longo do tempo</h6>
+            <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Requisições e erros ao longo do tempo</h6>
             <div class="tele-chart-box">
                 <canvas id="chart-atividade" height="150"></canvas>
             </div>
         </div>
         <div class="aed-card card-tech p-3">
             <span class="aed-eyebrow">HTTP</span>
-            <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">donut_small</span> Status HTTP por classe</h6>
+            <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">bar_chart</span> Status HTTP por classe</h6>
             <div class="tele-chart-box">
                 <canvas id="chart-status" height="150"></canvas>
             </div>
@@ -160,7 +164,7 @@
         </div>
         <div class="aed-card card-tech p-3">
             <span class="aed-eyebrow">Latência</span>
-            <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">query_stats</span> Latência por percentil (ms)</h6>
+            <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">bar_chart</span> Latência por percentil (ms)</h6>
             <div class="tele-chart-box">
                 <canvas id="chart-latencia" height="170"></canvas>
             </div>
@@ -173,7 +177,7 @@
             <div class="table-responsive">
                 <table class="table table-dark table-sm telemetry-table tele-endpoints mb-0">
                     <thead>
-                    <tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">link</span>Endpoint</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Chamadas</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">query_stats</span>P95</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">error</span>Erros</th></tr>
+                    <tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">cable</span>Endpoint</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Chamadas</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">bar_chart</span>P95</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">error</span>Erros</th></tr>
                     </thead>
                     <tbody id="t-top-lentos">
                     <tr><td colspan="5" class="tele-empty">Sem dados no período.</td></tr>
@@ -186,7 +190,7 @@
             <div class="table-responsive">
                 <table class="table table-dark table-sm telemetry-table tele-endpoints mb-0">
                     <thead>
-                    <tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">link</span>Endpoint</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">warning</span>4xx</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">error</span>5xx</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Chamadas</th></tr>
+                    <tr><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">cable</span>Endpoint</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">warning</span>4xx</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">error</span>5xx</th><th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Chamadas</th></tr>
                     </thead>
                     <tbody id="t-top-erros">
                     <tr><td colspan="5" class="tele-empty">Nenhum erro no período.</td></tr>
@@ -198,7 +202,7 @@
 
     <!-- Origem do tráfego: de onde vem a carga, por módulo e por rota (dados da própria telemetria) -->
     <div class="aed-card card-tech p-3 mb-3" id="secao-origem">
-        <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Origem do tráfego</h6>
+        <h6 class="tele-chart-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">search</span> Origem do tráfego</h6>
         <p class="small text-secondary mb-3">
             De onde vem a carga DENTRO da aplicação — por módulo e por rota. A telemetria não coleta IP nem
             localização do visitante (por privacidade); a "origem" aqui é o alvo interno das requisições.
@@ -218,7 +222,7 @@
                                 <th class="text-end" title="Participação no total de requisições"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">percent</span>%</th>
                                 <th class="text-end" title="Respostas de sucesso (2xx/3xx)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">check_circle</span>OK</th>
                                 <th class="text-end" title="Respostas com erro (4xx/5xx)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">error</span>Erro</th>
-                                <th class="text-end" title="Latência no percentil 95 (ms)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">query_stats</span>P95</th>
+                                <th class="text-end" title="Latência no percentil 95 (ms)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">bar_chart</span>P95</th>
                             </tr>
                         </thead>
                         <tbody id="tabela-origem-modulos">
@@ -234,10 +238,10 @@
                 <thead>
                     <tr>
                         <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th>
-                        <th title="Rota/endpoint acessado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">route</span>Rota</th>
+                        <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">route</span>Rota</th>
                         <th class="text-end" title="Volume de chamadas no período"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Chamadas</th>
                         <th class="text-end" title="Chamadas que terminaram em erro"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">error</span>Erros</th>
-                        <th class="text-end" title="Latência no percentil 95 (ms)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">query_stats</span>P95</th>
+                        <th class="text-end" title="Latência no percentil 95 (ms)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">bar_chart</span>P95</th>
                     </tr>
                 </thead>
                 <tbody id="tabela-origem-rotas">
@@ -255,7 +259,7 @@
                             medido não é medição.</caption>
                         <thead>
                             <tr>
-                                <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">public</span>País</th>
+                                <th title="Código ISO do país informado pela borda, sem IP. ?? = sem fonte confiável (o padrão)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">public</span>País</th>
                                 <th class="text-end" title="Acessos originados desse país"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Acessos</th>
                                 <th class="text-end" title="Participação no total de acessos"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">percent</span>%</th>
                             </tr>
@@ -294,7 +298,7 @@
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span>
                 </button>
                 <button type="button" class="aed-btn aed-btn-danger btn-sm btn-clear-console" data-target="console-telemetria"
-                        title="Limpar todas as mensagens exibidas no console ao vivo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+                        title="Limpar todas as mensagens exibidas no console ao vivo"><span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar</button>
             </div>
         </div>
         <pre class="aed-console console-body" id="console-telemetria" translate="no" tabindex="0" role="region" aria-label="Console de eventos">Aguardando eventos...</pre>
@@ -312,10 +316,10 @@
                 <thead>
                 <tr>
                     <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">schedule</span>Horário</th>
-                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">equalizer</span>Nível</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">priority_high</span>Nível</th>
                     <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Módulo</th>
                     <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">http</span>Método</th>
-                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">link</span>Endpoint</th>
+                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">cable</span>Endpoint</th>
                     <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">flag</span>Status</th>
                     <th class="num"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">timer</span>Duração</th>
                     <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">chat</span>Mensagem</th>
@@ -329,7 +333,7 @@
         <div class="telemetry-pagination d-flex gap-2 align-items-center justify-content-center mt-2">
             <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="t-page-prev"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_left</span> Anterior</button>
             <span id="t-page-info" class="small text-secondary">Página 1</span>
-            <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="t-page-next"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_right</span> Próxima</button>
+            <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="t-page-next"><span class="material-symbols-outlined" translate="no" aria-hidden="true">arrow_forward</span> Próxima</button>
         </div>
     </div>
 </div>

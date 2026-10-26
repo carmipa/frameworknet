@@ -143,9 +143,9 @@
         "Para que serve"
       ],
       "dicas_colunas": [
-        "",
+        "Categoria do endereço conforme o alcance e o modo de entrega: local, global, grupo ou especial",
         "Bloco ou endereço que identifica a categoria; o número após a barra diz quantos bits iniciais são fixos",
-        ""
+        "Alcance e uso prático de cada categoria, com o equivalente no IPv4 quando existe"
       ],
       "linhas": [
         [
@@ -189,7 +189,7 @@
       ],
       "dicas_colunas": [
         "Nome da convenção de escrita ou abreviação aplicada ao endereço",
-        "",
+        "Endereço escrito seguindo a convenção da linha, para comparar com a forma completa",
         "Como a convenção é aplicada e qual limite ela tem"
       ],
       "linhas": [

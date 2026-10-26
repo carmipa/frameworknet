@@ -199,3 +199,10 @@
 .rings-saber-card strong .material-symbols-outlined{color:#38bdf8;font-size:1.1rem}
 .rings-saber-card p{margin:0;color:#cbd5e1;font-size:.83rem;line-height:1.45}
 @media(max-width:760px){.rings-saber{grid-template-columns:1fr}.rings-anel{grid-template-columns:1fr}.rings-anel-badge{justify-self:start}}
+
+/* Etapa sem anterior/próxima: o botão segue focável (aria-disabled) e só parece desativado. */
+#lab-prev[aria-disabled="true"],
+#lab-next[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

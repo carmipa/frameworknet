@@ -1,15 +1,14 @@
 /*
- * Tooltip compartilhado (dica.css v1.2 copiado SEM edição) numa camada de cascata própria.
+ * Tooltip compartilhado (dica.css copiado SEM edição) numa camada de cascata própria.
  *
- * Por que camada: o adaptador (web/js/field-tooltips.js) põe a classe .dica no próprio link ou botão que já
- * tinha dica, em vez de embrulhá-lo — embrulhar quebraria o menu suspenso do Bootstrap (ele acha o menu pelo
- * irmão do botão) e os seletores de filho direto (.input-group > ...). Fora de camada, o
- * ".dica { display: inline-flex }" do canônico empataria em especificidade com ".nav-link { display: block }"
- * e ganharia por ordem, mudando o layout de centenas de itens. Dentro da camada, qualquer regra do site
- * (Bootstrap, app.css, aed-command-center.css) vence a do canônico — o canônico só decide onde o site não diz
- * nada, que é o que ele precisa decidir (posição, visibilidade, foco, toque, Esc).
+ * Por que camada: o adaptador (web/js/field-tooltips.js) embrulha o controle que tinha dica numa .dica (com a marca
+ * "?" ao lado) e, no menu suspenso do Bootstrap, põe a .dica logo depois do botão. Fora de camada, o
+ * ".dica { display: inline-flex }" do canônico empataria em especificidade com as regras do site e ganharia por
+ * ordem, mudando o layout de centenas de itens. Dentro da camada, qualquer regra do site (Bootstrap, app.css,
+ * aed-command-center.css) vence a do canônico — o canônico só decide onde o site não diz nada, que é o que ele
+ * precisa decidir (posição, visibilidade, foco, toque, Esc).
  */
-@import url("/web/css/dica.css?v=20261022") layer(dica-canonica);
+@import url("/web/css/dica.css?v=20261025") layer(dica-canonica);
 
 /* Tema escuro do site: o balão segue as cores do design system (contraste 4,5:1 conferido no fundo #0b1220). */
 :root {
@@ -23,10 +22,10 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
-/* Quando a classe .dica está no PRÓPRIO link ou botão (menu, item de lista, grupo de botões), o
+/* Quando a classe .dica está no PRÓPRIO item (os itens de um grupo com um "?" só, como os bits da régua), o
    ".dica:has(:focus-visible)" do canônico não enxerga o foco — :has() olha só os descendentes. Mesmo efeito,
    respeitando o Esc (data-fechada) do canônico. */
-.dica:focus-visible:not([data-fechada]) > .dica__texto {
+.dica:focus-visible:not([data-fechada]):not([aria-expanded="true"]) > .dica__texto {
     visibility: visible;
     opacity: 1;
 }
@@ -40,9 +39,71 @@
     pointer-events: none;
 }
 
-/* Envoltório de campo de formulário: ocupa a linha do bloco, como o próprio campo ocupava (form-control é 100%). */
+/* Aberta pela marca "?" (mouse em cima dela), a dica nasce embaixo da marca e o mouse desce até o texto sem ela
+   sumir (WCAG 1.4.13); aberta pelo controle, continua deixando o clique passar para o vizinho. */
+.dica[data-pela-marca] > .dica__texto {
+    pointer-events: auto;
+}
+
+/* Envoltório de controle que ocupava a linha (botão w-100, item de grade): ocupa a linha, com o controle esticado
+   e a marca "?" ao lado. */
 .dica.dica-bloco {
-    display: block;
+    display: flex;
+    width: 100%;
+    gap: 0.25rem;
+}
+
+.dica.dica-bloco > :first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Envoltório em linha: a marca "?" encostada no controle, sem empurrar o vizinho. */
+.dica[data-dica-adaptador]:not(.dica-bloco) {
+    gap: 0.2rem;
+}
+
+/* A marca "?" soma largura ao controle: numa linha apertada (320 px, grade de botões, linha de ações) o envoltório
+   encolhe com a linha e o texto do botão quebra, em vez de empurrar a página para o lado (medido em 25/10/2026:
+   31 estados com rolagem lateral de 4 a 48 px só por causa da marca). */
+.dica[data-dica-adaptador] {
+    max-width: 100%;
+    min-width: 0;
+}
+
+.dica[data-dica-adaptador] > :first-child {
+    min-width: 0;
+}
+
+.dica[data-dica-adaptador] > .aed-btn {
+    white-space: normal;
+}
+
+/* "?" de menu suspenso (ao lado do botão) e "?" de um grupo (antes dele). */
+.dica.dica-irmao,
+.dica.dica-do-grupo {
+    margin-inline: 0.25rem;
+}
+
+/* Controle escondido (hidden): a marca "?" some junto com ele (ex.: o botão "Menu" que só existe no celular). */
+.dica:has(> [hidden]) {
+    display: none;
+}
+
+/* O botão "Menu" só aparece no celular com o recolhimento ligado (aed-command-center.css); a marca dele acompanha. */
+.dica:has(> .aed-nav-recolher) {
+    display: none;
+}
+
+@media (max-width: 36em) {
+    .nav-recolhivel .dica:has(> .aed-nav-recolher) {
+        display: inline-flex;
+    }
+}
+
+[aria-expanded="true"] + .dica-irmao > .dica__texto {
+    visibility: hidden;
+    opacity: 0;
 }
 
 /* Esc e começar a digitar DISPENSAM a dica (data-fechada), mesmo com o mouse parado sobre o campo. No dica.css

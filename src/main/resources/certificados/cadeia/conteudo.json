@@ -3,7 +3,8 @@
   "ficha": [
     {
       "rotulo": "Grupo",
-      "valor": "Fundamentos -- Certificados / X.509 / PKI"
+      "valor": "Fundamentos -- Certificados / X.509 / PKI",
+      "dica": "Base conceitual antes de mergulhar em emissão, revogação e mTLS."
     },
     {
       "rotulo": "Modelo",
@@ -34,7 +35,7 @@
   "conceitos": [
     {
       "titulo": "Âncora de confiança",
-      "icone": "verified_user",
+      "icone": "lock",
       "texto": "É o ponto de partida da confiança: um certificado raiz, autoassinado, que o cliente aceita não por causa de uma assinatura externa, mas porque alguém decidiu colocá-lo na trust store. Toda a segurança da cadeia depende dessa lista curta e curada. Se uma raiz maliciosa entrar ali, ela pode assinar certificados para qualquer domínio e o cliente confiará.",
       "destaque": "A raiz é confiada por decisão, não por prova criptográfica."
     },
@@ -52,7 +53,7 @@
     },
     {
       "titulo": "Path building (construção do caminho)",
-      "icone": "schema",
+      "icone": "account_tree",
       "texto": "O cliente nem sempre recebe a cadeia perfeita e ordenada. Com cross-signing e intermediárias faltando, ele precisa montar o caminho: para cada certificado, procurar um emissor cujo Subject bata com o Issuer e cuja assinatura confira, até chegar a uma âncora. Um bom validador tenta múltiplos caminhos antes de desistir; um fraco reprova cadeias que na verdade são válidas por outra rota.",
       "destaque": "Validar não é só subir uma lista -- é buscar um caminho até a âncora."
     },
@@ -64,7 +65,7 @@
     },
     {
       "titulo": "CAA (Certification Authority Authorization)",
-      "icone": "policy",
+      "icone": "rule",
       "texto": "É um registro DNS onde o dono do domínio declara quais CAs estão autorizadas a emitir certificados para ele. Antes de emitir, a CA é obrigada a consultar o CAA; se ela não estiver na lista, deve recusar. Reduz o risco de uma CA legítima, porém errada, emitir para o seu domínio. Funciona no lado da emissão, complementando o CT que atua na detecção.",
       "destaque": "CAA restringe quem pode emitir; CT revela quem emitiu."
     }

@@ -1,6 +1,6 @@
 {! Aba "Engenharia reversa": form em largura total; diagnóstico 100% abaixo (regra global de layout IPv6). !}
 <div class="calc-form-card mb-3">
-    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">manage_search</span> Engenharia reversa (Cisco IPv6)</h2>
+    <h2 class="h6 calc-form-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">search</span> Engenharia reversa (Cisco IPv6)</h2>
     <p class="calc-hint">Cole uma configuração Cisco IPv6. Lê interfaces, endereços, rotas estáticas e OSPFv3/EIGRP, reconstrói o desenho e aponta achados.</p>
     <form id="formEng" hx-post="/ipv6/api/engenharia" hx-target="#saidaEng" hx-swap="innerHTML"
           hx-disabled-elt="find button[type='submit']">
@@ -27,7 +27,7 @@ ipv6 router ospf 1</textarea>
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Analisar config
             </button>
             <button type="button" class="aed-btn aed-btn-neutral" data-limpar title="Esvaziar e recomeçar">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
             </button>
         </div>
     </form>
@@ -35,7 +35,7 @@ ipv6 router ospf 1</textarea>
 
 <div id="saidaEng" class="calc-saida ipv6-saida-full">
     <div class="calc-placeholder">
-        <span class="material-symbols-outlined" aria-hidden="true" translate="no">manage_search</span>
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">search</span>
         <p class="mb-0">Cole a configuração para ver as interfaces, os endereços (com tipo IANA), as rotas, o
             processo de roteamento e os achados/recomendações reconstruídos.</p>
     </div>

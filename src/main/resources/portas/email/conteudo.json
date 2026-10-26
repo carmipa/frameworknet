@@ -52,7 +52,7 @@
     },
     {
       "titulo": "Claro x seguro: os pares",
-      "icone": "shield",
+      "icone": "lock",
       "texto": "Cada protocolo de leitura tem uma versão insegura e uma segura. POP3 110 vira POP3S 995. IMAP 143 vira IMAPS 993. As portas claras enviam usuário e senha sem criptografia; qualquer um na mesma rede pode capturar. Use somente as portas seguras e desative as claras.",
       "destaque": "110 para 995, 143 para 993. Sempre a versão segura."
     },
@@ -70,7 +70,7 @@
     },
     {
       "titulo": "SPF, DKIM e DMARC",
-      "icone": "security",
+      "icone": "lock",
       "texto": "Além de fechar o relay, três registros no DNS protegem a reputação do domínio: SPF diz quais servidores podem enviar em seu nome, DKIM assina as mensagens criptograficamente, e DMARC define o que fazer quando SPF/DKIM falham (e para onde reportar). Juntos, dificultam a falsificação (spoofing) do seu domínio.",
       "destaque": "SPF autoriza, DKIM assina, DMARC decide e reporta."
     }
@@ -190,7 +190,7 @@
       "dicas_colunas": [
         "O que se quer fazer com o e-mail",
         "A porta indicada para essa tarefa hoje",
-        "O motivo da escolha"
+        ""
       ],
       "linhas": [
         [

@@ -52,7 +52,7 @@
     },
     {
       "titulo": "Abstração e interoperabilidade",
-      "icone": "hub",
+      "icone": "lan",
       "texto": "Como cada camada oferece uma interface padronizada para a de cima, fabricantes diferentes conseguem criar equipamentos e softwares que funcionam juntos. Um roteador de uma marca fala com a placa de rede de outra porque ambos respeitam o contrato de cada camada. Sem esse padrão comum, cada rede seria uma ilha incompatível.",
       "destaque": "Padrão comum = equipamentos de fabricantes diferentes se entendem."
     },
@@ -83,7 +83,7 @@
         "Nome oficial da camada no modelo OSI",
         "O que essa camada faz pelo dado durante a comunicação",
         "Nome dado ao bloco de dados enquanto ele está nessa camada",
-        ""
+        "Protocolos, padrões e equipamentos associados a essa camada"
       ],
       "linhas": [
         [
@@ -139,6 +139,7 @@
     },
     {
       "titulo": "Mnemônicos para memorizar a ordem das camadas",
+      "dica": "Frases cujas iniciais seguem a ordem das camadas, para decorar a sequência",
       "colunas": [
         "Sentido",
         "Frase",

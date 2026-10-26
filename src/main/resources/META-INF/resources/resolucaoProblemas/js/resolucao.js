@@ -72,7 +72,15 @@
             desc.setAttribute("role", "tooltip");
             desc.className = "dica__texto";
             desc.textContent = DICA_NO_TOPOLOGIA;
-            (document.querySelector(".topology-wrap") || document.body).appendChild(desc);
+            const wrap = document.querySelector(".topology-wrap");
+            (wrap || document.body).appendChild(desc);
+            if (wrap) {
+                // Um "?" para o diagrama inteiro (o adaptador o põe antes dele); cada nó mantém a descrição.
+                wrap.setAttribute("data-dica-grupo", "Clique, ou use Tab e Enter, num equipamento ou enlace: o painel de detalhes mostra a rede, a máscara, o gateway e os endereços dele.");
+                wrap.setAttribute("data-dica-grupo-rotulo", "o diagrama da topologia");
+                wrap.setAttribute("data-dica-excecao", "nós do diagrama de topologia (SVG): um \"?\" para o diagrama; cada nó mantém a descrição no leitor de tela e o balão nativo no mouse");
+                if (window.FieldTooltips) { window.FieldTooltips.init(wrap); }
+            }
         }
         return desc.id;
     }

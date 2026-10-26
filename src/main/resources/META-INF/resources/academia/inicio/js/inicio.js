@@ -24,6 +24,10 @@
     var valor = 0;
 
     if (container && saida) {
+        // Um "?" para a fileira (o contêiner é exceção registrada); cada bit mantém a própria dica.
+        container.setAttribute('data-dica-grupo', 'Clique num bit, ou use Tab e Enter, para acendê-lo ou apagá-lo; o valor em decimal aparece ao lado.');
+        container.setAttribute('data-dica-grupo-rotulo', 'os bits');
+        container.setAttribute('data-dica-excecao', 'bits de um byte: um "?" para a fileira; cada bit mantém a sua dica no foco e no mouse');
         PESOS.forEach(function (peso) {
             var botao = document.createElement('button');
             botao.type = 'button';

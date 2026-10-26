@@ -42,19 +42,19 @@
     },
     {
       "titulo": "IV / nonce nunca deve repetir",
-      "icone": "restart_alt",
+      "icone": "refresh",
       "texto": "O IV (vetor de inicialização) ou nonce garante que cifrar a mesma mensagem duas vezes produza saídas diferentes. Ele não é secreto, mas é um número de uso único: repeti-lo sob a mesma chave, sobretudo em modos como GCM e CTR, quebra a segurança de forma catastrófica. No CBC não basta ser único: o IV tem de ser imprevisível (NIST SP 800-38A, apêndice C) — o IV previsível do TLS 1.0 é o que o BEAST explorou.",
       "destaque": "Não secreto, porém estritamente único por chave"
     },
     {
       "titulo": "AEAD: confidencialidade e integridade juntas",
-      "icone": "verified_user",
+      "icone": "lock",
       "texto": "AEAD (Authenticated Encryption with Associated Data) cifra e, ao mesmo tempo, produz uma tag de autenticação. Se o texto cifrado for adulterado, a decifragem falha em vez de devolver lixo. Cifrar sem autenticar deixa a porta aberta para ataques ativos como o padding oracle.",
       "destaque": "AES-GCM e ChaCha20-Poly1305 são os padrões AEAD"
     },
     {
       "titulo": "Bloco versus fluxo",
-      "icone": "grid_view",
+      "icone": "table_chart",
       "texto": "Cifras de bloco (AES) processam pedaços de tamanho fixo (128 bits) e precisam de um modo de operação para tratar mensagens maiores. Cifras de fluxo (ChaCha20) geram um keystream combinado por XOR com os dados, dispensando padding e sendo excelentes em software sem aceleração AES.",
       "destaque": "AES domina em hardware; ChaCha20 brilha em software"
     }
@@ -76,10 +76,10 @@
       ],
       "dicas_colunas": [
         "Nome do algoritmo de cifra simétrica",
-        "",
+        "Se cifra em blocos de tamanho fixo, com o tamanho do bloco, ou como fluxo contínuo",
         "Tamanhos de chave suportados, em bits",
         "Classificação atual: recomendada, obsoleta ou quebrada",
-        ""
+        "Motivo técnico da classificação ou característica de destaque"
       ],
       "linhas": [
         [

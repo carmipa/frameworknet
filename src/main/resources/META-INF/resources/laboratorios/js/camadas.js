@@ -305,8 +305,9 @@
         $("lab-alt-lista").querySelectorAll(".lab-alt-atual").forEach(function (li) { li.classList.remove("lab-alt-atual"); });
         var itemAlt = $("lab-alt-lista").children[idx];
         if (itemAlt) { itemAlt.classList.add("lab-alt-atual"); }
-        $("lab-prev").disabled = idx === 0;
-        $("lab-next").disabled = idx === ETAPAS.length - 1;
+        // aria-disabled (e não disabled): o botão continua focável e a dica diz por que ele não anda.
+        $("lab-prev").setAttribute("aria-disabled", String(idx === 0));
+        $("lab-next").setAttribute("aria-disabled", String(idx === ETAPAS.length - 1));
     }
 
     function irPara(novo) {

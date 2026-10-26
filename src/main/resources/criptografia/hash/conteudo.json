@@ -83,7 +83,7 @@
         "Nome da função de hash",
         "Comprimento fixo do resumo gerado, em bits, qualquer que seja o tamanho da entrada",
         "Padrão ou construção a que a função pertence",
-        ""
+        "Situação atual de segurança, considerando os ataques de colisão conhecidos"
       ],
       "linhas": [
         [
@@ -185,7 +185,7 @@
       "dicas_colunas": [
         "Algoritmo de derivação usado para armazenar senhas",
         "Mecanismo que encarece o ataque de força bruta ou de dicionário",
-        ""
+        "Quando escolher a função e o cuidado de configuração mais importante"
       ],
       "linhas": [
         [

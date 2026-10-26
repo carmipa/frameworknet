@@ -47,19 +47,19 @@
     },
     {
       "titulo": "WPA2-PSK e o 4-way handshake",
-      "icone": "vpn_key",
+      "icone": "key",
       "texto": "No WPA2 Pessoal, cliente e ponto de acesso derivam a PMK a partir da senha (PBKDF2 sobre PSK+SSID) e trocam nonces no 4-way handshake para gerar a PTK, a chave de sessão. Esse handshake é o alvo: quem o captura pode testar milhões de senhas offline até reproduzir o MIC correto, sem precisar mais do sinal da rede.",
       "destaque": "PMK derivada da senha; PTK negociada nos 4 quadros EAPOL."
     },
     {
       "titulo": "Captura de handshake + brute force offline",
-      "icone": "password",
+      "icone": "key",
       "texto": "O atacante não quebra o AES: ele captura os quadros EAPOL do handshake e, offline, testa palavras de dicionário ou combinações até encontrar a que gera o MIC observado. Ferramentas de GPU aceleram bilhões de tentativas. Por isso a força da senha é o único fator que protege uma rede WPA2-PSK contra esse ataque.",
       "destaque": "O ataque roda offline; senha fraca cai em horas."
     },
     {
       "titulo": "WPA3-SAE resiste a dicionário offline",
-      "icone": "encrypted",
+      "icone": "lock",
       "texto": "O WPA3 Pessoal substitui o PSK pelo SAE (handshake Dragonfly), uma troca de chave autenticada por senha baseada em curvas elípticas. Mesmo capturando a troca, o atacante não consegue testar senhas offline - cada tentativa exige uma nova interação ao vivo com a rede, o que permite detecção e bloqueio. O SAE ainda entrega Forward Secrecy: comprometer a senha não decifra o tráfego passado. Ressalva: o Dragonblood (Vanhoef e Ronen, 2019) mostrou que implementações que vazam informação por tempo ou cache permitem, sim, ataque de dicionário offline, e que o modo de transição WPA2/WPA3 deixa empurrar o cliente para o WPA2; por isso, firmware atualizado e, quando possível, WPA3 sem modo de transição.",
       "destaque": "Cada palpite exige interação ao vivo - brute force offline inviável."
     },

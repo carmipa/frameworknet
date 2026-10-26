@@ -35,7 +35,7 @@
   "conceitos": [
     {
       "titulo": "O caminho de um e-mail",
-      "icone": "hub",
+      "icone": "lan",
       "texto": "O cliente de e-mail (MUA) entrega a mensagem ao seu servidor de saída (MTA) por submission. Esse MTA consulta o registro MX no DNS do domínio de destino e fala SMTP com o MTA de entrada. Este passa a mensagem ao MDA, que a grava na caixa postal. O destinatário lê com POP3 ou IMAP.",
       "destaque": "MUA -> MTA -> MTA -> MDA -> MUA"
     },
@@ -47,25 +47,25 @@
     },
     {
       "titulo": "STARTTLS x TLS implícito",
-      "icone": "enhanced_encryption",
+      "icone": "lock",
       "texto": "No STARTTLS a conexão começa em texto puro e é promovida a TLS por um comando: STARTTLS no SMTP (587) e no IMAP (143), ou STLS no POP3 (110). No TLS implícito a sessão já nasce cifrada na porta dedicada (465, 993, 995). O implícito evita a janela de exposição e o ataque de downgrade (STARTTLS stripping).",
       "destaque": "STARTTLS/STLS negocia; implícito já nasce cifrado"
     },
     {
       "titulo": "POP3: baixa e apaga",
-      "icone": "swap_vert",
+      "icone": "sort",
       "texto": "O POP3 foi feito para um único dispositivo: conecta, transfere as mensagens da INBOX para a máquina local e, por padrão, apaga a cópia do servidor. O estado (lido, respondido) fica só no dispositivo.",
       "destaque": "Cópia única, offline, sem pastas no servidor"
     },
     {
       "titulo": "IMAP: sincroniza no servidor",
-      "icone": "sync",
+      "icone": "refresh",
       "texto": "O IMAP mantém as mensagens, pastas e flags no servidor. Vários dispositivos veem o mesmo estado em tempo real e baixam só os cabeçalhos ou o corpo sob demanda. É o padrão para quem usa celular e desktop juntos.",
       "destaque": "Estado único no servidor, múltiplos dispositivos"
     },
     {
       "titulo": "SPF, DKIM e DMARC",
-      "icone": "verified_user",
+      "icone": "lock",
       "texto": "O SMTP sozinho não prova quem enviou. SPF autoriza os IPs que podem enviar pelo domínio, DKIM assina a mensagem com chave publicada no DNS e o DMARC passa quando pelo menos UM dos dois está alinhado com o domínio do From visível, além de gerar relatórios.",
       "destaque": "Três camadas de DNS contra falsificação de domínio"
     }
@@ -88,7 +88,7 @@
       "dicas_colunas": [
         "Verbo em texto que o cliente envia ao servidor de e-mail",
         "O que o comando faz na sessão e em que momento é usado",
-        "",
+        "Linha exatamente como o cliente a envia, com endereços fictícios",
         "Código de três dígitos e texto que o servidor costuma devolver ao comando"
       ],
       "linhas": [
@@ -146,7 +146,7 @@
       "dicas_colunas": [
         "Número de três dígitos; o primeiro indica a classe: 2 sucesso, 3 continue, 4 falha temporária, 5 falha permanente",
         "Gravidade do resultado: sucesso, intermediário, falha temporária ou falha permanente",
-        ""
+        "Situação que o código descreve e em que momento da sessão costuma aparecer"
       ],
       "linhas": [
         [
@@ -208,7 +208,7 @@
         "Protocolo de e-mail e o papel dele: envio entre servidores, envio pelo cliente ou leitura da caixa",
         "Porta que começa sem cifragem e pode ser promovida a TLS por comando, indicado entre parênteses",
         "Porta em que a conexão já nasce cifrada com TLS; o hífen indica que não há porta padrão",
-        ""
+        "Quem usa a porta e em qual etapa do caminho da mensagem"
       ],
       "linhas": [
         [

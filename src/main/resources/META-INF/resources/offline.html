@@ -17,7 +17,7 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="/web/css/material-symbols.css?v=20261022">
-    <link rel="stylesheet" href="/paginaErros/css/erro.css?v=20261023">
+    <link rel="stylesheet" href="/paginaErros/css/erro.css?v=20261026">
     
 </head>
 
@@ -35,26 +35,26 @@
                 </div>
             </a>
             <div class="topbar-right">
-                <div class="langs">
-                    <button data-dica-excecao="página servida sem a aplicação: o componente de dica não carrega e fica o title nativo" type="button" class="lang is-on" onclick="aedTranslate('pt')"
-                            title="Traduzir para Português (Brasil)" aria-label="PT: traduzir para português">
+                <div class="langs" data-dica-excecao="página servida sem a aplicação: o componente de dica não carrega e fica o title nativo" title="PT é a página original. EN e ES abrem esta página traduzida automaticamente pelo Google." data-dica-grupo-rotulo="tradução da página">
+                    <button type="button" class="lang is-on" onclick="aedTranslate('pt')"
+                            aria-label="PT: traduzir para português">
                         <img class="flag" src="/web/img/bandeiras/br.png?v=20261001" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">PT</span>
                     </button>
-                    <button data-dica-excecao="página servida sem a aplicação: o componente de dica não carrega e fica o title nativo" type="button" class="lang" onclick="aedTranslate('en')"
-                            title="Traduzir para English (US)" lang="en" aria-label="EN: translate to English">
+                    <button type="button" class="lang" onclick="aedTranslate('en')"
+                            lang="en" aria-label="EN: translate to English">
                         <img class="flag" src="/web/img/bandeiras/us.png?v=20261001" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">EN</span>
                     </button>
-                    <button data-dica-excecao="página servida sem a aplicação: o componente de dica não carrega e fica o title nativo" type="button" class="lang" onclick="aedTranslate('es')"
-                            title="Traduzir para Español" lang="es" aria-label="ES: traducir al español">
+                    <button type="button" class="lang" onclick="aedTranslate('es')"
+                            lang="es" aria-label="ES: traducir al español">
                         <img class="flag" src="/web/img/bandeiras/es.png?v=20261001" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">ES</span>
                     </button>
                 </div>
                 <div class="status-pill" role="status">
                     <span class="dot" aria-hidden="true"></span>
-                    <span class="status-txt">SEM REDE</span>
+                    <span class="status-txt"><span class="material-symbols-outlined" aria-hidden="true" translate="no">wifi_off</span> SEM REDE</span>
                 </div>
             </div>
         </div>
@@ -80,7 +80,7 @@
                             <div class="code-main">OFF</div>
                         </div>
 
-                        <h1 class="err-title">Sem conexão com a internet.</h1>
+                        <h1 class="err-title" data-titulo-editorial>Sem conexão com a internet.</h1>
                         <p class="err-desc">O Framework de Redes precisa de internet para calcular, resolver DNS e consultar geolocalização — nada disso roda no seu aparelho. Assim que a conexão voltar, recarregue a página.</p>
 
                         <div class="cta-row">
@@ -161,7 +161,7 @@
                 <div class="links-grid">
                     <a class="lk" style="--ac:#2dd4bf" href="/analise">
                         <span class="lk-ic" style="--ic:#2dd4bf">
-                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">insights</span>
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">bar_chart</span>
                         </span>
                         <span class="lk-txt">
                             <span class="lk-t">Análise Didática</span>
@@ -210,7 +210,7 @@
             Desenvolvido por: <a class="foot-autor" href="https://carminati.dev.br/" target="_blank" rel="noopener noreferrer"><strong>Paulo André Carminati</strong></a>
         </div>
         <div class="foot-2">
-            <span class="material-symbols-outlined" aria-hidden="true" translate="no">code</span>
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">data_object</span>
             <a href="https://github.com/carmipa" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">github.com/carmipa</a> · <span class="mono">Java + Quarkus</span>
         </div>
     </footer>

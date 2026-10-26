@@ -35,7 +35,7 @@
   "conceitos": [
     {
       "titulo": "O problema: combinar antes de conversar",
-      "icone": "swap_vert",
+      "icone": "sort",
       "texto": "Dois programas em máquinas diferentes precisam concordar em parâmetros (números iniciais, tamanho de janela, cifras) e, principalmente, provar que cada um recebe o que o outro envia. O handshake é essa troca de mensagens de abertura que estabelece esse acordo mútuo antes do primeiro byte de dados útil.",
       "destaque": "Sem acordo prévio, os dados chegariam sem ordem e sem contexto"
     },
@@ -47,13 +47,13 @@
     },
     {
       "titulo": "Números de sequência: o segredo compartilhado",
-      "icone": "schema",
+      "icone": "account_tree",
       "texto": "Cada lado escolhe seu próprio número de sequência inicial (ISN). Confirmar um SYN com ack = seq+1 prova que o pacote foi realmente recebido. Depois do handshake, esses contadores ordenam os dados e detectam perda. Se o ISN for previsível, um atacante fora do caminho consegue forjar segmentos.",
       "destaque": "ack = seq recebido + 1 é a prova de que a ponta ouviu"
     },
     {
       "titulo": "TLS: negociar cifra e chaves",
-      "icone": "enhanced_encryption",
+      "icone": "lock",
       "texto": "Sobre o TCP já aberto, o TLS 1.3 faz seu próprio aperto de mãos: ClientHello (versões, cifras e um key share ECDHE), ServerHello (escolhas e key share do servidor), depois certificado e Finished. Ao fim, ambos derivam a mesma chave de sessão sem nunca a transmitirem.",
       "destaque": "TLS 1.3 fecha o handshake em 1 RTT"
     },
@@ -65,7 +65,7 @@
     },
     {
       "titulo": "Handshake não é autenticação",
-      "icone": "verified_user",
+      "icone": "lock",
       "texto": "Concluir o 3-way TCP prova apenas que existe algo escutando e que há caminho de ida e volta. Não prova quem é o outro lado nem esconde os dados. Identidade e sigilo são trabalho das camadas de cima (certificado no TLS, host key + login no SSH).",
       "destaque": "Alcançabilidade não é identidade"
     }
@@ -193,9 +193,9 @@
         "Próximo evento típico"
       ],
       "dicas_colunas": [
-        "",
+        "Nome do estado da conexão como aparece em netstat e ss",
         "Lado da conexão em que esse estado ocorre",
-        "",
+        "Situação da conexão enquanto ela permanece nesse estado",
         "Segmento ou evento que normalmente tira a conexão desse estado, e para onde ela vai"
       ],
       "linhas": [

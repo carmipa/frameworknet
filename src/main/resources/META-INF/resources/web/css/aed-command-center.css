@@ -86,9 +86,20 @@ body.aed-app .aed-page {
        negativa que o compensava quando ele morava dentro do .container de cada página. */
     margin: 0 0 1.5rem;
     background: var(--aed-nav-bg);
+    border-bottom: 1px solid var(--aed-border);
+}
+
+/* O desfoque mora num pseudo-elemento: backdrop-filter no proprio .aed-topnav faz dele o bloco de contencao
+   do position: fixed, e o balao de dica de um item (fixo, posicionado pela janela) nascia deslocado. */
+.aed-topnav::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--aed-border);
 }
 
 /* O respiro de cima que o contêiner da página (py-4 / py-5) dava ANTES do menu passa para o <body>, e o

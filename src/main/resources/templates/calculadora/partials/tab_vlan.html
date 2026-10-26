@@ -40,13 +40,13 @@
 
                 <div class="row g-2 mb-3">
                     <div class="col-6">
-                        <label for="vlanInicial" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">sell</span> VLAN ID inicial</label>
+                        <label for="vlanInicial" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span> VLAN ID inicial</label>
                         <input type="text" class="aed-input form-control input-numeric" id="vlanInicial"
                                name="vlanInicial" inputmode="numeric" value="10"
                                title="ID de 1 a 4094; evite a 1, que é a VLAN padrão, e a faixa 1002 a 1005, reservada">
                     </div>
                     <div class="col-6">
-                        <label for="vlanPasso" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_next</span> Passo entre IDs</label>
+                        <label for="vlanPasso" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_forward</span> Passo entre IDs</label>
                         <input type="text" class="aed-input form-control input-numeric" id="vlanPasso"
                                name="passoVlan" inputmode="numeric" value="10"
                                title="Número inteiro, por exemplo 10 para gerar 10, 20, 30; use 1 para IDs consecutivos">
@@ -67,7 +67,7 @@
 
                 <div class="mb-3">
                     <label for="vlanNomes" class="form-label text-secondary">
-                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> Nomes das VLANs <span class="text-muted">(opcional)</span>
+                        <span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span> Nomes das VLANs <span class="text-muted">(opcional)</span>
                     </label>
                     <input type="text" class="aed-input form-control" id="vlanNomes" name="nomes"
                            title="Lista separada por vírgula, por exemplo ADM, VENDAS, TI, VOZ"
@@ -75,13 +75,14 @@
                     <div class="form-text text-muted">Separe por vírgula. Sem nome, vira VLAN_10, VLAN_20…</div>
                 </div>
 
-                <button type="submit" class="aed-btn aed-btn-teal w-100">
+                <button type="submit" class="aed-btn aed-btn-teal w-100"
+                        title="Gerar plano de endereçamento de VLANs e scripts de configuração Cisco">
                     <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Gerar plano
                 </button>
                 <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
                         title="Esvaziar os campos e apagar o resultado">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
                 </button>
             </form>
         </div>
@@ -108,7 +109,7 @@
                     </button>
                     <button type="button" class="aed-btn aed-btn-neutral" data-limpar
                             title="Esvaziar os campos e apagar o resultado">
-                        <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                        <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
                     </button>
                 </div>
             </form>

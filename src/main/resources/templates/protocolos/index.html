@@ -33,7 +33,7 @@
                             <th title="Protocolo de roteamento comparado na linha"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">conversion_path</span>Protocolo</th>
                             <th title="O que o protocolo mede para escolher o melhor caminho"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">straighten</span>Métrica</th>
                             <th title="Distância administrativa na Cisco: quanto menor, mais confiável é a fonte da rota"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">low_priority</span>AD</th>
-                            <th title="Quanto tempo a rede leva para se ajustar depois de uma mudança"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">update</span>Convergência</th>
+                            <th title="Quanto tempo a rede leva para se ajustar depois de uma mudança"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">refresh</span>Convergência</th>
                             <th title="Até que tamanho de rede o protocolo funciona bem"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">open_in_full</span>Escalabilidade</th>
                         </tr>
                     </thead>
@@ -49,8 +49,8 @@
             <div class="d-flex flex-wrap gap-2 mb-2">
                 <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">search</span>Busca por protocolo/camada</span>
                 <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">tune</span>Filtros por camada, transporte e nível</span>
-                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">hub</span>IGP vs EGP (roteamento)</span>
-                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">swap_vert</span>Clique no cabeçalho para ordenar</span>
+                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">route</span>IGP vs EGP (roteamento)</span>
+                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">sort</span>Clique no cabeçalho para ordenar</span>
                 <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">content_copy</span>Copie ou abra detalhes por linha</span>
             </div>
             <div class="row g-2 align-items-end mb-2">
@@ -115,7 +115,7 @@
                     </select>
                 </div>
                 <div class="col-lg-1">
-                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">equalizer</span> Nível</label>
+                    <label class="form-label small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">priority_high</span> Nível</label>
                     <select aria-label="Nível" class="form-select bg-dark text-light border-secondary" data-grid-risk="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Filtra pelo nível didático (crítico, atenção, seguro, didático).">
                         <option value="all">Todos</option>
                         <option value="crítico">Crítico</option>
@@ -125,7 +125,7 @@
                     </select>
                 </div>
                 <div class="col-lg-3 d-flex flex-wrap gap-2 justify-content-lg-end">
-                    <button type="button" class="aed-btn aed-btn-danger btn-sm grid-action-btn" data-grid-clear="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpa busca, filtros e ordenação da tabela."><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+                    <button type="button" class="aed-btn aed-btn-danger btn-sm grid-action-btn" data-grid-clear="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpa busca, filtros e ordenação da tabela."><span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar</button>
                     <button type="button" class="aed-btn aed-btn-json btn-sm grid-action-btn" data-grid-export-json="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Exporta os protocolos filtrados para arquivo JSON."><span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> JSON</button>
                     <button type="button" class="aed-btn aed-btn-pdf btn-sm grid-action-btn" data-grid-export-pdf="protocolos" data-bs-toggle="tooltip" data-bs-placement="top" title="Gera versão para impressão/PDF com os dados filtrados."><span class="material-symbols-outlined" translate="no" aria-hidden="true">picture_as_pdf</span> PDF</button>
                 </div>
@@ -141,9 +141,9 @@
                             <th class="sortable" data-sort-key="transporte" title="Como as mensagens do protocolo viajam: sobre TCP, UDP, ICMP ou nenhum deles"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">swap_calls</span>Transporte</th>
                             <th class="sortable" data-sort-key="porta" title="Porta TCP ou UDP em que o serviço costuma escutar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">door_open</span>Porta comum</th>
                             <th class="sortable" data-sort-key="seguro" title="Se o protocolo cifra ou autentica o tráfego por padrão"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lock</span>Seguro</th>
-                            <th class="sortable" data-sort-key="nivel" title="Classificação didática de risco: crítico, atenção, seguro ou didático"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">equalizer</span>Nível</th>
+                            <th class="sortable" data-sort-key="nivel" title="Classificação didática de risco: crítico, atenção, seguro ou didático"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">priority_high</span>Nível</th>
                             <th title="Para que o protocolo serve na rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">data_object</span>Função</th>
-                            <th class="text-center" style="width: 13.75rem;"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
+                            <th class="text-center" style="width: 13.75rem;" title="Copiar linha, abrir detalhes ou aprofundar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
                         </tr>
                     </thead>
                     <tbody data-grid-body="protocolos">
@@ -275,7 +275,7 @@
                 <div class="d-flex gap-2 align-items-center justify-content-center">
                     <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-prev="protocolos" aria-label="Página anterior" data-bs-toggle="tooltip" data-bs-placement="top" title="Mostra as linhas anteriores da tabela, mantendo a busca e os filtros"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_left</span></button>
                     <span class="small text-secondary" data-grid-page-label="protocolos"></span>
-                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-next="protocolos" aria-label="Próxima página" data-bs-toggle="tooltip" data-bs-placement="top" title="Mostra as próximas linhas da tabela, mantendo a busca e os filtros"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_right</span></button>
+                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-next="protocolos" aria-label="Próxima página" data-bs-toggle="tooltip" data-bs-placement="top" title="Mostra as próximas linhas da tabela, mantendo a busca e os filtros"><span class="material-symbols-outlined" translate="no" aria-hidden="true">arrow_forward</span></button>
                 </div>
             </div>
 

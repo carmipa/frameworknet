@@ -3,13 +3,13 @@
   "conceitos": [
     {
       "titulo": "Duas autenticações, não uma",
-      "icone": "swap_vert",
+      "icone": "sort",
       "texto": "Toda sessão autentica os dois lados. O SERVIDOR se identifica pela chave de host, verificada contra o ~/.ssh/known_hosts do cliente. Só depois o USUÁRIO se identifica, por senha, chave pública ou certificado. Confundir as duas é a origem de metade das dúvidas: a mensagem sobre chave de host alterada não fala do seu login, fala da identidade da máquina.",
       "destaque": "Quem digita 'yes' sem olhar o fingerprint na primeira conexão abre mão justamente da proteção contra man-in-the-middle."
     },
     {
       "titulo": "TOFU — confiança na primeira conexão",
-      "icone": "verified_user",
+      "icone": "lock",
       "texto": "Sem uma CA, o SSH usa Trust On First Use: aceita a chave de host na primeira vez e a grava em known_hosts; a partir daí, qualquer mudança vira alerta. Isso protege da segunda conexão em diante, não da primeira. As saídas para fechar essa janela são registrar a chave por canal fora de banda, publicar registros SSHFP no DNS com DNSSEC, ou emitir certificados de host por uma CA SSH.",
       "destaque": "Em servidor reinstalado a chave muda de verdade. Apagar a linha antiga com 'ssh-keygen -R host' é correto; desligar a verificação com StrictHostKeyChecking=no é abrir mão dela para sempre."
     },

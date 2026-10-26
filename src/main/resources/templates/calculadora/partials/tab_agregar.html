@@ -14,7 +14,7 @@
                   hx-swap="innerHTML"
                   hx-disabled-elt="find button[type='submit']">
                 <div class="mb-3">
-                    <label for="sumRedes" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list</span> Redes, uma por linha</label>
+                    <label for="sumRedes" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span> Redes, uma por linha</label>
                     <textarea class="aed-input form-control calc-textarea" id="sumRedes" name="redes" rows="6"
                               title="Uma rede por linha no formato endereço/prefixo, por exemplo 192.168.0.0/24"
                               spellcheck="false" required>192.168.0.0/24
@@ -23,13 +23,14 @@
 192.168.3.0/24</textarea>
                     <div class="form-text text-muted">Aceita vírgula, ponto e vírgula ou quebra de linha.</div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-indigo w-100">
+                <button type="submit" class="aed-btn aed-btn-indigo w-100"
+                        title="Calcular a rota resumo (super-rede) agregando a lista de sub-redes">
                     <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Sumarizar
                 </button>
                 <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
                         title="Esvaziar os campos e apagar o resultado">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
                 </button>
             </form>
         </div>
@@ -60,13 +61,14 @@
                                value="10.0.5.0/24" spellcheck="false" autocomplete="off" required>
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-amber w-100">
+                <button type="submit" class="aed-btn aed-btn-amber w-100"
+                        title="Verificar relação de sobreposição, contenção ou independência entre os blocos">
                     <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Comparar
                 </button>
                 <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
                         title="Esvaziar os campos e apagar o resultado">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
                 </button>
             </form>
         </div>

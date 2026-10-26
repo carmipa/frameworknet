@@ -53,7 +53,7 @@
     },
     {
       "titulo": "Code signing: origem e integridade",
-      "icone": "verified_user",
+      "icone": "lock",
       "texto": "Um certificado com EKU codeSigning assina o hash de um binário ou driver. Quando o usuário executa, o sistema operacional verifica a assinatura: confirma quem assinou (origem) e que o arquivo não foi alterado depois (integridade). Drivers em Windows, por exemplo, só carregam com assinatura válida.",
       "destaque": "A assinatura não cifra o programa; ela prova quem o publicou e que está intacto"
     },
@@ -85,10 +85,10 @@
         "Exemplo"
       ],
       "dicas_colunas": [
-        "",
+        "Cenário de aplicação do certificado",
         "Nome do propósito na extensão Extended Key Usage e seu identificador numérico OID",
         "Parte que envia o certificado para provar a própria identidade",
-        ""
+        "Situação real em que esse uso acontece"
       ],
       "linhas": [
         [

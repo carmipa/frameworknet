@@ -46,7 +46,7 @@
                 nodeBorder: "rgba(255,255,255,0.18)",
                 edgeLabelBackground: "#0a0e16",
                 fontFamily: "Inter Tight, system-ui, sans-serif",
-                fontSize: "14px"
+                fontSize: "0.875rem"
             }
         });
         var blocos = Array.prototype.slice.call(document.querySelectorAll(".aprof-mermaid"));

@@ -131,7 +131,7 @@
       ],
       "dicas_colunas": [
         "Nome do algoritmo e, quando aplicável, a curva usada",
-        "",
+        "Se o algoritmo produz assinatura assimétrica ou MAC simétrico",
         "Como cada operação obtém o valor aleatório ou único que entra no cálculo, se houver",
         "Cuidado de uso ou propriedade de destaque do algoritmo"
       ],
@@ -164,6 +164,7 @@
     },
     {
       "titulo": "Quando usar cada um",
+      "dica": "Ajuda a escolher entre assinatura digital e HMAC conforme quem precisa verificar a mensagem",
       "colunas": [
         "Cenário",
         "Escolha",

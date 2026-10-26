@@ -23,6 +23,12 @@
             return { mostrar: function () {} };
         }
         container.textContent = '';
+        // Um "?" para a régua inteira (o contêiner é exceção registrada); a dica de cada bit traz o prefixo /n.
+        container.setAttribute('data-dica-grupo', interativa
+            ? 'Clique num bit, ou use as setas, para pôr a divisória da máscara depois dele; a dica de cada bit mostra o prefixo.'
+            : 'Nesta etapa a régua só mostra a máscara. Para mudar a divisória, vá para a etapa Mexer.');
+        container.setAttribute('data-dica-grupo-rotulo', 'a régua de bits');
+        container.setAttribute('data-dica-excecao', 'régua de 32 bits: um "?" para a régua; cada bit mantém a sua dica (o prefixo /n)');
         for (var i = 0; i < 32; i++) {
             var botao = document.createElement('button');
             botao.type = 'button';

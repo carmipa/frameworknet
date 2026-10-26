@@ -81,7 +81,7 @@
             { icone: 'swap_horiz', nome: 'Transporte', total: r.segmento, blocos: [t(), carga()] },
             { icone: 'lan', nome: 'Rede (IPv4)', total: r.pacote, blocos: [ip(), t(), carga()] },
             {
-                icone: 'settings_ethernet', nome: 'Enlace (Ethernet)', total: r.quadro,
+                icone: 'door_open', nome: 'Enlace (Ethernet)', total: r.quadro,
                 blocos: [bloco('enlace', 'Ethernet', 14, true), ip(), t(), carga()]
                     .concat(r.preenchimento > 0 ? [bloco('preenchimento', 'preenchimento', r.preenchimento, false)] : [])
                     .concat([bloco('enlace', 'FCS', 4, true)])

@@ -30,6 +30,12 @@
                 destacar: function () {}, limparMarcas: function () {} };
         }
         container.textContent = '';
+        // Um "?" para a fileira inteira (o contêiner é exceção registrada); cada bit mantém a própria dica.
+        container.setAttribute('data-dica-grupo', interativo
+            ? 'Clique num bit, ou use Tab e Enter, para acendê-lo ou apagá-lo; o número embaixo de cada um é o peso dele.'
+            : 'Nesta etapa os bits só mostram o valor. Para acender e apagar você mesmo, vá para a etapa Mexer.');
+        container.setAttribute('data-dica-grupo-rotulo', 'os bits');
+        container.setAttribute('data-dica-excecao', 'bits de um byte: um "?" para a fileira; cada bit mantém a sua dica no foco e no mouse');
         if (opcoes && opcoes.nibbles) {
             container.classList.add('com-nibbles');
         }

@@ -82,9 +82,9 @@
         "Para que serve"
       ],
       "dicas_colunas": [
-        "",
-        "",
-        ""
+        "Valor do campo Tipo, primeiro byte do cabeçalho ICMP",
+        "Nome da mensagem como aparece em analisadores de pacotes",
+        "Situação em que a mensagem é gerada e como usá-la no diagnóstico"
       ],
       "linhas": [
         [
@@ -122,8 +122,8 @@
         "Função"
       ],
       "dicas_colunas": [
-        "",
-        "",
+        "Valor do campo Tipo no ICMPv6; de 128 em diante são mensagens informativas",
+        "Nome da mensagem, com a sigla usada na documentação do Neighbor Discovery",
         "Papel da mensagem no ping, na autoconfiguração ou na descoberta de vizinhos"
       ],
       "linhas": [
@@ -173,7 +173,7 @@
       ],
       "dicas_colunas": [
         "Valor do campo Código, que refina o motivo dentro do Tipo 3",
-        "",
+        "Motivo da falha de entrega que o código indica",
         "Situação de rede que leva o roteador ou o host de destino a enviar esse código"
       ],
       "linhas": [

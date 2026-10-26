@@ -46,7 +46,19 @@
     border: 1px solid var(--aed-border);
     border-radius: var(--aed-radius-card);
     background: rgba(6, 8, 15, 0.92);
+}
+
+/* O desfoque mora num pseudo-elemento: backdrop-filter no proprio .tls-indice faz dele o bloco de contencao
+   do position: fixed, e o balao de dica de um item (fixo, posicionado pela janela) nascia deslocado. */
+.tls-indice::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
     backdrop-filter: blur(0.4rem);
+    -webkit-backdrop-filter: blur(0.4rem);
 }
 
 .tls-indice a {

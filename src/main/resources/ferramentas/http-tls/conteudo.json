@@ -30,7 +30,7 @@
   "conceitos": [
     {
       "titulo": "curl -v narra a requisição inteira",
-      "icone": "travel_explore",
+      "icone": "search",
       "texto": "O modo verboso imprime cada fase na saída de erro. Linhas com * são notas do curl (DNS, conexão, TLS), > são os cabeçalhos que você envia e < são os que o servidor responde. Ler esses três prefixos separa problema de cliente de problema de servidor.",
       "destaque": "* nota do curl · > envio · < resposta"
     },
@@ -81,7 +81,7 @@
       "dicas_colunas": [
         "Opção passada ao curl na linha de comando",
         "Comportamento que a opção muda na requisição ou na saída exibida",
-        ""
+        "Situação de diagnóstico em que a opção ajuda a isolar o problema"
       ],
       "linhas": [
         [

@@ -47,7 +47,7 @@
     },
     {
       "titulo": "RDP e VNC: potentes e perigosos",
-      "icone": "desktop_windows",
+      "icone": "computer",
       "texto": "O RDP (Windows) e o VNC dão controle gráfico completo da máquina. Justamente por isso são alvos preferidos: exposto direto na internet, um RDP recebe milhares de tentativas de login por dia e pode cair para exploits como o BlueKeep.",
       "destaque": "Nunca exponha direto"
     },
@@ -65,7 +65,7 @@
     },
     {
       "titulo": "Superfície de ataque",
-      "icone": "security",
+      "icone": "lock",
       "texto": "Cada porta aberta na internet é uma porta em que alguém vai bater. Fechar as portas administrativas ao público é a medida de maior impacto: o ataque que não alcança a porta não acontece.",
       "destaque": "Porta fechada não é atacada"
     }
@@ -129,7 +129,7 @@
         "Como a porta está publicada",
         "Quanto do serviço fica ao alcance de qualquer um",
         "Se dá para tentar senhas em massa contra a porta",
-        ""
+        "A ação indicada para esse cenário"
       ],
       "linhas": [
         [

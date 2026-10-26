@@ -111,7 +111,7 @@ public record AprofundamentoProtocolo(
                     List.of("IPv6")),
             generico("arp", "ARP — Address Resolution Protocol", "ARP", "swap_calls", "Rede",
                     "A ponte entre IP e MAC na rede local, e o ARP spoofing — o ataque clássico de "
-                            + "quem já está dentro da LAN. Viaja no quadro do Enlace, a serviço da camada de Rede.",
+                            + "quem já está na LAN. Viaja no quadro do Enlace, a serviço da camada de Rede.",
                     List.of("ARP")),
             generico("icmp", "ICMP / ICMPv6 — o mensageiro da rede", "ICMP", "network_ping", "Rede",
                     "As mensagens de controle e erro que sustentam ping e traceroute, e por que o "
@@ -119,7 +119,7 @@ public record AprofundamentoProtocolo(
                     List.of("ICMP", "ICMPv6")),
             new AprofundamentoProtocolo("bgp", "BGP-4 — Border Gateway Protocol", "BGP", "hub",
                     "O protocolo que mantém a Internet conectada: política entre Sistemas Autônomos, "
-                            + "não menor custo interno. Roda como aplicação sobre TCP 179, a serviço da camada de Rede.",
+                            + "não menor custo. Roda sobre TCP 179, a serviço da camada de Rede.",
                     "protocolos/bgp/index.html", "/protocolos/bgp/css/bgp.css",
                     "Rede", false, List.of("BGP-4 / eBGP", "iBGP")));
 

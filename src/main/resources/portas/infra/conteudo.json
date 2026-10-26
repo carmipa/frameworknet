@@ -53,7 +53,7 @@
     },
     {
       "titulo": "SNMP community 'public'",
-      "icone": "security",
+      "icone": "lock",
       "texto": "O SNMP v1/v2c usa uma senha em texto claro chamada community; o padrão de fábrica costuma ser 'public' (leitura) e 'private' (escrita). Deixar isso exposto entrega inventário, topologia e até a reconfiguração do equipamento a qualquer um.",
       "destaque": "'public' e 'private' são senhas conhecidas por todos"
     },
@@ -65,7 +65,7 @@
     },
     {
       "titulo": "Falsificar a origem só existe sem BCP38",
-      "icone": "shield",
+      "icone": "lock",
       "texto": "O IP falsificado só sai da rede do atacante porque o provedor dele não filtra a origem. O BCP38 (ingress filtering) descarta pacotes cuja origem não pertence àquela rede, cortando a raiz de toda reflexão.",
       "destaque": "Sem spoofing na saída, não há reflexão"
     }
@@ -78,6 +78,7 @@
   "tabelas": [
     {
       "titulo": "Porta x serviço x transporte x amplificação",
+      "dica": "Serviços de infraestrutura, o transporte de cada um e quanto a resposta pode ser maior que a pergunta",
       "colunas": [
         "Porta",
         "Serviço",
@@ -147,7 +148,7 @@
       ],
       "dicas_colunas": [
         "Protocolo de infraestrutura",
-        "Versão ou porta sem proteção",
+        "",
         "Versão ou porta que acrescenta autenticação ou criptografia",
         "A garantia que se ganha com a troca"
       ],

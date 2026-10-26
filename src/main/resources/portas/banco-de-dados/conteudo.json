@@ -35,7 +35,7 @@
   "conceitos": [
     {
       "titulo": "A regra de ouro",
-      "icone": "shield",
+      "icone": "lock",
       "texto": "Banco de dados não conversa com a internet, conversa com a sua aplicação. A aplicação (o backend) é o único cliente legítimo do banco, e ela quase sempre roda na mesma máquina ou na mesma rede privada. Não existe motivo bom para um navegador ou um celular abrir uma porta 5432 direto.",
       "destaque": "O banco fala com o app, nunca com o mundo."
     },
@@ -47,7 +47,7 @@
     },
     {
       "titulo": "Firewall default-deny",
-      "icone": "security",
+      "icone": "lock",
       "texto": "A postura correta é negar tudo por padrão e liberar só o necessário. Mesmo que o banco escute na rede privada, o firewall (do sistema ou do provedor de nuvem) deve bloquear as portas de banco para qualquer origem que não seja o servidor de aplicação autorizado.",
       "destaque": "Feche tudo primeiro; abra só o buraco exato que precisa."
     },
@@ -128,6 +128,7 @@
     },
     {
       "titulo": "Exposto na internet x bind local: o que muda",
+      "dica": "A diferença entre o banco escutar em todas as interfaces e só no endereço local",
       "colunas": [
         "Aspecto",
         "Exposto (bind 0.0.0.0, sem firewall)",
@@ -176,7 +177,7 @@
       "dicas_colunas": [
         "Sistema de banco de dados",
         "A opção ou o arquivo que ativa a autenticação",
-        ""
+        "O comportamento quando a opção falta ou a versão muda"
       ],
       "linhas": [
         [

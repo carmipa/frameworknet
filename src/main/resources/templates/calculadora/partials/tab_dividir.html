@@ -2,7 +2,7 @@
     <div class="col-lg-4">
         <div class="calc-form-card">
             <h2 class="h6 calc-form-title">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_on</span> Dividir um bloco
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">table_chart</span> Dividir um bloco
             </h2>
             <p class="calc-hint">
                 Exemplo clássico: um <code translate="no">/21</code> tem 2048 endereços. Dividido em <code translate="no">/24</code>
@@ -48,7 +48,7 @@
                         </div>
                         <div class="calc-radio campo">
                             <label class="calc-radio-rotulo">
-                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span> <input type="radio" name="criterio" value="quantidade" data-alvo="grupo-quantidade" aria-describedby="d-calc-criterio-quantidade">
+                                <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span> <input type="radio" name="criterio" value="quantidade" data-alvo="grupo-quantidade" aria-describedby="d-calc-criterio-quantidade">
                                 <span>Por nº de sub-redes</span>
                             </label>
                             <span class="dica"><button type="button" class="dica__gatilho" aria-label="Ajuda sobre Por nº de sub-redes" aria-describedby="d-calc-criterio-quantidade"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><span id="d-calc-criterio-quantidade" role="tooltip" class="dica__texto">Você informa quantas sub-redes precisa e a calculadora acha o prefixo, arredondando para potência de 2</span></span>
@@ -72,7 +72,7 @@
                 </div>
 
                 <div class="mb-3 calc-criterio d-none" id="grupo-quantidade">
-                    <label for="divQuantidade" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span> Quantas sub-redes você precisa</label>
+                    <label for="divQuantidade" class="form-label text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span> Quantas sub-redes você precisa</label>
                     <input type="text" class="aed-input form-control input-numeric" id="divQuantidade"
                            name="quantidade" inputmode="numeric" placeholder="6" value="6"
                            title="Número inteiro maior que zero; o resultado sobe para a próxima potência de 2">
@@ -91,13 +91,14 @@
                     </div>
                 </div>
 
-                <button type="submit" class="aed-btn aed-btn-execute w-100">
+                <button type="submit" class="aed-btn aed-btn-execute w-100"
+                        title="Calcular a divisão do bloco em sub-redes conforme o critério selecionado">
                     <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Calcular
                 </button>
                 <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
                         title="Esvaziar os campos e apagar o resultado">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
                 </button>
             </form>
         </div>
@@ -106,7 +107,7 @@
     <div class="col-lg-8">
         <div id="saidaDividir" class="calc-saida">
             <div class="calc-placeholder">
-                <span class="material-symbols-outlined" aria-hidden="true" translate="no">grid_on</span>
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span>
                 <p class="mb-0">Informe o bloco e o critério para ver as sub-redes, a matriz de capacidade
                     e quantas redes cabem em cada prefixo.</p>
             </div>

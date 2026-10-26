@@ -33,7 +33,7 @@
        mesma origem, então entram no cache na primeira visita e o menu funciona offline.
    v6: a página offline passa a sair do template das páginas de erro (mesmo visual de todas elas);
        a casca leva o CSS, a fonte, o script e as bandeiras que ela usa, e o offline.css sai. */
-const VERSAO = 'framework-net-v7';
+const VERSAO = 'framework-net-v8';
 const CACHE_ESTATICO = `${VERSAO}-estatico`;
 const PAGINA_OFFLINE = '/offline.html';
 
@@ -45,7 +45,7 @@ const PRE_CACHE = [
   '/pwa/icone-192.png',
   // O que a página offline (gerada do template das páginas de erro) carrega do próprio site.
   '/pwa/icone-192.png?v=20260804',
-  '/paginaErros/css/erro.css?v=20261023',
+  '/paginaErros/css/erro.css?v=20261026',
   '/paginaErros/js/erro-matrix.js?v=20260810',
   '/web/js/i18n-translate.js?v=20261002',
   '/web/img/bandeiras/br.png?v=20261001',

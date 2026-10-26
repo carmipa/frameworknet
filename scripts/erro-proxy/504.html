@@ -133,9 +133,21 @@ a:hover { color: #eef2f8; }
     top: 0;
     z-index: 50;
     background: rgba(5, 7, 13, .82);
-    backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(255, 255, 255, .06);
     padding: .75rem 4%;
+}
+
+/* O desfoque mora num pseudo-elemento: backdrop-filter no proprio .topbar faz dele o bloco de contencao
+   do position: fixed, e o balao de dica de um item (fixo, posicionado pela janela) nascia deslocado. */
+.topbar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .topbar-in { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
@@ -423,26 +435,26 @@ a:hover { color: #eef2f8; }
                 </div>
             </a>
             <div class="topbar-right">
-                <div class="langs">
-                    <button data-dica-excecao="página servida sem a aplicação: o componente de dica não carrega e fica o title nativo" type="button" class="lang is-on" onclick="aedTranslate('pt')"
-                            title="Traduzir para Português (Brasil)" aria-label="PT: traduzir para português">
+                <div class="langs" data-dica-excecao="página servida sem a aplicação: o componente de dica não carrega e fica o title nativo" title="PT é a página original. EN e ES abrem esta página traduzida automaticamente pelo Google." data-dica-grupo-rotulo="tradução da página">
+                    <button type="button" class="lang is-on" onclick="aedTranslate('pt')"
+                            aria-label="PT: traduzir para português">
                         <img class="flag" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAA4CAMAAABdaI+oAAAAw1BMVEUAlED/ywAwJoEHlj4SmDs3LHv7yAKnuBZYpypCoi5trCXtyATixQYgmjf9ygG8lSk2LYT0xwQyKIE+NIdNPW5MRJGKsh25uxHHvg4vnjPWwgpmX6JFN3OsiDNgTWJeV5y74syKbUjYrBh8da5VRGmdu7vX7OGopsql2rzJnyGMhre0tdDI59aZtRp6riKVkL2V0rBWUJj4/PpaUpq018h5fKppwI7Q3d7Mx8CNpa58iqulycCjkISAdpbVrS9uaKTPuH6BIXwtAAACKElEQVRYw+1XaXOiQBDNtGJAUUaORMUDRQHFRI3mzm72//+qpYZhist1RKitVPm+WGrXq+7pN697bm6uuCJCrVYunyTLUol09VsU4LZeFp/YQgQtsRS69j1iuG9fztfsohi6zQvp+j2UQq9/iVbuOiiDzl1hBUkDwtBYTse6IOjj6bJBfhgUU1D9IaQbDYFhOAopHwooSJRJfYoOCegKOQVZLCRlhBQBUhCU8J/zZN6kUlYgB5Sxxa+gdqSVmZBHKMxou3t8Mq89NihfYw65mLOARw4F9QdMcSM4ghELGfTPkHL3fbE4bA+fi/fNs4njhMMur8wlOXYl/ljW1vLWznb99PLkLD522M2mGChIOqkVii/b3BsYG3vT/nBf15538E1KOE0EHlNQZHsRxuDGyjRdxwvynJAv42RkrlHGbS/EMN0L03deLEKpp2OzRpm0PYKMCCeq4QeHGuQtZIIzRvkPwlWcdOdvnU+Dg/BUyapKP8FeW9av0yXnNgUwaFG5E8ZtvHpvHE3JyKYzBdhQPtWIV47dNy7ZpIW9NOygwlV4RzRGt9Iw/OYTdurqdeYxpugMg+K1/fycCRMzB+KGz0BStG1W8CZyRB5zSNhXmCL4lEkzQd1puw2wBLns67jBYgzfGGvMYFGvfeEI0FYwMYuMgLwhRZtiGMWGFBujaJYeo2G9svj/B335q0gFy1L561wFC2cFK3H5S3sFz4ryHz4VPM2u+NH4C4s2LLeHO8TWAAAAAElFTkSuQmCC" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">PT</span>
                     </button>
-                    <button data-dica-excecao="página servida sem a aplicação: o componente de dica não carrega e fica o title nativo" type="button" class="lang" onclick="aedTranslate('en')"
-                            title="Traduzir para English (US)" lang="en" aria-label="EN: translate to English">
+                    <button type="button" class="lang" onclick="aedTranslate('en')"
+                            lang="en" aria-label="EN: translate to English">
                         <img class="flag" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAqCAMAAAATdiw4AAAAS1BMVEWzGUL///8KMWHsxtDZjKHGU3IMNGMgQ28nSXQ1VX1xXYBgeZiJnLP//v7CzNhGZIgRN2bl6e9RbY+xvc1wh6Prxc+Zqr709vhyX4F3rzwPAAABHklEQVRIx+2UwW7CMBQEzQD77MYkjgmh//+lvUAhFkplK4dWdA5W5rJStKvn+AFXCzYFUNcJwmSUXh+ofgBiBIZelF4fiBKBlAgkyWzp7Ou4OIBu9ODHDnQ+69lhV8fJgWGelOQNw/ulNwRaP4BiFAy9UfqhEgcxILoOEaJQ4Q2lQJgNbA6gadKz0xb4ai4351iJgw7AB7h9Lr2hlOtjLlej9IbZrA+7IRDyaGBjBs2znr2pFMMPKGkwjBCW3hDo+3wfcu49pTdcm2LYhTcdhxANLD6G/e20lbI27IbATJJ8kBKZlMgkcfeG4/DyDj68oRTvgdsjSq8O/PxYp/qXT7tNOW0feNlvysW9Ib+/5c0DjxvzB1o+bMz/cXgHvgD4OyGtUE286gAAAABJRU5ErkJggg==" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">EN</span>
                     </button>
-                    <button data-dica-excecao="página servida sem a aplicação: o componente de dica não carrega e fica o title nativo" type="button" class="lang" onclick="aedTranslate('es')"
-                            title="Traduzir para Español" lang="es" aria-label="ES: traducir al español">
+                    <button type="button" class="lang" onclick="aedTranslate('es')"
+                            lang="es" aria-label="ES: traducir al español">
                         <img class="flag" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAA1CAMAAADh9px2AAAA3lBMVEX6vQCtFRnnkwabMRKZPA30tQH4uwGXKhDuswC+OxmrqKnjqQOuAyOcSQZ6bh+2TQ6bXAjFlwrvrQTSpyHnnQWzpXigIBCqoY5EZHlqbkeKVBK6ZCKHLxKoggWrWl/Sr0qUFBe8jKamiSDTnhKfUzLjsh/OWwo8MHOrcA6sKxiRdAmyXUfSZauEf1KvjHjccwvLhg+1rZixCiCjFB9BWGODIA7Zggeynaf5vwtvf2zJfwarbly2GxyyiwSuREt5G02qMkCjgCmvl4dxRwB7XgClO0cQP5Wpdl68fpO9fp8nzyHlAAABfklEQVRYw+3Wx26DQBAG4MVb6RhMM8Vg494r7o5byvu/UC5RTrktUpSI/7aXTzPSzGqAUHBACZZgCf4PsFJwwF9OtVBtyyxNbm+L4nDLauFIlq2WXFC300BfXBUxmFZJIWBPWTiC03ccRS+maxktIUWUOmjPj5m6iIFsDAbGQDNmANT2JifY6+HKxkAhzXpXyyKzqMUHsijCupKslaEkTdwbO0W8A2nbRFfu92T4no5SlzXsNp9H5jbRk8djPcxHo9xlDYkT3JxfxL6iackwl0apKwh9EXMtyTF+24jrgZZ0L+lH6naCuN/hqlC8HTr6Mgy7q1Us5W5NlPgqBDhWpnVKw+7q1TFUVFs8+caGiOcJqUMIl90LRQiyRnyscYmduU3qEEIEVUNTEWtIAeYemy9QrSNkco+N3Gwyg0KIMlWAKsKnJuemjH2/aYYUoskTITizfM3nA33PGwM5yMa73SGrgKrnedyfLAEAYGYy/P36zRR+OZTnXAmWYAn+lE9C+ywNWkwjFAAAAABJRU5ErkJggg==" alt="" width="26" height="20" loading="lazy">
                         <span class="lang-code">ES</span>
                     </button>
                 </div>
                 <div class="status-pill" role="status" title="Código de status HTTP do erro">
                     <span class="dot" aria-hidden="true"></span>
-                    <span class="status-txt">HTTP 504</span>
+                    <span class="status-txt"><span class="material-symbols-outlined" aria-hidden="true" translate="no">error</span> HTTP 504</span>
                 </div>
             </div>
         </div>
@@ -468,7 +480,7 @@ a:hover { color: #eef2f8; }
                             <div class="code-main">504</div>
                         </div>
 
-                        <h1 class="err-title">A aplicação demorou demais para responder.</h1>
+                        <h1 class="err-title" data-titulo-editorial>A aplicação demorou demais para responder.</h1>
                         <p class="err-desc">O tempo limite foi atingido antes da conclusão do processamento. Tente novamente ou reduza o escopo da operação.</p>
 
                         <div class="cta-row">
@@ -544,7 +556,7 @@ a:hover { color: #eef2f8; }
                 <div class="links-grid">
                     <a class="lk" style="--ac:#2dd4bf" href="/analise">
                         <span class="lk-ic" style="--ic:#2dd4bf">
-                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">insights</span>
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">bar_chart</span>
                         </span>
                         <span class="lk-txt">
                             <span class="lk-t">Análise Didática</span>
@@ -593,7 +605,7 @@ a:hover { color: #eef2f8; }
             Desenvolvido por: <a class="foot-autor" href="https://carminati.dev.br/" target="_blank" rel="noopener noreferrer"><strong>Paulo André Carminati</strong></a>
         </div>
         <div class="foot-2">
-            <span class="material-symbols-outlined" aria-hidden="true" translate="no">code</span>
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">data_object</span>
             <a href="https://github.com/carmipa" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">github.com/carmipa</a> · <span class="mono">Java + Quarkus</span>
         </div>
     </footer>

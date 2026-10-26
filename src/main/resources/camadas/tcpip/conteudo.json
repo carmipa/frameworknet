@@ -54,13 +54,13 @@
     },
     {
       "titulo": "A camada de Aplicação do TCP/IP funde três do OSI",
-      "icone": "apps",
+      "icone": "category",
       "texto": "A maior simplificação do TCP/IP está no topo: sua única camada de Aplicação cobre as camadas 5 (Sessão), 6 (Apresentação) e 7 (Aplicação) do OSI. Na prática, controle de sessão, criptografia (TLS) e formatação de dados (JSON, MIME, charset) são tratados dentro da própria aplicação ou de bibliotecas, não por camadas separadas do sistema operacional.",
       "destaque": "3 camadas OSI colapsam em 1: menos fronteiras rígidas, mais liberdade para a aplicação."
     },
     {
       "titulo": "A camada de Acesso à rede funde as duas de baixo",
-      "icone": "settings_ethernet",
+      "icone": "door_open",
       "texto": "Na base, o TCP/IP junta a camada 1 (Física) e a camada 2 (Enlace) do OSI em uma só: Acesso à rede (também chamada de Enlace ou Host-a-rede). O raciocínio é que sinais elétricos/ópticos e endereçamento MAC vêm sempre casados na mesma tecnologia (Ethernet, Wi-Fi), então não há ganho prático em separá-los na arquitetura do protocolo.",
       "destaque": "Física + Enlace = Acesso à rede: a tecnologia de link já entrega os dois juntos."
     }

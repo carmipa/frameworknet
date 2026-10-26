@@ -171,8 +171,11 @@ Desde 22/10/2026:
   borda/sombra, `100vw`, espaço entre linhas de grade em `%` e fonte abaixo de `.75rem`.
 - **Dicas (tooltip acessível)** — `node scripts/verificar-dicas.mjs [base]` varre todas as
   páginas, abas e painéis de resultado com a varredura do componente de tooltip. Dica só onde
-  há o que explicar: reprova a que falta (botão só com ícone, campo com formato, desabilitado)
-  e a que sobra (em título, card clicável ou texto corrido). Para cada rota, com axe WCAG 2.2 AA:
+  há o que explicar, e sempre com um "?" à vista: reprova a que falta (botão só com ícone, campo
+  com formato, desabilitado), a que sobra (card clicável, texto corrido, repetindo o que está
+  escrito) e a marcação fora do padrão (dica dentro do próprio controle, texto fora da `.dica`).
+  As dicas escritas como `title` viram a marcação do componente pelo `web/js/field-tooltips.js`;
+  grupo com um "?" só leva `data-dica-grupo` + `data-dica-excecao`. Para cada rota, com axe WCAG 2.2 AA:
   `cd scripts && BASE_URL=http://localhost:8081 ROTAS=/,/calculadora npx playwright test dica-rotas.spec.mjs`.
 - **Ícones** — `node scripts/verificar-icones.mjs [base]` percorre as mesmas páginas, abas e
   painéis de resultado e reprova rótulo sem ícone (coluna, campo, título de área, botão, aba, menu,
@@ -180,6 +183,9 @@ Desde 22/10/2026:
   Exceção só com `data-icone-excecao="motivo"`. Os ícones de coluna saem de um mapa só,
   `IconesColuna` (mesmo rótulo, mesmo glifo): `IconesColunaTest` reprova coluna dos JSON ou do
   diagnóstico sem glifo próprio e cabeçalho fixo com glifo diferente do mapa.
+- **Rolagem lateral** — `node scripts/verificar-largura.mjs [base]` percorre as mesmas páginas,
+  abas e painéis de resultado a 320, 390 e 1366 px e reprova rolagem lateral da página ou
+  elemento fora da janela (o que está dentro de quem rola, como `.table-responsive`, não conta).
 - **Bibliotecas de terceiros** (Bootstrap, mermaid, Chart.js, Leaflet) são servidas por
   `/web/vendor/`, com os mesmos `integrity` de antes; o `.gitattributes` impede o git de
   trocar as quebras de linha desses arquivos.

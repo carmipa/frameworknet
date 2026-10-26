@@ -35,7 +35,7 @@
   "conceitos": [
     {
       "titulo": "Requisição e resposta",
-      "icone": "swap_vert",
+      "icone": "sort",
       "texto": "Cada troca tem uma requisição (método + caminho + cabeçalhos + corpo opcional) e uma resposta (código de status + cabeçalhos + corpo). É sempre o cliente que inicia.",
       "destaque": "Método + URL vão, status + corpo voltam."
     },
@@ -59,7 +59,7 @@
     },
     {
       "titulo": "HTTPS sobre TLS",
-      "icone": "enhanced_encryption",
+      "icone": "lock",
       "texto": "Antes de qualquer requisição, o TLS faz o handshake, valida o certificado do servidor e cria um canal cifrado. Só depois o HTTP flui, agora ilegível para intermediários.",
       "destaque": "TLS primeiro, HTTP depois, tudo pela porta 443."
     },
@@ -147,6 +147,7 @@
     },
     {
       "titulo": "Famílias de códigos de status",
+      "dica": "Agrupa os códigos de resposta HTTP pelo primeiro dígito, para saber de cara se a requisição deu certo e de quem é a falha",
       "colunas": [
         "Família",
         "Significado",
@@ -154,8 +155,8 @@
       ],
       "dicas_colunas": [
         "Faixa de códigos definida pelo primeiro dígito; xx indica qualquer número",
-        "",
-        ""
+        "Tipo de resultado que todos os códigos da faixa comunicam",
+        "Códigos frequentes da faixa, com o texto de motivo padrão"
       ],
       "linhas": [
         [
@@ -237,7 +238,7 @@
         "Versão ou variante do HTTP comparada",
         "Porta padrão do servidor; sem indicação, TCP",
         "Protocolos abaixo do HTTP que carregam as mensagens",
-        ""
+        "Diferença marcante da versão em formato, desempenho ou segurança"
       ],
       "linhas": [
         [

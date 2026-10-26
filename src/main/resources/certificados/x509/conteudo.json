@@ -35,7 +35,7 @@
   "conceitos": [
     {
       "titulo": "O que é assinado vs. a assinatura",
-      "icone": "verified_user",
+      "icone": "lock",
       "texto": "O tbsCertificate é o CORPO do certificado: tudo que descreve a identidade e a chave. A CA calcula um hash desse corpo e assina o hash com sua chave privada, gerando o signatureValue. Verificar o certificado significa recalcular o hash do tbsCertificate e conferir a assinatura usando a chave pública da CA. Se um único byte do corpo mudar, o hash muda e a verificação falha.",
       "destaque": "A assinatura protege o corpo inteiro; o corpo não contém a própria assinatura."
     },
@@ -65,7 +65,7 @@
     },
     {
       "titulo": "Cadeia de confiança",
-      "icone": "schema",
+      "icone": "account_tree",
       "texto": "Um certificado de servidor é assinado por uma CA intermediária, que é assinada por uma CA raiz. Confiar em um certificado não é olhar só para ele: é verificar cada assinatura até uma raiz que já está no seu truststore. Validar campos (CN/SAN, validade) sem verificar essa cadeia é aceitar qualquer coisa que alguém tenha escrito ali.",
       "destaque": "Ler o texto do certificado não valida nada; validar a cadeia até uma raiz confiável, sim."
     }
@@ -102,13 +102,14 @@
   "tabelas": [
     {
       "titulo": "Campos do tbsCertificate",
+      "dica": "Descreve os campos da parte assinada do certificado X.509, a que a CA aplica a assinatura",
       "colunas": [
         "Campo",
         "O que guarda",
         "Por que importa"
       ],
       "dicas_colunas": [
-        "",
+        "Nome do campo na estrutura ASN.1 do tbsCertificate",
         "Valor ou informação armazenada nesse campo",
         "Para que esse campo serve na validação e no uso do certificado"
       ],

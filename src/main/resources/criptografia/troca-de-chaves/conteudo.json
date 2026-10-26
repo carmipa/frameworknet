@@ -30,7 +30,7 @@
   "conceitos": [
     {
       "titulo": "Segredo por canal aberto",
-      "icone": "vpn_key",
+      "icone": "key",
       "texto": "No Diffie-Hellman cada lado guarda um número privado e publica apenas um valor derivado dele. Alice envia A_pub, Bob envia B_pub. Alice combina seu privado com B_pub; Bob combina o seu com A_pub. Os dois chegam ao mesmo segredo S, que nunca trafegou. Um espião vê A_pub e B_pub mas não consegue reverter para o privado (problema do logaritmo discreto).",
       "destaque": "O segredo é calculado dos dois lados, nunca transmitido"
     },

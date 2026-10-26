@@ -5,7 +5,7 @@
 {#title}Camadas em ação — Laboratórios Interativos | Framework de Redes A&D{/title}
 {#description}Laboratório interativo Camadas em ação: veja passo a passo uma mensagem ganhar cabeçalhos (UDP, IP, Ethernet), atravessar um switch e ser desencapsulada no destino, na mesma rede.{/description}
 {#extraHead}
-<link rel="stylesheet" href="/laboratorios/css/laboratorios.css?v=20261025b">
+<link rel="stylesheet" href="/laboratorios/css/laboratorios.css?v=20261025c">
 {/extraHead}
 {#menu}{#include shared/main_menu.html activeMainMenu='laboratorios' /}{/menu}
 {#content}
@@ -39,7 +39,7 @@
                 </ul>
             </div>
             <div class="lab-cenario-col">
-                <h2 class="h3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">checklist</span> O que já é conhecido</h2>
+                <h2 class="h3" title="O que o Host A já sabe antes de enviar, e por isso não aparece nas etapas"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span> O que já é conhecido</h2>
                 <ul>
                     <li>Os dois já estão na <strong>mesma sub-rede</strong> — não há gateway no caminho.</li>
                     <li>O Host A <strong>já sabe o MAC</strong> do Host B (o passo de ARP fica fora deste cenário).</li>
@@ -75,19 +75,19 @@
 
     {! Controles da experiência — separados da navegação de páginas. !}
     <div class="lab-controles" role="group" aria-label="Controles da experiência">
-        <button type="button" class="aed-btn aed-btn-neutral" id="lab-reiniciar" data-bs-trigger="hover">
-            <span class="material-symbols-outlined" aria-hidden="true" translate="no">restart_alt</span> Reiniciar
+        <button type="button" class="aed-btn aed-btn-neutral" id="lab-reiniciar" data-bs-trigger="hover" title="Voltar à etapa inicial">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">restore</span> Reiniciar
         </button>
-        <button type="button" class="aed-btn aed-btn-neutral" id="lab-prev" data-bs-trigger="hover" title="Etapa anterior">
-            <span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_previous</span> Anterior
+        <button type="button" class="aed-btn aed-btn-neutral" id="lab-prev" title="Fica desativado na primeira etapa: não há etapa antes dela">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">chevron_left</span> Anterior
         </button>
         <button type="button" class="aed-btn aed-btn-teal" id="lab-play" aria-pressed="false"
-                data-bs-trigger="hover">
+                data-bs-trigger="hover" title="Reproduzir / pausar">
             <span class="material-symbols-outlined" aria-hidden="true" id="lab-play-icone" translate="no">play_arrow</span>
             <span id="lab-play-texto">Executar</span>
         </button>
-        <button type="button" class="aed-btn aed-btn-neutral" id="lab-next" data-bs-trigger="hover">
-            <span class="material-symbols-outlined" aria-hidden="true" translate="no">skip_next</span> Próxima
+        <button type="button" class="aed-btn aed-btn-neutral" id="lab-next" data-bs-trigger="hover" title="Fica desativado na última etapa: o pacote já chegou ao destino">
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_forward</span> Próxima
         </button>
         <span class="lab-passo-indicador" aria-live="polite">
             Etapa <strong id="lab-passo-num">1</strong> de <strong id="lab-passo-total">1</strong>
@@ -130,7 +130,7 @@
 
         {! Pilha de encapsulamento — cresce na origem e encolhe no destino. !}
         <div class="lab-lado">
-            <h2 class="lab-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">stacks</span> Pilha de encapsulamento</h2>
+            <h2 class="lab-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Pilha de encapsulamento</h2>
             <div class="lab-pilha" id="lab-pilha" aria-hidden="true">
                 <div class="lab-camada" data-camada="eth">
                     <span class="lab-camada-nome">Ethernet · L2</span><span class="lab-camada-bytes">14 B + 4 B</span>
@@ -159,14 +159,16 @@
         </div>
         <p class="lab-explica-desc" id="lab-etapa-desc">Clique em <strong>Executar</strong> ou <strong>Próxima</strong> para começar.</p>
         <p class="lab-explica-porque" id="lab-etapa-porque"></p>
+        <div class="table-responsive">
         <table class="lab-campos" id="lab-campos-tabela" hidden>
             <thead><tr>
-                <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span> Campo</th>
-                <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span> Ação</th>
+                <th title="Nome do campo de cabeçalho tratado nesta etapa"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span> Campo</th>
+                <th title="O que o equipamento faz com o campo nesta etapa: acrescenta, examina, confere, encaminha ou remove"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span> Ação</th>
                 <th title="O conteúdo do campo neste cenário, ou uma nota sobre ele"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">info</span> Valor / observação</th>
             </tr></thead>
             <tbody id="lab-campos"></tbody>
         </table>
+        </div>
         <p class="lab-proximo" id="lab-proximo"></p>
     </div>
 
@@ -174,14 +176,14 @@
     <div class="lab-pergunta" id="lab-pergunta-bloco" hidden>
         <h2 class="lab-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span> Preveja antes de avançar</h2>
         <p id="lab-pergunta-texto" class="mb-2"></p>
-        <div class="lab-pergunta-opcoes" id="lab-pergunta-opcoes" role="group" aria-label="Opções da pergunta"></div>
+        <div class="lab-pergunta-opcoes" id="lab-pergunta-opcoes" role="group" aria-label="Opções da pergunta" data-dica-grupo="Escolha a sua previsão; logo abaixo aparece se ela está certa e por quê." data-dica-grupo-rotulo="as opções da previsão"></div>
         <p class="lab-pergunta-feedback" id="lab-pergunta-feedback" role="status" aria-live="polite" hidden></p>
     </div>
 
     {! OSI × TCP/IP — explicação em níveis, sem forçar equivalência exata. !}
     <div class="lab-modelo">
         <div class="lab-modelo-cab">
-            <h2 class="lab-secao-titulo mb-0"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span> Este cenário nos modelos</h2>
+            <h2 class="lab-secao-titulo mb-0" title="Em que camada de cada modelo de referência fica cada parte desta simulação"><span class="material-symbols-outlined" aria-hidden="true" translate="no">table_chart</span> Este cenário nos modelos</h2>
             <div class="lab-modelo-toggle" role="group" aria-label="Escolher modelo de referência">
                 <button type="button" class="aed-btn aed-btn-neutral btn-sm is-active" id="lab-modelo-tcpip" aria-pressed="true" title="Explica o cenário nas quatro camadas do modelo TCP/IP"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span> TCP/IP</button>
                 <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="lab-modelo-osi" aria-pressed="false" title="Explica o cenário nas sete camadas do modelo OSI"><span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span> OSI</button>
@@ -204,12 +206,12 @@
     <section class="lab-relacionado mt-4" aria-label="Conteúdo e ferramentas relacionados">
         <span class="text-secondary small">Aprofunde:</span>
         <a href="/camadas" class="aed-btn aed-btn-neutral btn-sm"><span class="material-symbols-outlined" aria-hidden="true" translate="no">layers</span> Teoria das camadas</a>
-        <a href="/trafego" class="aed-btn aed-btn-neutral btn-sm"><span class="material-symbols-outlined" aria-hidden="true" translate="no">travel_explore</span> Encapsulamento / decodificador</a>
+        <a href="/trafego" class="aed-btn aed-btn-neutral btn-sm"><span class="material-symbols-outlined" aria-hidden="true" translate="no">search</span> Encapsulamento / decodificador</a>
         <a href="/protocolos" class="aed-btn aed-btn-neutral btn-sm"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span> Protocolos</a>
     </section>
 </div>
 {/content}
 {#extraScripts}
-<script src="/laboratorios/js/camadas.js?v=20261025b"></script>
+<script src="/laboratorios/js/camadas.js?v=20261025c"></script>
 {/extraScripts}
 {/include}

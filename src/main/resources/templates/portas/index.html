@@ -11,7 +11,7 @@
     {#include portas/partials/subnav.html /}
     <div class="text-center mb-4">
         <span class="aed-eyebrow aed-eyebrow-indigo">Catálogo</span>
-        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);"><span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">settings_ethernet</span> Catálogo de Portas TCP/UDP</h1>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);"><span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">door_open</span> Catálogo de Portas TCP/UDP</h1>
         <p class="text-secondary small mx-auto aed-medida-leitura">
             DataGrid técnico com busca em tempo real, filtros por risco e paginação.
         </p>
@@ -26,7 +26,7 @@
 
     <div class="card-tech p-3 mb-3 portas-faixas-bloco">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
-            <h2 class="h3 portas-faixas-titulo mb-0"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> As três faixas de portas (16 bits)</h2>
+            <h2 class="h3 portas-faixas-titulo mb-0" title="A divisão oficial dos números de porta em três grupos, desenhada na proporção do tamanho de cada um"><span class="material-symbols-outlined" aria-hidden="true" translate="no">straighten</span> As três faixas de portas (16 bits)</h2>
             <a href="/portas/anatomia" class="aed-btn aed-btn-teal btn-sm">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span> Anatomia das portas
             </a>
@@ -54,7 +54,7 @@
             <div class="d-flex flex-wrap gap-2 mb-2">
                 <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">search</span>Busca por porta/serviço</span>
                 <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">tune</span>Filtros por risco, categoria e transporte</span>
-                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">swap_vert</span>Clique no cabeçalho para ordenar</span>
+                <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">sort</span>Clique no cabeçalho para ordenar</span>
                 <span class="shield-badge"><span class="material-symbols-outlined icon" translate="no" aria-hidden="true">content_copy</span>Copie ou abra detalhes por linha</span>
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-25">
@@ -75,7 +75,7 @@
                     <label class="form-label small text-secondary d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">search</span> Busca geral
                         <button type="button" class="help-hint-btn" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Digite porta, serviço, transporte, risco ou categoria para filtrar os registros em tempo real." aria-label="Ajuda: Busca no DataGrid"><span class="material-symbols-outlined" translate="no" aria-hidden="true">info</span></button>
                     </label>
-                    <input type="text" class="form-control bg-dark text-light border-secondary" data-grid-search="portas" placeholder="Porta, serviço, transporte..." data-bs-toggle="tooltip" data-bs-placement="top" title="Digite porta, serviço, transporte, categoria ou risco.">
+                    <input type="text" class="form-control bg-dark text-light border-secondary" data-grid-search="portas" placeholder="Porta, serviço, transporte..." data-bs-toggle="tooltip" data-bs-placement="top">
                 </div>
                 <div class="col-lg-2">
                     <label class="form-label small text-secondary d-flex align-items-center gap-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">priority_high</span> Risco
@@ -113,7 +113,7 @@
                     </select>
                 </div>
                 <div class="col-lg-3 d-flex flex-wrap gap-2 justify-content-lg-end">
-                    <button type="button" class="aed-btn aed-btn-danger btn-sm grid-action-btn" data-grid-clear="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpa busca, filtros e ordenação da tabela."><span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar</button>
+                    <button type="button" class="aed-btn aed-btn-danger btn-sm grid-action-btn" data-grid-clear="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpa busca, filtros e ordenação da tabela."><span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar</button>
                     <button type="button" class="aed-btn aed-btn-json btn-sm grid-action-btn" data-grid-export-json="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Exporta os registros filtrados para arquivo JSON."><span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> JSON</button>
                     <button type="button" class="aed-btn aed-btn-pdf btn-sm grid-action-btn" data-grid-export-pdf="portas" data-bs-toggle="tooltip" data-bs-placement="top" title="Gera versão para impressão/PDF com os dados filtrados."><span class="material-symbols-outlined" translate="no" aria-hidden="true">picture_as_pdf</span> PDF</button>
                 </div>
@@ -126,11 +126,11 @@
                             <th class="sortable" data-sort-key="porta" title="Ordenar por número da porta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">door_open</span>Porta</th>
                             <th class="sortable" data-sort-key="servico" title="Ordenar por serviço associado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">door_open</span>Serviço</th>
                             <th class="sortable" data-sort-key="transporte" title="Ordenar por protocolo de transporte"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">swap_calls</span>Transporte</th>
-                            <th class="sortable" data-sort-key="categoria"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Categoria</th>
+                            <th class="sortable" data-sort-key="categoria" title="Ordenar por faixa de categoria"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Categoria</th>
                             <th class="sortable" data-sort-key="risco" title="Ordenar por nível de risco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">priority_high</span>Risco</th>
-                            <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tips_and_updates</span>Recomendação</th>
-                            <th title="Alternativa mais segura para operação"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">verified_user</span>Alternativa segura</th>
-                            <th class="text-center" style="width: 8.75rem;"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
+                            <th title="Ação recomendada para reduzir exposição"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lightbulb</span>Recomendação</th>
+                            <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lock</span>Alternativa segura</th>
+                            <th class="text-center" style="width: 8.75rem;" title="Copiar linha ou abrir detalhes"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ações</th>
                         </tr>
                     </thead>
                     <tbody data-grid-body="portas">
@@ -182,7 +182,7 @@
                         data-recomendacao="{item.recomendacao}"
                         data-alternativa="{item.alternativaSegura ?: '-'}"
                     >
-                        <h2 class="h6 mb-3 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">settings_ethernet</span> {item.porta} — {item.servico}</h2>
+                        <h2 class="h6 mb-3 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">door_open</span> {item.porta} — {item.servico}</h2>
                         <dl class="small mb-0">
                             <div class="d-flex flex-wrap justify-content-between gap-2 border-bottom border-secondary border-opacity-25 py-1">
                                 <dt class="mb-0 text-secondary">Transporte</dt><dd class="mb-0 text-light">{item.protocoloTransporte}</dd>
@@ -216,7 +216,7 @@
                 <div class="d-flex gap-2 align-items-center justify-content-center">
                     <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-prev="portas" aria-label="Página anterior" data-bs-toggle="tooltip" data-bs-placement="top" title="Volta para a página anterior dos resultados filtrados"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_left</span></button>
                     <span class="small text-secondary" data-grid-page-label="portas"></span>
-                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-next="portas" aria-label="Próxima página" data-bs-toggle="tooltip" data-bs-placement="top" title="Avança para a próxima página dos resultados filtrados"><span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_right</span></button>
+                    <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-grid-next="portas" aria-label="Próxima página" data-bs-toggle="tooltip" data-bs-placement="top" title="Avança para a próxima página dos resultados filtrados"><span class="material-symbols-outlined" translate="no" aria-hidden="true">arrow_forward</span></button>
                 </div>
             </div>
         </div>

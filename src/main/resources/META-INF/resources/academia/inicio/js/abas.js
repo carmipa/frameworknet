@@ -91,11 +91,13 @@
                     link.removeAttribute('href');
                 }
                 link.setAttribute('aria-disabled', 'true');
-                link.setAttribute('title', 'Bloqueada: conclua ' + (requisito ? requisito.titulo : 'o nível anterior') + ' para abrir');
                 link.setAttribute('tabindex', '0');
-                // Texto visível do link, sem o texto do balão que o adaptador pôs dentro dele.
+                // Cartão de lição é clicável: sem "?" dentro dele. O motivo do bloqueio já está escrito no aviso do
+                // painel (acima) e vai no nome lido pelo leitor de tela; o cartão é exceção registrada.
+                link.setAttribute('data-dica-excecao', 'cartão de lição bloqueada: o motivo está escrito no aviso do painel e no nome lido pelo leitor de tela');
                 var visivel = window.FieldTooltips ? window.FieldTooltips.textoLimpo(link) : link.textContent;
-                link.setAttribute('aria-label', (visivel || '').replace(/\s+/g, ' ').trim() + ' — ' + link.getAttribute('title'));
+                link.setAttribute('aria-label', (visivel || '').replace(/\s+/g, ' ').trim() + ' — bloqueada: conclua '
+                    + (requisito ? requisito.titulo : 'o nível anterior') + ' para abrir');
             } else {
                 if (link.hasAttribute('data-acad-href')) {
                     link.setAttribute('href', link.getAttribute('data-acad-href'));
@@ -104,6 +106,7 @@
                     link.removeAttribute('data-acad-title');
                 }
                 link.removeAttribute('aria-disabled');
+                link.removeAttribute('data-dica-excecao');
                 link.removeAttribute('tabindex');
                 link.removeAttribute('aria-label');
             }

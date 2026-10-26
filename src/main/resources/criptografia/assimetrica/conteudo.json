@@ -30,7 +30,7 @@
   "conceitos": [
     {
       "titulo": "Par de chaves ligado",
-      "icone": "vpn_key",
+      "icone": "key",
       "texto": "As duas chaves nascem juntas por uma operação matemática. O que a pública cifra, só a privada decifra; o que a privada assina, qualquer um verifica com a pública. Deduzir a privada a partir da pública é computacionalmente inviável.",
       "destaque": "Pública cifra, privada decifra"
     },
@@ -42,7 +42,7 @@
     },
     {
       "titulo": "ECC entrega mais com menos",
-      "icone": "compress",
+      "icone": "expand",
       "texto": "Curvas elípticas alcançam a mesma segurança do RSA com chaves muito menores: ECC 256 bits equivale a RSA 3072. Chaves e assinaturas menores significam menos banda, menos armazenamento e operações mais rápidas, ideal para mobile e IoT.",
       "destaque": "ECC 256 ~ RSA 3072"
     },
@@ -60,7 +60,7 @@
     },
     {
       "titulo": "Certificados dão confiança",
-      "icone": "verified_user",
+      "icone": "lock",
       "texto": "Uma chave pública solta não prova de quem é. O certificado X.509 liga a chave a uma identidade e é assinado por uma Autoridade Certificadora (CA). É o que sustenta HTTPS/TLS e evita ataques de troca de chave.",
       "destaque": "PKI é a cadeia de confiança"
     }

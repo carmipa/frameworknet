@@ -36,7 +36,7 @@
     },
     {
       "titulo": "Anatomia da resposta do dig",
-      "icone": "segment",
+      "icone": "list_alt",
       "texto": "A saída do dig é dividida em seções: HEADER (status, flags, contadores), QUESTION (o que foi perguntado), ANSWER (a resposta), AUTHORITY (quem é autoritativo) e ADDITIONAL (dados extras, como IPs dos NS).",
       "destaque": "O campo status no HEADER é onde mora o diagnóstico: NOERROR, NXDOMAIN, SERVFAIL."
     },
@@ -109,8 +109,8 @@
         "Exemplo de conteúdo"
       ],
       "dicas_colunas": [
-        "",
-        "",
+        "Sigla do tipo de registro, a mesma usada para pedi-lo numa consulta, como em dig MX",
+        "Que informação o registro associa ao nome consultado",
         "Valor ilustrativo como aparece na resposta; o ponto final indica nome totalmente qualificado"
       ],
       "linhas": [

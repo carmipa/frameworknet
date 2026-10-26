@@ -54,13 +54,13 @@
     },
     {
       "titulo": "OFDMA",
-      "icone": "grid_view",
+      "icone": "table_chart",
       "texto": "Introduzido no Wi-Fi 6, divide cada canal em pequenas unidades de recurso (RUs) e entrega pedaços a clientes diferentes na mesma transmissão. Reduz latência e melhora muito redes com muitos dispositivos pequenos (IoT).",
       "destaque": "Um canal atende vários clientes de uma vez"
     },
     {
       "titulo": "MLO: o diferencial do Wi-Fi 7",
-      "icone": "hub",
+      "icone": "lan",
       "texto": "O Multi-Link Operation permite que um dispositivo use 2.4, 5 e 6 GHz simultaneamente, agregando bandas ou usando uma como reserva. Aumenta a vazão e reduz a latência ao escolher o melhor enlace em tempo real.",
       "destaque": "Uso simultâneo de várias bandas"
     }
@@ -162,7 +162,7 @@
         "Quantos canais de 20 MHz podem operar lado a lado sem interferir entre si",
         "Cobertura relativa; frequências mais baixas atravessam melhor paredes e obstáculos",
         "Nível relativo de disputa com outras redes e aparelhos na mesma faixa",
-        ""
+        "Particularidade da banda que pesa na escolha"
       ],
       "linhas": [
         [

@@ -81,7 +81,7 @@
       "dicas_colunas": [
         "Comando de diagnóstico de rede descrito na linha",
         "Métricas coletadas, como latência (RTT), perda de pacotes e saltos do caminho",
-        ""
+        "Sintoma ou pergunta de diagnóstico que essa ferramenta responde melhor"
       ],
       "linhas": [
         [

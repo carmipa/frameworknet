@@ -123,6 +123,8 @@
             card.appendChild(p);
             var opc = document.createElement("div");
             opc.className = "rede-q-opcoes";
+            opc.setAttribute("data-dica-grupo", "Escolha uma resposta; a explicação aparece logo abaixo das opções.");
+            opc.setAttribute("data-dica-grupo-rotulo", "as opções de resposta");
             var fb = document.createElement("p");
             fb.className = "rede-q-fb";
             fb.setAttribute("role", "status");

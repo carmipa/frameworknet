@@ -5,14 +5,14 @@
 <div class="container py-5">
     {#include shared/project_header.html /}
 
-    <h2 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Região geográfica</h2>
+    <h2 class="text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">public</span> Região geográfica</h2>
     <p class="small text-secondary mb-4">
         Nesta área você tem apenas o painel de <strong>região geográfica</strong> (o IP da sua conexão ou outro endereço que você informar).
         A base local <span class="text-info">GeoLite2</span> é usada por padrão; há <strong>fallback</strong> HTTP apenas quando o país não é identificado localmente.
     </p>
 
     <div class="card-tech p-4 shadow border-start border-warning border-3">
-        <h3 class="h5 text-warning mb-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">travel_explore</span> Região geográfica (GeoIP)</h3>
+        <h3 class="h5 text-warning mb-3"><span class="material-symbols-outlined" aria-hidden="true" translate="no">public</span> Região geográfica (GeoIP)</h3>
         <p class="small text-secondary mb-3">
             Podes <strong>indicar qualquer IPv4/IPv6</strong> para localizar a região, ou usar o IP aparente
             da sua conexão (<code translate="no">X-Forwarded-For</code> / <code translate="no">X-Real-IP</code> / remoto). Só se chama
@@ -29,14 +29,15 @@
                        spellcheck="false" inputmode="text" maxlength="45" autocomplete="off">
             </div>
             <div class="col-auto">
-                <button type="button" class="btn btn-sm btn-warning text-dark fw-semibold" id="btn-geo-localizar">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">travel_explore</span> Localizar
+                <button type="button" class="btn btn-sm btn-warning text-dark fw-semibold" id="btn-geo-localizar"
+                        data-bs-toggle="tooltip" title="Consulta a região deste endereço. Se vazio, usa o IP da conexão atual.">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">search</span> Localizar
                 </button>
             </div>
             <div class="col-auto">
                 <button type="button" class="btn btn-sm btn-outline-warning" id="btn-geo-refresh"
                         data-bs-toggle="tooltip" title="Limpa o campo e consulta pelo IP da sua conexão.">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">my_location</span> IP da conexão
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">location_on</span> IP da conexão
                 </button>
             </div>
         </form>

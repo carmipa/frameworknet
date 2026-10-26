@@ -23,7 +23,8 @@
     </div>
 
     <div class="aed-action-row action-buttons mt-2 mb-1">
-        <button type="button" class="aed-btn aed-btn-json" data-baixar-plano>
+        <button type="button" class="aed-btn aed-btn-json" data-baixar-plano
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Baixar o plano completo (LANs, WANs, rotas, CLI) em .txt">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">download</span> Baixar plano (.txt)
         </button>
         <button type="button" class="aed-btn aed-btn-neutral" data-copiar-plano>
@@ -73,7 +74,7 @@
     </div>
     {/if}
 
-    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Rotas estáticas (alternativa)</h4>
+    <h4 class="h6 calc-secao-titulo mt-4" title="Comandos ipv6 route que substituem o protocolo dinâmico em redes pequenas"><span class="material-symbols-outlined" aria-hidden="true" translate="no">route</span> Rotas estáticas (alternativa)</h4>
     <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{#for r in p.rotasEstaticas}{r}
 {/for}</pre>
 

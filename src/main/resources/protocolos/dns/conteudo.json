@@ -9,7 +9,7 @@
     },
     {
       "titulo": "Recursivo × iterativo",
-      "icone": "sync",
+      "icone": "refresh",
       "texto": "Consulta recursiva: 'me devolva a resposta final, eu não quero saber o caminho'. Consulta iterativa: 'me devolva a resposta OU o próximo servidor a quem perguntar'. O stub pede recursivo ao resolver; o resolver pergunta iterativamente à raiz, ao TLD e ao autoritativo. A raiz não resolve o nome inteiro — ela só diz quem cuida do .br.",
       "destaque": "Servidor autoritativo que responde consulta recursiva de qualquer um na Internet é um 'open resolver' — combustível para ataques de amplificação."
     },
@@ -21,13 +21,13 @@
     },
     {
       "titulo": "UDP 53 primeiro, TCP 53 quando precisa",
-      "icone": "swap_vert",
+      "icone": "sort",
       "texto": "A consulta comum vai por UDP 53 — sem handshake, uma pergunta e uma resposta, barato e rápido. Se a resposta não cabe (bit TC=truncated ligado), o cliente refaz por TCP 53. Transferência de zona (AXFR) é sempre TCP. Justamente por ser UDP sem conexão, o atacante não precisa interceptar nada: basta chegar antes com uma resposta falsa e o campo Transaction ID certo.",
       "destaque": "Não ter conexão significa não ter prova de origem. É por isso que a defesa do DNS não é 'confiar no remetente' e sim assinar a resposta (DNSSEC)."
     },
     {
       "titulo": "A zona e a delegação",
-      "icone": "schema",
+      "icone": "account_tree",
       "texto": "Uma zona é um pedaço da árvore de nomes sob uma administração — carminati.dev.br é uma zona. O registro NS delega uma subzona a outros servidores, e o registro SOA marca quem é o autoritativo primário e os tempos de atualização. Delegar é dizer 'eu não respondo por isto, pergunte àqueles servidores'.",
       "destaque": "Delegação pendente (registro NS apontando para servidor que não responde mais pela zona) é a porta de entrada do subdomain takeover."
     },

@@ -36,7 +36,7 @@
     },
     {
       "titulo": "Interface e modo promíscuo",
-      "icone": "settings_ethernet",
+      "icone": "door_open",
       "texto": "Você só captura o que passa pela interface escolhida. Sem modo promíscuo a placa entrega apenas quadros destinados a ela; com ele, entrega todos os que enxerga. Em redes com switch, sem espelhamento de porta você vê pouco além do próprio tráfego.",
       "destaque": "-i eth0 escolhe a interface; -i any captura em todas"
     },
@@ -73,6 +73,7 @@
   "tabelas": [
     {
       "titulo": "Filtros BPF comuns (sintaxe de captura tcpdump)",
+      "dica": "Expressões prontas para restringir, já na captura, quais pacotes o tcpdump grava, cada uma com o tráfego que seleciona e um caso de uso",
       "colunas": [
         "Filtro",
         "O que casa",

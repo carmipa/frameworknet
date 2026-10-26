@@ -58,7 +58,7 @@
     },
     {
       "titulo": "Desencapsulamento e demultiplexação",
-      "icone": "swap_vert",
+      "icone": "sort",
       "texto": "No destino, a subida usa campos do cabeçalho para decidir a quem entregar: o campo Protocolo do IP aponta se acima está TCP ou UDP; a porta de destino do TCP/UDP aponta qual aplicação recebe. Assim cada camada remove seu cabeçalho e escolhe corretamente a camada superior."
     }
   ],
@@ -125,7 +125,7 @@
       "dicas_colunas": [
         "Protocolo cujo cabeçalho acrescenta bytes de controle ao dado",
         "Tamanho em bytes do cabeçalho na forma mais comum, sem campos opcionais",
-        ""
+        "Variações de tamanho e particularidades desse cabeçalho"
       ],
       "linhas": [
         [

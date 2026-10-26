@@ -33,10 +33,12 @@
                     title="Resolve um domínio e mostra a resposta no formato do dig">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span><span>DNS (dig)</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="traceroute" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="traceroute" role="tab"
+                    title="Revela os saltos da rota manipulando o TTL do pacote IP">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span><span>Traceroute</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="sweep" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="sweep" role="tab"
+                    title="Descobre quais hosts de uma faixa respondem ao ICMP">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span><span>Ping Sweep</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="scan" role="tab"
@@ -72,13 +74,14 @@
                         <code translate="no">1.1.1.1</code> (Cloudflare) ou <code translate="no">google.com</code>.
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-execute w-100" id="btnPing">
+                <button type="submit" class="aed-btn aed-btn-execute w-100" id="btnPing"
+                        title="Disparar pacotes ICMP Echo Request simulados para testar conectividade e latência">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">network_ping</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     Disparar Ping Simulado
                 </button>
                 <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
                         title="Esvaziar os campos e apagar o resultado">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
                 </button>
             </form>
             <div id="pingSaida"></div>
@@ -107,13 +110,14 @@
                         <code translate="no">google.com</code>, <code translate="no">fiap.com.br</code>, <code translate="no">carminati.dev.br</code>.
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-indigo w-100" id="btnDns">
+                <button type="submit" class="aed-btn aed-btn-indigo w-100" id="btnDns"
+                        title="Consultar registros DNS e IPs associados ao domínio informado">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">dns</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     Resolver Nome Simulado
                 </button>
                 <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
                         title="Esvaziar os campos e apagar o resultado">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
                 </button>
             </form>
             <div id="dnsSaida"></div>
@@ -142,13 +146,14 @@
                         <code translate="no">8.8.8.8</code> ou <code translate="no">github.com</code>.
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-teal w-100">
+                <button type="submit" class="aed-btn aed-btn-teal w-100"
+                        title="Traçar a rota até o destino, salto a salto, via TTL crescente (simulado)">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     Traçar Rota Simulada
                 </button>
                 <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
                         title="Esvaziar os campos e apagar o resultado">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
                 </button>
             </form>
             <div id="traceSaida"></div>
@@ -177,13 +182,14 @@
                         <code translate="no">192.168.1.0/24</code> (256 endereços domésticos), <code translate="no">10.0.0.0/24</code>.
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-teal w-100">
+                <button type="submit" class="aed-btn aed-btn-teal w-100"
+                        title="Varrer a faixa e listar os hosts que respondem ao ICMP (simulado)">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">radar</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     Varrer Faixa Simulada
                 </button>
                 <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
                         title="Esvaziar os campos e apagar o resultado">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
                 </button>
             </form>
             <div id="sweepSaida"></div>
@@ -212,13 +218,14 @@
                         <code translate="no">scanme.nmap.org</code> (o nmap mantém esse host para praticar).
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-amber w-100">
+                <button type="submit" class="aed-btn aed-btn-amber w-100"
+                        title="Executar uma varredura SYN stealth simulada e classificar as portas">
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">lan</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     Varrer Portas (Simulado)
                 </button>
                 <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
                         title="Esvaziar os campos e apagar o resultado">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
                 </button>
             </form>
             <div id="scanSaida"></div>
@@ -247,13 +254,14 @@
                         <code translate="no">banco.example.com</code>, <code translate="no">login.example.com</code> — alvos típicos de phishing.
                     </div>
                 </div>
-                <button type="submit" class="aed-btn aed-btn-amber w-100">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">gpp_maybe</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
+                <button type="submit" class="aed-btn aed-btn-amber w-100"
+                        title="Simular a corrida entre a resposta DNS legítima e a forjada">
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">gpp_bad</span> <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
                     Simular Spoofing (Didático)
                 </button>
                 <button type="button" class="aed-btn aed-btn-neutral w-100 mt-2" data-limpar
                         title="Esvaziar os campos e apagar o resultado">
-                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+                    <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
                 </button>
             </form>
             <div id="spoofSaida"></div>

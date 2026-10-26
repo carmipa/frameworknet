@@ -37,12 +37,12 @@
         </div>
 
         <div class="col-sm-6">
-            <label class="form-label small text-secondary" for="c-ipo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">call_made</span> IP de origem</label>
+            <label class="form-label small text-secondary" for="c-ipo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">source</span> IP de origem</label>
             <input id="c-ipo" name="ipOrigem" value="192.168.0.10" class="form-control form-control-sm bg-dark text-light border-secondary"
                    title="IPv4 em quatro números de 0 a 255 separados por ponto, ex.: 192.168.0.10">
         </div>
         <div class="col-sm-6">
-            <label class="form-label small text-secondary" for="c-ipd"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">call_received</span> IP de destino</label>
+            <label class="form-label small text-secondary" for="c-ipd"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">near_me</span> IP de destino</label>
             <input id="c-ipd" name="ipDestino" value="203.0.113.5" class="form-control form-control-sm bg-dark text-light border-secondary"
                    title="IPv4 em quatro números de 0 a 255 separados por ponto, ex.: 203.0.113.5">
         </div>
@@ -63,7 +63,7 @@
                    title="Número inteiro de 0 a 4294967295 (32 bits), ex.: 1000">
         </div>
         <div class="col-sm-3">
-            <label class="form-label small text-secondary" for="c-win"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">aspect_ratio</span> Janela (TCP)</label>
+            <label class="form-label small text-secondary" for="c-win"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">straighten</span> Janela (TCP)</label>
             <input id="c-win" name="window" value="64240" class="form-control form-control-sm bg-dark text-light border-secondary"
                    title="Número inteiro de 0 a 65535 (16 bits), ex.: 64240">
         </div>
@@ -87,13 +87,14 @@
         </div>
     </div>
     <div class="d-flex flex-wrap gap-2 mt-3">
-        <button type="submit" class="aed-btn aed-btn-teal">
+        <button type="submit" class="aed-btn aed-btn-teal"
+                title="Montar os bytes do pacote a partir dos campos">
             <span class="spinner-border spinner-border-sm htmx-indicator" role="status" aria-hidden="true"></span>
-            <span class="material-symbols-outlined" aria-hidden="true" translate="no">construction</span> Gerar pacote
+            <span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Gerar pacote
         </button>
         <button type="button" class="aed-btn aed-btn-neutral" data-limpar
                 title="Esvaziar os campos e apagar o resultado">
-            <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar
         </button>
     </div>
 </form>

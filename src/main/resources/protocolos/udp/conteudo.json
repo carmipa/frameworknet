@@ -181,7 +181,7 @@
       "dicas_colunas": [
         "Protocolo de aplicação que usa UDP como transporte",
         "Número da porta UDP padrão; faixas dinâmicas variam conforme o equipamento ou software",
-        ""
+        "Função do serviço na rede"
       ],
       "linhas": [
         [
@@ -231,7 +231,7 @@
       "dicas_colunas": [
         "Tipo de necessidade da aplicação que favorece o UDP",
         "Vantagem concreta do UDP sobre o TCP nesse cenário",
-        ""
+        "Protocolos ou aplicações conhecidos que se enquadram no cenário"
       ],
       "linhas": [
         [

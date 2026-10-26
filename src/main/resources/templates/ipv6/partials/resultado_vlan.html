@@ -23,7 +23,8 @@
     </div>
 
     <div class="aed-action-row action-buttons mt-2 mb-1">
-        <button type="button" class="aed-btn aed-btn-neutral" data-copiar-plano>
+        <button type="button" class="aed-btn aed-btn-neutral" data-copiar-plano
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Copiar a configuração completa (VLANs, SVIs e trunk)">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar configuração
         </button>
     </div>
@@ -35,7 +36,7 @@
     <div class="table-responsive calc-tabela-scroll">
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
             <thead><tr>
-                <th title="Número 802.1Q da VLAN"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">sell</span>VLAN ID</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span>Nome</th><th title="Prefixo IPv6 atribuído à VLAN"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede (LAN)</th><th title="Endereço ::1 da interface Vlan no switch L3, usado pelos hosts como roteador padrão"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">router</span>Gateway (SVI ::1)</th>
+                <th title="Número 802.1Q da VLAN"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>VLAN ID</th><th title="Nome dado à VLAN no switch"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">label</span>Nome</th><th title="Prefixo IPv6 atribuído à VLAN"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede (LAN)</th><th title="Endereço ::1 da interface Vlan no switch L3, usado pelos hosts como roteador padrão"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">router</span>Gateway (SVI ::1)</th>
             </tr></thead>
             <tbody>
             {#for l in v.vlans}
@@ -50,7 +51,7 @@
         </table>
     </div>
 
-    <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">router</span> Trunk 802.1Q (uplink)</h4>
+    <h4 class="h6 calc-secao-titulo mt-4" title="Comandos da porta de uplink que transporta todas as VLANs do plano com tag 802.1Q"><span class="material-symbols-outlined" aria-hidden="true" translate="no">router</span> Trunk 802.1Q (uplink)</h4>
     <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{v.trunkCli}</pre>
 
     <h4 class="h6 calc-secao-titulo mt-4"><span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span> SVI Cisco por VLAN (roteamento inter-VLAN)</h4>
@@ -66,7 +67,7 @@
     </div>
 
     <p class="calc-explicacao mt-3">
-        <span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> {v.dhcpNota}
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> {v.dhcpNota}
     </p>
     <p class="calc-explicacao mt-1">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> {v.enunciado}

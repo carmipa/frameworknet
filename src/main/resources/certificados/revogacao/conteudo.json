@@ -3,7 +3,8 @@
   "ficha": [
     {
       "rotulo": "Grupo",
-      "valor": "Ciclo de vida do certificado"
+      "valor": "Ciclo de vida do certificado",
+      "dica": "Emissão, renovação, revogação e expiração fazem parte do mesmo ciclo."
     },
     {
       "rotulo": "Padrão base",
@@ -58,13 +59,13 @@
     },
     {
       "titulo": "Stapling resolve latência E privacidade",
-      "icone": "verified_user",
+      "icone": "lock",
       "texto": "No OCSP stapling o SERVIDOR TLS consulta o responder periodicamente, guarda a resposta OCSP assinada (com validade própria) e a anexa (grampeia) dentro do handshake, na extensão status_request. O cliente recebe status recente sem fazer nenhuma chamada extra: some a latência (nenhuma viagem adicional) e some o vazamento de privacidade (o cliente nunca fala com a CA). A resposta continua assinada pela CA, então o servidor não consegue forjar um good.",
       "destaque": "O servidor faz a pergunta uma vez e serve a resposta a todos os clientes."
     },
     {
       "titulo": "Must-Staple e o futuro dos short-lived",
-      "icone": "autorenew",
+      "icone": "refresh",
       "texto": "Stapling sozinho ainda é soft-fail: se o servidor omitir o grampo, o cliente segue. O Must-Staple (extensão TLS Feature marcada no certificado) inverte isso: o cliente PASSA a exigir o grampo e recusa a conexão sem ele, fechando a brecha (na prática, poucos clientes aplicam essa exigência: o Firefox aplica; o Chrome, que nem consulta OCSP, ignora a extensão). A tendência complementar são os certificados de vida curta (dias, não meses): se um certificado vive pouco, a janela de exposição pós-vazamento é tão pequena que a revogação quase perde a função. É a direção para onde a PKI pública caminha.",
       "destaque": "Must-Staple torna o grampo obrigatório; a vida curta torna a revogação quase dispensável."
     }
@@ -136,8 +137,8 @@
         "O que o cliente deve fazer"
       ],
       "dicas_colunas": [
-        "",
-        "",
+        "Valor literal do campo de status na resposta OCSP assinada",
+        "O que o responder afirma sobre o certificado consultado",
         "Reação esperada do navegador ou da aplicação ao receber esse status"
       ],
       "linhas": [

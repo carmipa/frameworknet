@@ -42,7 +42,7 @@
     },
     {
       "titulo": "Estados de porta",
-      "icone": "traffic",
+      "icone": "door_open",
       "texto": "Aberta: um serviço respondeu (SYN/ACK). Fechada: a máquina respondeu RST, está viva mas sem serviço ali. Filtrada: nenhuma resposta útil voltou, tipicamente um firewall descartando o pacote em silêncio.",
       "destaque": "aberta | fechada | filtrada"
     },
@@ -54,7 +54,7 @@
     },
     {
       "titulo": "Detecção de serviço e versão",
-      "icone": "manage_search",
+      "icone": "search",
       "texto": "Encontrar a porta 22 aberta é só metade da história. O -sV interroga a porta e lê o banner para dizer qual software e qual versão está rodando, base para avaliar vulnerabilidades.",
       "destaque": "-sV"
     },
@@ -81,7 +81,7 @@
       ],
       "dicas_colunas": [
         "Parâmetro do nmap que seleciona o tipo de varredura",
-        "",
+        "Nome pelo qual a técnica é conhecida na documentação do nmap",
         "Como a técnica sonda o alvo e que informação ela obtém",
         "Se a técnica exige root ou administrador, em geral por montar pacotes brutos"
       ],
@@ -132,7 +132,7 @@
         "Interpretação"
       ],
       "dicas_colunas": [
-        "",
+        "Classificação que o nmap atribui à porta no relatório",
         "O que o alvo devolveu à sonda, como SYN/ACK, RST, ICMP ou silêncio",
         "Conclusão que se tira sobre a porta e sobre o caminho até ela"
       ],

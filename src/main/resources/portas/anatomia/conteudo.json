@@ -65,7 +65,7 @@
     },
     {
       "titulo": "NAT/PAT reescreve a origem",
-      "icone": "security",
+      "icone": "lock",
       "texto": "Na sua rede doméstica vários aparelhos compartilham um só IP público. O roteador usa NAT/PAT: ao sair, ele troca a porta de origem por outra única e anota isso numa tabela; ao voltar, a resposta chega nessa porta e ele reescreve de volta para o aparelho certo. É o que faz milhares de dispositivos caberem num único IP público.",
       "destaque": "O que o servidor vê como sua porta de origem quase nunca é a sua real."
     }
@@ -96,6 +96,7 @@
   "tabelas": [
     {
       "titulo": "As três faixas de portas (RFC 6335)",
+      "dica": "Como os 65.536 números de porta se dividem entre serviços padronizados, aplicações registradas e portas temporárias de cliente",
       "colunas": [
         "Faixa",
         "Intervalo",
@@ -106,7 +107,7 @@
         "Nome oficial do grupo de portas",
         "Primeiro e último número de porta do grupo",
         "Quem reserva o número e quem costuma abrir portas nesse grupo",
-        ""
+        "Portas conhecidas que caem nesse grupo, com o serviço de cada uma"
       ],
       "linhas": [
         [
@@ -197,7 +198,7 @@
       ],
       "dicas_colunas": [
         "Qual dos cinco valores da tupla",
-        "",
+        "Um valor ilustrativo, com endereços reservados para documentação",
         "O que esse valor representa na conexão"
       ],
       "linhas": [

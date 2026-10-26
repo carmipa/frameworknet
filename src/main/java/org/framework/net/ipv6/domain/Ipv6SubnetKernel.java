@@ -1310,11 +1310,11 @@ public class Ipv6SubnetKernel {
                         + "reservados do topo do /64 (RFC 2526)"));
 
         List<Ipv6AnaliseRica.ItemProva> provaItens = List.of(
-                new Ipv6AnaliseRica.ItemProva("🏷️ Tipo", base.tipo()),
-                new Ipv6AnaliseRica.ItemProva("📏 Prefixo", "/" + prefixo),
-                new Ipv6AnaliseRica.ItemProva("🔢 Endereços", "2^" + (128 - prefixo) + " = " + base.totalEnderecos()),
-                new Ipv6AnaliseRica.ItemProva("🌐 Rede", base.rede()),
-                new Ipv6AnaliseRica.ItemProva("🔌 Interface ID", base.interfaceId()));
+                new Ipv6AnaliseRica.ItemProva("Tipo", base.tipo()),
+                new Ipv6AnaliseRica.ItemProva("Prefixo", "/" + prefixo),
+                new Ipv6AnaliseRica.ItemProva("Endereços", "2^" + (128 - prefixo) + " = " + base.totalEnderecos()),
+                new Ipv6AnaliseRica.ItemProva("Rede", base.rede()),
+                new Ipv6AnaliseRica.ItemProva("Interface ID", base.interfaceId()));
         String provaFrase = base.comprimido() + "/" + prefixo + " é " + base.tipo()
                 + ": " + prefixo + " bits de rede, " + (128 - prefixo) + " de interface, 2^" + (128 - prefixo)
                 + " endereços, sem broadcast.";

@@ -89,7 +89,7 @@ try {
     await concluir(page, FUNDAMENTOS);
     await page.reload({ waitUntil: 'load' });
     const depois = await estadosDasAbas(page);
-    confere(depois[0] === 'fundamentos:task_alt concluído' && depois[1] === 'ipv4:lock_open liberado' && depois[2] === 'transporte:lock bloqueado',
+    confere(depois[0] === 'fundamentos:check_circle concluído' && depois[1] === 'ipv4:lock_open liberado' && depois[2] === 'transporte:lock bloqueado',
       'Fundamentos concluído libera IPv4: ' + depois.join(' | '));
     const ativa = await page.$eval('[data-acad-aba][aria-selected="true"]', (a) => a.getAttribute('data-acad-aba'));
     confere(ativa === 'ipv4', 'a aba inicial é o nível em que o aluno está: ' + ativa);
@@ -136,7 +136,8 @@ try {
     const ipv4Nav = await page.$eval('[data-acad-nav-nivel="ipv4"]', (a) => ({ href: a.getAttribute('href'), estado: a.querySelector('[data-acad-aba-estado]').textContent }));
     confere(ipv4Nav.href === null && ipv4Nav.estado.includes('bloqueado'), 'na navegação o nível bloqueado não abre e diz por quê: ' + JSON.stringify(ipv4Nav));
     await page.click('.acad-nav-niveis a[href="/academia#trilha"]');
-    await page.waitForURL('**/academia/**');
+    // O link é /academia#trilha (sem barra): o glob '**/academia/**' nunca casava e a espera estourava.
+    await page.waitForURL(/\/academia\/?(#.*)?$/);
     confere(await page.isVisible('[data-acad-abas-lista]'), '"Academia · início" volta para as abas');
     // concluir a lição na própria página atualiza a sub-aba sem recarregar
     await page.goto(BASE + '/academia/fundamentos/binario', { waitUntil: 'load' });

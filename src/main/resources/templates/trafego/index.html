@@ -13,7 +13,7 @@
 
     <div class="text-center mb-4">
         <span class="aed-eyebrow aed-eyebrow-teal">Tráfego &amp; pacotes</span>
-        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);"><span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">travel_explore</span> Analisador de tráfego e pacotes</h1>
+        <h1 class="h2 mb-2" style="font-family:var(--aed-font-display);"><span class="material-symbols-outlined aed-title-icon" aria-hidden="true" translate="no">search</span> Analisador de tráfego e pacotes</h1>
         <p class="text-secondary small mx-auto aed-medida-leitura">
             Painel ao vivo (simulação), decodificador de pacotes (hex → camadas) e o simulador de
             <strong>encapsulamento</strong> — como os dados são embrulhados camada a camada.
@@ -23,13 +23,19 @@
     <div class="aed-card card-tech p-4 shadow" data-aed-tabs data-active-tab="aovivo">
         <span class="aed-eyebrow">Ferramenta</span>
         <div class="aed-mode-grid tab-nav mb-3" role="tablist">
-            <button type="button" class="aed-mode-btn tab-trigger active" data-tab="aovivo" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger active" data-tab="aovivo" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Painel simulado de tráfego (protocolos, throughput, top hosts e redes abertas)">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">sensors</span><span>Ao vivo</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="decodificador" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="decodificador" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Cole um hex dump e veja os cabeçalhos Ethernet/IP/TCP/UDP/ICMP campo a campo">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">memory</span><span>Decodificador</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="encapsulamento" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="encapsulamento" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Veja uma mensagem ser embrulhada camada a camada (Aplicação → Enlace)">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">layers</span><span>Encapsulamento</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="handshake" role="tab"
@@ -42,12 +48,13 @@
                     title="SYN flood (esgotamento do backlog) e sequestro por previsão do número de sequência">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span><span>Anomalias TCP</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="construtor" role="tab">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">construction</span><span>Construtor de pacotes</span>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="construtor" role="tab"
+                    title="Edite os campos, gere os bytes e decodifique de volta">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">build</span><span>Construtor de pacotes</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="lab" role="tab"
                     title="Laboratório DNS/ICMP: compare tráfego normal e suspeito (tunneling) em dados fictícios">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">biotech</span><span>Lab DNS/ICMP</span>
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">science</span><span>Lab DNS/ICMP</span>
             </button>
         </div>
 

@@ -30,7 +30,7 @@
   "conceitos": [
     {
       "titulo": "Domínio de colisão x domínio de broadcast",
-      "icone": "device_hub",
+      "icone": "lan",
       "texto": "Domínio de colisão é o conjunto de portas que disputam o mesmo meio: se dois falam juntos, há colisão. O hub deixa tudo em um único domínio de colisão; o switch cria um por porta (por isso opera em full-duplex, sem colisões). Domínio de broadcast é até onde chega um quadro enviado para todos (FF:FF:FF:FF:FF:FF). O switch encaminha broadcast por todas as portas da mesma LAN, então switch não reduz broadcast. Quem quebra o domínio de broadcast é o roteador (ou uma VLAN, que faz isso logicamente).",
       "destaque": "Switch corta colisão; só roteador e VLAN cortam broadcast."
     },
@@ -54,7 +54,7 @@
     },
     {
       "titulo": "Firewall com estado (stateful)",
-      "icone": "security",
+      "icone": "lock",
       "texto": "Um firewall stateful não olha pacote a pacote de forma isolada: ele mantém uma tabela de conexões (IP origem, IP destino, portas e estado do handshake TCP). Assim ele libera a resposta de uma conexão que você iniciou sem precisar de regra manual, e bloqueia pacotes que chegam fora de qualquer sessão válida. Isso é camada 3-4. Se for firewall de aplicação (WAF/proxy), ele sobe para a camada 7 e inspeciona o conteúdo, como uma URL ou um cabeçalho HTTP malicioso.",
       "destaque": "Stateful decide pelo contexto da conexão, não só pelo pacote."
     }

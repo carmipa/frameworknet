@@ -30,7 +30,7 @@
   "conceitos": [
     {
       "titulo": "Evil Twin / Rogue AP",
-      "icone": "wifi_tethering",
+      "icone": "gpp_bad",
       "texto": "Ponto de acesso falso que clona o SSID (e às vezes o BSSID/MAC) de uma rede legítima, muitas vezes com sinal mais forte, para atrair clientes. Uma vez associado, o atacante fica no meio do tráfego (MITM) e pode servir portais falsos. Rogue AP é o termo amplo para qualquer AP não autorizado na rede.",
       "destaque": "Clona o SSID e vence pelo sinal mais forte"
     },
@@ -48,7 +48,7 @@
     },
     {
       "titulo": "WPS PIN fraco",
-      "icone": "pin",
+      "icone": "tag",
       "texto": "O Wi-Fi Protected Setup com PIN de 8 dígitos é validado em duas metades independentes (4 + 3 dígitos, o último é checksum), reduzindo o espaço a ~11.000 tentativas. Ataques como Reaver e o Pixie Dust (offline, explorando nonces fracos) recuperam o PIN e, com ele, a PSK.",
       "destaque": "8 dígitos viram ~11.000 tentativas, não 100 milhões"
     },
@@ -60,7 +60,7 @@
     },
     {
       "titulo": "WPA3-SAE (Dragonfly)",
-      "icone": "shield_lock",
+      "icone": "lock",
       "texto": "Substitui o PSK por Simultaneous Authentication of Equals, um handshake com troca de chaves autenticada por senha. Cada tentativa exige interação com o AP, o que inviabiliza o ataque de dicionário offline e adiciona forward secrecy. Torna a mera captura de handshake inútil.",
       "destaque": "Elimina o ataque de dicionário offline"
     }
@@ -80,7 +80,7 @@
       ],
       "dicas_colunas": [
         "Nome pelo qual o ataque é conhecido",
-        "",
+        "Mecanismo explorado pelo atacante e o que ele obtém",
         "Configuração ou padrão que neutraliza ou reduz o ataque"
       ],
       "linhas": [
@@ -113,6 +113,7 @@
     },
     {
       "titulo": "Bandas e canais 802.11 (contexto)",
+      "dica": "Bandas de frequência do Wi-Fi com seus canais e o efeito de cada uma sobre a exposição a ataques",
       "colunas": [
         "Banda",
         "Canais úteis",

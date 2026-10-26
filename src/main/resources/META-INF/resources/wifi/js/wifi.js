@@ -28,7 +28,8 @@
             b.textContent = c;
             b.setAttribute("data-icone-excecao", "canal do mapa de frequências: o número é o próprio rótulo");
             b.setAttribute("aria-pressed", selecionados.has(c) ? "true" : "false");
-            b.title = "Canal " + c + (NAO_SOBREPOEM.indexOf(c) >= 0 ? " (não sobrepõe 1/6/11)" : "");
+            // Só o canal que não se sobrepõe ganha dica: "Canal 10" repetiria o número escrito no botão.
+            if (NAO_SOBREPOEM.indexOf(c) >= 0) { b.title = "Um dos três canais de 2,4 GHz que não se sobrepõem entre si (1, 6 e 11)"; }
             b.addEventListener("click", function () {
                 if (selecionados.has(c)) { selecionados.delete(c); } else { selecionados.add(c); }
                 render();

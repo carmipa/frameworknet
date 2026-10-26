@@ -118,6 +118,14 @@ class PaginaErroProxyGeneratorTest {
     private static final String EXCECAO_SEM_APP = "<button data-dica-excecao=\"página servida sem a aplicação:"
             + " o componente de dica não carrega e fica o title nativo\"";
 
+    /**
+     * Grupo com um "?" só (as bandeiras do idioma): o "?" é criado pelo adaptador, que não carrega aqui. A explicação
+     * do grupo vira o title nativo do próprio grupo, com a mesma marca de exceção — assim ela não some da página.
+     */
+    private static final Pattern GRUPO_DE_DICA = Pattern.compile("data-dica-grupo=\"([^\"]*)\"");
+    private static final String GRUPO_SEM_APP = "data-dica-excecao=\"página servida sem a aplicação:"
+            + " o componente de dica não carrega e fica o title nativo\" title=\"$1\"";
+
     /** Scripts que só fazem sentido com a aplicação viva. */
     private static final List<Pattern> JS_DESCARTAVEIS = List.of(
             Pattern.compile("<script[^>]*src=\"/web/js/field-tooltips\\.js[^\"]*\"[^>]*></script>"),
@@ -181,6 +189,7 @@ class PaginaErroProxyGeneratorTest {
                 html = descartavel.matcher(html).replaceAll("");
             }
             html = BOTAO_COM_TITLE.matcher(html).replaceAll(Matcher.quoteReplacement(EXCECAO_SEM_APP));
+            html = GRUPO_DE_DICA.matcher(html).replaceAll(GRUPO_SEM_APP);
             html = html.replace("<head>", "<head>\n    " + avisoDeOrigem(codigo));
 
             Path arquivo = (REGENERAR ? DESTINO : GERADO).resolve(codigo + ".html");
@@ -246,6 +255,7 @@ class PaginaErroProxyGeneratorTest {
             html = descartavel.matcher(html).replaceAll("");
         }
         html = BOTAO_COM_TITLE.matcher(html).replaceAll(Matcher.quoteReplacement(EXCECAO_SEM_APP));
+        html = GRUPO_DE_DICA.matcher(html).replaceAll(GRUPO_SEM_APP);
         html = html.replace("<head>", "<head>\n    <!-- GERADO AUTOMATICAMENTE por PaginaErroProxyGeneratorTest a partir de\n"
                 + "     templates/paginaErros/erro.html + CatalogoErros.semConexao().\n"
                 + "     NAO EDITE ESTE ARQUIVO A MAO. Servido pelo service worker quando o aparelho\n"

@@ -89,7 +89,7 @@
         <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">route</span> Passo a passo do cálculo</h3>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm wizard-table mb-0">
-                <thead><tr><th title="Nome do passo do cálculo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">format_list_numbered</span>Etapa</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ação</th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">output</span>Resultado</th></tr></thead>
+                <thead><tr><th title="Nome do passo do cálculo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">format_list_numbered</span>Etapa</th><th title="Operação aplicada ao endereço neste passo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span>Ação</th><th title="Valor obtido ao fim do passo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">output</span>Resultado</th></tr></thead>
                 <tbody>
                 {#for passo in r.wizard}
                 <tr><td>{passo.icone} {passo.etapa}</td><td>{passo.acao}</td><td class="font-monospace">{passo.resultado}</td></tr>
@@ -101,7 +101,7 @@
 
     {! ---------- 9. Linha do tempo do bloco (sem broadcast) ---------- !}
     <div class="card-tech p-3 mb-3">
-        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">timeline</span> Linha do tempo do bloco</h3>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Linha do tempo do bloco</h3>
         <div class="timeline-bloco">
             <div class="timeline-step">
                 <div class="timeline-title">Rede</div>
@@ -127,7 +127,7 @@
                 <div class="table-responsive">
                     <table class="table table-dark table-bordered table-sm resultados-table mb-2">
                         <tbody>
-                            <tr><th title="Forma curta canônica: sem zeros à esquerda e com :: no maior bloco de zeros"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">compress</span>Comprimido (RFC 5952)</th><td class="font-monospace text-warning fw-bold">{r.base.comprimido}</td></tr>
+                            <tr><th title="Forma curta canônica: sem zeros à esquerda e com :: no maior bloco de zeros"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">expand</span>Comprimido (RFC 5952)</th><td class="font-monospace text-warning fw-bold">{r.base.comprimido}</td></tr>
                             <tr><th title="Os 8 hextetos completos, com 4 dígitos hexadecimais cada"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">expand</span>Expandido</th><td class="font-monospace">{r.base.expandido}</td></tr>
                             <tr><th title="Endereço com todos os bits de interface zerados"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede (/{r.base.prefixo})</th><td class="font-monospace">{r.base.rede}</td></tr>
                             <tr><th title="Menor endereço do bloco, igual ao endereço de rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">first_page</span>1º endereço</th><td class="font-monospace text-success">{r.base.primeiro}</td></tr>
@@ -141,10 +141,12 @@
                 <p class="small">Gateway sugerido: <span class="text-success fw-bold font-monospace">{r.gateway}</span> <span class="text-secondary">(::1 do prefixo, convenção)</span></p>
                 {#if r.provaItens.size > 0}
                 <hr class="border-secondary">
-                <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">edit_note</span> Resumo rápido (modo prova)</h3>
+                <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">input</span> Resumo rápido (modo prova)</h3>
+                <div class="table-responsive">
                 <table class="table table-dark table-bordered table-sm resumo-table mb-0">
-                    <tbody>{#for item in r.provaItens}<tr><th title="{#when item.campo}{#is '📏 Prefixo'}Quantos bits iniciais formam a rede{#is '🔢 Endereços'}Total de endereços do bloco, 2 elevado aos bits de interface{#is '🌐 Rede'}Endereço com os bits de interface zerados{#is '🔌 Interface ID'}Bits depois do prefixo, que identificam a interface{/when}">{item.campo}</th><td class="font-monospace">{item.valor}</td></tr>{/for}</tbody>
+                    <tbody>{#for item in r.provaItens}<tr><th title="{#when item.campo}{#is 'Tipo'}Classificação do endereço pela faixa da IANA{#is 'Prefixo'}Quantos bits iniciais formam a rede{#is 'Endereços'}Total de endereços do bloco, 2 elevado aos bits de interface{#is 'Rede'}Endereço com os bits de interface zerados{#is 'Interface ID'}Bits depois do prefixo, que identificam a interface{/when}"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">{item.campo.iconeColuna}</span>{item.campo}</th><td class="font-monospace">{item.valor}</td></tr>{/for}</tbody>
                 </table>
+                </div>
                 {/if}
             </div>
         </div>
@@ -164,7 +166,7 @@
                     </tbody>
                 </table>
                 <hr class="border-secondary">
-                <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco (IPv6 / OSPFv3)</h3>
+                <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Comandos IOS de exemplo para usar este endereço no roteador, conforme o tipo; alguns tipos não se configuram em interface"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco (IPv6 / OSPFv3)</h3>
                 <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{r.ciscoOspfv3}</pre>
             </div>
         </div>
@@ -172,9 +174,9 @@
 
     {! ---------- 11. Delegação de prefixo ---------- !}
     <div class="card-tech p-3 mb-3">
-        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">account_tree</span> Delegação de prefixo — quantas sub-redes menores cabem</h3>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Quantos blocos /48, /56 e /64 cabem neste prefixo, os tamanhos usuais de entrega a clientes e LANs"><span class="material-symbols-outlined" translate="no" aria-hidden="true">account_tree</span> Delegação de prefixo — quantas sub-redes menores cabem</h3>
         <table class="table table-dark table-bordered table-sm interval-table mb-0">
-            <thead><tr><th title="Tamanho do bloco menor a delegar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Prefixo</th><th title="Número de blocos desse tamanho dentro do prefixo analisado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">grid_on</span>Quantas cabem</th><th title="Para quem esse tamanho costuma ser entregue"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">task_alt</span>Uso típico</th></tr></thead>
+            <thead><tr><th title="Tamanho do bloco menor a delegar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Prefixo</th><th title="Número de blocos desse tamanho dentro do prefixo analisado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">table_chart</span>Quantas cabem</th><th title="Para quem esse tamanho costuma ser entregue"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lightbulb</span>Uso típico</th></tr></thead>
             <tbody>
             {#for l in r.delegacao}
                 <tr><td class="font-monospace">{l.prefixo}</td><td class="fw-bold">{l.quantidade}</td><td class="small text-secondary">{l.uso}</td></tr>
@@ -207,7 +209,7 @@
         <div class="p-3 border-bottom border-secondary text-info fw-bold d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">table_chart</span> Tabela de referência de prefixos IPv6</div>
         <div class="p-3 table-responsive">
             <table class="table table-dark table-bordered table-sm ref-table mb-0">
-                <thead><tr><th title="Tamanho do prefixo de referência"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Prefixo</th><th title="Quantas LANs /64 cabem num bloco desse tamanho"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">grid_on</span>Sub-redes /64</th><th title="Total de endereços do bloco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Endereços</th><th title="Se o prefixo termina num múltiplo de 4 bits, alinhado a um nibble, ou no meio de um"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">border_vertical</span>Fronteira</th></tr></thead>
+                <thead><tr><th title="Tamanho do prefixo de referência"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Prefixo</th><th title="Quantas LANs /64 cabem num bloco desse tamanho"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">table_chart</span>Sub-redes /64</th><th title="Total de endereços do bloco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Endereços</th><th title="Se o prefixo termina num múltiplo de 4 bits, alinhado a um nibble, ou no meio de um"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">border_vertical</span>Fronteira</th></tr></thead>
                 <tbody>
                 {#for row in r.referencia}
                 <tr class="{#if row.atual}is-current{/if}">
@@ -236,7 +238,7 @@
 
     {! ---------- 15. Cyber segurança (GRC) ---------- !}
     <div class="card-tech p-4 shadow mb-3">
-        <h3 class="h6 text-danger mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">security</span> Cyber segurança (GRC + contexto)</h3>
+        <h3 class="h6 text-danger mb-3 d-flex align-items-center gap-2" title="Riscos e controles recomendados conforme o tipo e o tamanho deste endereço"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span> Cyber segurança (GRC + contexto)</h3>
         <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h3>
         <ul class="small mb-3 grc-list">{#for linha in r.grcResumo}<li>{linha}</li>{/for}</ul>
         <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span> Alertas e recomendações</h3>
@@ -273,7 +275,7 @@
                     <ul class="mb-0"><li><code translate="no">ip -6 addr</code> — endereços IPv6</li><li><code translate="no">ip -6 route</code> — rotas IPv6</li><li><code translate="no">ping6 2606:4700:4700::1111</code> — testar alcance</li></ul>
                 </div>
                 <div class="col-md-6">
-                    <h3 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">desktop_windows</span> Windows</h3>
+                    <h3 class="h6 text-info d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">computer</span> Windows</h3>
                     <ul class="mb-0"><li><code translate="no">netsh interface ipv6 show address</code></li><li><code translate="no">ping -6 ipv6.google.com</code></li><li><code translate="no">tracert -6 2606:4700:4700::1111</code></li></ul>
                 </div>
             </div>

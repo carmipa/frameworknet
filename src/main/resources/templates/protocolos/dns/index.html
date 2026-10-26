@@ -3,8 +3,8 @@
 {#description}DNS em profundidade: hierarquia de zonas, tipos de registro, resolução recursiva e iterativa, cache e TTL, e os ataques mais comuns contra a resolução de nomes.{/description}
 {#extraHead}
 <link rel="stylesheet" href="/protocolos/css/subnav.css?v=20260810">
-<link rel="stylesheet" href="/protocolos/dns/css/dns.css?v=20261022">
-<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261022">
+<link rel="stylesheet" href="/protocolos/dns/css/dns.css?v=20261026">
+<link rel="stylesheet" href="/protocolos/aprofundamento/css/aprofundamento.css?v=20261025">
 {/extraHead}
 {#menu}{#include shared/main_menu.html activeMainMenu='protocolos' /}{/menu}
 {#content}
@@ -20,23 +20,23 @@
             <span class="dns-ficha-item" role="listitem" title="Documentos base do DNS"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">menu_book</span><strong>RFC</strong> 1034/1035</span>
             <span class="dns-ficha-item" role="listitem" title="UDP para consulta comum, TCP para respostas grandes e transferência de zona"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">lan</span><strong>Transporte</strong> UDP/TCP 53</span>
             <span class="dns-ficha-item" role="listitem" title="Camada de aplicação no modelo TCP/IP"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">layers</span><strong>Camada</strong> Aplicação</span>
-            <span class="dns-ficha-item" role="listitem" title="Estrutura em árvore com delegação por zona"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">schema</span><strong>Modelo</strong> Hierárquico/distribuído</span>
-            <span class="dns-ficha-item" role="listitem" title="Extensão que assina as respostas contra falsificação"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">verified_user</span><strong>Integridade</strong> DNSSEC</span>
+            <span class="dns-ficha-item" role="listitem" title="Estrutura em árvore com delegação por zona"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">account_tree</span><strong>Modelo</strong> Hierárquico/distribuído</span>
+            <span class="dns-ficha-item" role="listitem" title="Extensão que assina as respostas contra falsificação"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">lock</span><strong>Integridade</strong> DNSSEC</span>
             <span class="dns-ficha-item" role="listitem" title="Consulta cifrada sobre TLS (853) ou HTTPS (443)"><span class="material-symbols-outlined aprof-ficha-icone" aria-hidden="true" translate="no">lock</span><strong>Privacidade</strong> DoT/DoH</span>
         </div>
     </header>
 
     <nav class="dns-indice" aria-label="Índice da página">
-        <a href="#conceitos" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Conceitos</a>
-        <a href="#diagrama" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama</a>
-        <a href="#resolucao" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Resolução</a>
-        <a href="#registros" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span> Registros</a>
-        <a href="#cabecalho" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> Cabeçalho (bits)</a>
-        <a href="#ataques" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques</a>
-        <a href="#mitigacoes" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</a>
-        <a href="#dnssec" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">verified_user</span> DNSSEC</a>
-        <a href="#laboratorio" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</a>
-        <a href="#troubleshooting" data-indice-link><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</a>
+        <a href="#conceitos" data-indice-link title="Como o DNS funciona por dentro"><span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span> Conceitos</a>
+        <a href="#diagrama" data-indice-link title="Diagrama da resolução recursiva"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Diagrama</a>
+        <a href="#resolucao" data-indice-link title="Do resolver ao servidor autoritativo, passo a passo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">account_tree</span> Resolução</a>
+        <a href="#registros" data-indice-link title="A, AAAA, MX, NS, TXT e os demais tipos"><span class="material-symbols-outlined" aria-hidden="true" translate="no">list_alt</span> Registros</a>
+        <a href="#cabecalho" data-indice-link title="Decomposição binária do cabeçalho DNS"><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> Cabeçalho (bits)</a>
+        <a href="#ataques" data-indice-link title="Spoofing, cache poisoning e companhia"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_bad</span> Ataques</a>
+        <a href="#mitigacoes" data-indice-link title="DNSSEC, aleatorização de porta, DoT/DoH"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_good</span> Defesas</a>
+        <a href="#dnssec" data-indice-link title="A cadeia de confiança do DNSSEC"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> DNSSEC</a>
+        <a href="#laboratorio" data-indice-link title="Comandos dig para praticar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</a>
+        <a href="#troubleshooting" data-indice-link title="Sintomas comuns e como ler a saída"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</a>
     </nav>
 
     <section id="conceitos" class="dns-secao">
@@ -88,10 +88,10 @@
             <table class="table table-dark table-sm align-middle mb-0 dns-tabela">
                 <thead>
                     <tr>
-                        <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo</th>
+                        <th title="Sigla do tipo de registro, como aparece no arquivo de zona e na saída do dig"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo</th>
                         <th title="O que esse registro informa a quem consulta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">data_object</span>Função</th>
-                        <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lightbulb</span>Exemplo</th>
-                        <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Nota</th>
+                        <th title="Uma linha de exemplo: nome, TTL em segundos, classe, tipo e valor"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lightbulb</span>Exemplo</th>
+                        <th title="Cuidado ou detalhe que costuma causar erro de configuração"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">notes</span>Nota</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -122,7 +122,7 @@
                 <article class="card-tech p-3 h-100 dns-ataque dns-ataque-{at.gravidadeCor}">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                         <h3 class="h4 dns-ataque-titulo mb-0">
-                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">{#if at.gravidadeCor == 'danger'}local_fire_department{#else if at.gravidadeCor == 'warning'}warning{#else if at.gravidadeCor == 'info'}info{#else}report{/if}</span>
+                            <span class="material-symbols-outlined" aria-hidden="true" translate="no">{#if at.gravidadeCor == 'danger'}gpp_bad{#else if at.gravidadeCor == 'warning'}warning{#else if at.gravidadeCor == 'info'}info{#else}bug_report{/if}</span>
                             {at.nome}
                         </h3>
                         <span class="badge bg-dark border border-{at.gravidadeCor} text-{at.gravidadeCor}">{at.gravidade}</span>
@@ -139,7 +139,7 @@
     </section>
 
     <section id="mitigacoes" class="dns-secao">
-        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield</span> Defesas</h2>
+        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">gpp_good</span> Defesas</h2>
         <p class="small text-secondary">
             A coluna "não cobre" existe de propósito: nenhuma defesa resolve tudo, e tratar uma como bala de
             prata é como o furo entra.
@@ -149,7 +149,7 @@
                 <thead>
                     <tr>
                         <th title="Nome da proteção ou da boa prática"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lock</span>Defesa</th>
-                        <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">menu_book</span>Como funciona</th>
+                        <th title="O mecanismo que faz a proteção funcionar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">menu_book</span>Como funciona</th>
                         <th title="Os ataques ou riscos que a proteção de fato bloqueia"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">check_circle</span>Cobre</th>
                         <th title="O que continua possível mesmo com a proteção ativa: é o limite dela"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">cancel</span>Não cobre</th>
                     </tr>
@@ -169,7 +169,7 @@
     </section>
 
     <section id="dnssec" class="dns-secao">
-        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">verified_user</span> DNSSEC: a cadeia de confiança</h2>
+        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> DNSSEC: a cadeia de confiança</h2>
         <p class="small text-secondary">
             Cada elo assina o seguinte, da raiz até o seu registro. Zona sem cadeia (sem DS no pai) é entregue
             como não assinada, sem o bit AD; o resolver validante só recusa (SERVFAIL) quando a cadeia existe e não confere.
@@ -188,7 +188,7 @@
     </section>
 
     <section id="laboratorio" class="dns-secao">
-        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</h2>
+        <h2 class="h3 dns-secao-titulo" title="Exercícios com o dig para ver a resolução, os registros e o DNSSEC na prática"><span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span> Laboratório</h2>
         <div class="row g-3">
             {#for lab in conteudo.laboratorios}
             <div class="col-12 col-xl-6">
@@ -209,7 +209,7 @@
     </section>
 
     <section id="troubleshooting" class="dns-secao">
-        <h2 class="h3 dns-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</h2>
+        <h2 class="h3 dns-secao-titulo" title="Falhas comuns de resolução de nomes, a causa provável de cada uma e como confirmar"><span class="material-symbols-outlined" aria-hidden="true" translate="no">build</span> Troubleshooting</h2>
         <div class="row g-3">
             {#for diag in conteudo.diagnosticos}
             <div class="col-12 col-xl-6">
@@ -221,7 +221,8 @@
                     <p class="small mb-2"><span class="dns-rotulo dns-rotulo-risco">Causa provável</span> {diag.causaProvavel}</p>
                     <pre class="dns-codigo" id="dns-diag-{diag_count}" translate="no">{diag.comando}</pre>
                     <div class="d-flex justify-content-end mb-2">
-                        <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-copiar="dns-diag-{diag_count}">
+                        <button type="button" class="aed-btn aed-btn-neutral btn-sm" data-copiar="dns-diag-{diag_count}"
+                                title="Copiar comando de diagnóstico para a área de transferência">
                             <span class="material-symbols-outlined" aria-hidden="true" translate="no">content_copy</span> Copiar
                         </button>
                     </div>

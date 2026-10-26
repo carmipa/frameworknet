@@ -154,9 +154,9 @@
       ],
       "dicas_colunas": [
         "Classificação da entrada; entre parênteses, o nome do estado exibido pelo Linux",
-        "",
+        "O que levou a entrada a existir ou a chegar a esse estado",
         "Se a entrada some ou é revalidada sozinha com o tempo, sem ação do administrador",
-        ""
+        "Como interpretar a entrada nesse estado ao diagnosticar a comunicação com o vizinho"
       ],
       "linhas": [
         [

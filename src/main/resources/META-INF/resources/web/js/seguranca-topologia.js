@@ -36,7 +36,7 @@
                     primaryBorderColor: "#2dd4bf",
                     lineColor: "#5b6679",
                     fontFamily: "Inter Tight, system-ui, sans-serif",
-                    fontSize: "14px"
+                    fontSize: "0.875rem"
                 }
             });
         } catch (e) {

@@ -29,29 +29,39 @@
                     title="Calcula rede, broadcast, faixa de hosts e máscara a partir de um IPv4 e do prefixo">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span><span>CIDR</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="mask" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="mask" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Converta máscara decimal ↔ CIDR e visualize os bits de rede/host">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span><span>Máscara</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="wildcard" role="tab">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">grid_view</span><span>Wildcard</span>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="wildcard" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Calcule/valide a máscara curinga usada em ACL, OSPF e EIGRP">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">table_chart</span><span>Wildcard</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="autoip" role="tab"
                     data-bs-toggle="tooltip" data-bs-placement="top"
                     title="Descobre automaticamente o melhor prefixo para um endereço IPv4">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">auto_fix_high</span><span>Auto CIDR</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dominio" role="tab">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">language</span><span>Domínio</span>
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dominio" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Resolva um domínio/hostname para IP e analise a rede resultante">
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">translate</span><span>Domínio</span>
             </button>
             <button type="button" class="aed-mode-btn tab-trigger" data-tab="ipv6" role="tab"
                     data-bs-toggle="tooltip" data-bs-placement="top"
                     title="Expande, comprime e analisa endereços IPv6">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">filter_6</span><span>IPv6</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="comparador" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="comparador" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Compare o mesmo IP sob dois prefixos CIDR lado a lado">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">compare_arrows</span><span>Comparador</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="calculadora" role="tab">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="calculadora" role="tab"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Divida um bloco em sub-redes e veja quantas redes cabem (ex.: /21 em /24 = 8)">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span><span>Calculadora</span>
             </button>
         </div>
@@ -80,7 +90,7 @@
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar resultado
             </button>
             <a id="btn-limpar-tela" href="/analise?tab={activeTabPre}" class="aed-btn aed-btn-danger">
-                <span class="material-symbols-outlined" translate="no" aria-hidden="true">delete_sweep</span> Limpar Tela
+                <span class="material-symbols-outlined" translate="no" aria-hidden="true">ink_eraser</span> Limpar Tela
             </a>
         </div>
         {#if textoCopia}
@@ -91,7 +101,8 @@
     {#if comparadorOnly && comparadorCards}
     <div class="aed-card card-tech p-4 shadow mt-4">
         <span class="aed-eyebrow">Comparador</span>
-        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);">
+        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);"
+            title="O mesmo endereço recortado pelos dois prefixos, lado a lado, para ver o efeito de mudar a máscara">
             <span class="material-symbols-outlined text-warning" translate="no" aria-hidden="true">compare_arrows</span>
             Comparador — IP {comparadorIp}
         </h2>
@@ -144,7 +155,7 @@
 
     <div class="card-tech p-3 shadow mt-4 history-box">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-            <h2 class="h6 text-info mb-0 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico deste navegador</h2>
+            <h2 class="h6 text-info mb-0 d-flex align-items-center gap-2" title="Suas consultas ficam só neste navegador e somem ao fechá-lo; outras pessoas não as veem"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico deste navegador</h2>
             <form method="GET" action="/analise" class="d-flex flex-wrap align-items-center gap-2 small">
                 <input type="hidden" name="tab" value="{activeTabPre}">
                 <label class="text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> Por página</label>
@@ -155,7 +166,7 @@
                     <option value="20" {#if historyLimitPre == '20'}selected{/if}>20</option>
                 </select>
                 <input type="hidden" name="history_page" value="{historyPage}">
-                <button type="submit" class="btn btn-sm btn-outline-info"><span class="material-symbols-outlined" translate="no" aria-hidden="true">check</span> Aplicar</button>
+                <button type="submit" class="btn btn-sm btn-outline-info" title="Recarrega a tabela do histórico mostrando a quantidade de linhas escolhida ao lado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">check</span> Aplicar</button>
             </form>
         </div>
         <p class="small text-secondary mb-2">Página {historyPage} de {totalHistoryPages} · {historyPageItems.size} registro(s) nesta página</p>
@@ -163,7 +174,7 @@
             <table class="table table-dark table-sm table-bordered mb-0">
                 <thead>
                 <tr class="small text-secondary">
-                    <th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span><span class="visually-hidden">Ação</span></th><th><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">calendar_month</span>Data</th><th title="Qual aba da análise foi usada na consulta, como CIDR, máscara ou wildcard"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tune</span>Modo</th><th title="O endereço IPv4 ou IPv6 que foi digitado na consulta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">input</span>Entrada</th><th title="O endereço de rede calculado a partir da entrada e do prefixo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede</th><th title="Nível de risco do tamanho do bloco: quanto menor o prefixo, maior a rede e o risco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">topic</span>Tema</th>
+                    <th title="Botão que reabre a análise daquela linha com os mesmos dados"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">touch_app</span><span class="visually-hidden">Ação</span></th><th title="Dia e hora da consulta, no fuso UTC (3 horas à frente do horário de Brasília)"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">calendar_month</span>Data</th><th title="Qual aba da análise foi usada na consulta, como CIDR, máscara ou wildcard"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tune</span>Modo</th><th title="O endereço IPv4 ou IPv6 que foi digitado na consulta"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">input</span>Entrada</th><th title="O endereço de rede calculado a partir da entrada e do prefixo"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede</th><th title="Nível de risco do tamanho do bloco: quanto menor o prefixo, maior a rede e o risco"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">topic</span>Tema</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -190,7 +201,7 @@
             {/if}
             <span class="small text-secondary fw-bold">Página {historyPage}/{totalHistoryPages}</span>
             {#if hasNextHistory}
-            <a class="aed-btn aed-btn-neutral btn-sm" href="/analise?tab={activeTabPre}&history_limit={historyLimitPre}&history_page={historyPage + 1}">Próxima <span class="material-symbols-outlined" translate="no" aria-hidden="true">chevron_right</span></a>
+            <a class="aed-btn aed-btn-neutral btn-sm" href="/analise?tab={activeTabPre}&history_limit={historyLimitPre}&history_page={historyPage + 1}">Próxima <span class="material-symbols-outlined" translate="no" aria-hidden="true">arrow_forward</span></a>
             {/if}
         </div>
     </div>

@@ -9,13 +9,13 @@
     },
     {
       "titulo": "Autenticação do servidor por PKI",
-      "icone": "workspace_premium",
+      "icone": "verified",
       "texto": "O servidor apresenta um certificado que amarra a chave pública dele ao nome do domínio, assinado por uma Autoridade Certificadora (CA) em que o navegador já confia. O cliente verifica a assinatura subindo a cadeia até uma CA raiz do seu truststore. Sem uma CA confiável na ponta, não há confiança.",
       "destaque": "A confiança não está no site — está na CA. Instalar uma CA raiz maliciosa no dispositivo é o que transforma um MITM em invisível (é o que um proxy corporativo faz, com consentimento)."
     },
     {
       "titulo": "Forward secrecy: gravar hoje não decifra depois",
-      "icone": "enhanced_encryption",
+      "icone": "lock",
       "texto": "As chaves de sessão nascem de uma troca Diffie-Hellman efêmera (ECDHE) e são descartadas ao fim. A chave privada do certificado só ASSINA a negociação; ela não cifra os dados. Por isso, capturar o tráfego hoje e roubar a chave do servidor amanhã não decifra o que foi gravado. No TLS 1.3 isso é obrigatório — o RSA estático saiu.",
       "destaque": "É a diferença entre 'a chave do servidor vazou' e 'todas as sessões passadas vazaram': com forward secrecy, a segunda não decorre da primeira."
     },

@@ -59,7 +59,7 @@
     },
     {
       "titulo": "Reverse proxy é a fronteira",
-      "icone": "shield",
+      "icone": "lock",
       "texto": "O padrão sólido é: só a 443 aberta na borda, atendida por um reverse proxy (Nginx, Caddy, Traefik) ou WAF, que termina o TLS e repassa para a aplicação numa porta interna (8080, 3000) que não é acessível de fora. A aplicação nunca fica exposta diretamente.",
       "destaque": "Um ponto de entrada, cifrado, com registro e filtragem"
     },

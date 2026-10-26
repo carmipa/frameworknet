@@ -17,7 +17,7 @@
 </div>
 
 <div class="card-tech p-3 mb-3">
-    <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Calculadora visual de hosts</h2>
+    <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Arraste a barra e veja o menor prefixo que comporta essa quantidade de máquinas"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Calculadora visual de hosts</h2>
     <div class="row g-2 align-items-center">
         <div class="col-lg-5">
             <label for="mask_hosts_slider" class="form-label small text-secondary mb-1"><span class="material-symbols-outlined" aria-hidden="true" translate="no">group</span> Hosts necessários</label>
@@ -69,7 +69,9 @@
         </select>
     </div>
     <div class="col-lg-3 tab-actions d-grid gap-2">
-        <button type="submit" name="modo" value="mask" class="aed-btn aed-btn-execute w-100">
+        <button type="submit" name="modo" value="mask" class="aed-btn aed-btn-execute w-100"
+                data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Converter a máscara em CIDR, wildcard e número de hosts">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">play_arrow</span> Executar
         </button>
     </div>

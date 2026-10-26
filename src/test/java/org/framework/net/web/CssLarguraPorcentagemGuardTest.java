@@ -334,8 +334,8 @@ class CssLarguraPorcentagemGuardTest {
     @Test
     void tooltipCanonicoEhCopiaFiel() throws Exception {
         conferirCopias(new String[][] {
-            {ESTATICOS.resolve(CANONICO_CSS).toString(), "8109340fdfda78a213d84b16c9415dd65f81761aec7e91406d348009c7f5a62f"},
-            {ESTATICOS.resolve("web/js/dica.js").toString(), "6b939bdcaaa594e3d1b1d771fdc4acd080b403df20009457fbb8d5ee9639ba38"},
+            {ESTATICOS.resolve(CANONICO_CSS).toString(), "fd2f92750aeff05e76c6c9b5a21fbe82cd7a10e25560942887315cf15941a309"},
+            {ESTATICOS.resolve("web/js/dica.js").toString(), "cf7265cea8b238bd398ee211077d268568f1dfff047ce530cd19e46981855872"},
         });
     }
 
@@ -349,7 +349,7 @@ class CssLarguraPorcentagemGuardTest {
         org.junit.jupiter.api.Assumptions.assumeTrue(Files.exists(Path.of(".git")),
                 "fora de um checkout (build da imagem): cópias da varredura não conferidas aqui");
         conferirCopias(new String[][] {
-            {"scripts/dica-varredura.js", "892a8517e82bacf63dd3baa6d43833fb717a212bb3b3c4715b43165dcb6494dd"},
+            {"scripts/dica-varredura.js", "ba0a8accd4f5cac68873f35ce7b74e606109067b908c059a4985752389ececd0"},
             {"scripts/dica-rotas.spec.mjs", "69913c2fdea9e2a4b266311073e10ae20b78c8ae4933450bf4b358eb12ce91d8"},
         });
     }

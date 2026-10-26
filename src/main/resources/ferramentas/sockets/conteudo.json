@@ -80,7 +80,7 @@
       ],
       "dicas_colunas": [
         "Opção de linha de comando; as letras podem ser combinadas num só argumento, como em -tulpn",
-        "",
+        "Palavra ou protocolo de que a letra da opção deriva",
         "O que muda na listagem de sockets ao usar a opção"
       ],
       "linhas": [
@@ -136,7 +136,7 @@
       "dicas_colunas": [
         "Se o netcat atua como cliente que conecta ou como servidor que escuta, e a variação do teste",
         "Linha de comando completa; troque host e porta pelos do seu cenário",
-        ""
+        "Significado das opções usadas e resultado esperado do comando"
       ],
       "linhas": [
         [
@@ -174,8 +174,8 @@
         "O que costuma indicar"
       ],
       "dicas_colunas": [
-        "",
-        "",
+        "Nome do estado TCP como aparece na listagem do ss ou do netstat",
+        "Fase do ciclo de vida da conexão TCP que o estado representa",
         "Interpretação usual ao encontrar sockets nesse estado, sobretudo em grande quantidade"
       ],
       "linhas": [

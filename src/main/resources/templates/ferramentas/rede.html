@@ -34,12 +34,12 @@
                    autocomplete="off" aria-label="Buscar tarefa ou comando"
                    title="Digite uma tarefa ou um comando, ex.: ver meu ip, ss, quem usa esta porta; acentos e maiúsculas são ignorados">
             <button type="button" class="aed-btn aed-btn-neutral btn-sm" id="rede-limpar-busca" data-bs-trigger="hover">
-                <span class="material-symbols-outlined" aria-hidden="true" translate="no">delete_sweep</span> Limpar
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">ink_eraser</span> Limpar
             </button>
         </div>
-        <div class="rede-chips" role="group" aria-label="Filtrar por categoria">
+        <div class="rede-chips" role="group" aria-label="Filtrar por categoria" data-dica-grupo="Mostra só as tarefas da categoria escolhida; Todas mostra a lista inteira de novo." data-dica-grupo-rotulo="os filtros">
             <button type="button" class="rede-chip is-active" data-cat="todas" aria-pressed="true">
-                <span class="material-symbols-outlined" aria-hidden="true" translate="no">apps</span> Todas
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">category</span> Todas
             </button>
             {#for cat in categorias}
             <button type="button" class="rede-chip rede-cat-{cat.id}" data-cat="{cat.id}" aria-pressed="false">
@@ -76,7 +76,7 @@
                     <div class="rede-col-cab">
                         <span class="rede-os {plat.classe}"><span class="material-symbols-outlined" aria-hidden="true" translate="no">{plat.icone}</span> {plat.rotulo}</span>
                         <span class="rede-shell">{plat.shell}</span>
-                        {#if plat.admin}<span class="rede-badge rede-badge-admin" title="Precisa de privilégio elevado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">shield_person</span> admin/root</span>{/if}
+                        {#if plat.admin}<span class="rede-badge rede-badge-admin" title="Precisa de privilégio elevado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span> admin/root</span>{/if}
                     </div>
                     <div class="rede-cmd-linha">
                         <code class="rede-code" translate="no">{plat.comando}</code>
@@ -102,7 +102,7 @@
                     <div class="rede-saida-bloco">
                         <div class="rede-saida-cab"><span class="rede-os {plat.classe}"><span class="material-symbols-outlined" aria-hidden="true" translate="no">{plat.icone}</span> {plat.rotulo}</span> <span class="rede-simulado">saída simulada</span></div>
                         <pre class="rede-pre" translate="no">{plat.saida}</pre>
-                        <div class="rede-campos">
+                        <div class="rede-campos" data-dica-grupo="Toque ou clique num trecho destacado para ver, logo abaixo, o que ele significa." data-dica-grupo-rotulo="os campos da saída" data-dica-excecao="campos de uma saída de comando: um &quot;?&quot; para o bloco; cada campo mostra o significado logo abaixo ao ser escolhido">
                             {#for campo in plat.campos}
                             <button type="button" class="rede-campo" data-icone-excecao="trecho da saída do comando: o texto é o próprio dado" data-sig="{campo.significado}" title="{campo.significado}">
                                 <span class="rede-campo-rot">{campo.rotulo}</span>
@@ -174,7 +174,7 @@
     </section>
 
     <p class="rede-rodape-aviso">
-        <span class="material-symbols-outlined" aria-hidden="true" translate="no">verified_user</span>
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">lock</span>
         Todas as saídas desta página são <strong>exemplos simulados</strong> para estudo. O framework nunca executa
         comandos no seu computador nem faz sondagens contra alvos reais.
     </p>

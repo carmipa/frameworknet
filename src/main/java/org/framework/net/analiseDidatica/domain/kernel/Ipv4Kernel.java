@@ -872,15 +872,15 @@ public class Ipv4Kernel {
                 + "Gateway sugerido: " + gatewaySugerido;
 
         List<Map<String, Object>> resumoProvaItens = List.of(
-                resumoItem("🌐 IP informado", fmtIp(ipI)),
-                resumoItem("📏 Máscara/CIDR", c.get("mask") + " /" + cidr),
-                resumoItem("🧭 Rede", fmtIp(rI)),
-                resumoItem("📣 Broadcast", broadExibicao),
-                resumoItem("🧩 Wildcard", (String) c.get("wildcard")),
-                resumoItem("✅ Hosts úteis", hostsUteisExibicao),
-                resumoItem("🔐 Tipo de IP", ipTipoPrivacidade),
-                resumoItem("📌 Papel do IP", ipPapel),
-                resumoItem("🚪 Gateway sugerido", gatewaySugerido)
+                resumoItem("IP informado", fmtIp(ipI)),
+                resumoItem("Máscara/CIDR", c.get("mask") + " /" + cidr),
+                resumoItem("Rede", fmtIp(rI)),
+                resumoItem("Broadcast", broadExibicao),
+                resumoItem("Wildcard", (String) c.get("wildcard")),
+                resumoItem("Hosts úteis", hostsUteisExibicao),
+                resumoItem("Tipo de IP", ipTipoPrivacidade),
+                resumoItem("Papel do IP", ipPapel),
+                resumoItem("Gateway sugerido", gatewaySugerido)
         );
 
         List<Map<String, Object>> segurancaDicas = montarSegurancaDicas(

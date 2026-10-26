@@ -59,13 +59,13 @@
     },
     {
       "titulo": "JKS/PKCS12 e keytool: o mundo Java",
-      "icone": "verified_user",
+      "icone": "lock",
       "texto": "Aplicações Java (Tomcat, Quarkus, servidores em geral) guardam certificados e chaves em um keystore, manipulado pela ferramenta keytool. O formato JKS era o proprietário histórico; a partir do Java 9 o padrão passou a ser PKCS12, interoperável com openssl. A conversão clássica é importar um .pfx para dentro de um keystore com keytool -importkeystore. Cada entrada tem um alias, e o keystore inteiro e o material têm senhas.",
       "destaque": "Java lê PKCS12 direto; JKS é o formato antigo."
     },
     {
       "titulo": "O que muda e o que não muda na conversão",
-      "icone": "autorenew",
+      "icone": "refresh",
       "texto": "Converter formato NÃO reassina, não renova e não altera o conteúdo criptográfico: a chave pública, a assinatura da CA, o serial e as datas continuam idênticos. Muda apenas a embalagem (Base64 x binário) e o agrupamento (avulso x container com/sem chave). Por isso o erro típico não é 'certificado inválido', e sim 'formato inesperado' quando você alimenta uma ferramenta com a embalagem errada. No handshake TLS, o que trafega na rede é sempre DER; PEM/PFX/P7B são formas de armazenar e transportar em disco.",
       "destaque": "Conversão troca a embalagem, nunca o conteúdo assinado."
     }

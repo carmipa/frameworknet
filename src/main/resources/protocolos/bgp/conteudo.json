@@ -33,7 +33,7 @@
     },
     {
       "titulo": "NEXT_HOP e a armadilha do iBGP",
-      "icone": "alt_route",
+      "icone": "route",
       "texto": "Ao repassar uma rota por eBGP, o roteador põe a si mesmo como NEXT_HOP. Ao repassar por iBGP, ele preserva o NEXT_HOP original — que costuma ser o IP do roteador do OUTRO AS, um endereço que o interior da sua rede não conhece. O par iBGP recebe a rota, não consegue resolver o next hop e não a instala.",
       "destaque": "Conserto canônico: 'neighbor <ip> next-hop-self' nas sessões iBGP da borda. O sintoma é rota visível no BGP e ausente na tabela de roteamento."
     }

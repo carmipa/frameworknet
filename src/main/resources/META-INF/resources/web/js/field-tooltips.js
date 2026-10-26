@@ -2,30 +2,33 @@
  * Adaptador do tooltip compartilhado para as dicas que o site escreve como atributo title.
  *
  * PROPÓSITO DE NEGÓCIO: o site tem centenas de dicas escritas como title="…" nos templates, nos JSON de
- * conteúdo e no JS que monta tela. Até 22/10/2026 elas viravam Tooltip do Bootstrap, que só põe o
- * aria-describedby enquanto a dica está aberta (o leitor de tela não ouvia a dica no foco), não tem gatilho
- * para o toque em título e cabeçalho de coluna, e dependia do Bootstrap carregar. Este arquivo converte cada
- * title na marcação do componente canônico (web/css/dica.css + web/js/dica.js, copiados sem edição): um
- * <span role="tooltip" class="dica__texto"> com id, ligado ao elemento por aria-describedby permanente, e o
- * comportamento (foco, hover, toque, Esc, posição) fica todo com o dica.js.
+ * conteúdo e no JS que monta tela. Este arquivo converte cada title na marcação do componente compartilhado
+ * (web/css/dica.css + web/js/dica.js, copiados sem edição) e deixa um "?" à vista em toda dica, para a pessoa
+ * saber que ela existe: a marca "?" ao lado do botão, link ou aba com texto (fora do Tab, porque o foco do
+ * próprio controle já abre a dica), e o gatilho "?" (um botão) junto do campo, do título, da coluna e do texto que
+ * não recebe foco. O comportamento (foco, mouse, toque, Esc, posição) fica todo com o dica.js.
  *
  * INVARIANTES DO DOMÍNIO:
- *  - o rótulo visível continua sendo o nome acessível: a dica entra como DESCRIÇÃO, nunca como nome; botão
- *    só com ícone, cujo único nome era o title, ganha aria-label com o mesmo texto antes do title sair;
+ *  - a .dica ENVOLVE o controle; o texto da dica nunca fica dentro do botão, do link ou do campo (entraria no nome
+ *    que o leitor de tela lê) e nunca fica fora de uma .dica;
+ *  - toda dica tem um "?" à vista, menos a do controle só com ícone (lá a dica é o próprio nome) e a dos itens de um
+ *    grupo marcado com data-dica-grupo, que ganha UM "?" para o grupo antes dele (o contêiner leva
+ *    data-dica-excecao com o motivo); item dentro de um contêiner com data-dica-excecao sem grupo segue a exceção
+ *    registrada naquele contêiner (o "?" fica no título dele);
+ *  - o rótulo visível continua sendo o nome acessível: a dica entra como DESCRIÇÃO; botão só com ícone, cujo único
+ *    nome era o title, ganha aria-label com o mesmo texto antes do title sair;
  *  - dica igual ao rótulo não é dica: vira só o nome, sem balão repetindo o que já está escrito;
+ *  - menu suspenso do Bootstrap acha o menu pelo irmão do botão: ali a .dica (marca + texto) entra logo depois do
+ *    botão, sem envolvê-lo; nos demais controles, o envoltório mantém o desenho (bloco quando o controle ocupava a
+ *    linha, em linha quando não);
  *  - o title sai depois da conversão (sem balão nativo duplicado), e o texto fica em data-dica-texto para o
- *    balão ser refeito se o JS da página trocar o conteúdo do elemento;
- *  - nada é embrulhado onde o embrulho quebraria o comportamento: menu suspenso (o Bootstrap acha o menu pelo
- *    irmão do botão), grupo de entrada/botões e item de lista recebem a classe .dica no próprio elemento;
- *    cabeçalho de coluna, rótulo e título recebem o gatilho "?" do canônico, porque não recebem foco;
- *  - texto copiado pela página (botões "Copiar") não leva o texto das dicas: use FieldTooltips.textoLimpo;
- *  - título não ganha dica inventada: o "?" ao lado do h1 com a meta description saiu em 24/10/2026 (o título e o
- *    texto visível já explicam a página; a dica repetia e punha uma parada a mais no Tab).
+ *    balão ser atualizado se o JS da página regravar o title;
+ *  - texto copiado pela página (botões "Copiar") não leva o texto das dicas: use FieldTooltips.textoLimpo.
  *
- * COMPORTAMENTO EM CASO DE FALHA: elemento que não dá para converter com segurança (iframe, svg, abbr,
- * option, imagem) fica com o title nativo, que continua funcionando no mouse; conteúdo que chega depois
- * (htmx, JS de tela) é convertido pelo MutationObserver e por FieldTooltips.init(escopo); sem o dica.js
- * carregado, o balão não abre, mas o aria-describedby continua descrevendo o elemento.
+ * COMPORTAMENTO EM CASO DE FALHA: elemento que não dá para converter com segurança (iframe, svg, abbr, option,
+ * imagem) fica com o title nativo, que continua funcionando no mouse; conteúdo que chega depois (htmx, JS de
+ * tela) é convertido pelo MutationObserver e por FieldTooltips.init(escopo); sem o dica.js carregado, o balão não
+ * abre, mas o aria-describedby continua descrevendo o elemento.
  */
 (function (w) {
     "use strict";
@@ -34,10 +37,9 @@
         + "input[type=hidden], .dica__texto, .dica__texto *, [data-dica-nativa]";
     const CAMPO = "input:not([type=hidden]), select, textarea";
     const FOCAVEL = "a[href], button, summary, " + CAMPO
-        + ", [tabindex]:not([tabindex='-1']), [role=button], [role=tab], [role=menuitem], [role=switch]";
+        + ", [tabindex]:not([tabindex='-1']), [role=button], [role=tab], [role=menuitem], [role=switch], [role=radio]";
     const SO_GATILHO = "th, td, label, legend, caption, h1, h2, h3, h4, h5, h6, dt, dd, li";
-    const NO_PROPRIO = "[data-bs-toggle=dropdown], .dropdown-toggle, .dropdown-item, .nav-link, .list-group-item, "
-        + ".input-group > *, .btn-group > *, .btn-group-vertical > *, li > *, tr > *";
+    const IRMAO = "[data-bs-toggle=dropdown], .dropdown-toggle";
     const SVG_AJUDA = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" '
         + 'fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 '
         + '1.7M12 17h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
@@ -52,19 +54,19 @@
     function textoVisivel(no) {
         const copia = no.cloneNode(true);
         copia.querySelectorAll(
-            ".material-symbols-outlined, [aria-hidden='true'], .dica__texto, .dica__gatilho, select, option, input, "
-            + "textarea, .visually-hidden-focusable"
+            ".material-symbols-outlined, [aria-hidden='true'], .dica__texto, .dica__gatilho, .dica__marca, select, "
+            + "option, input, textarea, .visually-hidden-focusable"
         ).forEach((n) => n.remove());
         return limpo(copia.textContent);
     }
 
-    /** Texto do elemento para copiar ou comparar, sem o texto das dicas que este adaptador pôs dentro dele. */
+    /** Texto do elemento para copiar ou comparar, sem o texto das dicas que este adaptador pôs junto dele. */
     function textoLimpo(no) {
         if (!no) {
             return "";
         }
         const copia = no.cloneNode(true);
-        copia.querySelectorAll(".dica__texto, .dica__gatilho").forEach((n) => n.remove());
+        copia.querySelectorAll(".dica__texto, .dica__gatilho, .dica__marca").forEach((n) => n.remove());
         return copia.textContent;
     }
 
@@ -83,6 +85,11 @@
         }
     }
 
+    /**
+     * O texto da dica. Oculto (aria-hidden) quando ele mora ao lado de um controle: o leitor de tela já o lê como
+     * descrição do controle (aria-describedby lê alvo oculto), e assim ele não aparece de novo na leitura corrida
+     * nem vira filho solto de uma lista de abas.
+     */
     function novoBalao(texto, oculto) {
         const balao = document.createElement("span");
         balao.id = "d-auto-" + (++sequencia);
@@ -90,12 +97,35 @@
         balao.className = "dica__texto";
         balao.setAttribute("translate", "yes");
         if (oculto) {
-            // Dentro do próprio botão/link: fora do nome acessível (o nome é o rótulo), mas ainda lido como
-            // descrição — aria-describedby lê alvo com aria-hidden.
             balao.setAttribute("aria-hidden", "true");
         }
         balao.textContent = texto;
         return balao;
+    }
+
+    function novaMarca() {
+        const marca = document.createElement("span");
+        marca.className = "dica__marca";
+        marca.setAttribute("aria-hidden", "true");
+        marca.innerHTML = SVG_AJUDA;
+        return marca;
+    }
+
+    function novoGatilho(rotulo, balao) {
+        const gatilho = document.createElement("button");
+        gatilho.type = "button";
+        gatilho.className = "dica__gatilho";
+        gatilho.setAttribute("aria-label", "Ajuda sobre " + rotulo);
+        gatilho.innerHTML = SVG_AJUDA;
+        gatilho.setAttribute("aria-describedby", balao.id);
+        return gatilho;
+    }
+
+    function novoEnvoltorio(extra) {
+        const envoltorio = document.createElement("span");
+        envoltorio.className = extra ? "dica " + extra : "dica";
+        envoltorio.setAttribute("data-dica-adaptador", "");
+        return envoltorio;
     }
 
     function descrever(el, id) {
@@ -111,110 +141,126 @@
         return textoVisivel(el) || limpo(el.getAttribute("aria-label")) || "este item";
     }
 
-    /** Padrão 3 do canônico: gatilho "?" no fim do elemento que não recebe foco (título, coluna, rótulo). */
+    /** Padrão 3: gatilho "?" no fim do elemento que não recebe foco (título, coluna, rótulo, selo, item de ficha). */
     function comGatilho(el, texto) {
-        const envoltorio = document.createElement("span");
-        envoltorio.className = "dica";
-        envoltorio.setAttribute("data-dica-adaptador", "");
-        const gatilho = document.createElement("button");
-        gatilho.type = "button";
-        gatilho.className = "dica__gatilho";
-        gatilho.setAttribute("aria-label", "Ajuda sobre " + rotuloCurto(el));
-        gatilho.innerHTML = SVG_AJUDA;
+        const envoltorio = novoEnvoltorio();
         const balao = novoBalao(texto, false);
-        gatilho.setAttribute("aria-describedby", balao.id);
-        envoltorio.appendChild(gatilho);
+        envoltorio.appendChild(novoGatilho(rotuloCurto(el), balao));
         envoltorio.appendChild(balao);
         el.appendChild(envoltorio);
     }
 
     /**
-     * Ícone de ajuda solto (ex.: "info" com title dentro de um rótulo): vira o gatilho "?" do canônico — um
-     * botão alcançável por Tab e pelo toque, com o MESMO ícone dentro, nomeado "Ajuda sobre <rótulo>".
+     * Ícone de ajuda solto (ex.: "info" com title dentro de um rótulo): vira o gatilho "?" — um botão alcançável
+     * por Tab e pelo toque, com o MESMO ícone dentro, nomeado "Ajuda sobre <rótulo>".
      */
     function iconeVirandoGatilho(el, texto) {
         const dono = el.parentElement && el.parentElement.closest("label, th, legend, caption, h1, h2, h3, h4, h5, h6, dt");
-        const envoltorio = document.createElement("span");
-        envoltorio.className = "dica";
-        envoltorio.setAttribute("data-dica-adaptador", "");
-        const gatilho = document.createElement("button");
-        gatilho.type = "button";
-        gatilho.className = "dica__gatilho";
-        gatilho.setAttribute("aria-label", "Ajuda sobre " + (dono ? rotuloCurto(dono) : texto.slice(0, 60)));
+        const envoltorio = novoEnvoltorio();
+        const balao = novoBalao(texto, false);
+        const gatilho = novoGatilho(dono ? rotuloCurto(dono) : texto.slice(0, 60), balao);
+        gatilho.innerHTML = "";
         el.parentNode.insertBefore(envoltorio, el);
         gatilho.appendChild(el);
         el.setAttribute("aria-hidden", "true");
         el.setAttribute("data-dica-texto", texto);
-        const balao = novoBalao(texto, false);
-        gatilho.setAttribute("aria-describedby", balao.id);
         envoltorio.appendChild(gatilho);
         envoltorio.appendChild(balao);
     }
 
-    /** Padrão 1 do canônico: o próprio controle dentro de .dica, com o balão ao lado. */
-    function embrulhar(el, texto, bloco) {
-        const envoltorio = document.createElement("span");
-        // Campo de formulário mede pela largura do bloco: o envoltório dele ocupa a linha inteira (dica-bloco).
-        envoltorio.className = bloco ? "dica dica-bloco" : "dica";
-        envoltorio.setAttribute("data-dica-adaptador", "");
+    /**
+     * O controle ocupava a linha do pai (botão w-100, item que estica)? Então o envoltório também ocupa. Mede pela
+     * LARGURA, não pelo display: item de menu e bandeira são flex por dentro e nem por isso ocupam a linha.
+     */
+    function ocupaALinha(el) {
+        const pai = el.parentElement;
+        if (!pai) {
+            return false;
+        }
+        const ps = w.getComputedStyle(pai);
+        // Célula de grade e item que estica no flex: o envoltório passa a ser a célula/o item, e o controle estica nele.
+        if (/grid/.test(ps.display) || (/flex/.test(ps.display) && parseFloat(w.getComputedStyle(el).flexGrow) > 0)) {
+            return true;
+        }
+        const largura = el.getBoundingClientRect().width;
+        const util = pai.clientWidth - parseFloat(ps.paddingLeft || 0) - parseFloat(ps.paddingRight || 0);
+        return largura > 0 && util > 0 && largura >= util * 0.95;
+    }
+
+    /** Padrão 1: a .dica envolve o controle, com a marca "?" (controle com texto) e o texto da dica ao lado. */
+    function embrulhar(el, texto, comMarca) {
+        const envoltorio = novoEnvoltorio(ocupaALinha(el) ? "dica-bloco" : "");
         el.parentNode.insertBefore(envoltorio, el);
         envoltorio.appendChild(el);
-        const balao = novoBalao(texto, false);
+        if (comMarca) {
+            envoltorio.appendChild(novaMarca());
+        }
+        const balao = novoBalao(texto, true);
         envoltorio.appendChild(balao);
         descrever(el, balao.id);
     }
 
-    /** Display do elemento como o site o desenha; "none" (menu fechado, aba oculta) cai no padrão da etiqueta. */
-    function exibicao(el) {
-        const d = w.getComputedStyle(el).display;
-        if (d && d !== "none") {
-            return d;
+    /** Menu suspenso: a .dica (marca + texto) entra logo depois do botão, sem envolvê-lo. */
+    function aoLado(el, texto, comMarca) {
+        const envoltorio = novoEnvoltorio("dica-irmao");
+        if (comMarca) {
+            envoltorio.appendChild(novaMarca());
         }
-        return /^(A|BUTTON|SPAN|SMALL|STRONG|EM|B|I|CODE|KBD|LABEL|SELECT|INPUT|TEXTAREA)$/.test(el.tagName)
-            ? "inline" : "block";
+        const balao = novoBalao(texto, true);
+        envoltorio.appendChild(balao);
+        el.after(envoltorio);
+        el.setAttribute("data-dica-irmao", "");
+        descrever(el, balao.id);
     }
 
-    const emLinha = (d) => /^inline/.test(d);
-
-    /**
-     * Onde embrulhar quebraria o componente: a classe .dica vai no próprio elemento e o balão fica dentro.
-     * Devolve false quando a classe mudaria o display que o site dá ao elemento (só acontece quando o display
-     * vinha da folha do navegador, que perde para a camada do canônico) — aí quem chamou usa o gatilho.
-     */
-    function noProprio(el, texto) {
+    /** Item de um grupo com UM "?" para todos: a dica fica no próprio item (o contêiner é exceção registrada). */
+    function noGrupo(el, texto) {
         const antes = w.getComputedStyle(el).display;
         el.classList.add("dica");
         if (antes !== "none" && w.getComputedStyle(el).display !== antes) {
-            el.classList.remove("dica");
-            return false;
+            el.style.display = antes;
         }
         const balao = novoBalao(texto, true);
         el.appendChild(balao);
         descrever(el, balao.id);
-        return true;
+        if (!el.matches(FOCAVEL) && !el.hasAttribute("tabindex")) {
+            el.setAttribute("tabindex", "0");
+        }
     }
 
-    /** Padrão 2 do canônico: o bloco do campo vira .campo quando o campo é o único controle dele. */
+    /**
+     * Padrão 2: o "?" (gatilho) entra logo depois do rótulo do campo; o bloco do campo vira .campo quando o campo é o
+     * único controle dele e não há outra dica ali (assim o foco no campo também mostra a dica).
+     */
     function noCampo(el, texto) {
-        const bloco = el.closest(".input-group") || el.parentElement;
-        // Bloco que já tem um "?" (popover convertido, ícone de ajuda) não vira .campo: o foco no campo mostraria os
-        // dois balões e o do campo ficaria preso no canto da tela (revisão de boa-fé, 22/10/2026).
-        const sozinho = bloco && bloco !== document.body && !bloco.matches("form, .dica, .campo")
-            && bloco.querySelectorAll(CAMPO).length === 1
-            && !bloco.querySelector(".dica, .dica__gatilho, [data-bs-toggle=popover]");
-        if (!sozinho) {
-            embrulhar(el, texto, true);
-            return;
+        const rotulo = (el.labels && el.labels[0])
+            || (el.parentElement && el.parentElement.querySelector(":scope > label"));
+        const nomeRotulo = rotulo ? textoVisivel(rotulo) : (limpo(el.getAttribute("aria-label")) || "este campo");
+        if (!(el.labels && el.labels.length) && !el.getAttribute("aria-label") && !el.getAttribute("aria-labelledby")) {
+            el.setAttribute("aria-label", nomeRotulo !== "este campo" ? nomeRotulo : texto);
         }
-        bloco.classList.add("campo");
+        const envoltorio = novoEnvoltorio();
         const balao = novoBalao(texto, false);
-        bloco.appendChild(balao);
+        envoltorio.appendChild(novoGatilho(nomeRotulo, balao));
+        envoltorio.appendChild(balao);
+        const grupo = el.closest(".input-group");
+        if (rotulo) {
+            rotulo.after(envoltorio);
+        } else {
+            (grupo || el).before(envoltorio);
+        }
         descrever(el, balao.id);
+        const bloco = envoltorio.parentElement;
+        const sozinho = bloco && bloco !== document.body && !bloco.matches("form, .campo, .dica")
+            && bloco.querySelectorAll(CAMPO).length === 1 && bloco.querySelectorAll(".dica").length === 1;
+        if (sozinho) {
+            bloco.classList.add("campo");
+        }
     }
 
     /**
      * Botão de ajuda que era popover do Bootstrap ("info" ao lado do rótulo, título + explicação): vira o gatilho
-     * do canônico com a EXPLICAÇÃO no balão — o título do popover já está no rótulo e no aria-label do botão.
+     * com a EXPLICAÇÃO no balão — o título do popover já está no rótulo e no aria-label do botão.
      */
     function popoverViraGatilho(el) {
         const explicacao = limpo(el.getAttribute("data-bs-content"));
@@ -231,9 +277,7 @@
         }
         el.setAttribute("data-dica-texto", texto);
         el.classList.add("dica__gatilho");
-        const envoltorio = document.createElement("span");
-        envoltorio.className = "dica";
-        envoltorio.setAttribute("data-dica-adaptador", "");
+        const envoltorio = novoEnvoltorio();
         el.parentNode.insertBefore(envoltorio, el);
         envoltorio.appendChild(el);
         const balao = novoBalao(texto, false);
@@ -241,10 +285,7 @@
         descrever(el, balao.id);
     }
 
-    /**
-     * Balão que este adaptador já criou para o elemento (pelo aria-describedby, pelo "?" dentro dele ou pelo
-     * gatilho em volta dele). Usado quando a página regrava o title de um elemento já convertido.
-     */
+    /** Balão que este adaptador já criou para o elemento (pelo aria-describedby ou pelo "?" dentro dele). */
     function balaoExistente(el) {
         const ids = (el.getAttribute("aria-describedby") || "").split(/\s+/).filter((i) => /^d-auto-/.test(i));
         for (const id of ids) {
@@ -261,13 +302,36 @@
         return gatilho ? document.getElementById(gatilho.getAttribute("aria-describedby") || "") : null;
     }
 
+    /** UM "?" antes de cada grupo marcado com data-dica-grupo (bits, campos de uma saída, opções, filtros, idiomas). */
+    function gatilhoDoGrupo(grupo) {
+        const texto = limpo(grupo.getAttribute("data-dica-grupo"));
+        if (!texto) {
+            return;
+        }
+        const antes = grupo.previousElementSibling;
+        if (antes && antes.matches(".dica-do-grupo")) {
+            // Grupo redesenhado (ex.: a régua trocou de modo): o "?" que já existe só troca de texto.
+            const balao = antes.querySelector(".dica__texto");
+            if (balao && balao.textContent !== texto) {
+                balao.textContent = texto;
+            }
+            return;
+        }
+        const envoltorio = novoEnvoltorio("dica-do-grupo");
+        const balao = novoBalao(texto, false);
+        const rotulo = limpo(grupo.getAttribute("data-dica-grupo-rotulo")) || limpo(grupo.getAttribute("aria-label"))
+            || "estes itens";
+        envoltorio.appendChild(novoGatilho(rotulo, balao));
+        envoltorio.appendChild(balao);
+        grupo.before(envoltorio);
+    }
+
     function converter(el) {
         if (el.matches(NAO_CONVERTER) || el.closest(".dica__texto")) {
             return;
         }
         if (el.hasAttribute("data-dica-texto")) {
-            // Já convertido: a página regravou o title (ex.: a Academia a cada acerto). Atualiza o balão que existe
-            // — criar outro empilhava balões e ids no aria-describedby (achado da revisão adversarial, 22/10/2026).
+            // Já convertido: a página regravou o title (ex.: a Academia a cada acerto). Atualiza o balão que existe.
             const novo = textoDaDica(el);
             tirarTitle(el);
             const balao = balaoExistente(el);
@@ -289,7 +353,8 @@
             return;
         }
         const visivel = textoVisivel(el);
-        if (!visivel && !el.getAttribute("aria-label") && !el.matches(CAMPO) && el.matches(FOCAVEL)) {
+        const focavel = el.matches(FOCAVEL);
+        if (!visivel && !el.getAttribute("aria-label") && !el.matches(CAMPO) && focavel) {
             // Botão/link só com ícone: o title era o único nome. O nome fica; a dica igual ao nome seria repetida.
             el.setAttribute("aria-label", texto);
             tirarTitle(el);
@@ -300,82 +365,47 @@
             return;
         }
         if (w.bootstrap && w.bootstrap.Tooltip && w.bootstrap.Tooltip.getInstance(el)) {
-            // Tooltip do Bootstrap criado antes do adaptador (script de página): sai, para não haver dois balões.
             w.bootstrap.Tooltip.getInstance(el).dispose();
         }
         tirarTitle(el);
         el.setAttribute("data-dica-texto", texto);
-        if (el.matches(CAMPO)) {
-            // O title podia ser o ÚNICO nome do campo (sem <label for> nem aria-label): tirá-lo deixaria o campo sem
-            // nome para o leitor de tela. O nome passa a ser o rótulo visível ao lado, ou, sem ele, o próprio texto.
-            if (!(el.labels && el.labels.length) && !el.getAttribute("aria-label") && !el.getAttribute("aria-labelledby")) {
-                const vizinho = el.parentElement && el.parentElement.querySelector(":scope > label");
-                el.setAttribute("aria-label", (vizinho && textoVisivel(vizinho)) || texto);
+        // Item de grupo (um "?" para todos) ou de contêiner com exceção registrada (o "?" fica no título dele): a dica
+        // fica no próprio item, sem "?" em cada um.
+        const grupo = el.closest("[data-dica-grupo]");
+        if (grupo || el.closest("[data-dica-excecao]")) {
+            if (grupo) {
+                gatilhoDoGrupo(grupo);
             }
+            noGrupo(el, texto);
+            return;
+        }
+        if (el.matches(CAMPO)) {
             noCampo(el, texto);
             return;
         }
-        if (el.matches(SO_GATILHO)) {
+        if (el.matches(SO_GATILHO) || !focavel) {
+            if (!focavel && !visivel && el.parentNode) {
+                iconeVirandoGatilho(el, texto);
+                return;
+            }
             comGatilho(el, texto);
             return;
         }
-        const focavel = el.matches(FOCAVEL);
-        if (!focavel && !visivel && el.parentNode) {
-            iconeVirandoGatilho(el, texto);
+        if (el.matches(IRMAO)) {
+            aoLado(el, texto, !!visivel);
             return;
         }
-        // Controle com texto (link, botão): a classe vai no PRÓPRIO elemento e o balão fica dentro dele. Embrulhar
-        // num <span> encolhia o que mede pela largura do pai — w-100, item de grade/flex: "Calcular" ia de 370 para
-        // 133 px e o bit da Academia de 70 para 15 px, deixando de receber o clique (revisão de boa-fé, 22/10/2026).
-        // Embrulho só para o botão sem texto (bandeira do idioma), cujo "texto" viraria o próprio balão, e para o
-        // trecho de texto em linha (selo, sigla), que ganha foco de teclado para a dica não ser só do mouse.
-        // "Sem texto" de verdade: nem texto visível nem texto escondido (o bit da Academia tem o valor em span
-        // aria-hidden e o nome em aria-label — com a classe no próprio botão ele não encolhe).
-        const soImagem = focavel && !(el.textContent || "").trim();
-        if (el.parentNode && (soImagem || (!focavel && !el.matches(NO_PROPRIO) && emLinha(exibicao(el))))) {
-            if (!focavel && !el.hasAttribute("tabindex")) {
-                el.setAttribute("tabindex", "0");
-            }
-            embrulhar(el, texto);
-            return;
-        }
-        if (noProprio(el, texto)) {
-            if (!focavel && !el.hasAttribute("tabindex")) {
-                el.setAttribute("tabindex", "0");
-            }
-            return;
-        }
-        if (!focavel) {
-            comGatilho(el, texto);
-            return;
-        }
-        // Controle focável cujo display viria só do navegador (raro): mantém o display e segue no próprio.
-        const d = w.getComputedStyle(el).display;
-        el.classList.add("dica");
-        el.style.display = d;
-        const balao = novoBalao(texto, true);
-        el.appendChild(balao);
-        descrever(el, balao.id);
-    }
-
-    /** O JS da página trocou o conteúdo do elemento (ex.: "Copiado") e levou o balão junto: refaz. */
-    function refazerSePerdeu(el) {
-        const texto = el.getAttribute("data-dica-texto");
-        if (!texto || !el.classList.contains("dica")) {
-            return;
-        }
-        let balao = el.querySelector(":scope > .dica__texto");
-        if (!balao) {
-            balao = novoBalao(texto, true);
-            el.appendChild(balao);
-        }
-        // A página pode ter devolvido o HTML salvo antes ("Copiado" → rótulo), com o balão ANTIGO dentro: o
-        // aria-describedby passa a apontar para o balão que está lá (antes ficava apontando para um id sumido).
-        descrever(el, balao.id);
+        embrulhar(el, texto, !!visivel);
     }
 
     function init(raiz) {
         const escopo = raiz && raiz.querySelectorAll ? raiz : document;
+        const grupos = [];
+        if (escopo.nodeType === 1 && escopo.matches("[data-dica-grupo]")) {
+            grupos.push(escopo);
+        }
+        escopo.querySelectorAll("[data-dica-grupo]").forEach((g) => grupos.push(g));
+        grupos.forEach(gatilhoDoGrupo);
         const alvos = [];
         const COM_DICA = "[title], [data-bs-title], [data-bs-original-title], [data-bs-toggle=popover]";
         if (escopo.nodeType === 1 && escopo.matches(COM_DICA)) {
@@ -397,9 +427,6 @@
                     }
                     continue;
                 }
-                if (m.target.nodeType === 1 && m.target.hasAttribute("data-dica-texto")) {
-                    refazerSePerdeu(m.target);
-                }
                 m.addedNodes.forEach((n) => {
                     if (n.nodeType === 1 && !n.closest(".dica__texto") && !n.matches(".dica__texto, [data-dica-adaptador]")) {
                         init(n);
@@ -409,7 +436,59 @@
         }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["title"] });
     }
 
+    /**
+     * Menu suspenso: a .dica mora DEPOIS do botão (não o envolve), então o foco do teclado no botão não abre a dica
+     * pelo canônico. Abre aqui, ancorada na marca "?" (o pointerover sintético faz o dica.js posicionar), e fecha ao
+     * sair do botão; Esc e o clique fora continuam com o dica.js.
+     */
+    function focoNoIrmao() {
+        const irmaoDe = (el) => {
+            const botao = el && el.closest ? el.closest("[data-dica-irmao]") : null;
+            const prox = botao && botao.nextElementSibling;
+            return prox && prox.matches(".dica-irmao") ? prox : null;
+        };
+        document.addEventListener("focusin", (e) => {
+            const dica = irmaoDe(e.target);
+            if (!dica || !e.target.matches(":focus-visible")) {
+                return;
+            }
+            dica.setAttribute("data-aberta", "");
+            dica.removeAttribute("data-fechada");
+            const alvo = dica.querySelector(".dica__marca") || dica;
+            alvo.dispatchEvent(new PointerEvent("pointerover", { bubbles: true }));
+        });
+        document.addEventListener("focusout", (e) => {
+            const dica = irmaoDe(e.target);
+            if (dica) {
+                dica.removeAttribute("data-aberta");
+            }
+        });
+    }
+
+    /**
+     * Dica aberta pela marca "?": o texto passa a receber o ponteiro (data-pela-marca), para o mouse descer da marca
+     * ao texto sem a dica sumir (WCAG 1.4.13). Aberta pelo próprio controle, o texto continua deixando o clique passar
+     * para o vizinho (dica-camada.css).
+     */
+    function abertaPelaMarca() {
+        document.addEventListener("pointerover", (e) => {
+            const marca = e.target.closest && e.target.closest(".dica__marca");
+            const dica = marca && marca.closest(".dica");
+            if (dica) {
+                dica.setAttribute("data-pela-marca", "");
+            }
+        });
+        document.addEventListener("pointerout", (e) => {
+            const dica = e.target.closest && e.target.closest(".dica[data-pela-marca]");
+            if (dica && !dica.contains(e.relatedTarget)) {
+                dica.removeAttribute("data-pela-marca");
+            }
+        });
+    }
+
     w.FieldTooltips = { init, textoLimpo };
+    focoNoIrmao();
+    abertaPelaMarca();
 
     // Converte já o que existe (script de página no fim do <body> roda antes do DOMContentLoaded e não pode
     // achar title sem converter) e de novo no DOMContentLoaded, quando o documento está inteiro.

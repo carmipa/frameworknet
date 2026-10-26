@@ -2,7 +2,7 @@
 <div class="aed-card mt-3">
     <div class="card-body">
         <h2 class="h5 d-flex flex-wrap align-items-center gap-2 text-white mb-2">
-            <span class="material-symbols-outlined" translate="no" aria-hidden="true">construction</span>
+            <span class="material-symbols-outlined" translate="no" aria-hidden="true">build</span>
             Pacote {sim.protocolo} &middot; {sim.totalBytes} bytes
             {#if sim.checksumValido}
             <span class="badge bg-success">checksum válido</span>
@@ -24,7 +24,8 @@
                     hx-post="/trafego/api/decodificar"
                     hx-vals='{"hex": "{sim.hex}", "camada": "ethernet"}'
                     hx-target="#construtor-decodificado"
-                    hx-swap="innerHTML">
+                    hx-swap="innerHTML"
+                    title="Decodificar de volta os bytes recém-montados (a ida e a volta)">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span>
                 Decodificar estes bytes
             </button>

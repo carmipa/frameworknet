@@ -55,7 +55,7 @@
         <table class="table table-dark table-sm table-bordered mb-0 calc-tabela">
             <thead>
             <tr>
-                <th title="ID da VLAN (802.1Q)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">sell</span>VLAN</th>
+                <th title="ID da VLAN (802.1Q)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">tag</span>VLAN</th>
                 <th><span class="material-symbols-outlined" aria-hidden="true" translate="no">label</span>Nome</th>
                 <th title="Faixa de IDs: default (1), normal (2–1001) ou estendida (1006–4094)"><span class="material-symbols-outlined" aria-hidden="true" translate="no">linear_scale</span>Faixa</th>
                 <th title="Sub-rede atribuída à VLAN"><span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span>Sub-rede</th>
@@ -82,10 +82,11 @@
         </table>
     </div>
 
-    <h4 class="h6 calc-secao-titulo mt-4">
+    <h4 class="h6 calc-secao-titulo mt-4" title="Comandos para criar as VLANs, o tronco, as SVIs ou subinterfaces e o pool DHCP de cada VLAN">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span>
         Configuração Cisco
-        <button type="button" class="aed-btn aed-btn-neutral btn-sm calc-copiar" data-alvo="cliVlan">
+        <button type="button" class="aed-btn aed-btn-neutral btn-sm calc-copiar" data-alvo="cliVlan"
+                title="Copiar os comandos de configuração Cisco para a área de transferência">
             <span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Copiar
         </button>
     </h4>

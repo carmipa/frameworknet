@@ -41,7 +41,7 @@
     },
     {
       "titulo": "EV perdeu o destaque visual",
-      "icone": "verified_user",
+      "icone": "lock",
       "texto": "O Extended Validation exige verificação jurídica da organização e antigamente pintava a barra de endereço com o nome da empresa em verde. Chrome, Firefox e Safari removeram esse indicador porque estudos mostraram que os usuários não o percebiam. Hoje EV e DV parecem iguais para o visitante; o valor do EV virou quase só jurídico/contratual.",
       "destaque": "A barra verde acabou; não conte com ela."
     },
@@ -53,7 +53,7 @@
     },
     {
       "titulo": "SAN lista vários nomes explícitos",
-      "icone": "schema",
+      "icone": "account_tree",
       "texto": "A extensão Subject Alternative Name enumera cada nome DNS (e IPs) que o certificado cobre. O browser moderno IGNORA o Common Name (CN) e valida somente a SAN. Um certificado SAN pode cobrir example.com, www.example.com e outroservico.com.br num único arquivo.",
       "destaque": "Sem o nome na SAN, o browser recusa."
     },
@@ -120,7 +120,7 @@
         "Risco/observação"
       ],
       "dicas_colunas": [
-        "",
+        "Forma de declarar os nomes protegidos pelo certificado",
         "Nomes DNS que o navegador aceita como válidos com esse certificado",
         "Nomes que geram erro de nome inválido se acessados com esse certificado",
         "Consequência prática da escolha, como o raio de dano se a chave vazar"
@@ -155,7 +155,7 @@
         "Onde é erro"
       ],
       "dicas_colunas": [
-        "",
+        "Quem assinou o certificado",
         "Se a cadeia de assinaturas termina em uma raiz já presente no repositório de confiança do sistema ou do navegador",
         "Ambientes em que esse tipo de certificado é adequado",
         "Situações em que usá-lo gera aviso ou prática insegura; o hífen indica nenhuma"
@@ -184,9 +184,9 @@
         "Onde inspecionar"
       ],
       "dicas_colunas": [
-        "",
+        "Finalidade para a qual o certificado é emitido",
         "Nome do valor gravado na extensão Extended Key Usage que libera esse uso",
-        "",
+        "Caso concreto em que esse tipo de certificado aparece",
         "Ferramenta ou local em que se observa o certificado sendo apresentado ou verificado"
       ],
       "linhas": [
