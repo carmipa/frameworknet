@@ -77,7 +77,26 @@ public class GeoService {
         return candidatos.get(0).getHostAddress();
     }
 
+    /** Consulta de geolocalização da API, registrando no histórico quando cabe (ver a sobrecarga com o sinalizador). */
     public Map<String, Object> executarApiInformacoesGeo(String clienteIp, String rawDigitado) {
+        return executarApiInformacoesGeo(clienteIp, rawDigitado, true);
+    }
+
+    /**
+     * Consulta de geolocalização da API ({@code /api/informacoes/geo}).
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> mostra país, região e provedor do IP digitado — ou do IP da própria ligação,
+     * quando nada foi digitado — e guarda no histórico da sessão só o que a pessoa digitou para consultar.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> a detecção da própria ligação nunca vai ao histórico; consulta digitada do
+     * próprio IP de quem acessa também não; com {@code registrarHistorico = false} (o teste de vazamento da
+     * Localização), nada vai. O que entra no histórico sai sem o IP da conexão e sem coordenadas
+     * ({@code HistoricoStore.CHAVES_PESSOAIS_GEO}).</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; IP digitado inválido volta com {@code ok=false} e a
+     * mensagem, sem consulta e sem histórico.</p>
+     */
+    public Map<String, Object> executarApiInformacoesGeo(String clienteIp, String rawDigitado, boolean registrarHistorico) {
         if (rawDigitado != null && !rawDigitado.isBlank()) {
             Optional<String> norm = geoLookupService.normalizarIpDigitado(rawDigitado);
             if (norm.isEmpty()) {
@@ -96,17 +115,19 @@ public class GeoService {
             payload.put("consultado", norm.get());
             payload.put("modo", "manual");
             payload.putAll(geo);
-            registrarHistoricoGeo(payload);
+            if (registrarHistorico && !HistoricoStore.mesmoEndereco(norm.get(), clienteIp)) {
+                registrarHistoricoGeo(payload);
+            }
             return payload;
         }
 
+        // A própria ligação não é algo que a pessoa digitou: não vai ao histórico.
         Map<String, Object> geo = geoLookupService.lookupRegiaoGeografica(clienteIp);
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("cliente_ip", clienteIp);
         payload.put("consultado", clienteIp);
         payload.put("modo", "ligacao");
         payload.putAll(geo);
-        registrarHistoricoGeo(payload);
         return payload;
     }
 

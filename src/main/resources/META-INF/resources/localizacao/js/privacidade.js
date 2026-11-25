@@ -1,7 +1,8 @@
 /* Autoteste de vazamento de IP / privacidade — roda no navegador do próprio usuário.
  * Combina: (1) IP visto pelo servidor + cadeia de proxy (/localizacao/api/inspecao),
  * (2) IP público via ip-api (/api/informacoes/geo), (3) candidatos WebRTC/STUN,
- * (4) fingerprint do navegador. Nada é enviado a terceiros nem persistido. */
+ * (4) fingerprint do navegador. O IP passa pelo site, pelo ip-api (via servidor) e pelo STUN; as consultas vão com
+ * registrar=nao e não entram no histórico. */
 (function (w, d) {
     "use strict";
 
@@ -292,7 +293,7 @@
 
         Promise.all([
             buscarJson("/localizacao/api/inspecao"),
-            buscarJson("/api/informacoes/geo"),
+            buscarJson("/api/informacoes/geo?registrar=nao"),
             coletarWebRTC(2500)
         ]).then(function (res) {
             var inspecao = res[0];
@@ -303,7 +304,7 @@
             var pubIp = ipPublicoWebRTC(webrtc);
             var semGeo = !geo.ok || geo.reservado === true || geo.latitude == null;
             var proximo = (semGeo && pubIp)
-                ? buscarJson("/api/informacoes/geo?ip=" + encodeURIComponent(pubIp))
+                ? buscarJson("/api/informacoes/geo?registrar=nao&ip=" + encodeURIComponent(pubIp))
                 : Promise.resolve(null);
             return proximo.then(function (geoPub) {
                 var usouFallback = !!(geoPub && geoPub.ok && geoPub.reservado !== true);

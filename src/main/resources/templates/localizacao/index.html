@@ -155,9 +155,12 @@
                     <span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span> Teste de vazamento de IP (o que o SEU navegador revela)
                 </h2>
                 <p class="small text-secondary mb-3">
-                    Roda inteiramente <strong>no seu navegador</strong>. Cruza o IP que o servidor enxerga, o IP público
-                    (ip-api), os candidatos <strong>WebRTC/STUN</strong> e o <strong>fingerprint</strong> do navegador para mostrar
-                    o quanto você está exposto — mesmo atrás de VPN/proxy. Nada é enviado a terceiros nem armazenado.
+                    Cruza o IP que o servidor enxerga, o país desse IP, os candidatos <strong>WebRTC/STUN</strong> e o
+                    <strong>fingerprint</strong> do navegador para mostrar o quanto você está exposto — mesmo atrás de VPN/proxy.
+                    O fingerprint é calculado <strong>no seu navegador</strong>, mas três serviços veem o seu IP enquanto o teste
+                    roda: este site; o ip-api (que diz o país, quando a base local de geolocalização não responde); e o servidor
+                    STUN do Google, usado pelo WebRTC. O site não grava este teste no histórico; a geolocalização fica em cache
+                    por até 5 minutos, para não repetir a consulta.
                 </p>
                 <div class="d-flex flex-wrap align-items-center gap-2">
                     <button type="button" class="aed-btn aed-btn-teal" id="btn-priv-testar"

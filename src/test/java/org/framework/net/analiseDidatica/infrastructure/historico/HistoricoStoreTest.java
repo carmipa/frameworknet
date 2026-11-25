@@ -362,4 +362,87 @@ class HistoricoStoreTest {
         org.junit.jupiter.api.Assertions.assertThrows(IllegalStateException.class, s::baseDoHistorico,
                 "expressão por expandir não pode virar nome de pasta");
     }
+
+    /**
+     * D26 (privacidade): a consulta de geolocalização entra no histórico sem o IP da conexão e sem coordenadas.
+     * A1: as chaves legítimas (IP consultado, país, provedor) passam iguais. A2: sem o filtro, "cliente_ip" fica.
+     */
+    @Test
+    void consultaDeGeoEntraSemOIpDaConexaoESemCoordenadas() {
+        HistoricoStore s = novoStore(tmp);
+        Map<String, Object> geo = new java.util.LinkedHashMap<>();
+        geo.put("cliente_ip", "200.1.2.3");
+        geo.put("consultado", "8.8.8.8");
+        geo.put("modo", "manual");
+        geo.put("pais", "Estados Unidos");
+        geo.put("isp", "Google LLC");
+        geo.put("latitude", 37.4);
+        geo.put("longitude", -122.1);
+        geo.put("lat", 37.4);
+        geo.put("lon", -122.1);
+        geo.put("maps_url", "https://www.openstreetmap.org/?mlat=37.4&mlon=-122.1");
+        Map<String, Object> res = new java.util.LinkedHashMap<>();
+        res.put("rede", "Califórnia");
+        res.put("broad", "Estados Unidos");
+        res.put("geo_consulta", geo);
+        s.registrarConsulta("sessao-d26", Map.of("modo", "geo", "ip", "8.8.8.8"), res);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> gravado = (Map<String, Object>) s.listarTodos().get(0).get("geo_consulta");
+        for (String chave : HistoricoStore.CHAVES_PESSOAIS_GEO) {
+            assertFalse(gravado.containsKey(chave), chave + " foi para o histórico: " + gravado.keySet());
+        }
+        assertEquals("8.8.8.8", gravado.get("consultado"));
+        assertEquals("Estados Unidos", gravado.get("pais"));
+        assertEquals("Google LLC", gravado.get("isp"));
+    }
+
+    /**
+     * D26: o arquivo gravado por versão anterior é limpo na carga e REGRAVADO (A6: o arquivo é relido do disco).
+     * A consulta do próprio visitante (modo "ligacao", ou IP consultado = IP da conexão, mesmo escrito como
+     * ::ffff:) some; a consulta digitada de outro IP fica, sem o IP da conexão e sem coordenadas; o registro de
+     * outro modo passa intacto (A1).
+     */
+    @Test
+    void cargaApagaAConsultaDoProprioVisitanteELimpaAsDemaisNoDisco() throws Exception {
+        Path home = Files.createTempDirectory("hist-d26");
+        Files.createDirectories(arquivo(home).getParent());
+        String legado = "["
+                + "{\"id\":\"r1\",\"sessao\":\"s1\",\"modo\":\"geo\",\"ip_entrada\":\"200.1.2.3\","
+                + "\"geo_consulta\":{\"modo\":\"ligacao\",\"cliente_ip\":\"200.1.2.3\",\"consultado\":\"200.1.2.3\","
+                + "\"latitude\":-23.5,\"longitude\":-46.6,\"cidade\":\"Sao Paulo\"}},"
+                + "{\"id\":\"r2\",\"sessao\":\"s1\",\"modo\":\"geo\",\"ip_entrada\":\"8.8.8.8\","
+                + "\"geo_consulta\":{\"modo\":\"manual\",\"cliente_ip\":\"200.1.2.3\",\"consultado\":\"8.8.8.8\","
+                + "\"latitude\":37.4,\"longitude\":-122.1,\"pais\":\"EUA\"}},"
+                + "{\"id\":\"r3\",\"sessao\":\"s1\",\"modo\":\"cidr\",\"ip_entrada\":\"10.0.0.1\",\"cidr_entrada\":\"24\"},"
+                + "{\"id\":\"r4\",\"sessao\":\"s2\",\"modo\":\"geo\",\"ip_entrada\":\"::ffff:200.1.2.3\","
+                + "\"geo_consulta\":{\"modo\":\"manual\",\"cliente_ip\":\"200.1.2.3\",\"consultado\":\"::ffff:200.1.2.3\"}}"
+                + "]";
+        Files.writeString(arquivo(home), legado);
+
+        HistoricoStore s = novoStore(home);
+        s.carregar();
+        List<String> ids = s.listarTodos().stream().map(r -> String.valueOf(r.get("id"))).toList();
+        assertEquals(List.of("r2", "r3"), ids, "a consulta do próprio visitante não pode voltar");
+
+        s.persistir();
+        String disco = Files.readString(arquivo(home));
+        assertFalse(disco.contains("200.1.2.3"), "o IP da conexão continua no disco: " + disco);
+        assertFalse(disco.contains("latitude") || disco.contains("longitude"), "coordenada continua no disco: " + disco);
+        assertTrue(disco.contains("8.8.8.8") && disco.contains("EUA"), "a consulta digitada tem de ficar: " + disco);
+        List<Map<String, Object>> relido = objectMapper.readValue(disco, new TypeReference<>() {});
+        assertEquals(List.of("r2", "r3"), relido.stream().map(r -> String.valueOf(r.get("id"))).toList());
+        assertEquals("24", relido.get(1).get("cidr_entrada"), "o registro de outro modo tem de passar igual");
+    }
+
+    /** O "mesmo endereço" compara o endereço, não o texto, e nunca consulta DNS. */
+    @Test
+    void mesmoEnderecoComparaOEnderecoENaoOTexto() {
+        assertTrue(HistoricoStore.mesmoEndereco("::ffff:1.2.3.4", "1.2.3.4"));
+        assertTrue(HistoricoStore.mesmoEndereco("2001:DB8:0::1", "2001:db8::1"));
+        assertFalse(HistoricoStore.mesmoEndereco("1.2.3.4", "1.2.3.5"));
+        assertFalse(HistoricoStore.mesmoEndereco("", "1.2.3.4"));
+        assertFalse(HistoricoStore.mesmoEndereco(null, null));
+        assertFalse(HistoricoStore.mesmoEndereco("exemplo.com", "1.2.3.4"), "nome não vira consulta de DNS");
+    }
 }

@@ -92,6 +92,81 @@ public class HistoricoStore {
     static final int MAX_CARACTERES_CAMPO = 255;
 
     /**
+     * Chaves da consulta de geolocalização que identificam ou localizam QUEM ACESSA: o IP da conexão e as
+     * coordenadas (inclusive a URL do mapa, que as carrega). Nunca vão ao histórico — a tela promete que o site
+     * guarda a consulta, não a pessoa.
+     */
+    static final java.util.Set<String> CHAVES_PESSOAIS_GEO =
+            java.util.Set.of("cliente_ip", "latitude", "longitude", "lat", "lon", "maps_url");
+
+    /**
+     * Cópia da consulta de geolocalização sem as chaves pessoais.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o histórico mostra de novo o país, a região e o provedor do IP que a pessoa
+     * digitou, sem guardar o IP de quem acessou nem coordenadas.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> nenhuma chave de {@link #CHAVES_PESSOAIS_GEO} sobrevive; as demais passam
+     * iguais, na mesma ordem; a entrada nunca é alterada.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; chave que não é texto é descartada.</p>
+     */
+    static Map<String, Object> geoSemDadoPessoal(Map<?, ?> geo) {
+        Map<String, Object> limpo = new LinkedHashMap<>();
+        geo.forEach((chave, valor) -> {
+            if (chave instanceof String nome && !CHAVES_PESSOAIS_GEO.contains(nome)) {
+                limpo.put(nome, valor);
+            }
+        });
+        return limpo;
+    }
+
+    /**
+     * A consulta de geolocalização foi sobre o próprio IP de quem acessou?
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o histórico guarda o que a pessoa DIGITOU para consultar; a detecção da
+     * própria ligação (modo {@code ligacao}) ou a consulta do próprio IP não são entrada dela e não entram.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> modo {@code ligacao} é sempre do próprio visitante; no modo manual, conta
+     * quando o IP consultado é o mesmo endereço do IP da conexão.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; sem os dois endereços, responde {@code false}.</p>
+     */
+    static boolean consultaDoProprioVisitante(Map<?, ?> geo) {
+        if ("ligacao".equals(geo.get("modo"))) {
+            return true;
+        }
+        Object cliente = geo.get("cliente_ip");
+        Object consultado = geo.get("consultado");
+        return cliente != null && consultado != null
+                && mesmoEndereco(String.valueOf(cliente), String.valueOf(consultado));
+    }
+
+    /**
+     * Dois textos de IP são o mesmo endereço? Compara pelo endereço ({@code ::ffff:1.2.3.4} é {@code 1.2.3.4}),
+     * sem consulta de DNS.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> reconhecer a consulta do próprio IP mesmo escrita de outro jeito.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> só literal de IP é interpretado ({@code InetAddress.ofLiteral}, nunca DNS);
+     * texto vazio nunca é "o mesmo".</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; texto que não é IP cai na comparação literal sem
+     * maiúsculas.</p>
+     */
+    public static boolean mesmoEndereco(String a, String b) {
+        String x = a == null ? "" : a.strip();
+        String y = b == null ? "" : b.strip();
+        if (x.isEmpty() || y.isEmpty()) {
+            return false;
+        }
+        try {
+            return java.net.InetAddress.ofLiteral(x).equals(java.net.InetAddress.ofLiteral(y));
+        } catch (IllegalArgumentException naoEIp) {
+            return x.equalsIgnoreCase(y);
+        }
+    }
+
+    /**
      * Maior arquivo que a carga aceita ler. O maior que esta versão consegue escrever é ~9 MB (500 registros, 11
      * campos no teto, todo caractere escapado como {@code \\uXXXX}); acima disto o arquivo não veio dela e vai
      * para a quarentena SEM ser lido — antes, um histórico de ~450 MB derrubava cada arranque por falta de
@@ -151,7 +226,9 @@ public class HistoricoStore {
      * <p><b>INVARIANTES DO DOMÍNIO:</b> arquivo acima de {@link #MAX_BYTES_ARQUIVO} não é lido (quarentena pelo
      * tamanho, antes do parse); registro sem sessão não volta; no máximo {@link #MAX_TOTAL} registros; todo
      * texto carregado passa pelo mesmo teto por campo da gravação ({@link #MAX_CARACTERES_CAMPO}), inclusive o
-     * que foi gravado por versão anterior.</p>
+     * que foi gravado por versão anterior. Consulta de geolocalização do próprio visitante, gravada por versão
+     * anterior, não volta; nas demais saem o IP da conexão e as coordenadas ({@link #CHAVES_PESSOAIS_GEO}) — e o
+     * arquivo é regravado logo, para a limpeza valer no disco.</p>
      *
      * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança — arquivo grande demais ou ilegível vai para a
      * quarentena ({@code .grande-demais-<epoch>} ou {@code .corrompido-<epoch>}), com log ERROR e evento de
@@ -172,11 +249,25 @@ public class HistoricoStore {
                 List<Map<String, Object>> raw = objectMapper.readValue(file.toFile(), new TypeReference<>() {});
                 int legados = 0;
                 int[] truncados = {0};
+                int doProprioVisitante = 0;
+                int geoLimpos = 0;
                 if (raw != null) {
                     for (Map<String, Object> item : raw) {
                         if (item == null || !(item.get(CHAVE_SESSAO) instanceof String)) {
                             legados++;   // balde global antigo: IP de terceiros sem dono — não volta
                             continue;
+                        }
+                        // Versões anteriores gravavam a consulta do próprio IP e o IP da conexão com coordenadas.
+                        if (item.get("geo_consulta") instanceof Map<?, ?> geo) {
+                            if (consultaDoProprioVisitante(geo)) {
+                                doProprioVisitante++;
+                                continue;
+                            }
+                            Map<String, Object> limpo = geoSemDadoPessoal(geo);
+                            if (limpo.size() != geo.size()) {
+                                item.put("geo_consulta", limpo);
+                                geoLimpos++;
+                            }
                         }
                         if (historyStore.size() < MAX_TOTAL) {
                             historyStore.addLast(comTextoNoTeto(item, truncados));
@@ -191,9 +282,17 @@ public class HistoricoStore {
                     LOG.warnf("Histórico: %d campo(s) acima de %d caracteres cortado(s) na carga.", truncados[0],
                             MAX_CARACTERES_CAMPO);
                 }
+                if (doProprioVisitante > 0 || geoLimpos > 0) {
+                    // A limpeza só vale quando o arquivo é regravado: agenda já, sem esperar a próxima consulta.
+                    LOG.warnf("Histórico: %d consulta(s) do próprio IP de quem acessou removida(s) e %d consulta(s) "
+                            + "de geolocalização sem o IP da conexão e as coordenadas, na carga.", doProprioVisitante,
+                            geoLimpos);
+                    agendarGravacao();
+                }
                 LOG.infof("Histórico carregado: %d registros", historyStore.size());
                 telemetriaLogger.logEvent("info", "analiseDidatica", "history_load",
-                        Map.of("status", "ok", "total", historyStore.size(), "truncados", truncados[0]));
+                        Map.of("status", "ok", "total", historyStore.size(), "truncados", truncados[0],
+                                "pessoaisRemovidos", doProprioVisitante, "pessoaisLimpos", geoLimpos));
             } catch (IOException ex) {
                 quarentena(file, ex.getClass().getSimpleName(), -1, ex);
             }
@@ -395,7 +494,8 @@ public class HistoricoStore {
      *
      * <p><b>INVARIANTES DO DOMÍNIO:</b> todo texto que veio da entrada ou do resultado entra no teto por campo
      * ({@link #MAX_CARACTERES_CAMPO}); teto por sessão e teto do arquivo como descritos na classe; gravação em
-     * lote, sob a trava.</p>
+     * lote, sob a trava; a consulta de geolocalização entra sem o IP da conexão e sem coordenadas
+     * ({@link #CHAVES_PESSOAIS_GEO}).</p>
      *
      * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> sem sessão ou sem resultado, não registra nada; não lança — erro
      * de disco aparece na gravação agendada.</p>
@@ -421,7 +521,7 @@ public class HistoricoStore {
         registro.put("tema", noTeto(res.getOrDefault("nivel_tema", "")));
         Object gc = res.get("geo_consulta");
         if (gc instanceof Map<?, ?> geoMap) {
-            registro.put("geo_consulta", geoMap);
+            registro.put("geo_consulta", geoSemDadoPessoal(geoMap));
         }
         synchronized (trava) {
             historyStore.addFirst(registro);

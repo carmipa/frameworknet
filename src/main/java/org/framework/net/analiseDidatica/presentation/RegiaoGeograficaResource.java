@@ -78,11 +78,23 @@ public class RegiaoGeograficaResource {
         }
     }
 
+    /**
+     * Geolocalização do IP digitado, ou do IP da própria ligação, em JSON.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> alimenta a Análise, a Localização e o teste de vazamento de IP.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> {@code registrar=nao} pede que a consulta não vá ao histórico — o teste de
+     * vazamento usa, porque o IP que ele consulta é o do próprio visitante; sem o parâmetro, vale a regra do
+     * serviço (só o que a pessoa digitou, nunca o próprio IP de quem acessa).</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; IP inválido volta 200 com {@code ok=false} e a mensagem.</p>
+     */
     @GET
     @Path("/api/informacoes/geo")
     @Produces(MediaType.APPLICATION_JSON)
     public Response apiInformacoesGeo(
             @QueryParam("ip") String ip,
+            @QueryParam("registrar") String registrar,
             @Context HttpHeaders headers,
             @Context HttpServerRequest request) {
         String remote = request.remoteAddress() != null ? request.remoteAddress().host() : "";
@@ -90,6 +102,7 @@ public class RegiaoGeograficaResource {
                 headers.getHeaderString("X-Forwarded-For"),
                 headers.getHeaderString("X-Real-IP"),
                 remote);
-        return Response.ok(geoService.executarApiInformacoesGeo(clienteIp, ip)).build();
+        boolean registrarHistorico = registrar == null || !"nao".equalsIgnoreCase(registrar.strip());
+        return Response.ok(geoService.executarApiInformacoesGeo(clienteIp, ip, registrarHistorico)).build();
     }
 }
