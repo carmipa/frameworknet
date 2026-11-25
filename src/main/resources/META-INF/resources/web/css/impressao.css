@@ -17,10 +17,12 @@ body.aed-app {
     color: #111 !important;
 }
 
-/* O tema tem centenas de cores fixas pensadas para fundo escuro; no papel tudo vira tinta escura sobre branco. */
-body.aed-app *,
-body.aed-app *::before,
-body.aed-app *::after {
+/* O tema tem centenas de cores fixas pensadas para fundo escuro; no papel tudo vira tinta escura sobre branco. Algumas
+   vêm com !important e seletor de duas classes (body.aed-app .card-tech pinta o cartão com gradiente escuro): o
+   :is(#impressao-sem-id, *) casa com qualquer elemento e dá a esta regra a força de um id, sem id nenhum na página. */
+body.aed-app :is(#impressao-sem-id, *),
+body.aed-app :is(#impressao-sem-id, *)::before,
+body.aed-app :is(#impressao-sem-id, *)::after {
     background: transparent !important;
     color: #111 !important;
     border-color: #999 !important;
