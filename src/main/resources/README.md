@@ -69,7 +69,7 @@ O framework cobre um fluxo didático completo para aula, laboratório e revisão
 
 | Módulo | Rota | Método | Descrição |
 |--------|------|--------|-----------|
-| Início | `/` | GET | Página inicial (landing) com atalhos para os módulos |
+| Início | `/` | GET | Página inicial (landing): dois caminhos no topo (Academia e Análise) e os módulos agrupados como no menu (IPv4, IPv6, Topologia, Operações), com o mesmo ícone de cada item |
 | Academia | `/academia`, `/academia/<nivel>`, `/academia/<nivel>/<licao>` | GET | Escola de redes do básico ao avançado: níveis em abas que desbloqueiam um por vez e lições em **Entenda · Ver · Mexer · Provar** (texto explicativo, animação, cálculo ao vivo e exercício corrigido), com as contas no navegador |
 | Academia (API) | `/academia/api/eventos` | POST | Telemetria anônima das lições: visita em faixas (nunca o número exato) e erro de JavaScript fora do dataset público |
 | Análise Didática | `/analise` | GET/POST | CIDR, máscara, wildcard, auto-CIDR, domínio, IPv6, comparador, calculadora (parâmetro `?tab=`) |
@@ -1140,7 +1140,8 @@ um caso de uso:
 1. `shared/main_menu.html` **e** `MenuRotasHttpTest` (a contagem de itens é verificada);
 2. `RateLimitFilter.HEAVY_PATHS` — e o `startsWith` do subcaminho, se as APIs forem pesadas;
 3. `TelemetriaDashboardService.moduloDePath` — senão o tráfego é creditado a outro módulo;
-4. `templates/home/index.html` — o bloco do módulo na landing;
+4. `templates/home/index.html` — o bloco do módulo na landing, no grupo de mesmo nome do menu e com o mesmo
+   ícone do item (o `HomeEDocumentacaoHttpTest` confere grupo, rota e glifo);
 5. `META-INF/resources/robots.txt` — o prefixo da API nova, **em todos** os grupos
    permissivos (o `RobotsTxtHttpTest` cobra, mas só depois de o build quebrar);
 6. `web/domain/PaginasPublicas` — se o módulo tem página no menu: é a fonte única lida
