@@ -84,6 +84,21 @@ public class HistoricoStore {
     /** Teto do arquivo inteiro (todas as sessões): mantém a regravação por consulta pequena. */
     static final int MAX_TOTAL = 500;
 
+    /**
+     * Maior texto guardado por campo do registro. Cabe um nome de domínio inteiro (253 caracteres), então nada
+     * legítimo é cortado; acima disso o valor sai truncado com "…". Sem teto, cada consulta guardava o campo
+     * como veio (até 1 MB) e ~480 consultas faziam um arquivo de ~450 MB.
+     */
+    static final int MAX_CARACTERES_CAMPO = 255;
+
+    /**
+     * Maior arquivo que a carga aceita ler. O maior que esta versão consegue escrever é ~9 MB (500 registros, 11
+     * campos no teto, todo caractere escapado como {@code \\uXXXX}); acima disto o arquivo não veio dela e vai
+     * para a quarentena SEM ser lido — antes, um histórico de ~450 MB derrubava cada arranque por falta de
+     * memória, em laço.
+     */
+    static final long MAX_BYTES_ARQUIVO = 16L * 1024 * 1024;
+
     private static final String CHAVE_SESSAO = "sessao";
 
     @Inject
@@ -115,10 +130,33 @@ public class HistoricoStore {
     /** Há gravação agendada? (guardado por {@link #trava}) */
     private boolean gravacaoAgendada;
 
+    /**
+     * Ligada quando a quarentena não conseguiu mover o arquivo ilegível ou grande demais: gravar por cima dele o
+     * apagaria. Só um reinício (com o arquivo resolvido) a desliga.
+     */
+    volatile boolean gravacaoSuspensa;
+
+    /** Último aviso de gravação suspensa (guardado por {@link #trava}). */
+    private long ultimoAvisoSuspensa;
+
     void onStart(@Observes @Priority(1) StartupEvent event) {
         carregar();
     }
 
+    /**
+     * Carrega o histórico do volume no arranque.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o histórico didático sobrevive ao reinício do contêiner.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> arquivo acima de {@link #MAX_BYTES_ARQUIVO} não é lido (quarentena pelo
+     * tamanho, antes do parse); registro sem sessão não volta; no máximo {@link #MAX_TOTAL} registros; todo
+     * texto carregado passa pelo mesmo teto por campo da gravação ({@link #MAX_CARACTERES_CAMPO}), inclusive o
+     * que foi gravado por versão anterior.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança — arquivo grande demais ou ilegível vai para a
+     * quarentena ({@code .grande-demais-<epoch>} ou {@code .corrompido-<epoch>}), com log ERROR e evento de
+     * telemetria, e o histórico sobe vazio.</p>
+     */
     public void carregar() {
         Path file = historyFile();
         if (!Files.exists(file)) {
@@ -126,8 +164,14 @@ public class HistoricoStore {
         }
         synchronized (trava) {
             try {
+                long tamanho = Files.size(file);
+                if (tamanho > MAX_BYTES_ARQUIVO) {
+                    quarentena(file, "tamanho", tamanho, null);
+                    return;
+                }
                 List<Map<String, Object>> raw = objectMapper.readValue(file.toFile(), new TypeReference<>() {});
                 int legados = 0;
+                int[] truncados = {0};
                 if (raw != null) {
                     for (Map<String, Object> item : raw) {
                         if (item == null || !(item.get(CHAVE_SESSAO) instanceof String)) {
@@ -135,38 +179,111 @@ public class HistoricoStore {
                             continue;
                         }
                         if (historyStore.size() < MAX_TOTAL) {
-                            historyStore.addLast(item);
+                            historyStore.addLast(comTextoNoTeto(item, truncados));
                         }
                     }
                 }
                 if (legados > 0) {
                     LOG.warnf("Histórico: %d registro(s) legado(s) sem sessão descartado(s) na carga.", legados);
                 }
+                if (truncados[0] > 0) {
+                    // O corte vira definitivo na próxima gravação: fica registrado que houve reparo (a causa não se perde).
+                    LOG.warnf("Histórico: %d campo(s) acima de %d caracteres cortado(s) na carga.", truncados[0],
+                            MAX_CARACTERES_CAMPO);
+                }
                 LOG.infof("Histórico carregado: %d registros", historyStore.size());
                 telemetriaLogger.logEvent("info", "analiseDidatica", "history_load",
-                        Map.of("status", "ok", "total", historyStore.size()));
+                        Map.of("status", "ok", "total", historyStore.size(), "truncados", truncados[0]));
             } catch (IOException ex) {
-                quarentena(file, ex);
+                quarentena(file, ex.getClass().getSimpleName(), -1, ex);
             }
         }
     }
 
     /**
-     * Tira do caminho um arquivo ilegível (preservando o conteúdo para investigação) e sobe vazio:
-     * antes, a exceção saía do observer de StartupEvent, abortava o Quarkus e o container entrava
-     * em reinício infinito — um histórico didático derrubando o site inteiro.
+     * Tira do caminho um arquivo que não pode ser carregado, preservando o conteúdo para investigação, e sobe
+     * vazio.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> um histórico didático nunca derruba o site — antes, a exceção saía do observer
+     * de StartupEvent e o contêiner entrava em reinício infinito; e um arquivo gigante estourava a memória em
+     * todo arranque.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> o arquivo nunca é apagado (vai para {@code .grande-demais-<epoch>} quando nem
+     * foi lido, {@code .corrompido-<epoch>} quando a leitura falhou); o motivo
+     * (o tamanho ou o tipo do erro) sai no log e no evento — a causa não se perde.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; se nem mover der, registra ERROR e sobe vazio do mesmo
+     * jeito.</p>
+     *
+     * @param motivo  "tamanho" ou o nome simples da exceção de leitura
+     * @param tamanho bytes do arquivo quando o motivo é o tamanho; -1 nos demais
+     * @param causa   exceção da leitura, ou {@code null} quando o arquivo nem foi lido
      */
-    private void quarentena(Path file, IOException causa) {
+    private void quarentena(Path file, String motivo, long tamanho, IOException causa) {
         historyStore.clear();
-        Path destino = file.resolveSibling(file.getFileName() + ".corrompido-" + Instant.now().getEpochSecond());
+        // O arquivo grande demais pode ser JSON válido: chamá-lo de "corrompido" mandava o operador procurar o defeito
+        // errado.
+        String sufixo = causa == null ? ".grande-demais-" : ".corrompido-";
+        Path destino = file.resolveSibling(file.getFileName() + sufixo + Instant.now().getEpochSecond());
         try {
             Files.move(file, destino, StandardCopyOption.REPLACE_EXISTING);
-            LOG.errorf(causa, "Histórico ilegível movido para %s; iniciando vazio.", destino);
+            if (causa != null) {
+                LOG.errorf(causa, "Histórico ilegível movido para %s; iniciando vazio.", destino);
+            } else {
+                LOG.errorf("Histórico com %d bytes (teto %d) movido sem ler para %s; iniciando vazio.",
+                        tamanho, MAX_BYTES_ARQUIVO, destino);
+            }
         } catch (IOException moveEx) {
-            LOG.errorf(moveEx, "Histórico ilegível em %s e não foi possível movê-lo; iniciando vazio.", file);
+            // Sem mover, a primeira gravação escreveria por cima do arquivo que não pôde ser lido — e ele "nunca é
+            // apagado". A gravação fica suspensa até alguém resolver e reiniciar.
+            gravacaoSuspensa = true;
+            LOG.errorf(moveEx, "Histórico impossível de carregar (%s) em %s e não foi possível movê-lo; iniciando vazio "
+                    + "e SEM gravar até o arquivo ser resolvido.", motivo, file);
         }
-        telemetriaLogger.logEvent("error", "analiseDidatica", "history_load",
-                Map.of("status", "quarentena", "motivo", causa.getClass().getSimpleName()));
+        Map<String, Object> campos = new LinkedHashMap<>();
+        campos.put("status", "quarentena");
+        campos.put("motivo", motivo);
+        if (tamanho >= 0) {
+            campos.put("bytes", tamanho);
+        }
+        telemetriaLogger.logEvent("error", "analiseDidatica", "history_load", campos);
+    }
+
+    /**
+     * Texto de um campo do registro, no teto.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o registro guarda o que a pessoa digitou; um campo de 1 MB não pode virar
+     * 1 MB no volume a cada consulta.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> texto até {@link #MAX_CARACTERES_CAMPO} passa igual; acima, sai com os
+     * primeiros {@code MAX_CARACTERES_CAMPO - 1} caracteres e "…" — o total continua no teto. O corte nunca parte
+     * um par substituto (emoji) ao meio: a metade órfã é um caractere que a pessoa não digitou (no arquivo vira o
+     * escape solto {@code \uD83D}, e na tela, "?"). Outros tipos passam como estão.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; nulo continua nulo.</p>
+     */
+    static Object noTeto(Object valor) {
+        if (valor instanceof CharSequence texto && texto.length() > MAX_CARACTERES_CAMPO) {
+            int corte = MAX_CARACTERES_CAMPO - 1;
+            if (Character.isHighSurrogate(texto.charAt(corte - 1))) {
+                corte--;
+            }
+            return texto.subSequence(0, corte) + "…";
+        }
+        return valor;
+    }
+
+    /** Cópia do registro com todo valor de texto de primeiro nível no teto ({@link #noTeto}); conta os cortes. */
+    private static Map<String, Object> comTextoNoTeto(Map<String, Object> item, int[] cortes) {
+        Map<String, Object> copia = new LinkedHashMap<>();
+        item.forEach((chave, valor) -> {
+            Object noTeto = noTeto(valor);
+            if (noTeto != valor) {
+                cortes[0]++;
+            }
+            copia.put(chave, noTeto);
+        });
+        return copia;
     }
 
     /**
@@ -215,8 +332,29 @@ public class HistoricoStore {
         }
     }
 
+    /**
+     * Grava o histórico inteiro no volume.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o histórico sobrevive ao reinício.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> gravação atômica (temporário + move) sob a trava; com a gravação suspensa
+     * ({@link #gravacaoSuspensa}), nada é gravado — o arquivo que a quarentena não conseguiu mover não é
+     * sobrescrito.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> erro de E/S lança {@link HistoricoPersistenciaException}; suspensa,
+     * não lança (o ERROR já foi registrado na quarentena) e o conteúdo fica só em memória.</p>
+     */
     public void persistir() {
         synchronized (trava) {
+            if (gravacaoSuspensa) {
+                long agora = System.currentTimeMillis();
+                if (agora - ultimoAvisoSuspensa >= 3_600_000L) {   // um aviso por hora, para não sumir no log que gira
+                    ultimoAvisoSuspensa = agora;
+                    LOG.warnf("Histórico com gravação SUSPENSA: o arquivo %s não pôde ser movido para a quarentena; "
+                            + "as consultas ficam só em memória até ele ser resolvido e o serviço reiniciado.", historyFile());
+                }
+                return;
+            }
             gravacoes.incrementAndGet();
             Path destino = historyFile();
             try {
@@ -250,6 +388,18 @@ public class HistoricoStore {
         registrarConsulta(sessao.get(), entrada, res);
     }
 
+    /**
+     * Registra uma consulta da Análise no histórico da sessão.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> a pessoa reencontra e repete o que já consultou.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> todo texto que veio da entrada ou do resultado entra no teto por campo
+     * ({@link #MAX_CARACTERES_CAMPO}); teto por sessão e teto do arquivo como descritos na classe; gravação em
+     * lote, sob a trava.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> sem sessão ou sem resultado, não registra nada; não lança — erro
+     * de disco aparece na gravação agendada.</p>
+     */
     public void registrarConsulta(String sessao, Map<String, String> entrada, Map<String, Object> res) {
         if (res == null || res.isEmpty() || sessao == null || sessao.isBlank()) {
             return;
@@ -258,17 +408,17 @@ public class HistoricoStore {
         registro.put("id", UUID.randomUUID().toString().substring(0, 8));
         registro.put(CHAVE_SESSAO, sessao);
         registro.put("timestamp", Instant.now().toString());
-        registro.put("modo", entrada.getOrDefault("modo", ""));
-        registro.put("ip_entrada", entrada.getOrDefault("ip", ""));
-        registro.put("ipv6_entrada", entrada.getOrDefault("ipv6", ""));
-        registro.put("cidr_entrada", entrada.getOrDefault("cidr", ""));
-        registro.put("mask_entrada", entrada.getOrDefault("mask_decimal", ""));
-        registro.put("wildcard_entrada", entrada.getOrDefault("wildcard_mask", ""));
-        registro.put("rede", res.getOrDefault("rede", ""));
-        registro.put("broadcast", res.getOrDefault("broad", ""));
-        registro.put("mask", res.getOrDefault("mask", ""));
-        registro.put("cidr", res.getOrDefault("cidr", ""));
-        registro.put("tema", res.getOrDefault("nivel_tema", ""));
+        registro.put("modo", noTeto(entrada.getOrDefault("modo", "")));
+        registro.put("ip_entrada", noTeto(entrada.getOrDefault("ip", "")));
+        registro.put("ipv6_entrada", noTeto(entrada.getOrDefault("ipv6", "")));
+        registro.put("cidr_entrada", noTeto(entrada.getOrDefault("cidr", "")));
+        registro.put("mask_entrada", noTeto(entrada.getOrDefault("mask_decimal", "")));
+        registro.put("wildcard_entrada", noTeto(entrada.getOrDefault("wildcard_mask", "")));
+        registro.put("rede", noTeto(res.getOrDefault("rede", "")));
+        registro.put("broadcast", noTeto(res.getOrDefault("broad", "")));
+        registro.put("mask", noTeto(res.getOrDefault("mask", "")));
+        registro.put("cidr", noTeto(res.getOrDefault("cidr", "")));
+        registro.put("tema", noTeto(res.getOrDefault("nivel_tema", "")));
         Object gc = res.get("geo_consulta");
         if (gc instanceof Map<?, ?> geoMap) {
             registro.put("geo_consulta", geoMap);

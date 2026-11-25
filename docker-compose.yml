@@ -51,6 +51,9 @@ services:
     mem_limit: ${MEM_LIMIT:-768m}
     memswap_limit: ${MEM_LIMIT:-768m}
     mem_reservation: 256m
+    # Teto de CPU: a VPS tem 4 núcleos divididos com outros serviços. Sem ele, um pedido caro (ou vários
+    # em paralelo) ocupava todos os núcleos e derrubava a latência dos vizinhos junto (auditoria, Lote 1).
+    cpus: ${CPU_LIMIT:-2.0}
     restart: unless-stopped
     # O log vai para o stdout (json-file do Docker). Sem teto ele cresce sem limite no disco que a
     # VPS divide com outros serviços (auditoria F27): 3 arquivos de 10 MB por container.

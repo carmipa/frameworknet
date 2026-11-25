@@ -618,6 +618,18 @@ flowchart LR
 | **Env obrigatórias (prod)** | `ADMIN_API_KEY`, `CSRF_SECRET`, `QUARKUS_PROFILE=prod` |
 | **Rede (VPS)** | `nginx-proxy-network` (externa) + bind `127.0.0.1:${HTTP_PORT}:8080` |
 | **Dev Docker** | `docker-compose.dev.yml` — dados em `./docker-data`, porta padrão `8081` |
+| **Teto de CPU** | `cpus: ${CPU_LIMIT:-2.0}` no serviço da aplicação (produção e dev). Vale para o contêiner em execução, não para o build da imagem |
+
+#### Arquivos em quarentena no volume (o que fazer)
+
+| Arquivo | Quando aparece | Ação |
+|---------|----------------|-------------|
+| `.framework-net/consulta_history.v2.json.grande-demais-<epoch>` | histórico acima de 16 MiB no arranque: movido **sem ser lido** (ler tudo estourava a memória em todo arranque) | o site sobe com histórico vazio; o arquivo fica para investigação e pode ser apagado depois de lido |
+| `.framework-net/consulta_history.v2.json.corrompido-<epoch>` | histórico ilegível (JSON quebrado) | idem |
+| `logs/telemetria_compartilhada.json.grande-demais-<epoch>` | janela da telemetria acima de `max-events` × 16 KiB (mínimo 4 MiB) | a janela começa vazia; o JSONL (`framework-net-eventos.jsonl`) continua com a trilha |
+
+- Se a quarentena **não conseguir mover** o arquivo, a gravação daquele arquivo fica **suspensa** até um reinício (gravar por cima apagaria a evidência). O log diz isso em ERROR no arranque e, no histórico, avisa de novo a cada hora. Resolva o arquivo (permissão, disco cheio) e reinicie o contêiner.
+- **Rollback**: nunca devolva um `*.grande-demais-*` ao nome original com uma versão anterior no ar — versões anteriores leem o arquivo inteiro e voltariam a cair por falta de memória em todo arranque.
 
 ---
 
@@ -847,6 +859,7 @@ As chaves são definidas em `application.properties` (dev) e `application-prod.p
 | `framework.calculadora.max-linhas` | `512` | Sub-redes **renderizadas** por divisão. O total real continua sendo calculado e exibido — o teto evita travar o navegador (um `/8` em `/30` são 4.194.304) |
 | `framework.calculadora.max-vlans` | `256` | VLANs geradas por plano |
 | `framework.calculadora.max-redes-agregacao` | `64` | Redes aceitas por sumarização |
+| `framework.ipv6.max-redes-sumarizacao` | `64` | Prefixos aceitos por sumarização IPv6 — o mesmo teto do IPv4; a lista acima dele é recusada com mensagem, antes de qualquer cálculo |
 | `framework.app.comparador-cidr-padrao-a` | `20` | CIDR padrão do comparador (A) |
 | `framework.app.comparador-cidr-padrao-b` | `24` | CIDR padrão do comparador (B) |
 | `framework.dns.cache-ttl-seconds` | `180` | TTL do cache DNS |
@@ -877,6 +890,7 @@ As chaves são definidas em `application.properties` (dev) e `application-prod.p
 | `framework.security.rate-limit-enabled` | `true` | Habilita rate limiting |
 | `framework.security.rate-limit-per-minute` | `120` | Limite geral por minuto |
 | `framework.security.rate-limit-heavy-per-minute` | `30` | Limite de rotas pesadas |
+| `framework.security.rate-limit-csrf-recusas-per-minute` | `120` | Recusas de CSRF por cliente e minuto, num balde próprio: não gastam o limite da rota (turma atrás do mesmo NAT com token vencido não se bloqueia); acima do teto, o pedido sem token válido no cabeçalho leva 429 sem o corpo ser lido |
 | `framework.security.admin-api-key` | *(dev)* | Chave admin — em prod via `ADMIN_API_KEY` |
 | `framework.security.admin-api-key-required` | `true` | Exige chave nas rotas protegidas |
 

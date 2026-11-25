@@ -21,6 +21,14 @@ public interface Ipv6Config {
     @WithDefault("256")
     int maxLinhas();
 
+    /**
+     * Máximo de prefixos aceitos por sumarização IPv6 — o mesmo teto da sumarização IPv4
+     * ({@code framework.calculadora.max-redes-agregacao}). Sem ele, uma lista de ~25 mil prefixos
+     * gerava ~7 MB de HTML por pedido e poucos pedidos simultâneos esgotavam a memória.
+     */
+    @WithDefault("64")
+    int maxRedesSumarizacao();
+
     /** Quantas sub-redes contíguas do mesmo prefixo a "régua" da Análise lista (análogo ao IPv4). */
     @WithDefault("8")
     int reguaCount();

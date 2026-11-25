@@ -5,6 +5,7 @@ import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -46,8 +47,21 @@ public class AdminLoginResource {
                 .data("enforcementActive", adminApiKeyService.isEnforcementActive());
     }
 
+    /**
+     * Login do painel administrativo pela chave de API.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> dar ao dono acesso às telas administrativas quando a chave é exigida.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> sem a exigência ativa, só redireciona (não há o que autenticar); o redirect
+     * passa por {@code safeRedirect}, nunca para fora do site; só formulário urlencoded entra — o multipart tem outro
+     * leitor, com outros tetos, e a tela de login nunca o envia.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> chave errada volta à tela de login com o erro; corpo de outro tipo
+     * recebe 415 antes de qualquer leitura.</p>
+     */
     @POST
     @Path("/login")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
     public Response authenticate(
             @FormParam("api_key") String apiKey,

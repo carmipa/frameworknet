@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.framework.net.telemetria.TelemetriaContext;
 
 /**
  * Geocodificação (endereço → coordenadas) via
@@ -180,7 +181,7 @@ public class NominatimGeocoder {
             guardarCache(chave, out);
             return Optional.of(new LinkedHashMap<>(out));
         } catch (Exception ex) {
-            LOG.warnf("Falha no geocoding Nominatim para \"%s\": %s", query, ex.getMessage());
+            LOG.warnf("Falha no geocoding Nominatim para \"%s\": %s", TelemetriaContext.paraLog(query, 256), TelemetriaContext.paraLog(ex.getMessage(), 512));
             return Optional.empty();
         }
     }
@@ -239,7 +240,7 @@ public class NominatimGeocoder {
             guardarCache(chave, out);
             return Optional.of(new LinkedHashMap<>(out));
         } catch (Exception ex) {
-            LOG.warnf("Falha no reverse geocoding Nominatim (%s, %s): %s", lat, lon, ex.getMessage());
+            LOG.warnf("Falha no reverse geocoding Nominatim (%s, %s): %s", lat, lon, TelemetriaContext.paraLog(ex.getMessage(), 512));
             return Optional.empty();
         }
     }
@@ -262,14 +263,25 @@ public class NominatimGeocoder {
         }
     }
 
+    /**
+     * Guarda a resposta do geocoding no cache em memória e no distribuído.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> a mesma busca não volta ao Nominatim dentro do TTL — poupa a cota pública e
+     * responde mais rápido.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> a chave da busca por texto é o que a pessoa digitou (normalizado): no log
+     * ela sai pela regra única ({@code TelemetriaContext.paraLog}, até 256 caracteres), nunca crua.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; falha do cache distribuído vira linha de DEBUG e a
+     * resposta já obtida segue válida (cache é otimização).</p>
+     */
     private void guardarCache(String chave, Map<String, Object> value) {
         cache().guardar(chave, new LinkedHashMap<>(value));
         try {
             cacheDistribuido.guardar("nominatim", chave, objectMapper.writeValueAsString(value),
                     Duration.ofSeconds(Math.max(1, cacheTtlSeconds)));
         } catch (Exception ex) {
-            // Cache é otimização: falhar aqui não pode invalidar a resposta já obtida.
-            LOG.debugf("Nao foi possivel gravar %s no cache distribuido", chave);
+            LOG.debugf("Nao foi possivel gravar %s no cache distribuido", TelemetriaContext.paraLog(chave, 256));
         }
     }
 

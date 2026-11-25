@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.framework.net.telemetria.TelemetriaContext;
 
 @Path("/resolucao-problemas")
 public class ResolucaoProblemasResource {
@@ -138,6 +139,21 @@ public class ResolucaoProblemasResource {
         return renderPage(null, formData, locations, Set.of(), null, "{}", "");
     }
 
+    /**
+     * Recebe o formulário do Projetar: calcula o plano VLSM, exporta o roteiro/relatório/ZIP do laboratório, monta o
+     * pacote da turma ou desvia para a engenharia reversa.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> é a ação principal da página — o aluno descreve o cenário e recebe o plano de
+     * endereçamento e os arquivos para o Packet Tracer.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> entrada inválida nunca vira plano nem arquivo; a tela volta com o erro e os
+     * campos marcados. O evento de telemetria leva só vocabulário fixo e o nome da classe da falha — o texto da
+     * mensagem, que pode ecoar a colagem, vai em {@code mensagem}, fora do esquema do dataset público.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança: {@link EntradaInvalidaException} e
+     * {@link ResolucaoProblemasException} voltam como mensagem na própria página (200 com HTML); qualquer outra
+     * exceção vira mensagem genérica na tela e evento de erro com a pilha saneada.</p>
+     */
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.TEXT_HTML, MediaType.TEXT_PLAIN, "application/zip"})
@@ -233,7 +249,7 @@ public class ResolucaoProblemasResource {
                         .build();
             }
             telemetriaLogger.logEvent("info", "resolucaoProblemas", "problem_solve",
-                    Map.of("status", "ok", "topology", formData.getTopologyType(),
+                    Map.of("status", "ok", "topology", TelemetriaContext.vocabulario(formData.getTopologyType()),
                             "locations", locationResult.locations().size()));
         } catch (EntradaInvalidaException ex) {
             erro = ex.getMessage();
@@ -243,11 +259,11 @@ public class ResolucaoProblemasResource {
                 erro = "Não foi possível exportar: " + erro;
             }
             telemetriaLogger.logEvent("warn", "resolucaoProblemas", "problem_solve",
-                    Map.of("status", "invalid_input", "erro", ex.getMessage()));
+                    camposDaFalha("invalid_input", ex));
         } catch (ResolucaoProblemasException ex) {
             erro = ex.getMessage();
             telemetriaLogger.logEvent("warn", "resolucaoProblemas", "problem_solve",
-                    Map.of("status", "error", "erro", ex.getMessage()));
+                    camposDaFalha("error", ex));
         } catch (Exception ex) {
             erro = "Erro interno ao processar a resolução de problemas. Tente novamente.";
             telemetriaLogger.logException("resolucaoProblemas", "problem_solve", null, ex);
@@ -260,6 +276,19 @@ public class ResolucaoProblemasResource {
         return Response.ok(instance.render()).type(MediaType.TEXT_HTML).build();
     }
 
+    /**
+     * Monta o pacote da turma (um laboratório por aluno) a partir da colagem.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o professor cola a lista da turma e baixa um ZIP com o cenário de cada aluno.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> parâmetros de exportação inválidos ou colagem inválida nunca geram ZIP; servidor
+     * ocupado não marca a colagem como errada; o evento leva o nome da classe da falha, nunca o texto que pode trazer
+     * nome de aluno.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança: a página volta com a mensagem — a da colagem (campo marcado),
+     * a de "sem vaga" ({@code PacoteTurmaOcupadoException}, campo não marcado) ou uma genérica para falha inesperada,
+     * registrada com a pilha saneada.</p>
+     */
     private Response handleClassZipExport(ResolucaoFormData formData, String rosterPaste) {
         Set<String> invalidFields = new HashSet<>(markExportSettings(formData));
         if (!invalidFields.isEmpty()) {
@@ -278,11 +307,16 @@ public class ResolucaoProblemasResource {
                     .type("application/zip")
                     .header("Content-Disposition", "attachment; filename=\"pacote_turma_packet_tracer.zip\"")
                     .build();
+        } catch (org.framework.net.resolucaoProblemas.exception.PacoteTurmaOcupadoException ex) {
+            // Servidor ocupado não é erro da colagem: a colagem não é marcada e a telemetria separa o caso.
+            erro = ex.getMessage();
+            telemetriaLogger.logEvent("warn", "resolucaoProblemas", "problem_export_class_zip",
+                    Map.of("status", "sem_vaga"));
         } catch (EntradaInvalidaException ex) {
             erro = ex.getMessage();
             invalidFields.add("class_roster_paste");
             telemetriaLogger.logEvent("warn", "resolucaoProblemas", "problem_export_class_zip",
-                    Map.of("status", "invalid_input", "erro", ex.getMessage()));
+                    camposDaFalha("invalid_input", ex));
         } catch (Exception ex) {
             erro = "Erro ao gerar ZIP da turma. Verifique a colagem e os parâmetros WAN/roteamento.";
             invalidFields.add("class_roster_paste");
@@ -521,6 +555,18 @@ public class ResolucaoProblemasResource {
         return form;
     }
 
+    /**
+     * Junta as linhas de localidade do formulário (nome + hosts).
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> transformar o que a pessoa preencheu nas localidades do cenário VLSM.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> no máximo {@link InputLimits#MAX_LOCATION_ROWS} linhas preenchidas; nome
+     * saneado e com até {@link InputLimits#MAX_LABEL_LENGTH} caracteres (ele se repete na configuração de cada
+     * vizinho); hosts inteiro positivo dentro do teto.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; devolve a mensagem e os campos a marcar na primeira linha
+     * inválida — nome recusado por tamanho não volta para a tela.</p>
+     */
     private LocationCollectionResult collectLocations(List<String> locNames, List<String> locHosts) {
         List<String> names = locNames == null ? List.of() : locNames;
         List<String> hosts = locHosts == null ? List.of() : locHosts;
@@ -553,6 +599,17 @@ public class ResolucaoProblemasResource {
                         locations,
                         "Nome da localidade #" + rowNumber + " deve ser informado.",
                         Set.of("loc_name", "loc_hosts")
+                );
+            }
+            // O nome se repete na configuração de cada vizinho (em malha, por par de roteadores): sem teto, 50 nomes de
+            // 20 mil caracteres davam dezenas de MB por pedido. Volta para a tela só o começo (no teto), para a pessoa
+            // ver o que colou e corrigir sem redigitar.
+            if (name.length() > InputLimits.MAX_LABEL_LENGTH) {
+                locations.add(new LocationInput(name.substring(0, InputLimits.MAX_LABEL_LENGTH), host));
+                return new LocationCollectionResult(
+                        locations,
+                        "Nome da localidade #" + rowNumber + " passou de " + InputLimits.MAX_LABEL_LENGTH + " caracteres.",
+                        Set.of("loc_name")
                 );
             }
             if (host.isEmpty()) {
@@ -620,6 +677,28 @@ public class ResolucaoProblemasResource {
             }
         }
         return invalid;
+    }
+
+    /**
+     * Campos do evento de falha do Projetar, na convenção de {@code TelemetriaLogger.logException}.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o painel precisa saber o que falhou sem que o dataset público receba o que o
+     * aluno colou.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> {@code erro} é sempre o nome simples da classe da exceção (vocabulário do
+     * código); o texto da mensagem, que pode ecoar a colagem (nome de aluno, endereço), vai em {@code mensagem}, que
+     * não está no esquema publicável e no log sai pela regra única de neutralização.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; mensagem nula simplesmente não entra no mapa.</p>
+     */
+    static Map<String, Object> camposDaFalha(String status, Exception ex) {
+        Map<String, Object> campos = new java.util.LinkedHashMap<>();
+        campos.put("status", status);
+        campos.put("erro", ex.getClass().getSimpleName());
+        if (ex.getMessage() != null) {
+            campos.put("mensagem", ex.getMessage());
+        }
+        return campos;
     }
 
     /** Valida WAN/topologia/roteamento para exportação em lote (sem rede base do formulário). */

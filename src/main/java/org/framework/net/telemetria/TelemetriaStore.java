@@ -298,26 +298,91 @@ public class TelemetriaStore {
         }
     }
 
+    /** Bytes por evento admitidos no arquivo canônico (com o teto por evento, um evento fica bem abaixo disto). */
+    static final long BYTES_POR_EVENTO_CANONICO = 16L * 1024;
+
+    /** Ligada quando a carga não conseguiu mover o arquivo grande demais; só um reinício a desliga. */
+    volatile boolean gravacaoCanonicaSuspensa;
+
+    /**
+     * Carrega no arranque a janela de eventos gravada pelo processo anterior.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o painel da Telemetria não começa vazio a cada deploy.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> arquivo acima de {@code maxEvents} × {@value #BYTES_POR_EVENTO_CANONICO} bytes
+     * (mínimo 4 MiB) vai para a quarentena ({@code .grande-demais-<epoch>}) SEM ser lido: a versão anterior gravava
+     * campos de até 1 MB, e ler tudo no arranque estouraria a memória em laço — o mesmo modo de falha do histórico.
+     * Cada evento carregado passa por {@link TelemetriaContext#neutralizarLegado} (valor e mensagem, no teto): o
+     * gravado por versão anterior pode trazer controle cru, o desta versão já vem saneado — e a neutralização não
+     * reescapa {@code %}, então reaplicá-la a cada reinício não dobra escapes. No máximo {@code maxEvents}. Se o
+     * arquivo grande demais não puder ser movido, a gravação do canônico fica suspensa até um reinício (gravar por
+     * cima apagaria a evidência).</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> erro de leitura lança {@link IOException} (o chamador registra e
+     * segue vazio); arquivo grande demais não lança — é movido, com ERROR no log, e a janela começa vazia.</p>
+     */
     private void carregarPersistido() throws IOException {
         Path arquivo = arquivoCompartilhado();
         if (!Files.exists(arquivo)) {
+            return;
+        }
+        long tamanho = Files.size(arquivo);
+        long teto = Math.max(4L * 1024 * 1024, Math.max(1, maxEvents) * BYTES_POR_EVENTO_CANONICO);
+        if (tamanho > teto) {
+            Path destino = arquivo.resolveSibling(arquivo.getFileName() + ".grande-demais-" + Instant.now().getEpochSecond());
+            String desfecho;
+            try {
+                Files.move(arquivo, destino, StandardCopyOption.REPLACE_EXISTING);
+                desfecho = "movido";
+                LOG.errorf("Telemetria persistida com %d bytes (teto %d) movida sem ler para %s; janela começa vazia.",
+                        tamanho, teto, destino);
+            } catch (IOException moveEx) {
+                desfecho = "nao_movido";
+                gravacaoCanonicaSuspensa = true;
+                LOG.errorf(moveEx, "Telemetria persistida com %d bytes (teto %d) não foi lida nem movida; janela começa "
+                        + "vazia e o arquivo NÃO será regravado até ser resolvido.", tamanho, teto);
+            }
+            eventos.clear();
+            Map<String, Object> campos = new LinkedHashMap<>();
+            campos.put("status", "quarentena");
+            campos.put("motivo", "tamanho");
+            campos.put("bytes", tamanho);
+            campos.put("resultado", desfecho);
+            registrar(new TelemetriaEvent(java.util.UUID.randomUUID().toString(), Instant.now(), "ERROR", "telemetria",
+                    "telemetry_load", "error", null, null, null, null, null, null,
+                    "evento=telemetry_load status=quarentena bytes=" + tamanho + " resultado=" + desfecho, campos));
             return;
         }
         Map<String, Object> root = objectMapper.readValue(arquivo.toFile(), new TypeReference<>() {});
         List<TelemetriaEvent> carregados = TelemetriaOtlpMapper.fromLogsData(root);
         eventos.clear();
         for (TelemetriaEvent evento : carregados) {
-            eventos.addLast(evento);
+            eventos.addLast(comTamanhoNoTeto(evento));
         }
         while (eventos.size() > maxEvents) {
             eventos.removeLast();
         }
     }
 
+    /** Evento carregado com valor e mensagem neutralizados e no teto (neutralização idempotente, sem reescapar %). */
+    static TelemetriaEvent comTamanhoNoTeto(TelemetriaEvent e) {
+        Map<String, Object> campos = new LinkedHashMap<>();
+        if (e.fields() != null) {
+            e.fields().forEach((chave, valor) -> campos.put(chave,
+                    valor instanceof CharSequence texto ? TelemetriaContext.neutralizarLegado(texto.toString(), TelemetriaLogger.MAX_VALOR_CAMPO) : valor));
+        }
+        return new TelemetriaEvent(e.id(), e.timestamp(), e.level(), e.modulo(), e.evento(), e.status(), e.requestId(),
+                e.traceId(), e.httpMethod(), e.httpPath(), e.httpStatus(), e.durationMs(),
+                TelemetriaContext.neutralizarLegado(e.message(), TelemetriaLogger.MAX_MENSAGEM), campos);
+    }
+
     /**
      * Persiste o arquivo canônico compartilhado em OpenTelemetry OTLP/JSON (Logs data model).
      */
     private void persistirCanonico() throws IOException {
+        if (gravacaoCanonicaSuspensa) {
+            return;   // o arquivo que a carga não conseguiu mover continua no lugar: gravar por cima o apagaria
+        }
         garantirPasta();
         TelemetriaResumo resumo = gerarResumo(maxEvents);
         Map<String, Object> root = TelemetriaOtlpMapper.toLogsData(

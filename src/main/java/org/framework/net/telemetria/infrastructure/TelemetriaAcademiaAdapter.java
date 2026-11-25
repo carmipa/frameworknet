@@ -6,6 +6,7 @@ import org.framework.net.academia.eventos.domain.EventoAcademia;
 import org.framework.net.academia.eventos.domain.EventoAcademia.ErroJs;
 import org.framework.net.academia.eventos.domain.EventoAcademia.Visita;
 import org.framework.net.academia.eventos.domain.ports.TelemetriaAcademiaPort;
+import org.framework.net.telemetria.TelemetriaContext;
 import org.framework.net.telemetria.TelemetriaLogger;
 import org.jboss.logging.Logger;
 
@@ -80,17 +81,33 @@ public class TelemetriaAcademiaAdapter implements TelemetriaAcademiaPort {
         telemetriaLogger.logEvent("info", MODULO, "academia_visita", campos);
     }
 
+    /**
+     * Guarda um erro de JavaScript da Academia no buffer próprio e o anuncia no log e no console do painel.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o dono do site precisa ver que uma lição quebrou no navegador de alguém, sem
+     * que esse texto chegue ao dataset público.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> o buffer nunca passa de {@link #TETO_ERROS} (o mais antigo sai e é contado);
+     * a mensagem, que vem do navegador do visitante, vai ao log e ao console pela regra única
+     * ({@code TelemetriaContext.paraLog}, até 256 caracteres) — não forja linha nem sai com emoji partido.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança por conteúdo da mensagem; falha de runtime sobe para
+     * {@link #registrar}, que a loga em WARN sem derrubar a Academia.</p>
+     */
     private synchronized void guardarErro(ErroJs erro) {
         if (erros.size() >= TETO_ERROS) {
             erros.removeFirst();
             errosDescartados++;
         }
         erros.addLast(new ErroGuardado(Instant.now(), erro.licaoId(), erro.tipo().name(), erro.mensagem()));
-        LOG.warnf("academia erro_js licao=%s tipo=%s mensagem=%s", erro.licaoId(), erro.tipo(), erro.mensagem());
+        // O texto vem do navegador do visitante: o saneador da Academia troca controle C0 e formatação, mas deixa
+        // passar U+2028/U+2029 e pode cortar um emoji ao meio — a regra única do log fecha os dois.
+        String mensagemLog = TelemetriaContext.paraLog(erro.mensagem(), 256);
+        LOG.warnf("academia erro_js licao=%s tipo=%s mensagem=%s", erro.licaoId(), erro.tipo(), mensagemLog);
         // ACAD-04: o buffer não tinha leitor fora dos testes. O console do painel é onde o dono olha.
         if (console != null) {
             console.append("warn", "academia erro_js licao=" + erro.licaoId() + " tipo=" + erro.tipo()
-                    + " mensagem=" + erro.mensagem() + " (buffer " + erros.size() + "/" + TETO_ERROS
+                    + " mensagem=" + mensagemLog + " (buffer " + erros.size() + "/" + TETO_ERROS
                     + ", descartados " + errosDescartados + ")");
         }
     }

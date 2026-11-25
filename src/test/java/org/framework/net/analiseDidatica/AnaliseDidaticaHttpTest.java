@@ -250,6 +250,105 @@ class AnaliseDidaticaHttpTest {
                 .body(containsString("O /8 digitado junto do endereço prevaleceu sobre o /24"));
     }
 
+    /**
+     * Lote 1 da auditoria: o POST /analise lê o corpo como mapa, caminho em que o teto de 256 KB por campo do Quarkus
+     * não vale — cada campo ia até 1 MB e chegava ao DNS, ao log, à telemetria e ao histórico. Campo acima de 8192
+     * caracteres é recusado com mensagem e campo marcado; o valor NÃO volta na página, e os campos que cabiam voltam
+     * (a pessoa não redigita o CIDR).
+     */
+    @Test
+    void campoAcimaDoTetoERecusadoSemEcoarOValor() {
+        String colado = "zq".repeat(4097);
+        String corpo = given()
+                .contentType("application/x-www-form-urlencoded")
+                .formParam("modo", "dominio")
+                .formParam("ip", colado)
+                .formParam("cidr", "27")
+                .when().post("/analise")
+                .then()
+                .statusCode(200)
+                .extract().asString();
+        org.junit.jupiter.api.Assertions.assertTrue(corpo.contains("passou de 8192 caracteres"),
+                "a recusa veio sem a mensagem");
+        org.junit.jupiter.api.Assertions.assertFalse(corpo.contains("zqzqzqzqzqzqzqzqzqzq"),
+                "o valor recusado foi ecoado na página");
+        org.junit.jupiter.api.Assertions.assertTrue(
+                java.util.regex.Pattern.compile("name=\"ip\" class=\"[^\"]*is-invalid").matcher(corpo).find(),
+                "o campo recusado não foi marcado");
+        org.junit.jupiter.api.Assertions.assertTrue(
+                java.util.regex.Pattern.compile("name=\"cidr\"[^>]*value=\"27\"").matcher(corpo).find(),
+                "o CIDR que cabia no teto não voltou para a tela");
+    }
+
+    /**
+     * A1: uma URL longa colada no modo Domínio (link de proteção de e-mail passa de 2 mil caracteres) fica dentro do
+     * teto e cai na validação do próprio modo, que extrai o host. O host do teste passa de 253 de propósito: a
+     * validação recusa sem consultar o DNS, e a mensagem fala do nome, não da URL.
+     */
+    @Test
+    void campoNoTetoSegueParaAValidacaoDoModo() {
+        String url = "https://" + "a".repeat(300) + ".invalid/caminho?p=" + "x".repeat(7000);
+        org.junit.jupiter.api.Assertions.assertTrue(url.length() > 2048 && url.length() <= 8192);
+        given()
+                .contentType("application/x-www-form-urlencoded")
+                .formParam("modo", "dominio")
+                .formParam("ip", url)
+                .when().post("/analise")
+                .then()
+                .statusCode(200)
+                .body(not(containsString("passou de 8192 caracteres")))
+                .body(containsString("Nome de domínio longo demais"));
+    }
+
+    /**
+     * Lote 1 (revisão adversarial): o corpo do /analise era lido como mapa, leitor sem teto de quantidade de campos — um
+     * corpo de 1 MB com centenas de milhares de chaves montava três mapas inteiros na memória. Lido por @RestForm, a
+     * enxurrada de campos é recusada pelo leitor do Quarkus (medido: 5000 campos → 400). A1: um envio com algumas
+     * centenas de campos sobrando continua calculando.
+     */
+    @Test
+    void enxurradaDeCamposERecusadaEEnvioNormalCalcula() {
+        StringBuilder corpo = new StringBuilder("modo=cidr&ip=10.0.0.1&cidr=24");
+        for (int i = 0; i < 5000; i++) {
+            corpo.append("&k").append(i).append('=');
+        }
+        given()
+                .contentType("application/x-www-form-urlencoded")
+                .body(corpo.toString())
+                .when().post("/analise")
+                .then()
+                .statusCode(400);
+        given()
+                .contentType("application/x-www-form-urlencoded")
+                .body(corpo.substring(0, corpo.indexOf("&k300=")))
+                .when().post("/analise")
+                .then()
+                .statusCode(200)
+                .body(containsString("10.0.0.255"));
+    }
+
+    /**
+     * Lote 1 (revisão adversarial): escape {@code %} inválido no corpo, com o CSRF aprovado (este perfil o desliga),
+     * caía no leitor de formulário e virava 500 com stack trace no log, em toda rota de formulário. É erro de quem
+     * enviou: 400, sem falha não tratada.
+     */
+    @Test
+    void escapeInvalidoNoCorpoE400ENao500() {
+        given()
+                .contentType("application/x-www-form-urlencoded")
+                .body("modo=cidr&ip=10.0.0.1&cidr=24&x=%zz")
+                .when().post("/analise")
+                .then()
+                .statusCode(400);
+        given()
+                .header("Accept", "*/*")
+                .contentType("application/x-www-form-urlencoded")
+                .body("vlans=10&x=%")
+                .when().post("/calculadora/api/vlan")
+                .then()
+                .statusCode(400);
+    }
+
     @Test
     void postComparador() {
         given()

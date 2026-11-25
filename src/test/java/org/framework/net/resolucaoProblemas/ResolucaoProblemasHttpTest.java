@@ -39,6 +39,41 @@ class ResolucaoProblemasHttpTest {
                 .body(containsString("Matriz"));
     }
 
+    /**
+     * Lote 1 (revisão adversarial): o nome da localidade se repete na configuração de cada vizinho — em malha, por par
+     * de roteadores. Sem teto, 50 nomes de 20 mil caracteres davam dezenas de MB por pedido. Fronteira (A1): 120
+     * caracteres calculam; 121 são recusados com a linha, e o nome recusado não volta para a tela.
+     */
+    @Test
+    void nomeDeLocalidadeTemTeto() {
+        String noTeto = "M".repeat(org.framework.net.shared.InputLimits.MAX_LABEL_LENGTH);
+        given()
+                .contentType("application/x-www-form-urlencoded")
+                .formParam("action_type", "calculate")
+                .formParam("base_network", "172.42.0.0/16")
+                .formParam("topology_type", "mesh")
+                .formParam("loc_name", noTeto, "Filial")
+                .formParam("loc_hosts", "40", "30")
+                .when().post("/resolucao-problemas")
+                .then()
+                .statusCode(200)
+                .body(not(containsString("passou de 120 caracteres")))
+                .body(containsString(noTeto));
+        String acima = "Q".repeat(org.framework.net.shared.InputLimits.MAX_LABEL_LENGTH + 1);
+        given()
+                .contentType("application/x-www-form-urlencoded")
+                .formParam("action_type", "calculate")
+                .formParam("base_network", "172.42.0.0/16")
+                .formParam("topology_type", "mesh")
+                .formParam("loc_name", acima, "Filial")
+                .formParam("loc_hosts", "40", "30")
+                .when().post("/resolucao-problemas")
+                .then()
+                .statusCode(200)
+                .body(containsString("Nome da localidade #1 passou de 120 caracteres"))
+                .body(not(containsString(acima)));
+    }
+
     /** Auditoria CALC-39: o título dos enlaces dizia "/30" com outro prefixo WAN escolhido. */
     @Test
     void tituloDosEnlacesUsaOPrefixoWanEscolhido() {

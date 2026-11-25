@@ -77,6 +77,46 @@ class RecusaComPaginaParaNavegadorHttpTest {
                 .body(containsString("Token CSRF inválido ou ausente"));
     }
 
+    /**
+     * Lote 1 (OPS-05): corpo com escape {@code %} inválido derrubava o filtro do CSRF com 500 e stack trace no log,
+     * uma linha por pedido. Token ilegível é token ausente: 403, como qualquer token inválido.
+     */
+    /**
+     * Com o CSRF ligado (como em produção), o filtro lê o tipo do corpo para achar o token. Cabeçalho malformado é erro
+     * de sintaxe de quem enviou: 400, 403 ou 415 — nunca 500 com pilha no log.
+     */
+    @org.junit.jupiter.params.ParameterizedTest(name = "Content-Type malformado [{0}] sem token recebe 4xx")
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"application/x-www-form-urlencoded; charset", "a/b/c",
+            "texto-sem-barra", "application/x-www-form-urlencoded;;=;"})
+    void contentTypeMalformadoSemTokenNaoVira500(String contentType) throws Exception {
+        java.net.http.HttpRequest pedido = java.net.http.HttpRequest.newBuilder(raiz.resolve("analise"))
+                .header("Content-Type", contentType)
+                .header("Accept", "text/html")
+                .POST(java.net.http.HttpRequest.BodyPublishers.ofString("modo=cidr&ip=10.0.0.1&cidr=%32%34"))
+                .build();
+        int status;
+        try (java.net.http.HttpClient cliente = java.net.http.HttpClient.newHttpClient()) {
+            status = cliente.send(pedido, java.net.http.HttpResponse.BodyHandlers.discarding()).statusCode();
+        }
+        assertTrue(status == 400 || status == 403 || status == 415, "veio " + status);
+    }
+
+    @io.quarkus.test.common.http.TestHTTPResource("/")
+    java.net.URI raiz;
+
+    @Test
+    void corpoComEscapeInvalidoRecebe403ENao500() {
+        given()
+                .header("Accept", "*/*")
+                .contentType("application/x-www-form-urlencoded")
+                .body("csrf_token=%&x=%zz")
+                .when().post("/calculadora/api/vlan")
+                .then()
+                .statusCode(403)
+                .body(containsString("Token CSRF inválido ou ausente"));
+    }
+
+
     @Test
     void navegacaoLimitadaRecebeAPaginaDeErro() {
         Response recusa = primeiraRecusa("text/html,application/xhtml+xml,*/*;q=0.8", "/calculadora/");

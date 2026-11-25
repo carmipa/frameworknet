@@ -35,6 +35,11 @@ class ComposeDevEspelhaProducaoGuardTest {
         assertEquals(comandoRedis(prod), comandoRedis(dev), "Redis do dev diverge da produção");
         assertEquals(prod.stream().filter(l -> l.strip().startsWith("mem_limit:")).count(),
                 dev.stream().filter(l -> l.strip().startsWith("mem_limit:")).count(), "teto de memória ausente no dev");
+        // Teto de CPU (Lote 1 da auditoria): sem ele um pedido caro ocupava os 4 núcleos da VPS compartilhada.
+        List<String> cpusProd = prod.stream().map(String::strip).filter(l -> l.startsWith("cpus:")).toList();
+        assertEquals(1, cpusProd.size(), "a aplicação na produção precisa de exatamente um teto de CPU (cpus:)");
+        assertEquals(cpusProd, dev.stream().map(String::strip).filter(l -> l.startsWith("cpus:")).toList(),
+                "teto de CPU do dev diverge da produção");
         assertFalse(dev.stream().anyMatch(l -> l.contains("127.0.0.1:8080/ ")), "healthcheck do dev bate em / (gera telemetria)");
         assertFalse(dev.stream().anyMatch(l -> l.strip().equals("healthcheck:")), "healthcheck próprio no dev diverge do Dockerfile");
     }

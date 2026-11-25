@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import org.framework.net.analiseDidatica.config.DnsConfig;
 import org.framework.net.analiseDidatica.exception.DnsResolucaoException;
 import org.framework.net.analiseDidatica.exception.EntradaInvalidaException;
+import org.framework.net.shared.InputLimits;
 import org.framework.net.shared.NetworkAddressGuard;
 import org.framework.net.telemetria.TelemetriaLogger;
 import org.jboss.logging.Logger;
@@ -321,10 +322,27 @@ public class DnsResolver {
         }
     }
 
-    private static String normalizar(String hostname) {
+    /**
+     * Nome pronto para o cache e para a consulta.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> todo nome que a Análise e o IPv6 mandam ao DNS passa por aqui — é a única
+     * saída para a rede.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> minúsculo e aparado; no máximo {@link InputLimits#MAX_NOME_HOST}
+     * caracteres — nome maior não existe no DNS, e sem o teto ele virava chave de cache, evento de telemetria e
+     * consulta inútil.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> vazio lança {@link EntradaInvalidaException}; longo demais lança
+     * {@link DnsResolucaoException}, que os chamadores já transformam em mensagem na tela.</p>
+     */
+    static String normalizar(String hostname) {
         String normalized = hostname == null ? "" : hostname.strip().toLowerCase();
         if (normalized.isEmpty()) {
             throw new EntradaInvalidaException("Domínio/hostname vazio.");
+        }
+        if (normalized.length() > InputLimits.MAX_NOME_HOST) {
+            throw new DnsResolucaoException("Nome de domínio longo demais: o máximo é " + InputLimits.MAX_NOME_HOST
+                    + " caracteres (RFC 1035).");
         }
         return normalized;
     }

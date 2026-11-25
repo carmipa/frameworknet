@@ -17,6 +17,7 @@ import org.framework.net.ipv6.exception.Ipv6Exception;
 import org.framework.net.telemetria.TelemetriaLogger;
 
 import java.util.Map;
+import org.framework.net.telemetria.TelemetriaContext;
 
 /**
  * Orquestra a Calculadora IPv6: valida a intenção, chama o kernel e registra telemetria.
@@ -112,9 +113,17 @@ public class Ipv6CidrService {
         return p;
     }
 
-    /** Sumariza N prefixos/endereços IPv6 (supernet, blocos mesclados, contenção). */
+    /**
+     * Sumariza N prefixos/endereços IPv6 (supernet, blocos mesclados, contenção).
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o análogo IPv6 do "Sumarizar" da Calculadora IPv4.</p>
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> o teto de entradas vem da configuração
+     * ({@code framework.ipv6.max-redes-sumarizacao}), nunca do cliente — o mesmo 64 do IPv4.</p>
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> lista vazia, malformada ou acima do teto lança
+     * {@link Ipv6Exception} (400 didático).</p>
+     */
     public Ipv6SubnetKernel.SumarizacaoIpv6 sumarizar(java.util.List<String> entradas) {
-        Ipv6SubnetKernel.SumarizacaoIpv6 r = kernel.sumarizar(entradas);
+        Ipv6SubnetKernel.SumarizacaoIpv6 r = kernel.sumarizar(entradas, config.maxRedesSumarizacao());
         telemetriaLogger.logEvent("info", "ipv6", "ipv6_sumarizacao",
                 Map.of("status", "ok", "entradas", r.entradas(), "blocos", r.blocosMesclados().size()));
         return r;
@@ -158,7 +167,7 @@ public class Ipv6CidrService {
                 locais, eigrpAs, ospfProc);
         telemetriaLogger.logEvent("info", "ipv6", "ipv6_projetar",
                 Map.of("status", "ok", "locais", r.totalLocais(), "links", r.totalLinks(),
-                        "topologia", r.topologia()));
+                        "topologia", TelemetriaContext.vocabulario(r.topologia())));
         return r;
     }
 
@@ -185,15 +194,25 @@ public class Ipv6CidrService {
      * decompõe (tipo, forma canônica, Interface ID, solicited-node, reverso ip6.arpa), reusando o
      * mesmo motor de análise e a mesma egress DNS endurecida (guardas SSRF) da Análise IPv4.</p>
      * <p><b>INVARIANTES DO DOMÍNIO:</b> não reimplementa resolução DNS — delega ao {@link DnsResolver}
-     * (único ponto de saída com bloqueio de hostname interno e recusa de endereço não-público).</p>
-     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> domínio vazio/sem ponto lança {@link Ipv6Exception}
-     * antes de qualquer rede; falha de resolução ({@link DnsResolucaoException}) é reembalada como
+     * (único ponto de saída com bloqueio de hostname interno e recusa de endereço não-público). Nome
+     * acima de {@link org.framework.net.shared.InputLimits#MAX_NOME_HOST} caracteres não existe no DNS
+     * e é recusado antes de qualquer processamento.</p>
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> domínio vazio, longo demais ou sem ponto lança
+     * {@link Ipv6Exception} antes de qualquer rede; falha de resolução ({@link DnsResolucaoException}) é reembalada como
      * {@link Ipv6Exception} para virar 400 didático no {@code Ipv6ExceptionMapper}.</p>
      */
     public DominioAaaaResult resolverDominio(String dominio) {
         String d = dominio == null ? "" : dominio.strip();
         if (d.isEmpty()) {
             throw new Ipv6Exception("Informe um domínio (ex.: google.com).");
+        }
+        if (d.length() > org.framework.net.shared.InputLimits.MAX_NOME_HOST) {
+            // URL colada inteira não é "nome longo": dizer isso levava a pessoa a encurtar o domínio, que nem era o problema.
+            boolean pareceUrl = d.chars().anyMatch(c -> "/?#:@".indexOf(c) >= 0 || Character.isWhitespace(c));
+            throw new Ipv6Exception(pareceUrl
+                    ? "Isso parece um endereço (URL) inteiro. Cole só o nome do domínio (ex.: google.com)."
+                    : "Nome de domínio longo demais: o máximo é " + org.framework.net.shared.InputLimits.MAX_NOME_HOST
+                            + " caracteres (RFC 1035).");
         }
         if (!d.contains(".")) {
             throw new Ipv6Exception("Domínio inválido. Use algo como google.com ou www.example.org.");

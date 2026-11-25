@@ -51,6 +51,47 @@ class BulkClassImportServiceTest {
                 () -> bulkClassImportService.parseClassRosterPaste(cinquenta + ";10"));
     }
 
+    /**
+     * Lote 1 da auditoria (SEC-02): a vírgula era cortada pela regex {@code \s*,\s*}, que numa sequência longa de
+     * espaços sem vírgula retrocedia a cada posição — 250 mil espaços custavam 192,7 s de CPU. A2: a mesma entrada
+     * da auditoria, com 100 mil espaços (~30 s na forma antiga), termina bem abaixo de 2 s e na recusa de sempre.
+     */
+    @Test
+    void virgulaCortaEmTempoLinear() {
+        String colagem = "a,x" + " ".repeat(100_000) + "b";
+        EntradaInvalidaException ex = org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(
+                java.time.Duration.ofSeconds(2),
+                () -> assertThrows(EntradaInvalidaException.class,
+                        () -> bulkClassImportService.parseClassRosterPaste(colagem)));
+        assertTrue(ex.getMessage().contains("2 coluna(s)"), ex.getMessage());
+    }
+
+    /** A1: o mesmo sinal (espaço em volta da vírgula) numa planilha legítima continua dando as quatro colunas. */
+    @Test
+    void virgulaComEspacosEmVoltaContinuaSeparandoAsColunas() {
+        ClassRosterRow linha = bulkClassImportService.parseClassRosterPaste("Ana , 10.0.0.0/16 , 10 , 20").get(0);
+        assertEquals("Ana", linha.getStudentName());
+        assertEquals("10.0.0.0/16", linha.getBaseNetwork());
+        assertEquals(2, linha.getLocations().size());
+        assertEquals("10", linha.getLocations().get(0).getHosts());
+        assertEquals("20", linha.getLocations().get(1).getHosts());
+    }
+
+    /**
+     * Lote 1 (revisão adversarial): o nome do aluno vira pasta e vai no nome de cada arquivo do ZIP, duas vezes, sem
+     * compressão — sem teto, três nomes de 65 mil letras davam ~21 MB de nomes no pacote. Fronteira (A1): 120
+     * caracteres passam; 121 são recusados com a linha e o motivo.
+     */
+    @Test
+    void nomeDoAlunoTemTeto() {
+        String noTeto = "A".repeat(org.framework.net.shared.InputLimits.MAX_LABEL_LENGTH);
+        assertEquals(noTeto, bulkClassImportService.parseClassRosterPaste(noTeto + "\t10.0.0.0/16\t10\t20")
+                .get(0).getStudentName());
+        EntradaInvalidaException ex = assertThrows(EntradaInvalidaException.class,
+                () -> bulkClassImportService.parseClassRosterPaste(noTeto + "B\t10.0.0.0/16\t10\t20"));
+        assertTrue(ex.getMessage().contains("Linha 1") && ex.getMessage().contains("nome do aluno"), ex.getMessage());
+    }
+
     @Test
     void parseClassRosterPasteVazioFalha() {
         assertThrows(EntradaInvalidaException.class, () -> bulkClassImportService.parseClassRosterPaste("  "));

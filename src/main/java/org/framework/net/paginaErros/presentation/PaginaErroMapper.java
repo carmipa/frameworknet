@@ -102,8 +102,61 @@ public class PaginaErroMapper implements ExceptionMapper<Throwable> {
         if (exception instanceof WebApplicationException wae && wae.getResponse() != null) {
             return wae.getResponse().getStatus();
         }
+        if (formularioMalCodificado(exception)) {
+            return Response.Status.BAD_REQUEST.getStatusCode();
+        }
         return Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
     }
+
+    /**
+     * O corpo do formulário não pôde ser decodificado por culpa de quem enviou — escape {@code %} inválido ou
+     * {@code charset} inutilizável no {@code Content-Type}?
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> é erro de quem enviou, não do servidor. Tratado como falha não tratada, virava
+     * 500 com stack trace inteiro no log a cada pedido — em qualquer rota de formulário, inclusive com token CSRF
+     * válido (medido em 25/11/2026: {@code x=%zz} no {@code /analise}, no {@code /calculadora/api/vlan} e no
+     * {@code /resolucao-problemas}; e {@code charset=foo} ou {@code charset=@@} com corpo que tem escape, no
+     * {@code /resolucao-problemas}).</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> só a falha do LEITOR de formulário do Quarkus REST vira 400: a
+     * {@code IllegalArgumentException} lançada por {@code URLUtils}, ou a {@code UnsupportedCharsetException} /
+     * {@code IllegalCharsetNameException} de {@code Charset.forName} chamado DIRETAMENTE pelo
+     * {@code FormEncodedDataParser} (o primeiro quadro fora do JDK é o leitor; medido: 1 quadro do JDK para nome
+     * desconhecido, 4 para nome ilegal). A mesma exceção lançada pelo código da aplicação continua 500 — defeito nosso não se
+     * disfarça de erro de quem chamou. Se uma atualização do Quarkus mudar a origem, o caso volta a ser 500 (o lado
+     * seguro) e o teste reprova.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança.</p>
+     */
+    static boolean formularioMalCodificado(Throwable exception) {
+        if (!(exception instanceof IllegalArgumentException)) {
+            return false;
+        }
+        StackTraceElement[] pilha = exception.getStackTrace();
+        if (pilha.length == 0) {
+            return false;
+        }
+        if ("org.jboss.resteasy.reactive.common.util.URLUtils".equals(pilha[0].getClassName())) {
+            return true;
+        }
+        if (exception instanceof java.nio.charset.UnsupportedCharsetException
+                || exception instanceof java.nio.charset.IllegalCharsetNameException) {
+            for (int i = 0; i < Math.min(QUADROS_DO_JDK_NO_TOPO, pilha.length); i++) {
+                String classe = pilha[i].getClassName();
+                if (!classe.startsWith("java.")) {
+                    return classe.startsWith(LEITOR_DE_FORMULARIO);
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Classe (e internas) do leitor de corpo urlencoded do Quarkus REST. */
+    private static final String LEITOR_DE_FORMULARIO =
+            "org.jboss.resteasy.reactive.server.core.multipart.FormEncodedDataDefinition";
+
+    /** Até quantos quadros do JDK no topo da pilha se procura o primeiro de fora (medido: 1 a 4). */
+    private static final int QUADROS_DO_JDK_NO_TOPO = 12;
 
     /**
      * O cliente quer uma página?

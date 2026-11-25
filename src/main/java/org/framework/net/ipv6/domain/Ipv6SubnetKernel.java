@@ -497,15 +497,26 @@ public class Ipv6SubnetKernel {
      *
      * INVARIANTES DO DOMÍNIO: a sumarização é por fronteira de bit (menor prefixo comum); nunca
      * inventa "máscara". Um /0 cobre tudo. Reusa a biblioteca ipaddress (merge/cover por prefixo).
+     * Aceita no máximo {@code maxEntradas} prefixos (linhas em branco não contam): o teto vem da
+     * configuração, nunca do cliente, e é conferido ANTES de cada parse — sem ele ~25 mil prefixos
+     * geravam ~7 MB de HTML por pedido.
      *
-     * COMPORTAMENTO EM CASO DE FALHA: lista vazia ou entrada malformada lança {@link Ipv6Exception}.
+     * COMPORTAMENTO EM CASO DE FALHA: lista vazia, entrada malformada ou mais de {@code maxEntradas}
+     * prefixos lança {@link Ipv6Exception}; {@code maxEntradas} menor que 1 é tratado como 1.
      */
-    public SumarizacaoIpv6 sumarizar(List<String> entradas) {
+    public SumarizacaoIpv6 sumarizar(List<String> entradas, int maxEntradas) {
+        int teto = Math.max(1, maxEntradas);
         List<IPv6Address> blocos = new ArrayList<>();
         if (entradas != null) {
             for (String e : entradas) {
                 if (e == null || e.strip().isEmpty()) {
                     continue;
+                }
+                if (blocos.size() >= teto) {
+                    // Texto neutro, como no IPv4: juntar os resumos de lotes separados NÃO dá o resultado da lista
+                    // inteira (o espaço sobrando entre lotes some e a conta de "exata" fica falsa).
+                    throw new Ipv6Exception("Máximo de " + teto
+                            + " prefixos por sumarização. Divida a lista em lotes menores.");
                 }
                 String s = e.strip().replace("\"", "").replace("'", "");
                 IPAddressString ps = new IPAddressString(s);
@@ -648,10 +659,13 @@ public class Ipv6SubnetKernel {
      * prefixo informado; sem broadcast e sem "hosts úteis". Alvos sempre mais específicos que a base;
      * LANs e WANs não se sobrepõem (alocação sequencial). Topologia (árvore) tem n−1 enlaces; malha
      * tem n(n−1)/2. A rota default de cada roteador de borda aponta para a outra ponta do PRÓPRIO
-     * enlace; AS do EIGRP e processo OSPFv3 vão de 1 a 65535.
+     * enlace; AS do EIGRP e processo OSPFv3 vão de 1 a 65535. No máximo
+     * {@link InputLimits#MAX_LOCATION_ROWS} localidades, cada nome com até {@link InputLimits#MAX_LABEL_LENGTH}
+     * caracteres (o nome se repete por enlace e por roteador).
      *
      * COMPORTAMENTO EM CASO DE FALHA: base sem prefixo, prefixos incoerentes, AS/processo fora de
-     * 1–65535, nenhuma localidade ou estouro de capacidade lançam {@link Ipv6Exception}.
+     * 1–65535, nenhuma localidade, localidades demais, nome longo demais ou estouro de capacidade lançam
+     * {@link Ipv6Exception}.
      */
     public ProjetoRede projetarRede(String baseCidr, int prefixoLan, int prefixoWan,
             String topologia, List<String> locais, int eigrpAs, int ospfProc) {
@@ -707,6 +721,14 @@ public class Ipv6SubnetKernel {
         if (nomes.size() > InputLimits.MAX_LOCATION_ROWS) {
             throw new Ipv6Exception("Máximo de " + InputLimits.MAX_LOCATION_ROWS + " localidades por plano; você informou "
                     + nomes.size() + ".");
+        }
+        // Cada nome se repete por enlace e por roteador (em malha, por par): sem teto, 50 nomes de 20 mil caracteres
+        // passavam de 100 MB num pedido só. O nome recusado não é ecoado.
+        for (int i = 0; i < nomes.size(); i++) {
+            if (nomes.get(i).length() > InputLimits.MAX_LABEL_LENGTH) {
+                throw new Ipv6Exception("O nome da localidade " + (i + 1) + " passou de " + InputLimits.MAX_LABEL_LENGTH
+                        + " caracteres.");
+            }
         }
         String topo = topologia == null ? "estrela" : topologia.strip().toLowerCase();
         int n = nomes.size();

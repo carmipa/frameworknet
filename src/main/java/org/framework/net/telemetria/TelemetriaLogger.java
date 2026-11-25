@@ -19,6 +19,56 @@ public class TelemetriaLogger {
 
     private static final Logger LOG = Logger.getLogger("framework.telemetria");
 
+    /** Maior valor de texto por campo de evento (um IPv6 ou um domínio cabem com folga). */
+    static final int MAX_VALOR_CAMPO = 256;
+
+    /** Maior mensagem de evento (console do painel, stdout e o próprio evento). */
+    static final int MAX_MENSAGEM = 1024;
+
+    /** Profundidade do escopo {@link #semEventosInfo} na thread atual; ausente fora de qualquer escopo. */
+    private static final ThreadLocal<int[]> SILENCIO_INFO = new ThreadLocal<>();
+
+    /**
+     * Executa a ação sem gravar os eventos {@code info} e {@code debug} que ela produzir nesta thread.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> operação em lote — o pacote da turma resolve um cenário por aluno — gravava um
+     * evento por item: até 200 alunos e três eventos cada, numa janela de 500, empurravam para fora tudo o que havia
+     * antes, inclusive a evidência de outros pedidos. O lote grava UM evento de resumo, fora deste escopo.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> só {@code info} e {@code debug} (e nível desconhecido, que é gravado como info)
+     * calam; {@code warn} e {@code error} passam sempre — falha nunca some. O escopo vale só para a thread que chamou
+     * (outro pedido continua gravando) e é desfeito no {@code finally}, mesmo com exceção; escopo dentro de escopo
+     * conta profundidade.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não engole exceção da ação: ela sobe igual, com o escopo já desfeito.</p>
+     */
+    public static <T> T semEventosInfo(java.util.function.Supplier<T> acao) {
+        int[] nivel = SILENCIO_INFO.get();
+        if (nivel == null) {
+            nivel = new int[1];
+            SILENCIO_INFO.set(nivel);
+        }
+        nivel[0]++;
+        try {
+            return acao.get();
+        } finally {
+            nivel[0]--;
+            if (nivel[0] == 0) {
+                SILENCIO_INFO.remove();
+            }
+        }
+    }
+
+    /** Este nível está calado pelo escopo {@link #semEventosInfo} da thread atual? */
+    static boolean silenciado(String level) {
+        int[] nivel = SILENCIO_INFO.get();
+        if (nivel == null || nivel[0] == 0) {
+            return false;
+        }
+        String l = level == null ? "" : level.toLowerCase(java.util.Locale.ROOT);
+        return !(l.equals("warn") || l.equals("warning") || l.equals("error"));
+    }
+
     @Inject
     TelemetriaContext context;
 
@@ -53,7 +103,7 @@ public class TelemetriaLogger {
             boolean excInfo,
             Throwable error) {
 
-        if (!enabled) {
+        if (!enabled || silenciado(level)) {
             return;
         }
 
@@ -61,7 +111,7 @@ public class TelemetriaLogger {
         if (fields != null) {
             fields.forEach((key, value) -> {
                 if (value != null && !String.valueOf(value).isBlank()) {
-                    cleaned.put(key, value);
+                    cleaned.put(key, valorParaEvento(value));
                 }
             });
         }
@@ -70,7 +120,8 @@ public class TelemetriaLogger {
         // Nesse caso a correlação é resgatada do MDC da própria thread da requisição,
         // senão o evento sai órfão e não há como ligá-lo ao request no dataset.
         TelemetriaRequestContext ctx = requestContext != null ? requestContext : context.contextoDoMdc();
-        String message = montarMensagem(evento, status, cleaned);
+        // Os valores já chegam saneados (valorParaEvento); a mensagem só é cortada — saneá-la de novo dobrava os escapes.
+        String message = TelemetriaContext.cortar(montarMensagem(evento, status, cleaned), MAX_MENSAGEM);
         context.aplicarEvento(modulo, evento, status);
 
         TelemetriaEvent telemetriaEvent = new TelemetriaEvent(
@@ -185,6 +236,18 @@ public class TelemetriaLogger {
                 status, ctx.httpMethod(), ctx.httpPath(), httpStatus, ctx.elapsedMillis(), ctx.requestId());
     }
 
+    /**
+     * Evento de erro com a exceção.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> registrar a falha com o tipo, a mensagem e a pilha, para a investigação.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> o log recebe uma CÓPIA da exceção com as mensagens saneadas
+     * ({@link #comMensagensSaneadas}) e a mesma pilha — a mensagem costuma trazer o que a pessoa digitou (até 256 KB
+     * num campo de formulário), e o formato do console imprime a exceção inteira: crua, ela forjava linha no
+     * {@code docker logs} e girava os arquivos de log em segundos, apagando a evidência.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; exceção nula registra só o evento.</p>
+     */
     public void logException(String modulo, String evento, TelemetriaRequestContext ctx, Throwable error) {
         Map<String, Object> fields = new LinkedHashMap<>();
         if (error != null) {
@@ -193,7 +256,79 @@ public class TelemetriaLogger {
                 fields.put("mensagem", truncar(error.getMessage(), 300));
             }
         }
-        logEvent("error", modulo, evento, "error", ctx, fields, true, error);
+        logEvent("error", modulo, evento, "error", ctx, fields, true, comMensagensSaneadas(error));
+    }
+
+    /** Maior mensagem de exceção que vai ao log (por nível da cadeia de causas). */
+    static final int MAX_MENSAGEM_EXCECAO = 300;
+
+    /** Níveis da cadeia de causas copiados (o resto da cadeia não traz informação nova para o log). */
+    static final int MAX_NIVEIS_CAUSA = 5;
+
+    /**
+     * Cópia da exceção pronta para o log.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> manter a pilha para o diagnóstico sem levar ao log o texto cru de quem chamou.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> a cópia começa pelo nome da classe original seguido da mensagem saneada
+     * ({@link TelemetriaContext#paraLog}, até {@value #MAX_MENSAGEM_EXCECAO}); a pilha é a mesma (é código, não dado
+     * digitado); a causa é copiada do mesmo jeito até {@value #MAX_NIVEIS_CAUSA} níveis, e abaixo disso fica só a
+     * causa RAIZ, com a contagem das intermediárias omitidas; as exceções suprimidas (ex.: a falha do {@code close()}
+     * de um try-with-resources) também são copiadas, saneadas.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; nulo vira nulo.</p>
+     */
+    static Throwable comMensagensSaneadas(Throwable original) {
+        return sanear(original, 0);
+    }
+
+    private static Throwable sanear(Throwable original, int nivel) {
+        if (original == null) {
+            return null;
+        }
+        Throwable causa = nivel < MAX_NIVEIS_CAUSA ? sanear(original.getCause(), nivel + 1) : raiz(original.getCause());
+        ExcecaoSaneada copia = new ExcecaoSaneada(mensagemSaneada("", original), causa);
+        copia.setStackTrace(original.getStackTrace());
+        if (nivel < MAX_NIVEIS_CAUSA) {
+            for (Throwable suprimida : original.getSuppressed()) {
+                copia.addSuppressed(sanear(suprimida, nivel + 1));
+            }
+        }
+        return copia;
+    }
+
+    /** Só a causa raiz de uma cadeia funda demais, dizendo quantas intermediárias ficaram de fora. */
+    private static Throwable raiz(Throwable resto) {
+        if (resto == null) {
+            return null;
+        }
+        Throwable raiz = resto;
+        int omitidas = 0;
+        while (raiz.getCause() != null && raiz.getCause() != raiz && omitidas < 100) {
+            raiz = raiz.getCause();
+            omitidas++;
+        }
+        ExcecaoSaneada copia = new ExcecaoSaneada(mensagemSaneada(omitidas > 0
+                ? "[" + omitidas + " causa(s) intermediária(s) omitida(s)] " : "", raiz), null);
+        copia.setStackTrace(raiz.getStackTrace());
+        return copia;
+    }
+
+    private static String mensagemSaneada(String prefixo, Throwable t) {
+        return prefixo + (t.getMessage() == null ? t.getClass().getName()
+                : t.getClass().getName() + ": " + TelemetriaContext.paraLog(t.getMessage(), MAX_MENSAGEM_EXCECAO));
+    }
+
+    /** Exceção-cópia: imprime só a classe original e a mensagem saneada, sem o próprio nome na frente. */
+    static final class ExcecaoSaneada extends RuntimeException {
+        ExcecaoSaneada(String mensagem, Throwable causa) {
+            super(mensagem, causa, true, true);
+        }
+
+        @Override
+        public String toString() {
+            return getMessage();
+        }
     }
 
     public <T> T medir(String modulo, String evento, Supplier<T> acao) {
@@ -220,13 +355,47 @@ public class TelemetriaLogger {
         });
     }
 
+    /**
+     * Linha "evento=… status=… chave=valor" do evento.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> a forma legível do evento no console do painel e no stdout.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> texto já saneado entra como está (não é reescapado); valor de outro tipo
+     * (lista, mapa, objeto) passa por {@link TelemetriaContext#paraLog} no próprio texto — o {@code toString} dele pode
+     * trazer quebra de linha.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança.</p>
+     */
     private static String montarMensagem(String evento, String status, Map<String, Object> fields) {
         StringBuilder sb = new StringBuilder("evento=").append(evento).append(" status=").append(status);
         fields.entrySet().stream()
                 .filter(entry -> !"status".equals(entry.getKey())) // 'status' já vai no prefixo — evita "status=ok status=ok"
                 .sorted(Map.Entry.comparingByKey())
-                .forEach(entry -> sb.append(' ').append(entry.getKey()).append('=').append(entry.getValue()));
+                .forEach(entry -> sb.append(' ').append(entry.getKey()).append('=').append(
+                        entry.getValue() instanceof CharSequence
+                                ? entry.getValue()
+                                : TelemetriaContext.paraLog(String.valueOf(entry.getValue()), MAX_VALOR_CAMPO)));
         return sb.toString();
+    }
+
+    /**
+     * Valor de um campo de evento pronto para guardar.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> campos de evento carregam o que a pessoa digitou (domínio, IP de
+     * consulta). Sem teto, um campo de 1 MB por requisição esgotava a memória em ~150 pedidos e trocava a
+     * trilha durável (JSONL e Stream) por lixo; com quebra de linha crua, forjava linha no console.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> texto sai neutralizado e com no máximo {@value #MAX_VALOR_CAMPO}
+     * caracteres (regra única: {@link TelemetriaContext#paraLog}); número, booleano e os demais tipos passam
+     * como estão — o painel e o dataset dependem do tipo.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança.</p>
+     */
+    static Object valorParaEvento(Object valor) {
+        if (valor instanceof CharSequence texto) {
+            return TelemetriaContext.paraLog(texto.toString(), MAX_VALOR_CAMPO);
+        }
+        return valor;
     }
 
     private static String truncar(String value, int max) {

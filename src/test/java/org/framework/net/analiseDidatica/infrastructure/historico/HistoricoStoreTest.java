@@ -33,6 +33,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @QuarkusTest
 class HistoricoStoreTest {
 
+    /** Pasta apagada pelo JUnit no fim: o teste da quarentena grava 17 MB, que não podem ficar no temp a cada execução. */
+    @org.junit.jupiter.api.io.TempDir
+    Path tmp;
+
     @Inject
     AnaliseDidaticaConfig config;
 
@@ -41,6 +45,9 @@ class HistoricoStoreTest {
 
     @Inject
     TelemetriaLogger telemetriaLogger;
+
+    @Inject
+    org.framework.net.telemetria.TelemetriaStore telemetriaStore;
 
     private HistoricoStore novoStore(Path home) {
         HistoricoStore s = new HistoricoStore();
@@ -237,6 +244,108 @@ class HistoricoStoreTest {
         assertEquals(conteudoAntigo, Files.readString(antigo), "o arquivo lido pela versão anterior foi alterado");
         assertTrue(Files.readString(arquivo(home)).contains("203.0.113.50"), "o registro novo tem de ir para o v2");
         assertEquals(1, s.listar("S").size());
+    }
+
+    /**
+     * Lote 1 da auditoria (OPS-01): cada consulta guardava o campo como veio (até 1 MB) e ~480 consultas faziam um
+     * arquivo de ~450 MB que derrubava todo arranque. A2: o campo de 1 MB sai no teto, com "…". A1: o maior valor
+     * legítimo — um nome de domínio de 253 caracteres — é guardado inteiro.
+     */
+    @Test
+    void campoGuardadoNoTetoSemCortarODominioLegitimo() throws Exception {
+        Path home = Files.createTempDirectory("hist-teto-campo");
+        HistoricoStore s = novoStore(home);
+        String dominio = "a".repeat(63) + "." + "b".repeat(63) + "." + "c".repeat(63) + "." + "d".repeat(61);
+        assertEquals(253, dominio.length());
+        s.registrarConsulta("T", Map.of("modo", "dominio", "ip", dominio), Map.of("rede", "x"));
+        s.registrarConsulta("T", Map.of("modo", "dominio", "ip", "z".repeat(1_000_000)), Map.of("rede", "y".repeat(5_000)));
+
+        List<Map<String, Object>> registros = s.listar("T");
+        String longo = String.valueOf(registros.get(0).get("ip_entrada"));
+        assertEquals(HistoricoStore.MAX_CARACTERES_CAMPO, longo.length());
+        assertTrue(longo.endsWith("…"));
+        assertEquals(HistoricoStore.MAX_CARACTERES_CAMPO, String.valueOf(registros.get(0).get("rede")).length());
+        assertEquals(dominio, registros.get(1).get("ip_entrada"), "o domínio legítimo foi cortado");
+
+        s.gravarPendente();
+        assertTrue(Files.size(arquivo(home)) < 10_000, "o arquivo continua guardando o campo inteiro");
+    }
+
+    /**
+     * Revisão de boa-fé da correção acima: o corte no teto não pode partir um emoji (par substituto) ao meio — a
+     * metade órfã é um caractere que a pessoa não digitou (no arquivo vira o escape solto {@code \uD83D}; o Jackson
+     * grava sem erro, medido em 25/11/2026). O arquivo continua sendo gravado.
+     */
+    @Test
+    void corteNoTetoNaoParteEmojiAoMeioEOArquivoContinuaGravando() throws Exception {
+        Path home = Files.createTempDirectory("hist-teto-emoji");
+        HistoricoStore s = novoStore(home);
+        String comEmojiNoCorte = "x".repeat(HistoricoStore.MAX_CARACTERES_CAMPO - 2) + "😀" + "resto";
+        s.registrarConsulta("E", Map.of("modo", "dominio", "ip", comEmojiNoCorte), Map.of("rede", "x"));
+        String guardado = String.valueOf(s.listar("E").get(0).get("ip_entrada"));
+        assertTrue(guardado.length() <= HistoricoStore.MAX_CARACTERES_CAMPO);
+        assertFalse(Character.isHighSurrogate(guardado.charAt(guardado.length() - 2)),
+                "o corte deixou metade de um emoji antes do …");
+        assertDoesNotThrow(s::gravarPendente);
+        assertTrue(Files.readString(arquivo(home)).contains("xxxx"));
+    }
+
+    /**
+     * Lote 1 (OPS-01): arquivo acima do teto vai para a quarentena SEM ser lido. A2: o arquivo de teste é JSON VÁLIDO,
+     * com registros de sessão — se fosse parseado, os registros voltariam. A1: um arquivo legítimo abaixo do teto
+     * carrega normalmente, e o que veio de versão anterior acima do teto por campo entra cortado.
+     */
+    @Test
+    void arquivoAcimaDoTetoVaiParaQuarentenaSemSerLido() throws Exception {
+        Path home = Files.createDirectories(tmp.resolve("hist-teto-arquivo"));
+        Files.createDirectories(arquivo(home).getParent());
+        String registro = "{\"id\":\"g\",\"sessao\":\"S\",\"ip_entrada\":\"" + "q".repeat(1_000_000) + "\"}";
+        StringBuilder gigante = new StringBuilder("[");
+        while (gigante.length() <= HistoricoStore.MAX_BYTES_ARQUIVO) {
+            gigante.append(gigante.length() > 1 ? "," : "").append(registro);
+        }
+        Files.writeString(arquivo(home), gigante.append("]"));
+
+        HistoricoStore s = novoStore(home);
+        assertDoesNotThrow(s::carregar);
+        assertEquals(0, s.listarTodos().size(), "o arquivo acima do teto foi lido");
+        assertFalse(Files.exists(arquivo(home)));
+        try (var ls = Files.list(arquivo(home).getParent())) {
+            assertTrue(ls.anyMatch(p -> p.getFileName().toString().startsWith("consulta_history.v2.json.grande-demais-")),
+                    "o conteúdo precisa ficar preservado em quarentena, com nome que diz o motivo (não 'corrompido')");
+        }
+
+        Path home2 = Files.createDirectories(tmp.resolve("hist-teto-arquivo-ok"));
+        Files.createDirectories(arquivo(home2).getParent());
+        Files.writeString(arquivo(home2), "[" + registro + "]");
+        HistoricoStore ok = novoStore(home2);
+        java.time.Instant antesDaCarga = java.time.Instant.now().minusMillis(1);
+        ok.carregar();
+        assertEquals(1, ok.listar("S").size());
+        assertEquals(HistoricoStore.MAX_CARACTERES_CAMPO, String.valueOf(ok.listar("S").get(0).get("ip_entrada")).length(),
+                "registro de versão anterior entrou sem o teto por campo");
+        // A7: o corte na carga fica registrado no evento (na próxima gravação ele vira definitivo).
+        // A janela vem do mais novo para o mais velho e pode trazer eventos de execução anterior: só vale o desta carga.
+        var carga = telemetriaStore.snapshotEventos().stream()
+                .filter(e -> "history_load".equals(e.evento()) && e.fields() != null && e.fields().containsKey("truncados")
+                        && e.timestamp().isAfter(antesDaCarga))
+                .findFirst().orElseThrow();
+        assertEquals(1, ((Number) carga.fields().get("truncados")).intValue());
+    }
+
+    /**
+     * Revisão operacional: se a quarentena não consegue mover o arquivo, a primeira consulta gravaria por cima dele —
+     * e ele "nunca é apagado". Com a gravação suspensa, nada é gravado. A2: sem o guardião, o arquivo seria criado.
+     */
+    @Test
+    void gravacaoSuspensaNaoEscrevePorCimaDoArquivo() throws Exception {
+        Path home = Files.createTempDirectory("hist-suspensa");
+        HistoricoStore s = novoStore(home);
+        s.gravacaoSuspensa = true;
+        s.registrarConsulta("S", Map.of("modo", "ip", "ip", "10.0.0.1"), Map.of("rede", "x"));
+        s.gravarPendente();
+        assertFalse(Files.exists(arquivo(home)), "a gravação suspensa escreveu o arquivo");
+        assertEquals(1, s.listar("S").size(), "a consulta continua em memória");
     }
 
     /**

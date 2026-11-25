@@ -51,6 +51,7 @@ services:
     mem_limit: ${MEM_LIMIT:-768m}
     memswap_limit: ${MEM_LIMIT:-768m}
     mem_reservation: 256m
+    cpus: ${CPU_LIMIT:-2.0}
     restart: unless-stopped
     logging:
       driver: json-file

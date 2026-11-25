@@ -6,6 +6,7 @@ import org.framework.net.analiseDidatica.application.ModoResult;
 import org.framework.net.analiseDidatica.domain.kernel.Ipv4Kernel;
 import org.framework.net.analiseDidatica.exception.EntradaInvalidaException;
 import org.jboss.logging.Logger;
+import org.framework.net.telemetria.TelemetriaContext;
 
 @ApplicationScoped
 public class MascaraModoService {
@@ -15,6 +16,17 @@ public class MascaraModoService {
     @Inject
     Ipv4Kernel ipv4Kernel;
 
+    /**
+     * Modo Máscara: prepara a análise a partir da máscara pontuada.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> Modo Máscara: prepara a análise a partir da máscara pontuada.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> entrada inválida nunca vira resultado: o cálculo só segue com o que o kernel aceitou.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança por entrada inválida: o erro volta no {@link ModoResult},
+     * com o campo marcado; a mensagem vai ao log neutralizada ({@code TelemetriaContext.paraLog}) — ela costuma
+     * trazer o que a pessoa digitou, e crua forjava linha no log.</p>
+     */
     public ModoResult processar(String ipP, String maskDecP) {
         ModoResult result = new ModoResult();
         Integer cidrVal = null;
@@ -37,7 +49,7 @@ public class MascaraModoService {
                         "Máscara decimal inválida. Use máscara contígua "
                                 + "(ex.: 255.255.255.0), não valores como 255.0.255.0.");
             } catch (EntradaInvalidaException ex) {
-                LOG.warnf("Máscara inválida: %s", ex.getMessage());
+                LOG.warnf("Máscara inválida: %s", TelemetriaContext.paraLog(ex.getMessage(), 512));
                 result.setErro(ex.getMessage());
             }
             result.invalidFields().add("mask_decimal");
@@ -53,7 +65,7 @@ public class MascaraModoService {
                     cidrVal = inferencia.cidr();
                     cidrOrigem = "CIDR inferido automaticamente pelo IP informado. " + inferencia.descricaoOrigem() + ".";
                 } catch (EntradaInvalidaException ex) {
-                    LOG.warnf("IP inválido no modo máscara: %s", ex.getMessage());
+                    LOG.warnf("IP inválido no modo máscara: %s", TelemetriaContext.paraLog(ex.getMessage(), 512));
                     result.setErro(ex.getMessage());
                     result.invalidFields().add("ip");
                 }

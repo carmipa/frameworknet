@@ -89,6 +89,23 @@ public class DatasetPublicavelService {
     /** Maior valor publicado de um campo do esquema; acima disso não é vocabulário fixo. */
     private static final int MAX_VALOR_PUBLICAVEL = 64;
 
+    /**
+     * Campos do esquema cujo valor nasce no formulário (aba, topologia): passam pelo guardião de vocabulário também na
+     * saída, o que cobre os eventos gravados antes de a origem ser corrigida.
+     */
+    static final java.util.Set<String> CAMPOS_VOCABULARIO = java.util.Set.of("modo", "topology", "topologia");
+
+    /**
+     * Campos do esquema cujo valor é o nome da classe de uma falha (convenção de {@code TelemetriaLogger.logException}).
+     * Versão anterior do Projetar gravava aqui a MENSAGEM da exceção, que pode ecoar a colagem — nome de aluno,
+     * endereço. Na saída só passa o que tem forma de nome de classe de falha; o resto sai "outro".
+     */
+    static final java.util.Set<String> CAMPOS_CLASSE_DE_FALHA = java.util.Set.of("erro");
+
+    /** Nome simples de classe Java de falha, até 64 caracteres: {@code EntradaInvalidaException}, {@code StackOverflowError}. */
+    private static final java.util.regex.Pattern CLASSE_DE_FALHA =
+            java.util.regex.Pattern.compile("[A-Z][A-Za-z0-9]{0,54}(Exception|Error|Throwable)");
+
     /** Atributos cujo valor identifica pessoa e vira pseudônimo do pacote. */
     private static final List<String> CAMPOS_IDENTIFICADORES =
             List.of("framework.field.ip", "framework.field.ip_hash", "framework.field.host",
@@ -175,6 +192,36 @@ public class DatasetPublicavelService {
 
     // --------------------------------------------------------------- sanitização
 
+    /**
+     * Valor publicável de um campo de classe de falha.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o dataset conta que tipo de falha aconteceu sem publicar o texto da falha.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> só passa nome simples de classe terminado em {@code Exception}, {@code Error}
+     * ou {@code Throwable} (até 64 caracteres); frase, nome próprio solto, endereço ou qualquer outra coisa sai
+     * {@code "outro"}.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; nulo ou vazio sai {@code "outro"}.</p>
+     */
+    static String classeDeFalhaPublicavel(String valor) {
+        String v = valor == null ? "" : valor.strip();
+        return CLASSE_DE_FALHA.matcher(v).matches() ? v : "outro";
+    }
+
+    /**
+     * Converte um evento da janela num registro do dataset público.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o dataset é publicado para estudo; cada registro mostra o que aconteceu no site
+     * sem identificar quem fez nem repetir o que a pessoa digitou.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> só sai campo do esquema fechado; identificador vira pseudônimo; rota sai
+     * generalizada; campo de vocabulário passa pelo guardião de vocabulário e campo de classe de falha pelo de nome
+     * de classe — inclusive para evento gravado por versão anterior; valor longo ou com {@code @} fica de fora e é
+     * contado em {@code campos_fora_do_esquema}.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança por conteúdo do evento: o que não cabe no esquema é
+     * descartado e contado, nunca publicado.</p>
+     */
     private Map<String, Object> registroSanitizado(TelemetriaEvent evento,
                                                    Map<String, String> pseudonimos,
                                                    Map<String, Integer> foraDoEsquema) {
@@ -209,6 +256,12 @@ public class DatasetPublicavelService {
             } else if (!CAMPOS_PUBLICAVEIS.contains(entrada.getKey())) {
                 foraDoEsquema.merge(entrada.getKey(), 1, Integer::sum);
                 continue;
+            } else if (CAMPOS_CLASSE_DE_FALHA.contains(entrada.getKey())) {
+                valor = classeDeFalhaPublicavel(valor);
+            } else if (CAMPOS_VOCABULARIO.contains(entrada.getKey())) {
+                // Vocabulário que veio do formulário: evento gravado por versão anterior (ainda no Stream) pode trazer
+                // IP ou texto livre aqui — que abortaria a geração inteira ou sairia publicado.
+                valor = org.framework.net.telemetria.TelemetriaContext.vocabulario(valor);
             } else if (valor.length() > MAX_VALOR_PUBLICAVEL || valor.indexOf('@') >= 0) {
                 foraDoEsquema.merge(entrada.getKey() + " (valor fora do formato)", 1, Integer::sum);
                 continue;

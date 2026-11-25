@@ -23,7 +23,6 @@ public class BulkClassImportService {
             "nome", "name", "aluno", "estudante", "rede", "base", "ip", "hosts", "host", "matriz", "filial"
     );
     private static final Pattern MULTI_SPACE = Pattern.compile("\\s{2,}");
-    private static final Pattern CSV_SPLIT = Pattern.compile("\\s*,\\s*");
 
     @Inject
     Ipv4Kernel ipv4Kernel;
@@ -74,6 +73,12 @@ public class BulkClassImportService {
             if (studentName.isEmpty()) {
                 throw new EntradaInvalidaException("Linha " + lineNo + ": nome do aluno inválido.");
             }
+            // O nome vira pasta e vai no nome de cada arquivo do ZIP (duas vezes por arquivo, sem compressão): sem teto,
+            // três alunos com nomes de 65 mil letras davam ~21 MB só de nomes no pacote.
+            if (studentName.length() > InputLimits.MAX_LABEL_LENGTH) {
+                throw new EntradaInvalidaException("Linha " + lineNo + ": nome do aluno com mais de "
+                        + InputLimits.MAX_LABEL_LENGTH + " caracteres — confira se a coluna do nome não engoliu as outras.");
+            }
             String baseNetwork = normalizeBaseNetwork(parts.get(1), defaultPrefix);
             List<String> hostValues = parts.subList(2, parts.size());
             if (hostValues.size() < 2) {
@@ -121,6 +126,20 @@ public class BulkClassImportService {
         return rows;
     }
 
+    /**
+     * Quebra uma linha colada da planilha em colunas.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> aceitar o que o professor cola — TAB do Excel, ponto e vírgula, vírgula
+     * ou espaços — sem pedir formato.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> cada coluna sai aparada e as vazias somem. Custo LINEAR no tamanho da
+     * linha: TAB, ponto e vírgula e vírgula são cortados por caractere, e o espaço em volta sai no
+     * {@code strip()}. A vírgula usava a regex {@code \s*,\s*}, que numa sequência longa de espaços sem
+     * vírgula retrocedia a cada posição — custo quadrático, ~3 minutos de CPU por um colar de 250 mil
+     * caracteres.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; quem decide se faltam colunas é o chamador.</p>
+     */
     private List<String> splitLine(String line) {
         List<String> parts;
         if (line.contains("\t")) {
@@ -128,7 +147,7 @@ public class BulkClassImportService {
         } else if (line.contains(";")) {
             parts = List.of(line.split(";", -1));
         } else if (line.contains(",")) {
-            parts = List.of(CSV_SPLIT.split(line));
+            parts = List.of(line.split(",", -1));
         } else {
             parts = List.of(MULTI_SPACE.split(line.strip()));
         }

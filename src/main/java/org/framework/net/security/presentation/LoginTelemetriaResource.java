@@ -6,6 +6,7 @@ import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -158,10 +159,19 @@ public class LoginTelemetriaResource {
      * <p><b>Invariantes do domínio:</b> a resposta é a mesma para chave errada e
      * para chave ausente — nada aqui pode servir de oráculo sobre a chave. A rota
      * está no conjunto de caminhos pesados do {@code RateLimitFilter}, o que limita
-     * tentativa em série.</p>
+     * tentativa em série. Só formulário urlencoded entra: o multipart tem outro leitor,
+     * com outros tetos, e a tela nunca o envia.</p>
+     *
+     * <p><b>Propósito de negócio:</b> deixar o dono entrar na Telemetria quando o login
+     * pelo GitHub não está disponível.</p>
+     *
+     * <p><b>Comportamento em caso de falha:</b> chave errada ou ausente recebe 401 com a
+     * mesma tela "Chave inválida." — sem dizer qual dos dois; corpo de outro tipo recebe
+     * 415 antes de qualquer leitura.</p>
      */
     @POST
     @Path("/chave")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
     public Response contingencia(@RestForm("adminKey") String adminKey) {
         // Exigir enforcement ativo: com ele desligado, isValid() aprova qualquer

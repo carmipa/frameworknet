@@ -4,15 +4,16 @@ import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.MultivaluedMap;
 import org.framework.net.analiseDidatica.application.HomeAnaliseService;
 import org.framework.net.analiseDidatica.application.HomeViewModel;
 import org.framework.net.analiseDidatica.support.AnaliseDidaticaUiSupport;
+import org.jboss.resteasy.reactive.RestForm;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,15 +43,54 @@ public class AnaliseDidaticaResource {
         return render(vm);
     }
 
+    /**
+     * Envio do formulário da Análise.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> calcular o que a pessoa pediu na aba escolhida e devolver a página com o resultado.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> só os campos que a tela tem são lidos, cada um por {@code @RestForm} — o mesmo
+     * leitor de formulário das outras rotas, com o teto de 256 KB por campo do Quarkus. Antes o corpo inteiro virava
+     * um {@code MultivaluedMap}: esse leitor não tem teto por campo nem de quantidade de campos, e um corpo de 1 MB com
+     * centenas de milhares de chaves montava três mapas inteiros na memória antes de chegar aqui. Campo ausente
+     * continua ausente no mapa entregue ao serviço (a query preenche {@code tab} e o histórico só nesse caso).
+     * Só formulário {@code application/x-www-form-urlencoded} entra: o multipart tem outro leitor, com outros tetos,
+     * e a tela nunca o envia.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança por entrada; o serviço devolve a página com o erro. Corpo
+     * de outro tipo recebe 415 antes de qualquer leitura.</p>
+     */
     @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance post(
             @QueryParam("tab") String tab,
             @QueryParam("history_limit") String historyLimit,
             @QueryParam("history_page") String historyPage,
-            MultivaluedMap<String, String> form) {
+            @RestForm("tab") String tabForm,
+            @RestForm("history_limit") String historyLimitForm,
+            @RestForm("history_page") String historyPageForm,
+            @RestForm("modo") String modo,
+            @RestForm("ip") String ip,
+            @RestForm("ipv6") String ipv6,
+            @RestForm("cidr") String cidr,
+            @RestForm("mask_decimal") String maskDecimal,
+            @RestForm("wildcard_mask") String wildcardMask,
+            @RestForm("regua_count") String reguaCount,
+            @RestForm("comparador_cidr_a") String comparadorCidrA,
+            @RestForm("comparador_cidr_b") String comparadorCidrB) {
         Map<String, String> fields = new HashMap<>();
-        form.forEach((k, v) -> fields.put(k, v == null || v.isEmpty() ? "" : v.get(0)));
+        colocar(fields, "tab", tabForm);
+        colocar(fields, "history_limit", historyLimitForm);
+        colocar(fields, "history_page", historyPageForm);
+        colocar(fields, "modo", modo);
+        colocar(fields, "ip", ip);
+        colocar(fields, "ipv6", ipv6);
+        colocar(fields, "cidr", cidr);
+        colocar(fields, "mask_decimal", maskDecimal);
+        colocar(fields, "wildcard_mask", wildcardMask);
+        colocar(fields, "regua_count", reguaCount);
+        colocar(fields, "comparador_cidr_a", comparadorCidrA);
+        colocar(fields, "comparador_cidr_b", comparadorCidrB);
         if (tab != null) {
             fields.putIfAbsent("tab", tab);
         }
@@ -62,6 +102,12 @@ public class AnaliseDidaticaResource {
         }
         HomeViewModel vm = homeAnaliseService.processarPost(fields);
         return render(vm);
+    }
+
+    private static void colocar(Map<String, String> fields, String nome, String valor) {
+        if (valor != null) {
+            fields.put(nome, valor);
+        }
     }
 
     private TemplateInstance render(HomeViewModel vm) {

@@ -25,6 +25,14 @@ public class RequestRateLimiter {
     @ConfigProperty(name = "framework.security.rate-limit-global-per-minute", defaultValue = "600")
     int globalLimitPerMinute;
 
+    /**
+     * Recusas de CSRF aceitas por cliente e minuto. Balde PRÓPRIO, fora do limite da rota: token vencido de uma turma
+     * inteira atrás do mesmo NAT (cada aluno erra uma vez e reenvia) não esgota o limite pesado da rota; quem manda
+     * pedido sem token válido em série é freado, e acima do teto o corpo nem chega a ser lido.
+     */
+    @ConfigProperty(name = "framework.security.rate-limit-csrf-recusas-per-minute", defaultValue = "120")
+    int csrfRecusasPorMinuto;
+
     @Inject
     CurrentVertxRequest currentVertxRequest;
 
@@ -52,12 +60,7 @@ public class RequestRateLimiter {
         String client = clientKey(ctx);
         String key = client + "|" + routeKey + (heavy ? "|heavy" : "");
         long windowMinute = System.currentTimeMillis() / 60_000L;
-        // Limpeza oportunista (sem scheduler): no máximo uma vez por minuto, evita crescimento
-        // ilimitado do mapa de buckets (memory leak / vetor de DoS).
-        long previousPrune = lastPruneMinute.get();
-        if (windowMinute != previousPrune && lastPruneMinute.compareAndSet(previousPrune, windowMinute)) {
-            prune();
-        }
+        podarSeVirouMinuto(windowMinute);
         // A rota decide primeiro e só a aprovada conta no global. Revisão de boa-fé: contando também as
         // recusadas, um painel em polling (Tráfego ao vivo, 1/s) aberto por meia turma atrás do mesmo NAT
         // esgotava o global em segundos e derrubava TODOS os módulos da turma até a janela virar.
@@ -65,6 +68,66 @@ public class RequestRateLimiter {
             return false;
         }
         return incrementar(client + "|*", windowMinute) <= globalLimitPerMinute;
+    }
+
+    /** Resultado de {@link #reservarLeituraSemToken}: a vaga, o minuto dela e se o teto estourou neste pedido. */
+    public record ReservaCsrf(boolean dentroDoTeto, long minuto, boolean acabouDeEstourar) {
+    }
+
+    /**
+     * Reserva, ANTES de ler o corpo, uma vaga no balde de pedidos sem token válido no cabeçalho.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> frear quem manda pedido sem token válido em série — cada um obriga o filtro do
+     * CSRF a ler um corpo de até 1 MB — sem gastar o limite da rota, que uma turma atrás do mesmo NAT divide.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> conta e decide no mesmo passo (incremento atômico): pedidos simultâneos não
+     * passam todos de uma vez, como passavam com "olhar e só depois contar". O balde {@code cliente|csrf-recusa} é
+     * separado do limite da rota e do global; quem lê o corpo e acha token válido devolve a vaga
+     * ({@link #devolverReserva}), então só a RECUSA gasta o teto. A chave do cliente é a mesma dos outros baldes, nunca
+     * um cabeçalho escolhido por quem chama.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; limitador desligado devolve sempre "dentro do teto".</p>
+     */
+    public ReservaCsrf reservarLeituraSemToken(ContainerRequestContext ctx) {
+        long windowMinute = System.currentTimeMillis() / 60_000L;
+        if (!rateLimitEnabled) {
+            return new ReservaCsrf(true, windowMinute, false);
+        }
+        podarSeVirouMinuto(windowMinute);
+        int usados = incrementar(clientKey(ctx) + "|csrf-recusa", windowMinute);
+        return new ReservaCsrf(usados <= csrfRecusasPorMinuto, windowMinute, usados == csrfRecusasPorMinuto + 1);
+    }
+
+    /**
+     * Devolve a vaga de um pedido que, lido, trouxe token válido no corpo.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o formulário comum (sem htmx) manda o token no corpo; ele não pode gastar o teto
+     * de recusas da rede.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> só devolve no MESMO minuto da reserva (virado o minuto, o balde já é outro) e
+     * nunca deixa a contagem negativa.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; limitador desligado não faz nada.</p>
+     */
+    public void devolverReserva(ContainerRequestContext ctx, ReservaCsrf reserva) {
+        if (!rateLimitEnabled || reserva == null) {
+            return;
+        }
+        Bucket bucket = buckets.get(clientKey(ctx) + "|csrf-recusa");
+        if (bucket != null && bucket.windowMinute() == reserva.minuto()) {
+            bucket.counter().updateAndGet(v -> v > 0 ? v - 1 : 0);
+        }
+    }
+
+    /**
+     * Limpeza oportunista (sem scheduler): no máximo uma vez por minuto, evita crescimento ilimitado do mapa de
+     * baldes (memory leak / vetor de DoS).
+     */
+    private void podarSeVirouMinuto(long windowMinute) {
+        long previousPrune = lastPruneMinute.get();
+        if (windowMinute != previousPrune && lastPruneMinute.compareAndSet(previousPrune, windowMinute)) {
+            prune();
+        }
     }
 
     private int incrementar(String key, long windowMinute) {

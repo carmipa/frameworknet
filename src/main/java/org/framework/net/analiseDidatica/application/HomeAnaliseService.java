@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import org.framework.net.telemetria.TelemetriaContext;
 
 @ApplicationScoped
 public class HomeAnaliseService {
@@ -38,6 +39,20 @@ public class HomeAnaliseService {
     private static final Set<String> VALID_MODES = Set.of(
             "cidr", "mask", "wildcard", "autoip", "dominio", "ipv6", "comparador", "geo");
     private static final Set<Integer> REGUA_OPCOES = Set.of(5, 10, 15, 25, 50, 100);
+
+    /**
+     * Maior campo aceito no formulário da Análise. O maior valor legítimo é uma URL colada no modo Domínio, de onde
+     * sai só o nome do host: 8192 cobre os 8000 octetos que a RFC 9110 §4.1 recomenda aceitar numa URI (link de
+     * proteção de e-mail e URL assinada passam de 2 mil). O POST lê cada campo por {@code @RestForm}, com o teto de
+     * 256 KB por campo do Quarkus — largo demais para o que a tela tem: sem este teto, cada campo ia até lá e chegava
+     * ao DNS, ao log, à telemetria e ao histórico.
+     */
+    static final int MAX_CARACTERES_CAMPO = 8192;
+
+    /** Campos do formulário que a tela sabe destacar quando recusados. */
+    private static final Set<String> CAMPOS_DA_TELA = Set.of(
+            "ip", "ipv6", "cidr", "mask_decimal", "wildcard_mask", "modo",
+            "comparador_cidr_a", "comparador_cidr_b", "regua_count");
 
     @Inject
     AnaliseDidaticaConfig config;
@@ -98,6 +113,10 @@ public class HomeAnaliseService {
 
     @SuppressWarnings("unchecked")
     private HomeViewModel processarPostInterno(Map<String, String> form) {
+        HomeViewModel recusa = recusarCampoLongo(form);
+        if (recusa != null) {
+            return recusa;
+        }
         HomeViewModel vm = estadoPadrao(form.getOrDefault("tab", "cidr"));
         aplicarDefaultsHistorico(vm, form.get("history_limit"), form.get("history_page"));
 
@@ -186,10 +205,102 @@ public class HomeAnaliseService {
         finalizarPosProcessamento(vm);
         finalizarHistorico(vm);
         Map<String, Object> fields = new HashMap<>();
-        fields.put("modo", vm.activeTabPre());
+        fields.put("modo", modoParaTelemetria(vm.activeTabPre()));
         fields.put("statusCalc", vm.erro() == null || vm.erro().isBlank() ? "ok" : "invalid_input");
         telemetriaLogger.logEvent("info", "analiseDidatica", "calc_complete", fields);
         return vm;
+    }
+
+    /**
+     * Recusa o envio que traz um campo (nome ou valor) acima de {@link #MAX_CARACTERES_CAMPO}.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> nenhum endereço, máscara ou domínio chega perto do teto; o que passa dele é
+     * colagem errada ou abuso, e não pode chegar ao DNS, ao log, à telemetria nem ao histórico.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> a conferência roda antes de qualquer outro uso do formulário; o valor
+     * recusado nunca é ecoado na tela, no log nem no evento (só o nome do campo, e só se for um campo da tela);
+     * a recusa conta na telemetria como {@code statusCalc=campo_longo}.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; devolve {@code null} quando está tudo no teto, ou a tela
+     * com o erro e o campo marcado.</p>
+     */
+    private HomeViewModel recusarCampoLongo(Map<String, String> form) {
+        String campoLongo = null;
+        boolean achou = false;
+        for (Map.Entry<String, String> e : form.entrySet()) {
+            String chave = e.getKey() == null ? "" : e.getKey();
+            String valor = e.getValue() == null ? "" : e.getValue();
+            if (chave.length() > MAX_CARACTERES_CAMPO || valor.length() > MAX_CARACTERES_CAMPO) {
+                achou = true;
+                campoLongo = CAMPOS_DA_TELA.contains(chave) ? chave : null;
+                break;
+            }
+        }
+        if (!achou) {
+            return null;
+        }
+        String tab = form.get("tab");
+        HomeViewModel vm = estadoPadrao(tab != null && tab.length() <= MAX_CARACTERES_CAMPO ? tab : "cidr");
+        // Os campos que cabem voltam para a tela (a pessoa não redigita o resto); o que passou do teto não volta.
+        vm.setIpPre(noTetoOuVazio(form.get("ip")));
+        vm.setIpv6Pre(noTetoOuVazio(form.get("ipv6")));
+        vm.setCidrPre(noTetoOuVazio(form.get("cidr")));
+        vm.setMaskDecPre(noTetoOuVazio(form.get("mask_decimal")));
+        vm.setWildcardPre(noTetoOuVazio(form.get("wildcard_mask")));
+        vm.setErro("Um dos campos passou de " + MAX_CARACTERES_CAMPO + " caracteres — nenhum endereço, máscara, "
+                + "domínio ou URL chega perto disso. Confira o que foi colado.");
+        Set<String> invalidos = new HashSet<>();
+        if (campoLongo != null) {
+            invalidos.add(campoLongo);
+        }
+        vm.setInvalidFields(invalidos);
+        finalizarHistorico(vm);
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("modo", modoParaTelemetria(vm.activeTabPre()));
+        fields.put("statusCalc", "campo_longo");
+        if (campoLongo != null) {
+            fields.put("campo", campoLongo);
+        }
+        telemetriaLogger.logEvent("info", "analiseDidatica", "calc_complete", fields);
+        return vm;
+    }
+
+    /**
+     * O modo que vai ao evento de telemetria.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> {@code modo} vai ao dataset público como vocabulário fixo; a aba ativa vem do
+     * formulário, onde quem envia escolhe o texto (um IP derrubava a geração do dataset; texto livre saía publicado).</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> só os modos da tela passam; o resto vira {@code "invalido"}.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; nulo vira {@code "invalido"}.</p>
+     */
+    static String modoParaTelemetria(String modo) {
+        String m = modo == null ? "" : modo.strip().toLowerCase(java.util.Locale.ROOT);
+        return VALID_MODES.contains(m) ? m : "invalido";
+    }
+
+    private static String noTetoOuVazio(String valor) {
+        return valor == null || valor.length() > MAX_CARACTERES_CAMPO ? "" : valor.strip();
+    }
+
+    /**
+     * O que o histórico guarda como "entrada" da consulta.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o histórico serve para repetir a consulta. No modo Domínio a pessoa pode colar
+     * uma URL inteira — que pode carregar token de acesso e passar do teto do histórico, cortada num ponto em que a
+     * repetição já não funciona. O que a consulta usou de fato foi só o nome do host.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> no modo Domínio sai o host normalizado (o mesmo que foi ao DNS, até 253
+     * caracteres); nos demais modos, o texto digitado como veio.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; nulo vira {@code ""}.</p>
+     */
+    static String entradaParaHistorico(String modo, String digitado) {
+        if ("dominio".equals(modo)) {
+            return org.framework.net.analiseDidatica.support.HostnameNormalizer.normalizar(digitado);
+        }
+        return digitado == null ? "" : digitado;
     }
 
     private void finalizarPosProcessamento(HomeViewModel vm) {
@@ -385,7 +496,7 @@ public class HomeAnaliseService {
 
             Map<String, String> entrada = Map.of(
                     "modo", mode,
-                    "ip", ipEntradaOriginal,
+                    "ip", entradaParaHistorico(mode, ipEntradaOriginal),
                     "cidr", cidrRaw,
                     "mask_decimal", maskDecP,
                     "wildcard_mask", wildcardP);
@@ -395,7 +506,7 @@ public class HomeAnaliseService {
                 LOG.warnf("history_persist warn modo=%s erro=%s", mode, ex.getMessage());
             }
         } catch (EntradaInvalidaException ex) {
-            LOG.warnf("calc invalid_input modo=%s erro=%s", mode, ex.getMessage());
+            LOG.warnf("calc invalid_input modo=%s erro=%s", mode, TelemetriaContext.paraLog(ex.getMessage(), 512));
             out.put("erro", ex.getMessage());
         } catch (Exception ex) {
             LOG.error("calc error", ex);

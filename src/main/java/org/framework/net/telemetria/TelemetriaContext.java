@@ -18,6 +18,25 @@ public class TelemetriaContext {
 
     private static final Pattern REQUEST_ID_ACEITO = Pattern.compile("[A-Za-z0-9._-]{1,64}");
 
+    private static final Pattern VOCABULARIO = Pattern.compile("[a-z_-]{1,32}");
+
+    /**
+     * Valor de vocabulário (modo, topologia) pronto para campo de evento.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> esses campos vão ao dataset público como "vocabulário fixo do código", mas
+     * quando o valor vem do formulário quem envia escolhe o texto: um IP fazia a auditoria do dataset abortar a
+     * geração inteira (ela recusa IP público), e texto livre saía publicado.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> só passa palavra minúscula de letras, {@code _} e {@code -}, até 32
+     * caracteres — o vocabulário real do código; o resto vira {@code "outro"}. Custo linear.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; nulo vira {@code "outro"}.</p>
+     */
+    public static String vocabulario(String valor) {
+        String v = valor == null ? "" : valor.strip().toLowerCase(java.util.Locale.ROOT);
+        return v.length() <= 32 && VOCABULARIO.matcher(v).matches() ? v : "outro";
+    }
+
     /**
      * Abre a correlação de uma requisição.
      *
@@ -66,21 +85,111 @@ public class TelemetriaContext {
         if (caminho == null || caminho.isEmpty()) {
             return "/";
         }
-        StringBuilder sb = new StringBuilder(Math.min(caminho.length(), MAX_CAMINHO) + 16);
-        for (int i = 0; i < caminho.length(); i++) {
-            if (sb.length() >= MAX_CAMINHO) {
+        return paraLog(caminho, MAX_CAMINHO);
+    }
+
+    /**
+     * Texto vindo de quem usa o site, pronto para ir ao log, ao console e ao evento da telemetria.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> um valor digitado (domínio, IP, campo de formulário) entra em mensagem de
+     * log e em campo de evento. Cru, uma quebra de linha forjava uma linha inteira no console do painel e no
+     * {@code docker logs} (um "login" que não aconteceu), e um valor de 1 MB enchia a memória e a trilha.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> nenhum caractere de controle (C0, DEL, C1, separadores de linha Unicode)
+     * sai cru — vira {@code %XX}/{@code %uXXXX}; metade de par substituto (surrogate órfão) também vira
+     * {@code %uXXXX} — crua, ela sairia como "?" no console e no JSONL (medido em 25/11/2026), escondendo o que de
+     * fato chegou; controle bidirecional (que reordena o texto na tela) também vira {@code %uXXXX}, e o próprio
+     * {@code %} vira {@code %25}, para o escape ser inequívoco; texto legítimo, inclusive acentuado e emoji, passa
+     * igual. No máximo {@code max} caracteres antes da marca
+     * {@link #MARCA_TRUNCADO}: o corte nunca parte um escape nem um par substituto ao meio. Custo linear e
+     * limitado por {@code max}. É a regra única do projeto para isso: {@link #caminhoParaLog} e o
+     * {@code TelemetriaLogger} a usam.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; nulo vira {@code ""}; {@code max} menor que 1 é
+     * tratado como 1.</p>
+     */
+    public static String paraLog(String texto, int max) {
+        return sanear(texto, max, true);
+    }
+
+    /**
+     * Texto que JA passou (ou deveria ter passado) por {@link #paraLog}, pronto para voltar a circular.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> eventos gravados por versão anterior podem trazer controle cru; os gravados por esta
+     * versão já vêm saneados. A mesma função tem de servir aos dois sem estragar o segundo.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> mesma neutralização de {@link #paraLog}, exceto o {@code %}, que NÃO é
+     * reescapado — por isso é idempotente: aplicada de novo a cada reinício, não dobra escapes ({@code %0A} não vira
+     * {@code %250A}). No máximo {@code max} caracteres antes da marca.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; nulo vira {@code ""}.</p>
+     */
+    public static String neutralizarLegado(String texto, int max) {
+        return sanear(texto, max, false);
+    }
+
+    /**
+     * Só corta: texto já saneado no teto, sem partir emoji, com a marca {@link #MARCA_TRUNCADO}.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> a mensagem do evento é montada com valores já saneados; saneá-la de novo dobrava
+     * os escapes ({@code %0A} virava {@code %250A} no console).</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> não muda nenhum caractere; no máximo {@code max} caracteres antes da marca.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; nulo continua nulo.</p>
+     */
+    public static String cortar(String texto, int max) {
+        int teto = Math.max(1, max);
+        if (texto == null || texto.length() <= teto) {
+            return texto;
+        }
+        int corte = teto;
+        if (Character.isHighSurrogate(texto.charAt(corte - 1))) {
+            corte--;
+        }
+        return texto.substring(0, corte) + MARCA_TRUNCADO;
+    }
+
+    private static String sanear(String texto, int max, boolean escaparPercent) {
+        if (texto == null || texto.isEmpty()) {
+            return "";
+        }
+        int teto = Math.max(1, max);
+        StringBuilder sb = new StringBuilder(Math.min(texto.length(), teto) + MARCA_TRUNCADO.length());
+        int i = 0;
+        while (i < texto.length()) {
+            char c = texto.charAt(i);
+            String unidade = null;
+            int consumidos = 1;
+            if (Character.isHighSurrogate(c) && i + 1 < texto.length()
+                    && Character.isLowSurrogate(texto.charAt(i + 1))) {
+                unidade = texto.substring(i, i + 2);
+                consumidos = 2;
+            } else if (Character.isISOControl(c)) {
+                unidade = String.format("%%%02X", (int) c);
+            } else if (c == '%' && escaparPercent) {
+                unidade = "%25";   // sem isto, um "%0A" digitado ficaria igual ao escape de uma quebra de linha real
+            } else if (Character.isSurrogate(c) || c == '\u2028' || c == '\u2029' || controleBidi(c)) {
+                unidade = String.format("%%u%04X", (int) c);
+            }
+            int tamanho = unidade == null ? 1 : unidade.length();
+            if (sb.length() + tamanho > teto) {
                 return sb.append(MARCA_TRUNCADO).toString();
             }
-            char c = caminho.charAt(i);
-            if (Character.isISOControl(c)) {
-                sb.append(String.format("%%%02X", (int) c));
-            } else if (c == ' ' || c == ' ' || c == '\u0085') {
-                sb.append(String.format("%%u%04X", (int) c));
-            } else {
+            if (unidade == null) {
                 sb.append(c);
+            } else {
+                sb.append(unidade);
             }
+            i += consumidos;
         }
         return sb.toString();
+    }
+
+    /** Controle bidirecional (U+061C, U+200E/F, U+202A–202E, U+2066–2069): reordena na tela o texto do log. */
+    private static boolean controleBidi(char c) {
+        return c == '\u061C' || c == '\u200E' || c == '\u200F' || (c >= '\u202A' && c <= '\u202E')
+                || (c >= '\u2066' && c <= '\u2069');
     }
 
     public void registrarResposta(TelemetriaRequestContext ctx, int httpStatus) {

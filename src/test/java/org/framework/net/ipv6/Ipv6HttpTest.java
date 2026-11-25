@@ -312,6 +312,58 @@ class Ipv6HttpTest {
                 .body(containsString("2001:db8::/62"));
     }
 
+    /**
+     * Lote 1 da auditoria (SEC-04): sem teto, ~220 KB de prefixos geravam ~7 MB de HTML por pedido e 20 pedidos
+     * simultâneos esgotavam a memória. Fronteira (A1): 64 prefixos (o teto da sumarização IPv4) passam; 65 são
+     * recusados com 400 e mensagem, antes de qualquer cálculo.
+     */
+    @Test
+    void sumarizacaoAceitaOTetoERecusaOPrimeiroAlem() {
+        StringBuilder sessentaEQuatro = new StringBuilder();
+        for (int i = 0; i < 64; i++) {
+            sessentaEQuatro.append("2001:db8:0:").append(Integer.toHexString(i)).append("::/64\n");
+        }
+        given()
+                .contentType(FORM)
+                .formParam("prefixos", sessentaEQuatro.toString())
+                .when().post("/ipv6/api/sumarizar")
+                .then()
+                .statusCode(200)
+                .body(containsString("2001:db8::/58"));
+        given()
+                .contentType(FORM)
+                .header("HX-Request", "true")
+                .formParam("prefixos", sessentaEQuatro + "2001:db8:0:40::/64")
+                .when().post("/ipv6/api/sumarizar")
+                .then()
+                .statusCode(400)
+                .body(containsString("Máximo de 64 prefixos"));
+    }
+
+    /** Lote 1 (SEC-01): domínio acima de 253 caracteres (RFC 1035) é recusado com 400 antes de qualquer DNS. */
+    @Test
+    void dominioAcimaDoTetoVolta400SemConsultarODns() {
+        String nome = "a".repeat(63) + "." + "b".repeat(63) + "." + "c".repeat(63) + "." + "d".repeat(62);
+        org.junit.jupiter.api.Assertions.assertEquals(254, nome.length());
+        given()
+                .contentType(FORM)
+                .header("HX-Request", "true")
+                .formParam("dominio", nome)
+                .when().post("/ipv6/api/dominio")
+                .then()
+                .statusCode(400)
+                .body(containsString("Nome de domínio longo demais"));
+        // Revisão de boa-fé (2ª passada): URL inteira colada não é "nome longo" — a mensagem pede só o nome.
+        given()
+                .contentType(FORM)
+                .header("HX-Request", "true")
+                .formParam("dominio", "https://www.example.org/caminho?token=" + "x".repeat(300))
+                .when().post("/ipv6/api/dominio")
+                .then()
+                .statusCode(400)
+                .body(containsString("Cole só o nome do domínio"));
+    }
+
     @Test
     void faixaParaCidrCobreComUmBloco() {
         given()

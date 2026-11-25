@@ -3,13 +3,20 @@ package org.framework.net.telemetria.application;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import org.framework.net.shared.InputLimits;
+import org.framework.net.telemetria.TelemetriaEvent;
 import org.framework.net.telemetria.TelemetriaLogger;
+import org.framework.net.telemetria.TelemetriaStore;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,6 +37,9 @@ class DatasetEsquemaFechadoTest {
 
     @Inject
     ObjectMapper objectMapper;
+
+    @Inject
+    TelemetriaStore store;
 
     @Test
     @SuppressWarnings("unchecked")
@@ -66,5 +76,110 @@ class DatasetEsquemaFechadoTest {
         assertTrue(fora.containsKey("campoNovo" + marca), "campo novo contado por nome: " + fora);
         assertTrue(estatisticas.containsKey("identificadores_distintos"));
         assertFalse(estatisticas.containsKey("visitantes_distintos"), "não é contagem de visitantes");
+    }
+
+    /**
+     * Lote 1 (revisão operacional, 2ª passada): evento gravado por versão anterior pode ter texto do formulário em
+     * {@code modo}/{@code topology}. Na saída ele passa pelo guardião de vocabulário — sai "outro" — e o vocabulário
+     * real do código passa igual (A1).
+     */
+    @Test
+    void vocabularioQueVeioDoFormularioSaiComoOutro() {
+        String marca = "voc" + UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+        Map<String, Object> campos = new LinkedHashMap<>();
+        campos.put("modo", "Texto Livre Digitado 123");
+        campos.put("topology", "mesh");
+        telemetriaLogger.logEvent("info", "teste", "evento_" + marca, campos);
+
+        String jsonl = dataset.gerar().arquivos().entrySet().stream()
+                .filter(e -> e.getKey().endsWith("eventos.jsonl")).findFirst().orElseThrow().getValue();
+        String linha = jsonl.lines().filter(l -> l.contains("evento_" + marca)).findFirst().orElse(null);
+        assertNotNull(linha, "o evento de teste precisa estar no pacote para o teste valer");
+        assertFalse(linha.contains("Texto Livre"), "texto livre do formulário saiu publicado: " + linha);
+        assertTrue(linha.contains("outro"), linha);
+        assertTrue(linha.contains("mesh"), "o vocabulário real precisa passar igual: " + linha);
+    }
+
+    /**
+     * Campo {@code erro}: só passa nome de classe de falha (A1 — a fronteira é a mesma forma curta e sem espaço).
+     * Nome próprio solto, frase da colagem e endereço saem "outro".
+     */
+    @Test
+    void campoErroSoPublicaNomeDeClasseDeFalha() {
+        assertEquals("EntradaInvalidaException", DatasetPublicavelService.classeDeFalhaPublicavel("EntradaInvalidaException"));
+        assertEquals("StackOverflowError", DatasetPublicavelService.classeDeFalhaPublicavel("StackOverflowError"));
+        assertEquals("NoStackTraceThrowable", DatasetPublicavelService.classeDeFalhaPublicavel(" NoStackTraceThrowable "));
+        assertEquals("outro", DatasetPublicavelService.classeDeFalhaPublicavel("Fulano"));
+        assertEquals("outro", DatasetPublicavelService.classeDeFalhaPublicavel("Linha 1 (Fulano): curta"));
+        assertEquals("outro", DatasetPublicavelService.classeDeFalhaPublicavel("10.0.0.0/24"));
+        assertEquals("outro", DatasetPublicavelService.classeDeFalhaPublicavel("Exception"));
+        assertEquals("outro", DatasetPublicavelService.classeDeFalhaPublicavel(null));
+    }
+
+    /**
+     * Evento gravado pela versão anterior (ainda no Stream ou no arquivo da janela) com a mensagem curta da colagem em
+     * {@code erro}: abaixo de 64 caracteres e sem {@code @}, passava pelo guardião de tamanho e saía publicado. A2: sem o
+     * guardião de classe de falha, o nome aparece na linha.
+     */
+    @Test
+    void erroLegadoComTextoDaColagemSaiComoOutro() {
+        String marca = "leg" + UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+        String nome = "Aluna" + marca;
+        Map<String, Object> campos = new LinkedHashMap<>();
+        campos.put("status", "invalid_input");
+        campos.put("erro", "Linha 1 (" + nome + "): curta");
+        telemetriaLogger.logEvent("warn", "teste", "evento_" + marca, campos);
+
+        String jsonl = dataset.gerar().arquivos().entrySet().stream()
+                .filter(e -> e.getKey().endsWith("eventos.jsonl")).findFirst().orElseThrow().getValue();
+        String linha = jsonl.lines().filter(l -> l.contains("evento_" + marca)).findFirst().orElse(null);
+        assertNotNull(linha, "o evento de teste precisa estar no pacote para o teste valer");
+        assertFalse(linha.contains(nome), "texto da colagem publicado em erro: " + linha);
+        assertTrue(linha.contains("\"framework.field.erro\""), "o campo continua no esquema: " + linha);
+        assertTrue(linha.contains("outro"), linha);
+    }
+
+    /**
+     * Caminho real: a colagem da turma com uma linha de 51 colunas de hosts gera a mensagem que repete o nome do aluno.
+     * O evento guarda o nome da classe em {@code erro} e o texto em {@code mensagem} (A7: a causa continua no painel);
+     * no pacote publicado o nome não aparece e a classe aparece (A6: verificado no arquivo gerado, não no mapa).
+     * A2: com a origem antiga ({@code "erro", ex.getMessage()}), {@code erro} traz o nome e a primeira asserção cai.
+     */
+    @Test
+    void falhaDaColagemDaTurmaNaoPublicaONomeDoAluno() {
+        String nome = "Aluno" + UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+        String roster = nome + "\t172.51.0.0" + "\t10".repeat(InputLimits.MAX_LOCATION_ROWS + 1);
+        Instant antes = Instant.now();
+        given()
+                .contentType("application/x-www-form-urlencoded")
+                .formParam("action_type", "export_class_zip")
+                .formParam("topology_type", "extended_star")
+                .formParam("wan_prefix", "30")
+                .formParam("eigrp_as", "71")
+                .formParam("routing_mode", "auto")
+                .formParam("remote_access", "ssh")
+                .formParam("class_roster_paste", roster)
+                .when().post("/resolucao-problemas")
+                .then()
+                .statusCode(200)
+                .body(containsString("localidades"));
+
+        TelemetriaEvent evento = store.snapshotEventos().stream()
+                .filter(e -> "problem_export_class_zip".equals(e.evento()))
+                .filter(e -> e.timestamp() != null && !e.timestamp().isBefore(antes))
+                .filter(e -> e.fields() != null && "invalid_input".equals(e.fields().get("status")))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("o evento da falha da colagem não foi gravado"));
+        assertEquals("EntradaInvalidaException", evento.fields().get("erro"),
+                "erro deve ser o nome da classe, nunca o texto: " + evento.fields());
+        assertTrue(String.valueOf(evento.fields().get("mensagem")).contains(nome),
+                "a causa (com o nome) precisa continuar no evento do painel: " + evento.fields());
+
+        String jsonl = dataset.gerar().arquivos().entrySet().stream()
+                .filter(e -> e.getKey().endsWith("eventos.jsonl")).findFirst().orElseThrow().getValue();
+        String linha = jsonl.lines().filter(l -> l.contains(evento.id())).findFirst().orElse(null);
+        assertNotNull(linha, "o evento precisa estar no pacote para o teste valer");
+        assertFalse(linha.contains(nome), "nome do aluno publicado: " + linha);
+        assertTrue(linha.contains("EntradaInvalidaException"), linha);
     }
 }

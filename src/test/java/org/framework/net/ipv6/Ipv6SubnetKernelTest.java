@@ -29,6 +29,9 @@ class Ipv6SubnetKernelTest {
 
     private final Ipv6SubnetKernel kernel = new Ipv6SubnetKernel();
 
+    /** O teto da sumarização em produção ({@code framework.ipv6.max-redes-sumarizacao}). */
+    private static final int TETO = 64;
+
     @Test
     void comprimeExpandeEContaEnderecos() {
         AnaliseIpv6 r = kernel.analisar("2001:0db8:0000:0000:0000:0000:0000:0001");
@@ -302,7 +305,7 @@ class Ipv6SubnetKernelTest {
     void sumarizarQuatroContiguasViramUmSlash62() {
         // Gabarito independente: quatro /64 contíguos (0..3) alinham em um /62.
         SumarizacaoIpv6 s = kernel.sumarizar(java.util.List.of(
-                "2001:db8:0:0::/64", "2001:db8:0:1::/64", "2001:db8:0:2::/64", "2001:db8:0:3::/64"));
+                "2001:db8:0:0::/64", "2001:db8:0:1::/64", "2001:db8:0:2::/64", "2001:db8:0:3::/64"), TETO);
         assertEquals("2001:db8::/62", s.supernet());
         assertEquals(1, s.blocosMesclados().size());
         assertEquals("2001:db8::/62", s.blocosMesclados().get(0).cidr());
@@ -310,7 +313,7 @@ class Ipv6SubnetKernelTest {
 
     @Test
     void sumarizarDetectaContencao() {
-        SumarizacaoIpv6 s = kernel.sumarizar(java.util.List.of("2001:db8::/32", "2001:db8:0:1::/64"));
+        SumarizacaoIpv6 s = kernel.sumarizar(java.util.List.of("2001:db8::/32", "2001:db8:0:1::/64"), TETO);
         assertTrue(s.umContemOutro());
         assertTrue(s.relacao().toLowerCase().contains("cont"));
         assertEquals("2001:db8::/32", s.supernet());
@@ -323,7 +326,7 @@ class Ipv6SubnetKernelTest {
      */
     @Test
     void sumarizarInformaEspacoExtraArrastado() {
-        SumarizacaoIpv6 s = kernel.sumarizar(java.util.List.of("2001:db8:0::/64", "2001:db8:1::/64"));
+        SumarizacaoIpv6 s = kernel.sumarizar(java.util.List.of("2001:db8:0::/64", "2001:db8:1::/64"), TETO);
         assertEquals("2001:db8::/47", s.supernet());
         assertFalse(s.exata());
         assertEquals(java.math.BigInteger.TWO.pow(65).toString(), s.enderecosCobertos());
@@ -331,7 +334,7 @@ class Ipv6SubnetKernelTest {
                 s.enderecosExtras());
 
         SumarizacaoIpv6 exato = kernel.sumarizar(java.util.List.of(
-                "2001:db8:0:0::/64", "2001:db8:0:1::/64", "2001:db8:0:2::/64", "2001:db8:0:3::/64"));
+                "2001:db8:0:0::/64", "2001:db8:0:1::/64", "2001:db8:0:2::/64", "2001:db8:0:3::/64"), TETO);
         assertTrue(exato.exata());
         assertEquals("0", exato.enderecosExtras());
     }
@@ -357,7 +360,52 @@ class Ipv6SubnetKernelTest {
 
     @Test
     void sumarizarRejeitaListaVazia() {
-        assertThrows(Ipv6Exception.class, () -> kernel.sumarizar(java.util.List.of()));
+        assertThrows(Ipv6Exception.class, () -> kernel.sumarizar(java.util.List.of(), TETO));
+    }
+
+    /**
+     * Teto de entradas da sumarização (o mesmo 64 da sumarização IPv4). Fronteira (A1): exatamente
+     * {@code TETO} prefixos passam; {@code TETO + 1} são recusados pelo teto, não pelo parse — a lista
+     * é toda de prefixos válidos. Linhas em branco não contam. Gabarito: o contrato do teto, não o
+     * motor.
+     */
+    @Test
+    void sumarizarAceitaOTetoERecusaOPrimeiroAlem() {
+        java.util.List<String> noTeto = new java.util.ArrayList<>();
+        for (int i = 0; i < TETO; i++) {
+            noTeto.add("2001:db8:0:" + Integer.toHexString(i) + "::/64");
+            noTeto.add("   ");
+        }
+        SumarizacaoIpv6 ok = kernel.sumarizar(noTeto, TETO);
+        assertEquals(TETO, ok.entradas());
+
+        java.util.List<String> alem = new java.util.ArrayList<>(noTeto);
+        alem.add("2001:db8:0:" + Integer.toHexString(TETO) + "::/64");
+        Ipv6Exception ex = assertThrows(Ipv6Exception.class, () -> kernel.sumarizar(alem, TETO));
+        assertTrue(ex.getMessage().contains("Máximo de " + TETO + " prefixos"), ex.getMessage());
+    }
+
+    /**
+     * Lote 1 (revisão adversarial): no Projetar, cada nome de localidade se repete por enlace e por roteador — em
+     * malha, por par. Fronteira (A1): 120 caracteres passam; 121 são recusados sem ecoar o nome.
+     */
+    @Test
+    void projetarRecusaNomeDeLocalidadeAcimaDoTeto() {
+        String noTeto = "L".repeat(org.framework.net.shared.InputLimits.MAX_LABEL_LENGTH);
+        ProjetoRede ok = kernel.projetarRede("2001:db8::/48", 64, 127, "malha", java.util.List.of(noTeto, "B"), 100, 1);
+        assertEquals(2, ok.totalLocais());
+        String acima = noTeto + "X";
+        Ipv6Exception ex = assertThrows(Ipv6Exception.class,
+                () -> kernel.projetarRede("2001:db8::/48", 64, 127, "malha", java.util.List.of("A", acima), 100, 1));
+        assertTrue(ex.getMessage().contains("localidade 2") && !ex.getMessage().contains(acima), ex.getMessage());
+    }
+
+    /** O teto é conferido antes do parse: a 2ª entrada, mesmo malformada, cai no teto de 1. */
+    @Test
+    void sumarizarConfereOTetoAntesDoParse() {
+        Ipv6Exception ex = assertThrows(Ipv6Exception.class,
+                () -> kernel.sumarizar(java.util.List.of("2001:db8::/64", "isto nao e ipv6"), 1));
+        assertTrue(ex.getMessage().contains("Máximo de 1 prefixos"), ex.getMessage());
     }
 
     @Test

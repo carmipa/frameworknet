@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.framework.net.telemetria.TelemetriaContext;
 
 @ApplicationScoped
 public class VlsmService {
@@ -71,7 +72,7 @@ public class VlsmService {
             int ospfProcess) {
 
         telemetriaLogger.logEvent("info", "resolucaoProblemas", "problem_solve",
-                Map.of("status", "start", "topology", topologyType, "locations", locationsInput.size()));
+                Map.of("status", "start", "topology", TelemetriaContext.vocabulario(topologyType), "locations", locationsInput.size()));
 
         IPv4Address baseNetwork = ipv4Kernel.parseNetwork(
                 baseNetworkInput == null ? "" : baseNetworkInput.strip(), "Rede base");
