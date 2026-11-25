@@ -14,7 +14,7 @@ Cobre análise de IPv4/IPv6, CIDR, máscaras, wildcard, VLSM, topologia WAN, scr
 
 | Módulo | Rota | Descrição |
 |--------|------|-----------|
-| Início | `/` | Página inicial (landing) com visão geral e atalhos para os módulos |
+| Início | `/` | Página inicial (landing): dois caminhos no topo (Academia e Análise) e os módulos agrupados como no menu (IPv4, IPv6, Topologia, Operações), com o mesmo ícone de cada item |
 | Academia | `/academia` | Escola de redes do básico ao avançado: níveis em abas que desbloqueiam um por vez (Fundamentos, IPv4, Transporte) e lições em **Entenda · Ver · Mexer · Provar**, com as contas no navegador |
 | Análise Didática | `/analise` | CIDR, máscara, wildcard, auto-CIDR, domínio, IPv6, comparador |
 | Calculadora (IPv4) | `/calculadora` | Sub-redes e VLANs: dividir blocos, plano de VLAN, sumarização e faixa para CIDR |

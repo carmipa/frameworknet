@@ -55,13 +55,45 @@
     gap: 0.6rem;
 }
 
+/* Grupos com o nome e o ícone dos grupos do menu (IPv4, IPv6, Topologia, Operações). O título do grupo é h2; o
+   título do cartão desceu para h3. */
+.home-group + .home-group {
+    margin-top: 2.5rem;
+}
+
+.home-group-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--aed-font-display, "Space Grotesk", sans-serif);
+    font-size: 1.25rem;
+    margin: 0 0 1rem;
+    color: var(--aed-text, #eef2f8);
+}
+
+.home-group-title .material-symbols-outlined {
+    color: var(--aed-teal, #2dd4bf);
+}
+
+/* Selo de estado dentro do título do cartão (ex.: ADMIN), com o ícone de "exige login" antes do texto. */
+.home-selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.home-selo .material-symbols-outlined {
+    font-size: 1em;
+}
+
 .home-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
     gap: 1.25rem 3%;
 }
 
-/* O cartão é um <article>; o link real é o título (h2 > a.home-module-link) e o ::after dele cobre o cartão
+/* O cartão é um <article>; o link real é o título (h3 > a.home-module-link) e o ::after dele cobre o cartão
    inteiro, então clicar em qualquer ponto do cartão continua abrindo a página. O cartão não leva dica: o título e
    o texto visível já explicam o destino, e uma dica disputaria o toque com o próprio cartão. */
 .home-module {
