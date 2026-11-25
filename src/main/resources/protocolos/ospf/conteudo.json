@@ -1,0 +1,430 @@
+{
+  "resumo": "O OSPF (Open Shortest Path First) é o protocolo de roteamento interno (IGP) de estado de enlace mais usado em redes corporativas. Em vez de repassar tabelas prontas aos vizinhos, como fazem os protocolos de vetor de distância, cada roteador descreve os próprios enlaces em anúncios chamados LSAs e os inunda pela área. Todos montam a mesma base (a LSDB) e cada um roda sozinho o algoritmo de Dijkstra (SPF) para calcular a árvore de menor custo até cada rede. Roda direto sobre o IP (protocolo 89), sem TCP nem UDP, e fala em multicast com os vizinhos do enlace. A rede se divide em áreas ligadas ao backbone (área 0), o que limita o tamanho da LSDB e o alcance de cada mudança. O OSPFv2 (RFC 2328) atende o IPv4; o OSPFv3 (RFC 5340) atende o IPv6.",
+  "conceitos": [
+    {
+      "titulo": "Estado de enlace e LSDB",
+      "icone": "database",
+      "texto": "Cada roteador anuncia o que conhece de primeira mão: seus enlaces, o custo de cada um e os vizinhos. Esses anúncios (LSAs) são inundados pela área e guardados na LSDB, a base de estado de enlace. Quando a inundação termina, todos os roteadores da área têm a mesma LSDB, isto é, o mesmo mapa da rede, e cada um calcula as próprias rotas a partir dele.",
+      "destaque": "Todos veem o mesmo mapa; cada um calcula o próprio caminho."
+    },
+    {
+      "titulo": "Hello, vizinhos e adjacência",
+      "icone": "handshake",
+      "texto": "O roteador envia Hello a cada 10 segundos (em enlace broadcast ou ponto a ponto) e declara o vizinho morto se ficar 40 segundos sem ouvi-lo. Para virarem vizinhos, os dois lados precisam concordar em área, intervalos de Hello e Dead, tipo de área (stub ou não), autenticação e, em broadcast, máscara da sub-rede. Ser vizinho ainda não basta: a adjacência só fica completa (Full) depois de sincronizarem a LSDB.",
+      "destaque": "Parâmetro diferente num lado e o vizinho nunca aparece."
+    },
+    {
+      "titulo": "DR e BDR na rede multiacesso",
+      "icone": "groups",
+      "texto": "Numa LAN com vários roteadores, formar adjacência entre todos seria quadrático. Por isso eles elegem um roteador designado (DR) e um reserva (BDR): vence a maior prioridade (padrão 1; prioridade 0 nunca é eleita) e, no empate, o maior Router ID. Os demais (DROTHER) só ficam Full com o DR e o BDR, e entre si param no estado 2-Way. A eleição não é preemptiva: um roteador melhor que entra depois não toma o lugar do DR em funcionamento.",
+      "destaque": "Entre dois DROTHER, 2-Way é o normal, não defeito."
+    },
+    {
+      "titulo": "Áreas e o backbone",
+      "icone": "account_tree",
+      "texto": "Toda área se liga à área 0, o backbone. Os anúncios de enlace (LSAs tipo 1 e 2) não saem da própria área; o roteador de borda de área (ABR) leva só o resumo das redes para as outras áreas (LSA tipo 3). Quem traz rotas de fora do OSPF é o ASBR (LSA tipo 5). Áreas stub e NSSA recusam parte dessas rotas externas e ficam com LSDB menor, ganhando estabilidade.",
+      "destaque": "A área contém a mudança: um enlace instável não refaz o SPF do domínio inteiro."
+    },
+    {
+      "titulo": "Custo e o algoritmo SPF",
+      "icone": "route",
+      "texto": "Cada interface tem um custo, e a rota escolhida é a de menor custo total. A RFC deixa o custo para o administrador; no Cisco IOS o padrão é a largura de banda de referência (100 Mbps) dividida pela banda da interface, o que dá o mesmo custo 1 para 100 Mbps, 1 Gbps e 10 Gbps se a referência não for ajustada. Com a LSDB em mãos, o roteador roda o Dijkstra a partir de si mesmo e monta a árvore de caminhos mais curtos; caminhos de custo igual podem ser usados juntos (ECMP).",
+      "destaque": "Ajuste a referência de banda, senão 100 Mbps e 10 Gbps valem o mesmo."
+    },
+    {
+      "titulo": "Autenticação dos pacotes",
+      "icone": "lock",
+      "texto": "O OSPFv2 traz no cabeçalho o tipo de autenticação: nula (0), senha simples (1, que viaja em texto claro) ou criptográfica (2), com MD5 no texto original da RFC 2328 e HMAC-SHA desde a RFC 5709. O OSPFv3 tirou a autenticação do cabeçalho: usa IPsec (RFC 4552) ou o trailer de autenticação da RFC 7166. Sem autenticação, qualquer máquina que fale OSPF na LAN pode formar adjacência e injetar rotas.",
+      "destaque": "Sem autenticação, o roteador acredita em qualquer vizinho."
+    }
+  ],
+  "diagrama": {
+    "titulo": "De vizinho a adjacente: os estados até Full",
+    "definicao": "sequenceDiagram\n    participant R1 as R1 (Router ID 1.1.1.1)\n    participant R2 as R2 (Router ID 2.2.2.2)\n    R1->>R2: Hello para 224.0.0.5, ainda sem ver R2\n    Note over R2: Init: ouviu R1, mas R1 ainda não o listou\n    R2->>R1: Hello que lista o Router ID de R1\n    Note over R1,R2: 2-Way: cada um se vê no Hello do outro\n    R1->>R2: DBD vazio (ExStart: quem conduz a troca?)\n    R2->>R1: DBD de R2, o maior Router ID vira mestre\n    Note over R1,R2: Exchange: trocam só os cabeçalhos das LSAs\n    R1->>R2: LSR pedindo as LSAs que faltam (Loading)\n    R2->>R1: LSU com as LSAs completas\n    R1->>R2: LSAck confirmando o recebimento\n    Note over R1,R2: Full: LSDBs iguais, cada um roda o SPF",
+    "legenda": "O Hello descobre e confirma o vizinho (Init, 2-Way); os pacotes DBD comparam o que cada um tem (ExStart, Exchange); LSR, LSU e LSAck completam o que falta (Loading) até as bases ficarem iguais (Full)."
+  },
+  "cabecalho": {
+    "titulo": "Cabeçalho comum dos pacotes OSPFv2, campo a campo",
+    "campos": [
+      {
+        "nome": "Version",
+        "bits": 8,
+        "descricao": "Versão do protocolo: 2 no OSPFv2 (IPv4). O OSPFv3 usa 3 e tem cabeçalho de 16 bytes, sem os campos de autenticação.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Type (tipo do pacote)",
+        "bits": 8,
+        "descricao": "1 Hello, 2 Database Description, 3 Link State Request, 4 Link State Update, 5 Link State Acknowledgment.",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "Packet length",
+        "bits": 16,
+        "descricao": "Tamanho do pacote OSPF inteiro, em bytes, contando este cabeçalho.",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "Router ID",
+        "bits": 32,
+        "descricao": "Identidade de quem enviou, escrita como um endereço IPv4 (ex.: 1.1.1.1). Desempata a eleição de DR e decide quem é mestre na troca de DBD.",
+        "cor": "#059669"
+      },
+      {
+        "nome": "Area ID",
+        "bits": 32,
+        "descricao": "Área a que o pacote pertence; 0.0.0.0 é o backbone. Vizinhos com área diferente na mesma interface não formam adjacência.",
+        "cor": "#d97706"
+      },
+      {
+        "nome": "Checksum",
+        "bits": 16,
+        "descricao": "Soma de verificação do pacote inteiro, sem contar o campo de autenticação de 64 bits.",
+        "cor": "#dc2626"
+      },
+      {
+        "nome": "AuType (tipo de autenticação)",
+        "bits": 16,
+        "descricao": "0 = nenhuma, 1 = senha simples em texto claro, 2 = criptográfica (resumo com chave, como MD5 ou HMAC-SHA).",
+        "cor": "#4f46e5"
+      },
+      {
+        "nome": "Authentication",
+        "bits": 64,
+        "descricao": "Com AuType 1, a senha em claro; com AuType 2, o número da chave, o tamanho do resumo e um número de sequência crescente contra repetição. O resumo em si vai depois do pacote.",
+        "cor": "#be185d"
+      }
+    ],
+    "nota": "Somando os campos: 8 + 8 + 16 + 32 + 32 + 16 + 16 + 64 = 192 bits = 24 bytes. Todo pacote OSPFv2 começa com esse cabeçalho e vai direto dentro do IP (protocolo 89), sem TCP nem UDP. Em multicast sai com TTL 1, então nunca passa do enlace local."
+  },
+  "tabelas": [
+    {
+      "titulo": "Os cinco tipos de pacote",
+      "colunas": [
+        "Tipo",
+        "Pacote",
+        "Para que serve"
+      ],
+      "dicas_colunas": [
+        "Valor do campo Type no cabeçalho comum",
+        "Nome do pacote e a sigla usada nos comandos de diagnóstico",
+        "O papel do pacote na descoberta de vizinhos ou na sincronização da LSDB"
+      ],
+      "linhas": [
+        [
+          "1",
+          "Hello",
+          "Descobre e mantém vizinhos, confere parâmetros e elege DR e BDR"
+        ],
+        [
+          "2",
+          "Database Description (DBD)",
+          "Resume a LSDB (só cabeçalhos de LSA) ao formar a adjacência"
+        ],
+        [
+          "3",
+          "Link State Request (LSR)",
+          "Pede as LSAs que o vizinho tem e eu não tenho"
+        ],
+        [
+          "4",
+          "Link State Update (LSU)",
+          "Carrega LSAs completas; é o pacote que inunda as mudanças"
+        ],
+        [
+          "5",
+          "Link State Acknowledgment (LSAck)",
+          "Confirma cada LSA recebida, tornando a inundação confiável"
+        ]
+      ]
+    },
+    {
+      "titulo": "Estados do vizinho e onde costuma travar",
+      "colunas": [
+        "Estado",
+        "O que aconteceu",
+        "O que ainda verificar"
+      ],
+      "dicas_colunas": [
+        "Estado do vizinho como aparece em show ip ospf neighbor",
+        "Etapa da formação da adjacência que esse estado indica",
+        "A causa mais comum quando o vizinho não sai desse estado"
+      ],
+      "linhas": [
+        [
+          "Down",
+          "Nenhum Hello recebido do vizinho",
+          "Enlace, ACL ou multicast 224.0.0.5 bloqueado"
+        ],
+        [
+          "Init",
+          "Ouviu o vizinho, mas ele ainda não me listou",
+          "Hello passando só num sentido"
+        ],
+        [
+          "2-Way",
+          "Cada um se vê no Hello do outro",
+          "Normal entre dois DROTHER numa LAN"
+        ],
+        [
+          "ExStart / Exchange",
+          "Combinam quem é mestre e trocam DBD",
+          "MTU diferente nos dois lados"
+        ],
+        [
+          "Loading",
+          "Pedem e recebem as LSAs que faltam",
+          "LSA corrompida ou perda de pacotes"
+        ],
+        [
+          "Full",
+          "LSDBs sincronizadas",
+          "Nada: é o estado esperado da adjacência"
+        ]
+      ]
+    },
+    {
+      "titulo": "Tipos de LSA no OSPFv2",
+      "colunas": [
+        "Tipo",
+        "Quem gera",
+        "Alcance"
+      ],
+      "dicas_colunas": [
+        "Número e nome do anúncio de estado de enlace",
+        "O roteador responsável por criar esse anúncio",
+        "O alcance da inundação desse anúncio no domínio OSPF"
+      ],
+      "linhas": [
+        [
+          "1 Router",
+          "Todo roteador: seus enlaces e custos",
+          "Só a própria área"
+        ],
+        [
+          "2 Network",
+          "O DR de uma rede multiacesso",
+          "Só a própria área"
+        ],
+        [
+          "3 Summary",
+          "O ABR: redes de outras áreas",
+          "Entre áreas"
+        ],
+        [
+          "4 ASBR Summary",
+          "O ABR: como chegar ao ASBR",
+          "Entre áreas"
+        ],
+        [
+          "5 AS External",
+          "O ASBR: rotas de fora do OSPF",
+          "Todo o domínio, menos áreas stub e NSSA"
+        ],
+        [
+          "7 NSSA External",
+          "O ASBR dentro de uma NSSA (RFC 3101)",
+          "A NSSA; o ABR converte em tipo 5"
+        ]
+      ]
+    },
+    {
+      "titulo": "OSPFv2 e OSPFv3",
+      "colunas": [
+        "Aspecto",
+        "OSPFv2 (IPv4)",
+        "OSPFv3 (IPv6)"
+      ],
+      "dicas_colunas": [
+        "Característica comparada entre as duas versões",
+        "Como o OSPFv2, da RFC 2328, trata esse aspecto",
+        "Como o OSPFv3, da RFC 5340, trata o mesmo aspecto"
+      ],
+      "linhas": [
+        [
+          "Multicast",
+          "224.0.0.5 (todos) e 224.0.0.6 (DR e BDR)",
+          "FF02::5 e FF02::6"
+        ],
+        [
+          "Vizinho falado por",
+          "Endereço IPv4 da interface",
+          "Endereço link-local IPv6"
+        ],
+        [
+          "Autenticação",
+          "No cabeçalho (senha ou MD5/HMAC-SHA)",
+          "IPsec (RFC 4552) ou trailer (RFC 7166)"
+        ],
+        [
+          "Funciona por",
+          "Sub-rede",
+          "Enlace, com várias instâncias por enlace"
+        ],
+        [
+          "LSAs novos",
+          "Não",
+          "Link (tipo 8) e Intra-Area-Prefix (tipo 9)"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Roteador intruso forma adjacência",
+      "como_funciona": "Numa LAN sem autenticação OSPF, qualquer máquina com um roteador em software (FRRouting, por exemplo) e os mesmos parâmetros de área e de Hello vira vizinha. A partir daí ela participa da inundação como um roteador legítimo e pode anunciar o que quiser.",
+      "sinal": "Vizinho com Router ID desconhecido em show ip ospf neighbor; adjacência nova numa VLAN de usuários.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Injeção de rota mais específica ou mais barata",
+      "como_funciona": "Já adjacente, o intruso anuncia um prefixo mais específico (um /32 do servidor) ou um custo menor para uma rede existente. Como a rota mais específica sempre vence, o tráfego passa a ir para ele: para ler e repassar (man-in-the-middle) ou para sumir (buraco negro).",
+      "sinal": "Rota OSPF nova para um prefixo que ninguém configurou; próximo salto apontando para um vizinho estranho.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "LSA forjada em nome de outro roteador",
+      "como_funciona": "O atacante envia uma LSA com o Router ID de um roteador legítimo e número de sequência maior. O dono percebe e reanuncia a versão verdadeira (fight-back), mas a repetição contínua mantém a rede recalculando o SPF e pode deixar rotas erradas valendo entre um anúncio e outro.",
+      "sinal": "A mesma LSA com sequência subindo rápido; o roteador dono registrando que recebeu uma LSA própria que não gerou.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Inundação para esgotar a CPU",
+      "como_funciona": "Hellos e atualizações em excesso, ou um enlace forçado a cair e voltar, fazem todos os roteadores da área refazerem o SPF sem parar. Com a CPU ocupada, Hellos legítimos atrasam, adjacências caem e a instabilidade se espalha.",
+      "sinal": "Contador de execuções do SPF disparando; adjacências caindo por Dead timer sem queda física do enlace.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Captura da senha simples (AuType 1)",
+      "como_funciona": "Com a autenticação de senha simples, a senha vai em texto claro em todo pacote OSPF. Quem captura um único Hello na LAN aprende a senha e passa a formar adjacência como se fosse autorizado.",
+      "sinal": "Na captura, o campo Authentication legível; AuType 1 configurado nas interfaces.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Autenticação criptográfica (HMAC-SHA)",
+      "como_funciona": "Cada pacote leva um resumo calculado com uma chave compartilhada e um número de sequência crescente. Sem a chave não se forma adjacência nem se aceita LSA, e um pacote repetido é recusado pela sequência.",
+      "cobre": "Roteador intruso, injeção de rota por quem está de fora e captura de senha.",
+      "limite": "Não protege contra um roteador legítimo comprometido; MD5 é fraco e deve dar lugar ao HMAC-SHA; a troca de chave precisa ser coordenada (key chain com chaves sobrepostas)."
+    },
+    {
+      "nome": "Interface passiva onde não há vizinho",
+      "como_funciona": "Com passive-interface, o roteador continua anunciando a rede daquela interface, mas não envia nem aceita Hello nela. Numa VLAN de usuários ninguém consegue formar adjacência, com ou sem senha.",
+      "cobre": "Roteador intruso e injeção de rota a partir das redes de acesso.",
+      "limite": "Só vale onde não existe vizinho OSPF legítimo; esquecer uma interface deixa a porta aberta."
+    },
+    {
+      "nome": "Áreas, sumarização e áreas stub",
+      "como_funciona": "Dividir o domínio em áreas e resumir as redes no ABR limita até onde uma LSA chega e esconde a instabilidade de uma área das outras. Áreas stub recusam rotas externas (tipo 5), estreitando o que um invasor consegue espalhar.",
+      "cobre": "Alcance de LSA forjada e de inundação; recálculo do SPF no domínio inteiro.",
+      "limite": "É contenção, não prevenção: dentro da área atingida o ataque continua valendo."
+    },
+    {
+      "nome": "Ajustar o temporizador do SPF",
+      "como_funciona": "O SPF throttling espera um pouco antes do primeiro cálculo e aumenta a espera quando as mudanças se repetem, juntando várias LSAs num só cálculo. A rede converge sem que uma rajada de atualizações tome a CPU.",
+      "cobre": "Esgotamento de CPU por inundação e por enlace instável.",
+      "limite": "Esperas longas atrasam a convergência legítima; o ajuste é equilíbrio, não proteção contra rota falsa."
+    },
+    {
+      "nome": "Monitorar adjacências e o SPF",
+      "como_funciona": "log-adjacency-changes registra cada vizinho que sobe ou cai; traps SNMP do OSPF e a contagem de execuções do SPF vão para a monitoração. Vizinho novo fora de janela de manutenção vira alerta.",
+      "cobre": "Detecção de roteador intruso, LSA forjada e instabilidade.",
+      "limite": "Detecta, não impede: o ataque já está em curso quando o alerta chega."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ver vizinhos, estados e a LSDB",
+      "cenario": "Você quer saber com quem o roteador formou adjacência, em que estado está cada vizinho e o que a LSDB contém. É o ponto de partida de qualquer problema de OSPF.",
+      "comandos": "! Cisco IOS\nshow ip ospf neighbor\nshow ip ospf interface brief\nshow ip ospf database\nshow ip route ospf\n\n# FRRouting (Linux)\nsudo vtysh -c 'show ip ospf neighbor'\nsudo vtysh -c 'show ip ospf database'",
+      "explicacao": "A coluna State mostra FULL/DR, FULL/BDR, 2WAY/DROTHER e assim por diante: entre dois DROTHER, 2WAY é o normal. A LSDB lista as LSAs por tipo, com idade e número de sequência; uma LSA com idade sempre baixa está mudando o tempo todo."
+    },
+    {
+      "titulo": "Capturar o Hello e conferir os parâmetros",
+      "cenario": "Dois roteadores deveriam ser vizinhos e não são. A captura do Hello mostra exatamente o que cada lado está anunciando.",
+      "comandos": "# Só OSPF (protocolo IP 89), com detalhes\nsudo tcpdump -i eth0 -n -v 'ip proto 89'\n\n# Na saída de cada Hello, compare:\n#   Area, Hello Timer, Dead Timer, Mask, Priority, Designated Router\n\n# Cisco IOS: ver a formação da adjacência acontecendo\ndebug ip ospf adj",
+      "explicacao": "Se um lado anuncia Hello 10/Dead 40 e o outro 30/120, ou áreas diferentes, o vizinho nunca sai do Down ou do Init. O debug de adjacência mostra também a recusa por autenticação e por MTU (ExStart/Exchange)."
+    },
+    {
+      "titulo": "Ligar autenticação HMAC-SHA",
+      "cenario": "Você quer que só roteadores com a chave formem adjacência na interface, trocando a senha simples (ou nenhuma) por HMAC-SHA.",
+      "comandos": "! Cisco IOS 15.4 ou mais novo (OSPFv2, RFC 5709)\nkey chain CHAVES-OSPF\n key 1\n  key-string Uma-Chave-Longa-e-Aleatoria\n  cryptographic-algorithm hmac-sha-256\n!\ninterface GigabitEthernet0/0\n ip ospf authentication key-chain CHAVES-OSPF\n\n! Conferir\nshow ip ospf interface GigabitEthernet0/0",
+      "explicacao": "Configure os dois lados na mesma janela: enquanto só um lado tem a chave, o vizinho cai (por isso, em produção, troca-se com chaves sobrepostas na key chain). A saída do show deve indicar autenticação criptográfica com o algoritmo HMAC-SHA."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "O vizinho não aparece na lista",
+      "causa_provavel": "Hello/Dead diferentes, área ou máscara diferente, autenticação que não bate, interface passiva ou ACL bloqueando o protocolo 89.",
+      "comando": "show ip ospf interface GigabitEthernet0/0",
+      "leitura": "Compare, nos dois lados, área, Hello e Dead, tipo de rede e autenticação. Se a interface aparecer como passiva, ela não envia Hello."
+    },
+    {
+      "sintoma": "Vizinho preso em ExStart ou Exchange",
+      "causa_provavel": "MTU diferente nos dois lados: o DBD maior que o MTU do vizinho é descartado e a troca nunca termina.",
+      "comando": "show interfaces GigabitEthernet0/0 | include MTU",
+      "leitura": "O MTU tem de ser igual nos dois lados. ip ospf mtu-ignore faz a adjacência subir, mas esconde o problema que vai aparecer como perda de pacote grande."
+    },
+    {
+      "sintoma": "Dois roteadores da LAN ficam em 2-Way",
+      "causa_provavel": "Comportamento normal: dois DROTHER só ficam Full com o DR e o BDR, não entre si.",
+      "comando": "show ip ospf neighbor",
+      "leitura": "2WAY/DROTHER entre roteadores que não são DR nem BDR é esperado. Só é problema se o DR ou o BDR não estiverem em FULL."
+    },
+    {
+      "sintoma": "Uma rede deveria vir por OSPF e não aparece",
+      "causa_provavel": "Rede não anunciada no processo, área sem ligação com a área 0, rota externa barrada numa área stub, ou filtro de rota.",
+      "comando": "show ip ospf database",
+      "leitura": "Se a LSA da rede não está na base, o problema é de anúncio ou de alcance da área; se está na base e não na tabela de rotas, procure filtro ou uma rota com distância administrativa menor."
+    },
+    {
+      "sintoma": "SPF rodando sem parar e CPU alta",
+      "causa_provavel": "Enlace instável subindo e descendo, ou LSAs forjadas forçando recálculo.",
+      "comando": "show ip ospf statistics",
+      "leitura": "Muitas execuções do SPF em pouco tempo indicam mudança constante. Procure na LSDB a LSA com idade sempre baixa e sequência subindo: ela aponta a origem."
+    }
+  ],
+  "ficha": [
+    {
+      "rotulo": "RFC",
+      "valor": "RFC 2328 (OSPFv2); RFC 5340 (OSPFv3); RFC 3101 (NSSA); RFC 5709 (HMAC-SHA)",
+      "dica": "O OSPFv2 de 1998 continua sendo a referência do protocolo no IPv4."
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Rede: roda direto sobre o IP, protocolo 89",
+      "dica": "Não usa TCP nem UDP; a entrega confiável é do próprio OSPF (LSAck)."
+    },
+    {
+      "rotulo": "Endereços",
+      "valor": "Multicast 224.0.0.5 (todos os roteadores OSPF) e 224.0.0.6 (DR e BDR), com TTL 1",
+      "dica": "No OSPFv3: FF02::5 e FF02::6, falando pelo endereço link-local."
+    },
+    {
+      "rotulo": "Tamanho do cabeçalho",
+      "valor": "24 bytes no OSPFv2; 16 bytes no OSPFv3",
+      "dica": "O OSPFv3 tirou os campos de autenticação do cabeçalho."
+    },
+    {
+      "rotulo": "Algoritmo",
+      "valor": "Estado de enlace: Dijkstra (SPF) sobre a LSDB, por área",
+      "dica": "Cada roteador calcula sozinho a árvore de menor custo."
+    },
+    {
+      "rotulo": "Temporizadores",
+      "valor": "Hello 10 s e Dead 40 s em broadcast e ponto a ponto; LSA renovada a cada 30 min e expira em 60 min",
+      "dica": "Hello e Dead precisam ser iguais nos dois lados da adjacência."
+    },
+    {
+      "rotulo": "Segurança",
+      "valor": "Autenticação opcional: senha simples (em claro), MD5 ou HMAC-SHA; no OSPFv3, IPsec ou trailer",
+      "dica": "Sem autenticação, qualquer máquina da LAN pode virar vizinha."
+    }
+  ]
+}

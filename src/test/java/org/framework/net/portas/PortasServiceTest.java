@@ -4,6 +4,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.framework.net.portas.application.PortaItemExibicao;
 import org.framework.net.portas.application.PortasService;
+import org.framework.net.protocolos.domain.AprofundamentoProtocolo;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -99,6 +100,23 @@ class PortasServiceTest {
             defeitos.add("a linha do BGP não leva ao aprofundamento de BGP");
         }
         assertTrue(defeitos.isEmpty(), () -> String.join("\n", defeitos));
+    }
+
+    /** Porta de serviço que tem aprofundamento registrado mostra o botão Aprofundar (o README promete o cruzamento). */
+    @Test
+    void portaDeServicoComAprofundamentoTemOLink() {
+        List<String> semLink = new ArrayList<>();
+        int comAprofundamento = 0;
+        for (PortaItemExibicao p : portasService.montarPortasCatalogoExibicao()) {
+            if (AprofundamentoProtocolo.porNomeDoCatalogo(p.servico()).isPresent()) {
+                comAprofundamento++;
+                if (p.aprofundamentoRota() == null) {
+                    semLink.add(p.porta() + " " + p.servico());
+                }
+            }
+        }
+        assertTrue(comAprofundamento >= 8, "só " + comAprofundamento + " serviços com aprofundamento: leitor cego?");
+        assertTrue(semLink.isEmpty(), "serviço com aprofundamento e sem o botão Aprofundar: " + semLink);
     }
 
     @Test

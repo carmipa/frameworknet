@@ -1,0 +1,386 @@
+{
+  "resumo": "O NAT (Network Address Translation) reescreve o endereço dos pacotes que atravessam o roteador para que muitas máquinas com endereço privado (RFC 1918) saiam para a Internet com um ou poucos endereços públicos. Na forma mais comum, o NAPT ou PAT, ele reescreve também a porta de origem e assim distingue milhares de conexões atrás de um único endereço. Para cada fluxo que sai, o roteador guarda uma entrada na tabela de traduções; a resposta volta, casa com a entrada e é desfeita. Nasceu como remendo para o esgotamento do IPv4 (RFC 1631, depois RFC 3022). Não é firewall: o que vem de fora sem entrada correspondente é descartado só porque o roteador não sabe para onde mandar. E quebra a comunicação fim a fim, o que obriga a soluções para servidor interno (encaminhamento de porta), para protocolos que levam endereço dentro dos dados (FTP, SIP) e para IPsec.",
+  "conceitos": [
+    {
+      "titulo": "Endereços privados (RFC 1918)",
+      "icone": "lan",
+      "texto": "Os blocos 10.0.0.0/8, 172.16.0.0/12 e 192.168.0.0/16 podem ser usados por qualquer rede interna, e por isso não são roteados na Internet. Uma casa e milhões de outras usam 192.168.0.0/24 ao mesmo tempo sem conflito, porque esses endereços nunca saem de casa: na borda, o NAT os troca pelo endereço público do roteador.",
+      "destaque": "Endereço privado só existe dentro de casa; para sair, alguém precisa traduzir."
+    },
+    {
+      "titulo": "Estático, dinâmico e PAT",
+      "icone": "swap_horiz",
+      "texto": "O NAT estático liga um endereço interno a um público, fixo, nos dois sentidos. O dinâmico empresta endereços de um conjunto de públicos, um por máquina enquanto durar o uso. O PAT (NAPT, overload) põe muitas máquinas atrás de um único público e as diferencia pela porta de origem: é o que todo roteador doméstico faz.",
+      "destaque": "No PAT, quem separa as conexões é a porta, não o endereço."
+    },
+    {
+      "titulo": "Tabela de traduções e expiração",
+      "icone": "timer",
+      "texto": "Cada fluxo que sai cria uma entrada: endereço e porta internos de um lado, endereço e porta públicos do outro. A entrada expira se o fluxo fica parado: para UDP, não antes de 2 minutos (RFC 4787, que recomenda 5); para TCP estabelecido, não antes de 2 horas e 4 minutos (RFC 5382). Por isso conexão parada por muito tempo pode ser cortada pelo caminho.",
+      "destaque": "Conexão ociosa demais perde a entrada, e a resposta não volta."
+    },
+    {
+      "titulo": "Encaminhamento de porta (DNAT)",
+      "icone": "door_open",
+      "texto": "De fora para dentro não existe entrada na tabela, então nada chega a um servidor interno. O encaminhamento de porta cria uma tradução fixa de entrada: tudo o que chegar ao endereço público na porta 8080, por exemplo, vai para 192.168.0.20 na porta 80. É assim que se publica um serviço atrás de NAT, e é também assim que serviços são expostos sem querer.",
+      "destaque": "Cada porta encaminhada é um serviço interno visível da Internet."
+    },
+    {
+      "titulo": "NAT não é firewall",
+      "icone": "shield",
+      "texto": "A sensação de proteção vem de um efeito colateral: pacote de fora sem tradução é descartado. Mas um encaminhamento de porta, um pedido UPnP de um dispositivo interno ou um ALG mal enganado abrem caminho sem nenhuma regra de segurança. E no IPv6, onde não há NAT, cada host tem endereço global: sem firewall com estado, ele fica alcançável direto.",
+      "destaque": "O filtro de verdade é a regra de firewall, não a tradução."
+    },
+    {
+      "titulo": "O que o NAT quebra",
+      "icone": "link_off",
+      "texto": "Protocolos que escrevem o endereço dentro dos dados quebram: o FTP ativo anuncia o IP privado no comando PORT, e o SIP o anuncia no SDP da chamada. Para eles o roteador usa um ALG, que reescreve também o conteúdo. O IPsec AH protege o cabeçalho IP e falha quando o NAT o altera; o ESP atravessa encapsulado em UDP 4500 (NAT-T, RFC 3948). Aplicações par a par recorrem a STUN e TURN.",
+      "destaque": "Endereço escrito dentro do conteúdo não é visto pela tradução."
+    }
+  ],
+  "diagrama": {
+    "titulo": "PAT: a ida cria a entrada, a volta a desfaz",
+    "definicao": "sequenceDiagram\n    participant H as Host 192.168.0.10\n    participant R as Roteador NAT (público 203.0.113.5)\n    participant W as Servidor 198.51.100.20\n    H->>R: SYN de 192.168.0.10:51000 para 198.51.100.20:443\n    Note over R: Nova entrada 192.168.0.10:51000 vira 203.0.113.5:40001\n    R->>W: SYN de 203.0.113.5:40001 para 198.51.100.20:443\n    W-->>R: SYN-ACK de 198.51.100.20:443 para 203.0.113.5:40001\n    Note over R: Acha a entrada e desfaz a tradução\n    R-->>H: SYN-ACK de 198.51.100.20:443 para 192.168.0.10:51000\n    Note over R: Pacote de fora sem entrada correspondente é descartado",
+    "legenda": "Na saída o roteador troca endereço e porta de origem e anota a troca; na volta, troca endereço e porta de destino pela mesma anotação. Os endereços 203.0.113.0/24 e 198.51.100.0/24 são reservados para documentação (RFC 5737)."
+  },
+  "cabecalho": {
+    "titulo": "O que o PAT reescreve em cada pacote que sai",
+    "campos": [
+      {
+        "nome": "Endereço IP de origem",
+        "bits": 32,
+        "descricao": "Troca o endereço privado do host (192.168.0.10) pelo endereço público do roteador. Na volta, é o endereço de destino que se troca.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "Checksum do cabeçalho IP",
+        "bits": 16,
+        "descricao": "Recalculado, porque o endereço mudou. Sem isso o próximo roteador descartaria o pacote.",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "Porta de origem (TCP ou UDP)",
+        "bits": 16,
+        "descricao": "No PAT, trocada por uma porta livre do roteador, que identifica a conexão na tabela. No NAT só de endereço, fica como está.",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "Checksum do TCP ou UDP",
+        "bits": 16,
+        "descricao": "Também recalculado: o checksum de transporte cobre um pseudocabeçalho com os endereços IP, então muda até quando só o endereço muda.",
+        "cor": "#059669"
+      }
+    ],
+    "nota": "Somando os campos: 32 + 16 + 16 + 16 = 80 bits = 10 bytes reescritos por pacote no PAT. O NAT não acrescenta cabeçalho nenhum: edita campos dos cabeçalhos IP e TCP/UDP que já existem. No ICMP, o identificador da consulta faz o papel da porta."
+  },
+  "tabelas": [
+    {
+      "titulo": "Tipos de NAT",
+      "colunas": [
+        "Tipo",
+        "O que faz",
+        "Onde se usa"
+      ],
+      "dicas_colunas": [
+        "Forma de tradução",
+        "Quantos endereços internos para quantos públicos, e por quanto tempo",
+        "O cenário típico em que essa forma aparece"
+      ],
+      "linhas": [
+        [
+          "Estático",
+          "1 interno para 1 público, fixo, nos dois sentidos",
+          "Servidor publicado com endereço próprio"
+        ],
+        [
+          "Dinâmico",
+          "1 para 1, emprestado de um conjunto de públicos",
+          "Empresa com um bloco pequeno de públicos"
+        ],
+        [
+          "PAT (NAPT, overload)",
+          "Muitos para 1, separados pela porta",
+          "Casa, escritório e Wi-Fi público"
+        ],
+        [
+          "Encaminhamento de porta (DNAT)",
+          "Público:porta para interno:porta, de fora para dentro",
+          "Publicar um serviço interno"
+        ],
+        [
+          "CGNAT (NAT444)",
+          "PAT feito pela operadora, antes do roteador do cliente",
+          "Provedor sem IPv4 público para todos (100.64.0.0/10, RFC 6598)"
+        ]
+      ]
+    },
+    {
+      "titulo": "Os quatro endereços de uma tradução",
+      "colunas": [
+        "Nome",
+        "O que é",
+        "Exemplo (diagrama acima)"
+      ],
+      "dicas_colunas": [
+        "Nome usado na tabela de traduções do Cisco IOS",
+        "Que endereço é esse e de que lado ele é visto",
+        "O valor correspondente no diagrama desta página"
+      ],
+      "linhas": [
+        [
+          "Inside local",
+          "O host interno, como é visto dentro da rede",
+          "192.168.0.10"
+        ],
+        [
+          "Inside global",
+          "O host interno, como é visto na Internet",
+          "203.0.113.5"
+        ],
+        [
+          "Outside local",
+          "O destino externo, como é visto de dentro",
+          "198.51.100.20 (igual ao global, sem NAT de destino)"
+        ],
+        [
+          "Outside global",
+          "O destino externo, com o endereço real dele",
+          "198.51.100.20"
+        ]
+      ]
+    },
+    {
+      "titulo": "Comportamento do NAT para UDP (RFC 4787)",
+      "colunas": [
+        "Modo",
+        "O que significa",
+        "Efeito em VoIP, jogos e P2P"
+      ],
+      "dicas_colunas": [
+        "Classificação da RFC 4787 para mapeamento ou filtragem",
+        "Como o NAT escolhe a porta pública ou decide quem pode responder",
+        "Se as técnicas de travessia (STUN, hole punching) funcionam"
+      ],
+      "linhas": [
+        [
+          "Mapeamento independente do destino",
+          "Mesma porta pública para qualquer destino (a RFC exige)",
+          "STUN funciona: a porta descoberta vale para todos"
+        ],
+        [
+          "Mapeamento dependente do destino",
+          "Porta pública nova para cada destino (o NAT simétrico)",
+          "STUN não basta: o tráfego precisa passar por TURN"
+        ],
+        [
+          "Filtro independente do destino",
+          "Qualquer origem pode mandar para a porta mapeada",
+          "Mais fácil para P2P, mais aberto"
+        ],
+        [
+          "Filtro dependente de endereço e porta",
+          "Só quem já recebeu pacote pode responder",
+          "Exige hole punching coordenado dos dois lados"
+        ]
+      ]
+    },
+    {
+      "titulo": "O que quebra com NAT e o remédio",
+      "colunas": [
+        "Situação",
+        "Por que quebra",
+        "Correção"
+      ],
+      "dicas_colunas": [
+        "Protocolo ou cenário afetado pela tradução",
+        "O ponto em que a tradução atrapalha",
+        "O que se faz para funcionar atravessando o NAT"
+      ],
+      "linhas": [
+        [
+          "FTP ativo",
+          "O comando PORT leva o IP privado",
+          "Modo passivo ou ALG de FTP"
+        ],
+        [
+          "SIP e VoIP",
+          "O SDP leva o IP privado para a mídia",
+          "STUN, TURN ou um SBC na borda"
+        ],
+        [
+          "IPsec AH",
+          "Autentica o cabeçalho IP que o NAT altera",
+          "Usar ESP com NAT-T (UDP 4500)"
+        ],
+        [
+          "Servidor interno",
+          "De fora não existe entrada na tabela",
+          "Encaminhamento de porta ou VPN"
+        ],
+        [
+          "Dois lados atrás de NAT",
+          "Nenhum dos dois aceita conexão nova",
+          "STUN, hole punching e, no pior caso, TURN"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Porta aberta pelo UPnP",
+      "como_funciona": "Com UPnP ligado no roteador, qualquer programa da rede interna pode pedir um encaminhamento de porta, sem senha. Uma câmera abre a própria porta para a Internet, e um malware abre uma para receber comandos de fora.",
+      "sinal": "Encaminhamentos na tabela UPnP do roteador que ninguém configurou.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Serviço interno exposto por encaminhamento",
+      "como_funciona": "Um encaminhamento feito para acesso remoto (RDP na 3389, painel de câmera, banco de dados) deixa o serviço alcançável por qualquer um na Internet. Varreduras automáticas acham essas portas em minutos e partem para senha fraca e falhas conhecidas.",
+      "sinal": "Tentativas de login vindas de endereços externos no log do serviço interno.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Esgotamento da tabela de traduções",
+      "como_funciona": "Um host infectado ou um ataque abre conexões novas em quantidade até ocupar as portas livres do endereço público ou as entradas da tabela. A partir daí nenhuma conexão nova de ninguém consegue sair.",
+      "sinal": "Conexões novas falhando enquanto as antigas continuam; contador de traduções no limite.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "NAT Slipstreaming",
+      "como_funciona": "Técnica publicada em 2020: uma página web faz o navegador mandar dados que o ALG do roteador (de SIP, por exemplo) lê como um pedido legítimo de abrir porta. O ALG abre o caminho, e o atacante passa a alcançar um serviço da máquina da vítima de fora para dentro.",
+      "sinal": "Encaminhamentos temporários criados pelo ALG enquanto uma página é visitada; tráfego de entrada inesperado.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "IPv6 sem firewall onde o NAT protegia",
+      "como_funciona": "A rede passa a ter IPv6 e cada host ganha endereço global. Quem confiava no NAT do IPv4 para bloquear entrada fica sem barreira: serviços que só escutavam na rede interna passam a responder da Internet pelo IPv6.",
+      "sinal": "Varredura externa no endereço IPv6 do host encontra portas abertas que no IPv4 estavam fechadas.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "Firewall com estado, negando entrada por padrão",
+      "como_funciona": "Uma regra explícita que só deixa entrar respostas de conexões que saíram (estado estabelecido) e o que for liberado de propósito, valendo para IPv4 e IPv6. A proteção deixa de depender de efeito colateral da tradução.",
+      "cobre": "IPv6 exposto, encaminhamentos esquecidos e portas abertas por engano.",
+      "limite": "Precisa de manutenção: uma regra liberada para teste e não removida vira o mesmo buraco."
+    },
+    {
+      "nome": "Desligar o UPnP (e o NAT-PMP)",
+      "como_funciona": "Sem UPnP, só o administrador cria encaminhamentos. Nenhum dispositivo ou programa abre porta sozinho.",
+      "cobre": "Portas abertas por malware, câmeras e aplicativos.",
+      "limite": "Jogos e videoconferência perdem a abertura automática e podem precisar de configuração manual."
+    },
+    {
+      "nome": "VPN no lugar de encaminhamento",
+      "como_funciona": "Em vez de publicar o RDP, a câmera ou o banco de dados, publica-se só a VPN. O acesso remoto passa a exigir autenticação forte antes de enxergar qualquer serviço interno.",
+      "cobre": "Serviço interno exposto e varredura automática.",
+      "limite": "A VPN vira o novo alvo: mantenha-a atualizada e com autenticação de dois fatores."
+    },
+    {
+      "nome": "Limites por host e registro das traduções",
+      "como_funciona": "Limitar quantas traduções simultâneas cada host interno pode ter impede que um só esgote a tabela. Registrar as traduções (endereço e porta internos, públicos e horário) permite descobrir quem fez o quê, o que é obrigatório quando muitos clientes dividem um endereço (CGNAT).",
+      "cobre": "Esgotamento da tabela e rastreabilidade de abuso.",
+      "limite": "O registro cresce rápido e guarda dado pessoal: precisa de prazo de retenção e acesso controlado."
+    },
+    {
+      "nome": "Desligar ALGs que não se usam",
+      "como_funciona": "O ALG de SIP, por exemplo, reescreve o conteúdo das mensagens e pode abrir portas. Se ninguém na rede precisa dele, desligá-lo fecha o caminho do NAT Slipstreaming e costuma até resolver chamadas de VoIP com áudio em um sentido só.",
+      "cobre": "NAT Slipstreaming e corrupção de mensagens SIP pelo ALG.",
+      "limite": "Protocolos antigos que dependem do ALG (FTP ativo) param de funcionar; prefira o modo passivo."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ver as traduções no Linux",
+      "cenario": "Seu Linux faz NAT para uma rede interna (ou é o seu próprio roteador doméstico com Linux). Você quer ver as entradas da tabela e o endereço público que o mundo enxerga.",
+      "comandos": "# Entradas de rastreamento de conexão, com o lado da ida e o da volta\nsudo conntrack -L\n\n# Quantas entradas existem agora e qual o máximo\nsudo conntrack -C\nsysctl net.netfilter.nf_conntrack_max\n\n# Seu endereço interno e o público que os sites veem\nip -4 addr show\ncurl -s https://ifconfig.me",
+      "explicacao": "Cada linha do conntrack mostra o fluxo de ida (src e dst internos) e o de volta (já com o endereço público). Contagem perto do máximo é o começo do esgotamento da tabela."
+    },
+    {
+      "titulo": "Montar um PAT",
+      "cenario": "Você quer que a rede 192.168.0.0/24 saia pela interface externa com o endereço dela, como faz um roteador doméstico.",
+      "comandos": "# Linux com nftables (eth0 = interface externa)\nsudo sysctl -w net.ipv4.ip_forward=1\nsudo nft add table ip nat\nsudo nft 'add chain ip nat postrouting { type nat hook postrouting priority 100 ; }'\nsudo nft add rule ip nat postrouting oifname \"eth0\" masquerade\n\n! Cisco IOS\ninterface GigabitEthernet0/0\n ip nat outside\ninterface GigabitEthernet0/1\n ip nat inside\naccess-list 1 permit 192.168.0.0 0.0.0.255\nip nat inside source list 1 interface GigabitEthernet0/0 overload\nshow ip nat translations",
+      "explicacao": "O masquerade (Linux) e o overload (Cisco) são o PAT: muitos internos atrás do endereço da interface externa. O show ip nat translations mostra os quatro endereços de cada tradução (inside local e global, outside local e global)."
+    },
+    {
+      "titulo": "Encaminhar uma porta para um servidor interno",
+      "cenario": "Você quer publicar o servidor web 192.168.0.20 (porta 80) na porta 8080 do endereço público, e conferir de fora da rede.",
+      "comandos": "# Linux com nftables\nsudo nft 'add chain ip nat prerouting { type nat hook prerouting priority -100 ; }'\nsudo nft add rule ip nat prerouting iifname \"eth0\" tcp dport 8080 dnat to 192.168.0.20:80\n\n! Cisco IOS\nip nat inside source static tcp 192.168.0.20 80 interface GigabitEthernet0/0 8080\n\n# De fora da rede (por exemplo, pelo celular sem Wi-Fi)\ncurl -I http://<endereco_publico>:8080/",
+      "explicacao": "O teste precisa ser de fora: de dentro, o acesso ao endereço público depende de o roteador fazer hairpinning. Lembre que a porta encaminhada é alcançável por qualquer um na Internet; coloque autenticação no serviço ou use VPN."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "De dentro tudo navega, mas o servidor interno não é alcançado de fora",
+      "causa_provavel": "Falta o encaminhamento de porta, o firewall bloqueia a porta, ou a operadora usa CGNAT e o roteador nem tem endereço público.",
+      "comando": "show ip nat translations",
+      "leitura": "Sem tradução estática para a porta, o pacote que chega de fora não tem para onde ir. Se a interface externa tem endereço 100.64.x.x, é CGNAT: encaminhar no roteador não adianta."
+    },
+    {
+      "sintoma": "Conexões novas falham às vezes; as que estão abertas seguem",
+      "causa_provavel": "Tabela de traduções ou portas do endereço público esgotadas.",
+      "comando": "sudo conntrack -C",
+      "leitura": "Compare com net.netfilter.nf_conntrack_max. Perto do máximo, ache o host com mais entradas (conntrack -L, agrupando por origem) antes de simplesmente aumentar o limite."
+    },
+    {
+      "sintoma": "Chamada VoIP com áudio em um sentido só",
+      "causa_provavel": "O SDP anuncia o IP privado e a mídia de volta vai para um endereço inalcançável; ou um ALG de SIP reescrevendo errado.",
+      "comando": "sudo tcpdump -i eth0 -n -A udp port 5060 | grep 'c=IN IP4'",
+      "leitura": "Se a linha c= saindo para a Internet traz um IP privado, a mídia não sabe voltar. Use STUN ou TURN no telefone, ou desligue o ALG de SIP se ele estiver estragando a mensagem."
+    },
+    {
+      "sintoma": "A VPN IPsec não sobe atrás do NAT",
+      "causa_provavel": "Uso de AH, que não sobrevive à tradução, ou ESP sem NAT-T negociado.",
+      "comando": "sudo tcpdump -i eth0 -n 'udp port 500 or udp port 4500 or esp'",
+      "leitura": "Atrás de NAT, depois do IKE na porta 500 o tráfego deve passar para a 4500. Se só aparece ESP puro (protocolo 50) e nada na 4500, o NAT-T não foi negociado."
+    },
+    {
+      "sintoma": "O IP que os sites veem não é o da interface externa do roteador",
+      "causa_provavel": "CGNAT na operadora: o roteador recebeu um endereço da faixa 100.64.0.0/10 e a tradução final acontece no provedor.",
+      "comando": "curl -s https://ifconfig.me",
+      "leitura": "Compare com o endereço da interface externa do roteador. Diferentes, com a externa em 100.64.x.x, é CGNAT: peça endereço público à operadora ou use IPv6 para alcançar a rede de fora."
+    }
+  ],
+  "ficha": [
+    {
+      "rotulo": "RFC",
+      "valor": "RFC 3022 (NAT tradicional e NAPT); RFC 2663 (termos); RFC 4787 (UDP); RFC 5382 (TCP); RFC 1918 (endereços privados)",
+      "dica": "O NAT original é a RFC 1631, de 1994, substituída pela 3022."
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Rede: reescreve o cabeçalho IP; no PAT mexe também nas portas da camada de Transporte",
+      "dica": "Por isso o NAT precisa entender TCP, UDP e ICMP, e não só IP."
+    },
+    {
+      "rotulo": "Onde roda",
+      "valor": "No roteador ou firewall da borda entre a rede interna e a externa",
+      "dica": "No CGNAT, também no provedor, antes do roteador do cliente."
+    },
+    {
+      "rotulo": "Estado",
+      "valor": "Tabela de traduções por fluxo, com expiração por inatividade",
+      "dica": "UDP: pelo menos 2 min; TCP estabelecido: pelo menos 2 h 4 min."
+    },
+    {
+      "rotulo": "Alcance do PAT",
+      "valor": "Milhares de conexões por endereço público, separadas pela porta (são 65.536 portas por protocolo)",
+      "dica": "Com CGNAT, um endereço público é dividido entre muitos clientes."
+    },
+    {
+      "rotulo": "Segurança",
+      "valor": "Não é firewall: bloqueia a entrada só por falta de tradução",
+      "dica": "UPnP, encaminhamentos e ALGs abrem caminho sem regra de segurança."
+    },
+    {
+      "rotulo": "Equivalente IPv6",
+      "valor": "Não precisa: há endereço global para cada host; o NPTv6 (RFC 6296, experimental) traduz só o prefixo",
+      "dica": "No IPv6 a proteção de entrada é do firewall com estado."
+    }
+  ]
+}

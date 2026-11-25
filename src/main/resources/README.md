@@ -18,7 +18,7 @@ Documentação, Sobre):
 - **IPv6 → Calculadora IPv6 (CIDR)** — Sub-redes (contagem `2^n` exata), **EUI-64/SLAAC** a partir do MAC, gerador de **ULA** (fd00::/8, RFC 4193), **Sumarizar** (supernet + merge), **Faixa → CIDR** e **VLANs** (uma LAN /64 por VLAN, gateway SVI `::1`, SVI Cisco `interface VlanN` e trunk 802.1Q) — sem broadcast nem "hosts úteis = total − 2".
 - **IPv6 → Resolução IPv6** — **Projetar** (delegação de prefixo: um /64 por localidade com localidades dinâmicas, enlaces WAN /127 RFC 6164, CLI OSPFv3/EIGRP e diagrama de arquitetura Mermaid) e **Engenharia Reversa** (lê a config Cisco e reconstrói interfaces, endereços, rotas e protocolos).
 - **Topologia → Portas** — catálogo interativo TCP/UDP + **7 aprofundamentos** (Anatomia das portas e as famílias Web, E-mail, Acesso remoto, Arquivos, Banco de dados, Infra), com cross-link das portas para os aprofundamentos de protocolo.
-- **Topologia → Protocolos** — catálogo comparativo + troubleshooting e **15 aprofundamentos por camada** (Aplicação · Transporte · Rede), cada um com diagrama de arquitetura e decomposição binária do cabeçalho.
+- **Topologia → Protocolos** — catálogo comparativo + troubleshooting e **aprofundamentos por camada** (Aplicação · Transporte · Rede), cada um com diagrama de arquitetura e decomposição binária do cabeçalho.
 - **Topologia → Certificados** — X.509/PKI: catálogo de 3 tabelas (formatos, campos, tipos) + **8 aprofundamentos** por grupo; a Anatomia traz a régua binária ASN.1/DER.
 - **Topologia → Camadas** — modelo **OSI × TCP/IP**: tabela das 7 camadas (PDU, protocolos, dispositivos) + aprofundamentos (OSI, TCP/IP, encapsulamento, dispositivos).
 - **Topologia → Criptografia** — algoritmos e forças (simétrica, assimétrica, hash, assinatura) + **playground de hash** (WebCrypto) e comparador de força.
@@ -269,18 +269,18 @@ dedicada por protocolo. A navegação é em **dois níveis** — primeiro a **ca
 (Geral · Aplicação · Transporte · Rede), depois o **protocolo** daquela camada — e cada
 aprofundamento também é alcançável pelo botão **Aprofundar** na linha do DataGrid.
 
-São **15 aprofundamentos** em três camadas:
+Os aprofundamentos, nas três camadas:
 
 | Camada | Protocolos |
 |---|---|
-| Aplicação | HTTP/HTTPS · DNS · SSH · TLS · FTP/TFTP · SMTP/POP3/IMAP · Telnet |
+| Aplicação | HTTP/HTTPS · DNS · SSH · TLS · FTP/TFTP · SMTP/POP3/IMAP · Telnet · DHCP |
 | Transporte | TCP · UDP · Handshake (o aperto de mão: TCP 3-vias, TLS e SSH) |
-| Rede | IPv4 · IPv6 · ARP · ICMP/ICMPv6 · BGP-4 |
+| Rede | IPv4 · IPv6 · ARP · ICMP/ICMPv6 · NAT · OSPF · BGP-4 |
 
 Toda página traz, além do texto: **ícones** em título, ficha, seções e tabelas; um
 **diagrama de arquitetura/fluxo** (Mermaid); e a **decomposição binária do cabeçalho**
 (régua proporcional aos bits + tabela) — por exemplo TCP 20 B (160 bits), UDP 8 B,
-IPv4 20 B, IPv6 40 B, ARP 28 B, ICMP 8 B, DNS 12 B e BGP 19 B.
+IPv4 20 B, IPv6 40 B, ARP 28 B, ICMP 8 B, DNS 12 B, OSPF 24 B, DHCP 240 B e BGP 19 B.
 
 As quatro páginas **dedicadas** trazem conteúdo mais específico:
 
@@ -293,7 +293,7 @@ As quatro páginas **dedicadas** trazem conteúdo mais específico:
 
 Como isso é montado:
 
-- **`AprofundamentoProtocolo`** (`protocolos/domain`) é o registro único dos 15: slug,
+- **`AprofundamentoProtocolo`** (`protocolos/domain`) é o registro único deles: slug,
   rótulo, ícone, **camada**, template, CSS e os nomes que aquele aprofundamento cobre no
   catálogo. É ele que gera o sub-menu por camada, a rota, o botão "Aprofundar", as
   entradas do `sitemap.xml` e a cobertura da varredura — nenhum escrito à mão.

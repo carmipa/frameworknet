@@ -1,0 +1,482 @@
+{
+  "resumo": "O DHCP (Dynamic Host Configuration Protocol) é o que faz um computador, celular ou impressora ganhar endereço IPv4 ao entrar na rede, sem ninguém digitar nada: junto do endereço vêm a máscara, o gateway, os servidores DNS e o tempo de concessão. O servidor escuta na porta UDP 67 e o cliente na 68. Como o cliente ainda não tem endereço, a conversa começa em broadcast, em quatro mensagens conhecidas como DORA (Discover, Offer, Request, Ack). O endereço é emprestado por um prazo e renovado antes de vencer; quando o servidor está em outra sub-rede, um agente de retransmissão (relay) leva o pedido até ele. O protocolo não autentica nenhum dos lados, então qualquer máquina na LAN pode se fazer de servidor: é daí que vêm os ataques, e o DHCP snooping do switch é a defesa. No IPv6, o papel é do DHCPv6 (portas 546 e 547) ou da autoconfiguração SLAAC.",
+  "conceitos": [
+    {
+      "titulo": "DORA começa em broadcast",
+      "icone": "campaign",
+      "texto": "O cliente sem endereço envia o DHCPDISCOVER de 0.0.0.0, porta 68, para 255.255.255.255, porta 67: todos os hosts do segmento recebem, e só os servidores respondem com um DHCPOFFER. O cliente escolhe uma oferta e pede formalmente com um DHCPREQUEST, ainda em broadcast, para que os servidores não escolhidos saibam que perderam. O escolhido confirma com o DHCPACK.",
+      "destaque": "Sem endereço, o único jeito de começar é gritar para todos."
+    },
+    {
+      "titulo": "Concessão e renovação",
+      "icone": "timer",
+      "texto": "O endereço vem emprestado pelo tempo da opção 51. Na metade do prazo (T1, 50%) o cliente pede renovação direto ao servidor que concedeu, em unicast. Se ele não responder, em T2 (87,5%) o cliente tenta qualquer servidor, em broadcast. Se o prazo acabar sem resposta, o cliente deixa de usar o endereço e recomeça o DORA.",
+      "destaque": "Renova na metade do prazo, insiste com todos aos 87,5%."
+    },
+    {
+      "titulo": "Relay: o DHCP atravessando o roteador",
+      "icone": "router",
+      "texto": "Broadcast não passa por roteador. Para um servidor central atender várias VLANs, a interface do roteador em cada VLAN funciona como agente de retransmissão (no Cisco, ip helper-address): recebe o broadcast do cliente, preenche o campo giaddr com o próprio endereço e repassa em unicast ao servidor. O servidor escolhe o escopo pelo giaddr, isto é, pela sub-rede de onde o pedido veio.",
+      "destaque": "O giaddr diz ao servidor de qual sub-rede é o cliente."
+    },
+    {
+      "titulo": "Opções carregam a configuração",
+      "icone": "tune",
+      "texto": "Depois da parte fixa, a mensagem traz o magic cookie (99.130.83.99) e uma lista de opções da RFC 2132: 1 máscara, 3 gateway, 6 servidores DNS, 15 nome de domínio, 51 tempo de concessão, 53 tipo da mensagem, 54 identificador do servidor. A opção 55 é a lista do que o cliente quer receber. A opção 82 (RFC 3046) é acrescentada pelo relay ou pelo switch com a porta e o circuito de onde o pedido veio.",
+      "destaque": "O tipo da mensagem (DISCOVER, OFFER...) mora numa opção, a 53."
+    },
+    {
+      "titulo": "Endereço repetido e o DHCPDECLINE",
+      "icone": "dns",
+      "texto": "Antes de usar o endereço recebido, o cliente pode testar se alguém já o usa, com uma sondagem ARP (RFC 5227). Se encontrar dono, recusa com DHCPDECLINE e o servidor marca o endereço como indisponível. Muitos servidores também fazem um ping antes de oferecer. É assim que um IP fixo esquecido dentro da faixa do DHCP aparece, em vez de causar conflito silencioso.",
+      "destaque": "IP fixo dentro do escopo do DHCP é conflito anunciado."
+    },
+    {
+      "titulo": "Por que o DHCP não tem autenticação",
+      "icone": "gpp_bad",
+      "texto": "O cliente aceita a primeira oferta que serve, venha de quem vier, e configura o gateway e o DNS que ela mandar. A autenticação de mensagens DHCP chegou a ser definida (RFC 3118), mas quase ninguém a implantou. Na prática, quem garante que só o servidor certo responde é o switch, filtrando ofertas nas portas que não levam ao servidor.",
+      "destaque": "O cliente confia em quem responder primeiro."
+    }
+  ],
+  "diagrama": {
+    "titulo": "DORA: do cliente sem endereço ao endereço confirmado",
+    "definicao": "sequenceDiagram\n    participant C as Cliente sem endereço (MAC aa:bb:cc:00:11:22)\n    participant S as Servidor DHCP 192.168.0.1\n    C->>S: DHCPDISCOVER de 0.0.0.0 porta 68 para 255.255.255.255 porta 67\n    S-->>C: DHCPOFFER yiaddr 192.168.0.50 com máscara, gateway, DNS e prazo\n    C->>S: DHCPREQUEST em broadcast com a opção 54 (servidor escolhido) e 50 (endereço pedido)\n    S-->>C: DHCPACK confirma 192.168.0.50 por 86400 segundos\n    Note over C: Testa o endereço com ARP e configura a interface\n    Note over C,S: Em T1 (50%) renova em unicast com S. Em T2 (87,5%) pede a qualquer servidor",
+    "legenda": "O DISCOVER e o REQUEST saem em broadcast porque o cliente ainda não tem endereço (e para avisar os servidores não escolhidos). OFFER e ACK seguem em unicast ou broadcast conforme o cliente consiga receber unicast antes de configurar o IP (bit B do campo flags)."
+  },
+  "cabecalho": {
+    "titulo": "Mensagem DHCP campo a campo (parte fixa + magic cookie)",
+    "campos": [
+      {
+        "nome": "op",
+        "bits": 8,
+        "descricao": "1 = pedido (BOOTREQUEST, do cliente), 2 = resposta (BOOTREPLY, do servidor). Herança do BOOTP; o tipo real da mensagem está na opção 53.",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "htype",
+        "bits": 8,
+        "descricao": "Tipo de hardware: 1 para Ethernet.",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "hlen",
+        "bits": 8,
+        "descricao": "Tamanho do endereço de hardware: 6 bytes para um MAC Ethernet.",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "hops",
+        "bits": 8,
+        "descricao": "Começa em 0 no cliente; cada relay que repassa a mensagem soma 1.",
+        "cor": "#059669"
+      },
+      {
+        "nome": "xid",
+        "bits": 32,
+        "descricao": "Número aleatório escolhido pelo cliente para casar respostas com o pedido.",
+        "cor": "#d97706"
+      },
+      {
+        "nome": "secs",
+        "bits": 16,
+        "descricao": "Segundos desde que o cliente começou a buscar ou renovar o endereço.",
+        "cor": "#dc2626"
+      },
+      {
+        "nome": "flags",
+        "bits": 16,
+        "descricao": "Só o primeiro bit é usado: B (broadcast). Ligado, o cliente pede a resposta em broadcast porque ainda não consegue receber unicast.",
+        "cor": "#4f46e5"
+      },
+      {
+        "nome": "ciaddr",
+        "bits": 32,
+        "descricao": "Endereço atual do cliente, preenchido só quando ele já tem um (renovação, rebind).",
+        "cor": "#0d9488"
+      },
+      {
+        "nome": "yiaddr",
+        "bits": 32,
+        "descricao": "\"Your address\": o endereço que o servidor está oferecendo ou confirmando.",
+        "cor": "#be185d"
+      },
+      {
+        "nome": "siaddr",
+        "bits": 32,
+        "descricao": "Endereço do próximo servidor do processo de boot (TFTP do boot pela rede).",
+        "cor": "#2563eb"
+      },
+      {
+        "nome": "giaddr",
+        "bits": 32,
+        "descricao": "Endereço do relay que repassou a mensagem; é por ele que o servidor escolhe o escopo.",
+        "cor": "#7c3aed"
+      },
+      {
+        "nome": "chaddr",
+        "bits": 128,
+        "descricao": "Endereço de hardware do cliente (o MAC ocupa os 6 primeiros bytes dos 16).",
+        "cor": "#0891b2"
+      },
+      {
+        "nome": "sname",
+        "bits": 512,
+        "descricao": "Nome do servidor, opcional. Herança do BOOTP; pode ser reaproveitado para opções (opção 52, overload).",
+        "cor": "#059669"
+      },
+      {
+        "nome": "file",
+        "bits": 1024,
+        "descricao": "Nome do arquivo de boot para o boot pela rede (PXE). Também pode ser reaproveitado para opções.",
+        "cor": "#d97706"
+      },
+      {
+        "nome": "magic cookie",
+        "bits": 32,
+        "descricao": "Os quatro bytes 99.130.83.99 que dizem: daqui em diante vêm opções DHCP. Depois dele seguem as opções, de tamanho variável, até a opção 255 (fim).",
+        "cor": "#dc2626"
+      }
+    ],
+    "nota": "Somando os campos: 8 + 8 + 8 + 8 + 32 + 16 + 16 + 32 + 32 + 32 + 32 + 128 + 512 + 1024 + 32 = 1920 bits = 240 bytes, sendo 236 bytes de parte fixa e 4 do magic cookie; as opções vêm depois, com tamanho variável. A mensagem viaja em UDP (servidor 67, cliente 68), dentro de IP. Mais da metade da parte fixa (sname e file) é espaço herdado do BOOTP."
+  },
+  "tabelas": [
+    {
+      "titulo": "Tipos de mensagem (opção 53)",
+      "colunas": [
+        "Valor",
+        "Mensagem",
+        "Quem envia e quando"
+      ],
+      "dicas_colunas": [
+        "Número que vai na opção 53 e identifica a mensagem",
+        "Nome da mensagem DHCP",
+        "O lado que envia e em que momento da concessão"
+      ],
+      "linhas": [
+        [
+          "1",
+          "DHCPDISCOVER",
+          "Cliente, para achar servidores"
+        ],
+        [
+          "2",
+          "DHCPOFFER",
+          "Servidor, oferecendo um endereço"
+        ],
+        [
+          "3",
+          "DHCPREQUEST",
+          "Cliente, aceitando uma oferta ou renovando"
+        ],
+        [
+          "4",
+          "DHCPDECLINE",
+          "Cliente, quando o endereço já está em uso"
+        ],
+        [
+          "5",
+          "DHCPACK",
+          "Servidor, confirmando o endereço e o prazo"
+        ],
+        [
+          "6",
+          "DHCPNAK",
+          "Servidor, recusando (endereço errado para aquela rede)"
+        ],
+        [
+          "7",
+          "DHCPRELEASE",
+          "Cliente, devolvendo o endereço antes do prazo"
+        ],
+        [
+          "8",
+          "DHCPINFORM",
+          "Cliente com IP fixo, pedindo só as demais configurações"
+        ]
+      ]
+    },
+    {
+      "titulo": "Estados do cliente ao longo da concessão",
+      "colunas": [
+        "Estado",
+        "O que faz",
+        "Destino"
+      ],
+      "dicas_colunas": [
+        "Nome do estado na máquina de estados do cliente, da RFC 2131",
+        "A ação do cliente nesse estado",
+        "Se a mensagem sai em broadcast ou em unicast nesse estado"
+      ],
+      "linhas": [
+        [
+          "INIT / SELECTING",
+          "Envia DISCOVER e escolhe uma oferta",
+          "Broadcast"
+        ],
+        [
+          "REQUESTING",
+          "Pede a oferta escolhida com REQUEST",
+          "Broadcast"
+        ],
+        [
+          "BOUND",
+          "Usa o endereço normalmente",
+          "Nenhuma mensagem (só usa o endereço)"
+        ],
+        [
+          "RENEWING (T1, 50%)",
+          "Pede renovação ao mesmo servidor",
+          "Unicast"
+        ],
+        [
+          "REBINDING (T2, 87,5%)",
+          "Pede renovação a qualquer servidor",
+          "Broadcast"
+        ]
+      ]
+    },
+    {
+      "titulo": "Opções mais usadas (RFC 2132)",
+      "colunas": [
+        "Opção",
+        "Nome",
+        "O que carrega"
+      ],
+      "dicas_colunas": [
+        "Código numérico da opção",
+        "Nome da opção na RFC",
+        "O dado de configuração que a opção carrega"
+      ],
+      "linhas": [
+        [
+          "1",
+          "Subnet Mask",
+          "A máscara da sub-rede"
+        ],
+        [
+          "3",
+          "Router",
+          "O gateway padrão"
+        ],
+        [
+          "6",
+          "Domain Name Server",
+          "Os servidores DNS"
+        ],
+        [
+          "15",
+          "Domain Name",
+          "O sufixo de domínio local"
+        ],
+        [
+          "51",
+          "IP Address Lease Time",
+          "O prazo da concessão, em segundos"
+        ],
+        [
+          "82",
+          "Relay Agent Information (RFC 3046)",
+          "A porta e o circuito de onde o pedido veio (posta pelo relay ou switch)"
+        ]
+      ]
+    },
+    {
+      "titulo": "DHCP (IPv4) e DHCPv6",
+      "colunas": [
+        "Aspecto",
+        "DHCP (IPv4)",
+        "DHCPv6"
+      ],
+      "dicas_colunas": [
+        "Característica comparada entre as duas versões",
+        "Como o DHCP da RFC 2131 trata esse aspecto",
+        "Como o DHCPv6 da RFC 8415 trata o mesmo aspecto"
+      ],
+      "linhas": [
+        [
+          "Portas UDP",
+          "Servidor 67, cliente 68",
+          "Servidor e relay 547, cliente 546"
+        ],
+        [
+          "Como o cliente procura",
+          "Broadcast 255.255.255.255",
+          "Multicast FF02::1:2"
+        ],
+        [
+          "Troca de mensagens",
+          "Discover, Offer, Request, Ack",
+          "Solicit, Advertise, Request, Reply"
+        ],
+        [
+          "Gateway",
+          "Entregue pela opção 3",
+          "Não entrega: vem do Router Advertisement"
+        ],
+        [
+          "Quem manda usar",
+          "O próprio cliente decide",
+          "As flags M e O do Router Advertisement"
+        ]
+      ]
+    }
+  ],
+  "ataques": [
+    {
+      "nome": "Servidor DHCP intruso",
+      "como_funciona": "Um notebook ou um roteador doméstico ligado na rede passa a responder DISCOVERs. O cliente que receber a oferta dele primeiro aceita o gateway e o DNS que ele mandar: o atacante vira o caminho de saída (man-in-the-middle) ou resolve nomes para sites falsos.",
+      "sinal": "Dois servidores respondendo ao mesmo DISCOVER; hosts com gateway ou DNS que não são os da rede.",
+      "gravidade": "Crítico",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Esgotamento do escopo (starvation)",
+      "como_funciona": "Uma ferramenta envia milhares de DISCOVERs, cada um com um MAC inventado, até o servidor emprestar todos os endereços livres. Os clientes legítimos ficam sem IP, e o terreno fica livre para um servidor intruso ser o único a responder.",
+      "sinal": "Escopo esgotado de repente; concessões para muitos MACs que nunca apareceram antes, todas vindas da mesma porta.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "DHCPRELEASE forjado",
+      "como_funciona": "O RELEASE não é autenticado: o atacante envia um em nome da vítima, com o MAC e o endereço dela, e o servidor devolve o endereço ao escopo. Em seguida pode emprestá-lo a outra máquina, causando conflito, ou à própria máquina do atacante.",
+      "sinal": "Concessões liberadas antes do prazo sem que o dono tenha desligado; conflito de IP logo depois.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    },
+    {
+      "nome": "DNS e proxy apontados para o atacante",
+      "como_funciona": "Mesmo sem mudar o gateway, uma oferta falsa com outros servidores DNS (opção 6) ou com um endereço de configuração automática de proxy faz o tráfego web passar por onde o atacante quer, sem alterar a rota.",
+      "sinal": "Resolução de nomes devolvendo endereços estranhos; DNS configurado no host diferente do oficial.",
+      "gravidade": "Alto",
+      "gravidade_cor": "danger"
+    },
+    {
+      "nome": "Opção 82 falsificada pelo cliente",
+      "como_funciona": "Se o servidor confia na opção 82 para decidir escopo ou política, um cliente que a insere por conta própria, fingindo outra porta ou circuito, pode receber endereço de uma rede que não é a sua.",
+      "sinal": "Pedidos chegando de portas de acesso já com a opção 82 preenchida; endereços de outra VLAN entregues a uma porta comum.",
+      "gravidade": "Médio",
+      "gravidade_cor": "warning"
+    }
+  ],
+  "mitigacoes": [
+    {
+      "nome": "DHCP snooping no switch",
+      "como_funciona": "O switch só aceita OFFER e ACK nas portas marcadas como confiáveis (as que levam ao servidor ou ao uplink). Nas portas de acesso, mensagens de servidor são descartadas. De quebra, ele monta uma tabela de vínculos (MAC, IP, porta, VLAN) a partir das concessões reais.",
+      "cobre": "Servidor intruso, DNS e proxy falsos, e RELEASE forjado de outra porta.",
+      "limite": "Exige switch gerenciado e cuidado com as portas confiáveis; esquecer o trust no uplink deixa a VLAN inteira sem endereço."
+    },
+    {
+      "nome": "Limite de taxa nas portas de acesso",
+      "como_funciona": "O DHCP snooping permite limitar quantas mensagens DHCP por segundo cada porta pode enviar. Acima do limite, a porta é desativada (err-disable) ou as mensagens são descartadas.",
+      "cobre": "Esgotamento do escopo por enxurrada de DISCOVERs.",
+      "limite": "Limite baixo demais derruba portas legítimas (um switch de mesa com vários computadores atrás, por exemplo)."
+    },
+    {
+      "nome": "Port security e 802.1X",
+      "como_funciona": "Limitar a quantidade de MACs por porta impede que uma porta finja centenas de clientes; o 802.1X exige autenticação antes de a máquina falar qualquer coisa na rede.",
+      "cobre": "Starvation com MACs inventados e máquina não autorizada na LAN.",
+      "limite": "A ferramenta de starvation pode variar só o chaddr e manter o MAC do quadro; combine com o limite de taxa."
+    },
+    {
+      "nome": "Proteções que usam a tabela do snooping",
+      "como_funciona": "A tabela de vínculos do DHCP snooping alimenta o Dynamic ARP Inspection (descarta ARP que não bate com a tabela) e o IP Source Guard (descarta pacote com IP de origem que não foi concedido àquela porta).",
+      "cobre": "Quem se dá um IP na mão para escapar do DHCP e quem forja ARP depois de obter endereço.",
+      "limite": "Hosts com IP fixo precisam de entradas manuais; sem snooping funcionando, as duas proteções ficam cegas."
+    },
+    {
+      "nome": "Equivalentes no IPv6: DHCPv6 Guard e RA Guard",
+      "como_funciona": "No IPv6 o atacante não precisa de DHCP: basta um Router Advertisement falso para virar gateway. O switch filtra RA e mensagens de servidor DHCPv6 nas portas de acesso, como o snooping faz no IPv4.",
+      "cobre": "Servidor DHCPv6 intruso e roteador falso anunciado por RA.",
+      "limite": "Há formas conhecidas de contornar o RA Guard com cabeçalhos de extensão; mantenha o firmware do switch atualizado."
+    }
+  ],
+  "laboratorios": [
+    {
+      "titulo": "Ver o DORA acontecer no seu computador",
+      "cenario": "Você quer ver as quatro mensagens do DORA e o que o servidor entregou: endereço, máscara, gateway, DNS e prazo.",
+      "comandos": "# Linux: libera e pede de novo, mostrando cada mensagem\nsudo dhclient -r eth0\nsudo dhclient -v eth0\n\n# Windows: devolve, pede e mostra servidor e prazo\nipconfig /release\nipconfig /renew\nipconfig /all",
+      "explicacao": "O dhclient -v imprime DHCPDISCOVER, DHCPOFFER, DHCPREQUEST e DHCPACK com o endereço do servidor. No Windows, ipconfig /all mostra o servidor DHCP, a hora em que a concessão foi obtida e quando vence."
+    },
+    {
+      "titulo": "Capturar as mensagens e achar servidores na rede",
+      "cenario": "Você quer ver o conteúdo das mensagens (opções incluídas) e descobrir se há mais de um servidor respondendo na VLAN.",
+      "comandos": "# Captura o DHCP com detalhes das opções\nsudo tcpdump -i eth0 -n -v 'udp port 67 or udp port 68'\n\n# Envia um DISCOVER e lista todo servidor que responder\nsudo nmap --script broadcast-dhcp-discover",
+      "explicacao": "Na captura aparecem o xid que liga pedido e resposta, a opção 53 (tipo da mensagem) e as opções entregues. Se o nmap listar dois servidores na mesma VLAN, um deles provavelmente não deveria estar ali."
+    },
+    {
+      "titulo": "Ligar o DHCP snooping num switch Cisco",
+      "cenario": "Você quer que só a porta do servidor (ou do uplink) possa entregar endereços na VLAN 10, e que as portas de acesso tenham limite de mensagens.",
+      "comandos": "ip dhcp snooping\nip dhcp snooping vlan 10\n!\ninterface GigabitEthernet0/1\n description uplink para o servidor DHCP\n ip dhcp snooping trust\n!\ninterface range GigabitEthernet0/2 - 24\n ip dhcp snooping limit rate 15\n!\nshow ip dhcp snooping\nshow ip dhcp snooping binding",
+      "explicacao": "Sem o trust no uplink, nenhuma oferta chega aos clientes. A tabela de vínculos (binding) mostra MAC, IP, prazo, VLAN e porta de cada concessão: é a base para o DAI e o IP Source Guard."
+    }
+  ],
+  "diagnosticos": [
+    {
+      "sintoma": "O computador recebe endereço 169.254.x.x",
+      "causa_provavel": "Nenhum servidor respondeu: servidor fora do ar, VLAN sem relay, escopo esgotado ou a porta do servidor sem trust no DHCP snooping.",
+      "comando": "ipconfig /all",
+      "leitura": "169.254.0.0/16 é autoconfiguração local: o cliente desistiu de esperar o DHCP. Sem servidor DHCP na saída, o problema está antes do cliente."
+    },
+    {
+      "sintoma": "Hosts recebem gateway ou DNS errados",
+      "causa_provavel": "Servidor DHCP intruso respondendo antes do oficial.",
+      "comando": "sudo nmap --script broadcast-dhcp-discover",
+      "leitura": "Mais de um servidor na resposta indica intruso. Ache a porta pelo MAC do servidor e ligue o DHCP snooping na VLAN."
+    },
+    {
+      "sintoma": "Servidor registra que não há endereço livre",
+      "causa_provavel": "Escopo pequeno para a quantidade de clientes, prazo longo demais numa rede de visitantes, ou ataque de esgotamento.",
+      "comando": "show ip dhcp pool",
+      "leitura": "Compare endereços em uso com o tamanho do escopo. Muitos MACs desconhecidos vindos da mesma porta indicam starvation; muitos clientes reais pedem escopo maior ou prazo menor."
+    },
+    {
+      "sintoma": "Clientes de outra VLAN não recebem endereço",
+      "causa_provavel": "Falta o relay (ip helper-address) na interface da VLAN, ou o servidor não tem escopo para a sub-rede do giaddr.",
+      "comando": "show running-config interface Vlan20 | include helper",
+      "leitura": "Sem helper-address o broadcast do cliente morre no roteador. Com ele, confira no servidor se existe escopo para a sub-rede da interface Vlan20."
+    },
+    {
+      "sintoma": "Depois de ligar o DHCP snooping, ninguém recebe endereço",
+      "causa_provavel": "A porta do uplink ou do servidor não foi marcada como confiável, ou o servidor recusa pedidos com a opção 82 que o switch passou a inserir.",
+      "comando": "show ip dhcp snooping statistics",
+      "leitura": "Ofertas descartadas indicam porta sem trust. Se o servidor recusa a opção 82, desligue a inserção (no ip dhcp snooping information option) ou configure o servidor para aceitá-la."
+    }
+  ],
+  "ficha": [
+    {
+      "rotulo": "RFC",
+      "valor": "RFC 2131 (DHCP); RFC 2132 (opções); RFC 3046 (opção 82); RFC 8415 (DHCPv6)",
+      "dica": "O DHCP estendeu o BOOTP (RFC 951) e manteve o formato da mensagem."
+    },
+    {
+      "rotulo": "Camada",
+      "valor": "Aplicação, a serviço da camada de Rede (configura o IP do host)",
+      "dica": "Viaja em UDP sobre IP, mesmo antes de o cliente ter endereço."
+    },
+    {
+      "rotulo": "Portas",
+      "valor": "UDP 67 (servidor e relay) e 68 (cliente)",
+      "dica": "No DHCPv6: 547 (servidor e relay) e 546 (cliente)."
+    },
+    {
+      "rotulo": "Tamanho da mensagem",
+      "valor": "236 bytes de parte fixa + 4 do magic cookie + opções",
+      "dica": "sname e file, herança do BOOTP, ocupam 192 dos 236 bytes."
+    },
+    {
+      "rotulo": "Concessão",
+      "valor": "Prazo da opção 51; renova em T1 = 50% e em T2 = 87,5%",
+      "dica": "Prazo curto em rede de visitantes devolve endereços mais rápido."
+    },
+    {
+      "rotulo": "Segurança",
+      "valor": "Nenhuma no uso comum: o cliente aceita qualquer servidor",
+      "dica": "A defesa é do switch: DHCP snooping, limite de taxa, DAI e IP Source Guard."
+    },
+    {
+      "rotulo": "Equivalente IPv6",
+      "valor": "DHCPv6 (com ou sem estado) ou SLAAC, conforme as flags M e O do Router Advertisement",
+      "dica": "No IPv6 o gateway nunca vem do DHCP: vem do RA."
+    }
+  ]
+}

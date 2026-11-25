@@ -95,6 +95,7 @@ public class PortasService {
             Map.entry("imaps", "smtp"),
             Map.entry("pop3s", "smtp"),
             Map.entry("dns", "dns"),
+            Map.entry("dhcp", "dhcp"),
             Map.entry("http", "http"),
             Map.entry("http alternativo", "http"),
             Map.entry("https", "tls"),

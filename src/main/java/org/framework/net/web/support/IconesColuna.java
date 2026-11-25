@@ -444,7 +444,8 @@ public final class IconesColuna {
             regra("^(tls|starttls)", "lock"),
             regra("^(ssh|telnet)", "terminal"),
             regra("^(tcp|udp)", "swap_calls"),
-            regra("^(ipv4|ipv6|arp|ndp)", "conversion_path"),
+            regra("^(ipv4|ipv6|arp|ndp|dhcp)", "conversion_path"),
+            regra("^(ospf|bgp|eigrp|rip)", "route"),
             regra("^(pem|der|p7b|pfx|formato)", "description"),
             regra("^transporte", "swap_calls"));
 

@@ -88,6 +88,10 @@ public record AprofundamentoProtocolo(
             generico("telnet", "Telnet", "Telnet", "terminal", "Aplicação",
                     "O protocolo inseguro por excelência — tudo em texto plano. O contraste direto com o SSH.",
                     List.of("TELNET")),
+            generico("dhcp", "DHCP — Dynamic Host Configuration Protocol", "DHCP", "conversion_path", "Aplicação",
+                    "Como o host ganha endereço sem ninguém digitar: o DORA em broadcast, a concessão e o relay, "
+                            + "e por que um servidor intruso na LAN desvia o tráfego.",
+                    List.of("DHCP", "DHCPv6")),
             // --- Camada de Transporte ---
             generico("tcp", "TCP — Transmission Control Protocol", "TCP", "swap_horiz", "Transporte",
                     "O transporte confiável: 3-way handshake, números de sequência, janela, "
@@ -117,6 +121,14 @@ public record AprofundamentoProtocolo(
                     "As mensagens de controle e erro que sustentam ping e traceroute, e por que o "
                             + "ICMP também é vetor de varredura e túnel.",
                     List.of("ICMP", "ICMPv6")),
+            generico("nat", "NAT — Network Address Translation", "NAT", "swap_horiz", "Rede",
+                    "Muitas máquinas atrás de um endereço público: PAT, tabela de traduções, encaminhamento de "
+                            + "porta, o que o NAT quebra e por que ele não é firewall.",
+                    List.of("NAT")),
+            generico("ospf", "OSPF — Open Shortest Path First", "OSPF", "route", "Rede",
+                    "O roteamento interno por estado de enlace: vizinhos e adjacência, DR e BDR, áreas, LSAs e o "
+                            + "Dijkstra, e por que roteador sem autenticação aceita rota falsa.",
+                    List.of("OSPFv2", "OSPFv3")),
             new AprofundamentoProtocolo("bgp", "BGP-4 — Border Gateway Protocol", "BGP", "hub",
                     "O protocolo que mantém a Internet conectada: política entre Sistemas Autônomos, "
                             + "não menor custo. Roda sobre TCP 179, a serviço da camada de Rede.",
