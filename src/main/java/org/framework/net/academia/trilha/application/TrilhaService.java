@@ -38,6 +38,11 @@ public class TrilhaService {
         return CatalogoTrilha.proxima(id);
     }
 
+    /** Onde praticar o tema da lição (o link do rodapé); vazio se a lição não tem. */
+    public Optional<org.framework.net.academia.trilha.domain.Pratica> pratica(String id) {
+        return CatalogoTrilha.pratica(id);
+    }
+
     /** {@code true} se o id é de uma lição do catálogo. */
     public boolean existe(String licaoId) {
         return CatalogoTrilha.licao(licaoId).isPresent();

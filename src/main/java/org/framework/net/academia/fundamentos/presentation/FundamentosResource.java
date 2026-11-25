@@ -83,6 +83,18 @@ public class FundamentosResource {
         return licao(camadas, "fundamentos.camadas");
     }
 
+    /**
+     * Página de uma lição do nível, com a trilha ao redor.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> mostra a lição e o que vem depois: as lições do nível, a próxima e onde
+     * praticar o tema no site (o único link "ver a ferramenta completa" da decisão D2).</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> só abre lição que está no catálogo da trilha e com a Academia aberta; a
+     * prática vem do catálogo (rota interna validada), nunca da requisição.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> lição fora do catálogo lança {@code NotFoundException} (404);
+     * Academia fechada é tratada por {@code AcademiaAberta.exigir()}.</p>
+     */
     private TemplateInstance licao(Template template, String id) {
         academiaAberta.exigir();
         Licao licao = trilha.licao(id).orElseThrow(NotFoundException::new);
@@ -90,7 +102,8 @@ public class FundamentosResource {
                 .data("nivel", nivelFundamentos())
                 .data("niveis", trilha.niveis())
                 .data("licao", licao)
-                .data("proxima", trilha.proxima(id).orElse(null));
+                .data("proxima", trilha.proxima(id).orElse(null))
+                .data("pratica", trilha.pratica(id).orElse(null));
     }
 
     private Nivel nivelFundamentos() {

@@ -72,6 +72,32 @@ public final class CatalogoTrilha {
         return NIVEIS.stream().filter(n -> n.id().equals(id)).findFirst();
     }
 
+    /** Um link por lição para a ferramenta ou o aprofundamento do mesmo tema (decisão D2: "ver a ferramenta completa"). */
+    private static final java.util.Map<String, Pratica> PRATICAS = java.util.Map.of(
+            "fundamentos.binario", new Pratica("/analise", "os 32 bits de um endereço na Análise IPv4", "bar_chart"),
+            "fundamentos.hexadecimal", new Pratica("/ipv6/analise", "os hextetos de um endereço na Análise IPv6",
+                    "bar_chart"),
+            "fundamentos.camadas", new Pratica("/laboratorios/camadas", "o encapsulamento no laboratório de camadas",
+                    "science"),
+            "ipv4.mascara", new Pratica("/analise?tab=mask", "a máscara de qualquer rede na Análise IPv4", "bar_chart"),
+            "ipv4.subredes", new Pratica("/calculadora", "a divisão de um bloco na Calculadora", "calculate"),
+            "transporte.aperto", new Pratica("/protocolos/handshake", "o aperto de mão no aprofundamento de protocolos",
+                    "lan"),
+            "transporte.janela", new Pratica("/protocolos/tcp", "a janela no aprofundamento do TCP", "lan"));
+
+    /**
+     * Onde praticar o tema da lição.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o fim da lição leva à ferramenta ou ao aprofundamento do mesmo tema.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> no máximo um link por lição; a rota é interna e validada por {@link Pratica}.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> id desconhecido ou sem prática devolve {@link Optional#empty()}.</p>
+     */
+    public static Optional<Pratica> pratica(String licaoId) {
+        return licaoId == null ? Optional.empty() : Optional.ofNullable(PRATICAS.get(licaoId));
+    }
+
     /** Lição pelo id ({@code fundamentos.binario}). */
     public static Optional<Licao> licao(String id) {
         if (id == null) {

@@ -1,10 +1,16 @@
-{! Rodapé comum das lições: próxima lição (vinda da trilha) e o caminho de volta ao nível.
-   Variáveis: nivel, proxima (Licao ou nulo). !}
+{! Rodapé comum das lições: próxima lição (vinda da trilha), onde praticar o tema e o caminho de volta ao nível.
+   Variáveis: nivel, proxima (Licao ou nulo), pratica (Pratica ou nulo). !}
 <nav class="acad-licao-cabeca mt-4" aria-label="Continuar na trilha">
     <a href="{nivel.rota}" class="aed-btn aed-btn-neutral">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_back</span>
         <span>Lições de {nivel.titulo}</span>
     </a>
+    {#if pratica}
+    <a href="{pratica.rota}" class="aed-btn aed-btn-neutral" title="Continua no mesmo tema com números reais, numa página do site">
+        <span class="material-symbols-outlined" aria-hidden="true" translate="no">{pratica.icone}</span>
+        <span>Pratique: {pratica.rotulo}</span>
+    </a>
+    {/if}
     {#if proxima}
     <a href="{proxima.rota}" class="aed-btn aed-btn-teal">
         <span>Próxima: {proxima.titulo}</span>
