@@ -5,6 +5,7 @@
     let termoBusca = '';
     let paginaAtual = 1;
     let janelaMinutos = 60;
+    let soPessoas = false;
     let autoRefreshMs = 10000;
     let consolePausado = false;
     let timerAutoRefresh = null;
@@ -62,6 +63,7 @@
         if ($('t-periodo-label')) {
             let rotulo = 'janela: ' + (PERIODO_LABEL[String(data.janelaMinutos)] || (data.janelaMinutos + ' min'));
             if (data.coberturaDesde) rotulo += ' · dados desde ' + data.coberturaDesde;
+            if (data.soPessoas) rotulo += ' · só pessoas (sem robôs)';
             if (data.coberturaParcial) rotulo += ' (cobertura parcial: o período pedido começa antes do evento mais antigo guardado)';
             $('t-periodo-label').textContent = rotulo;
             $('t-periodo-label').classList.toggle('text-warning', !!data.coberturaParcial);
@@ -404,7 +406,8 @@
             return;
         }
         try {
-            const resp = await fetch('/telemetria/api/dashboard?janela=' + janelaMinutos + '&console=250');
+            const resp = await fetch('/telemetria/api/dashboard?janela=' + janelaMinutos + '&console=250'
+                + (soPessoas ? '&pessoas=true' : ''));
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             const data = await resp.json();
             atualizarMetricas(data);
@@ -476,6 +479,9 @@
 
         const periodo = $('t-periodo');
         if (periodo) periodo.addEventListener('change', () => { janelaMinutos = parseInt(periodo.value, 10) || 0; carregarDashboard(); });
+
+        const pessoas = $('t-so-pessoas');
+        if (pessoas) pessoas.addEventListener('change', () => { soPessoas = pessoas.checked; carregarDashboard(); });
 
         const auto = $('t-autorefresh');
         if (auto) auto.addEventListener('change', () => { autoRefreshMs = parseInt(auto.value, 10) || 0; reagendarAutoRefresh(); });

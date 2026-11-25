@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 class TelemetriaHttpTest {
@@ -114,5 +117,38 @@ class TelemetriaHttpTest {
                 .statusCode(200)
                 .header("X-Request-Id", notNullValue())
                 .header("X-Trace-Id", notNullValue());
+    }
+
+    /**
+     * D18: o painel "só pessoas" tira os robôs dos números de acesso; o padrão continua sendo a carga. Os acessos são
+     * feitos de verdade, passando pelo filtro que classifica o cliente pelo User-Agent (A6): um de robô e um de
+     * navegador. A1: o acesso de pessoa continua no modo só pessoas; valor de "pessoas" que não é true deixa o painel
+     * de carga.
+     */
+    @Test
+    void dashboardSoPessoasTiraOsRobos() {
+        given().header("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
+                .when().get("/portas").then().statusCode(200);
+        given().header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                        + "Chrome/131.0 Safari/537.36")
+                .when().get("/portas").then().statusCode(200);
+
+        java.util.Map<String, Object> carga = given().header("Cookie", cookieDeDono())
+                .when().get("/telemetria/api/dashboard?janela=60")
+                .then().statusCode(200).body("soPessoas", is(false))
+                .extract().jsonPath().getMap("clientes");
+        assertTrue(carga.containsKey("bot") && carga.containsKey("humano"),
+                "o painel de carga não viu os dois acessos: " + carga);
+
+        java.util.Map<String, Object> pessoas = given().header("Cookie", cookieDeDono())
+                .when().get("/telemetria/api/dashboard?janela=60&pessoas=true")
+                .then().statusCode(200).body("soPessoas", is(true))
+                .extract().jsonPath().getMap("clientes");
+        assertFalse(pessoas.containsKey("bot"), "o painel só pessoas contou robô: " + pessoas);
+        assertTrue(pessoas.containsKey("humano"), "o painel só pessoas perdeu a pessoa: " + pessoas);
+
+        given().header("Cookie", cookieDeDono())
+                .when().get("/telemetria/api/dashboard?janela=60&pessoas=abc")
+                .then().statusCode(200).body("soPessoas", is(false));
     }
 }

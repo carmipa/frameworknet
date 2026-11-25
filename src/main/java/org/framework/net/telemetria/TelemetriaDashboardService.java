@@ -35,6 +35,24 @@ public class TelemetriaDashboardService {
     TelemetriaConsoleBuffer console;
 
     public TelemetriaDashboard montar(int limiteConsole, int janelaMinutos) {
+        return montar(limiteConsole, janelaMinutos, false);
+    }
+
+    /**
+     * Painel da janela pedida, com ou sem os robôs.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o painel mede carga, e por isso soma robôs e pessoas (decisão de 08/09); para
+     * decidir produto o dono precisa do mesmo painel só com pessoas (proposta D18), sem perder a visão de carga, que
+     * continua sendo o padrão.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> com {@code soPessoas}, todo agregado de acesso HTTP (totais, classes de status,
+     * métodos, países, clientes, por módulo, rotas e a atividade) conta só o acesso marcado {@code humano}
+     * ({@link #entraNoPainel}); eventos que não são acesso HTTP continuam; o estado volta no próprio painel.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> acesso sem a marca de cliente (evento antigo) fica fora no modo só
+     * pessoas, porque não se sabe se foi pessoa; não lança.</p>
+     */
+    public TelemetriaDashboard montar(int limiteConsole, int janelaMinutos, boolean soPessoas) {
         TelemetriaResumo resumo = store.gerarResumo(500);
         List<TelemetriaEvent> todos = store.snapshotEventos();
 
@@ -52,7 +70,7 @@ public class TelemetriaDashboardService {
         List<TelemetriaEvent> janela = new ArrayList<>();
         List<TelemetriaEvent> http = new ArrayList<>();
         for (TelemetriaEvent e : todos) {
-            if (e.timestamp() == null || e.timestamp().isBefore(desde)) {
+            if (e.timestamp() == null || e.timestamp().isBefore(desde) || !entraNoPainel(e, soPessoas)) {
                 continue;
             }
             janela.add(e);
@@ -183,6 +201,7 @@ public class TelemetriaDashboardService {
                 janela.size(),
                 coberturaDesde,
                 coberturaParcial,
+                soPessoas,
                 httpTotal, http2xx, http3xx, http4xx, http5xx,
                 taxaSucesso, taxaErroServidor,
                 latencia, metodos, paisesTop, clientesAgg, porModulo, topLentos, topErros, topRotas, atividade,
@@ -246,6 +265,28 @@ public class TelemetriaDashboardService {
     }
 
     // ---- helpers de agregação ----
+
+    /**
+     * O evento entra no painel pedido?
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> regra única do filtro "só pessoas".</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> sem o filtro, entra tudo; com o filtro, acesso HTTP só entra marcado
+     * {@code clienteTipo = humano}, e evento que não é acesso HTTP entra sempre.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> evento nulo não entra; campos nulos ou sem a marca deixam o acesso
+     * fora do modo só pessoas; não lança.</p>
+     */
+    static boolean entraNoPainel(TelemetriaEvent e, boolean soPessoas) {
+        if (e == null) {
+            return false;
+        }
+        if (!soPessoas || !"http_access".equals(e.evento())) {
+            return true;
+        }
+        Map<String, Object> campos = e.fields();
+        return campos != null && "humano".equals(campos.get("clienteTipo"));
+    }
 
     private static boolean isRuido(String path) {
         if (path == null || path.isBlank()) {

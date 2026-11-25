@@ -61,13 +61,26 @@ public class TelemetriaResource {
         return store.gerarResumo(limit);
     }
 
+    /**
+     * Dados do painel para a janela pedida.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> alimenta o painel do dono; {@code pessoas=true} tira os robôs dos números de
+     * acesso, para decidir produto sobre gente e não sobre carga.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> sem {@code pessoas}, o painel é o de carga (todo o tráfego), como sempre foi;
+     * o estado aplicado volta em {@code soPessoas}.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> valor de {@code pessoas} que não é {@code true} vale como
+     * {@code false} (painel de carga); a validação de {@code janela} e {@code console} não mudou.</p>
+     */
     @GET
     @Path("/api/dashboard")
     @Produces(MediaType.APPLICATION_JSON)
     public TelemetriaDashboard dadosDashboard(
             @QueryParam("janela") @DefaultValue("60") int janela,
-            @QueryParam("console") @DefaultValue("250") int console) {
-        return dashboardService.montar(console, janela);
+            @QueryParam("console") @DefaultValue("250") int console,
+            @QueryParam("pessoas") @DefaultValue("false") boolean pessoas) {
+        return dashboardService.montar(console, janela, pessoas);
     }
 
     @GET

@@ -195,6 +195,19 @@
     color: #7d8aa1;
 }
 
+/* "Só pessoas": a caixa fica na linha do rótulo, alinhada ao pé dos seletores. */
+.tele-field-check {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.4rem;
+    min-block-size: 2rem;
+    cursor: pointer;
+}
+
+.tele-field-check .form-check-input {
+    margin: 0;
+}
+
 .tele-controls .form-select {
     background: #0a0e16;
     border: 1px solid var(--aed-border, rgba(255, 255, 255, 0.12));

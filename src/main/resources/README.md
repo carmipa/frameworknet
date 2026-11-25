@@ -128,7 +128,7 @@ O framework cobre um fluxo didático completo para aula, laboratório e revisão
 | Resolução VLSM | `/resolucao-problemas` | GET/POST | Aba **Projetar**: cenários VLSM/WAN, demos e exportações |
 | Resolução — reversa | `/resolucao-problemas?aba=reversa` | GET/POST | Aba **Engenharia reversa**: interpreta configuração Cisco colada, audita, corrige e reconstrói o projeto |
 | Páginas de erro | qualquer rota que falhe | — | Página única em `paginaErros/erro.html` servindo os 18 códigos (400…507) |
-| Telemetria | `/telemetria` | GET | Dashboard de eventos, console e **origem do tráfego** (por módulo, rotas, país e bots × pessoas — sem IP) |
+| Telemetria | `/telemetria` | GET | Dashboard de eventos, console e **origem do tráfego** (por módulo, rotas, país e bots × pessoas — sem IP); o padrão mede a carga (robôs incluídos), e **Só pessoas** (`/telemetria/api/dashboard?pessoas=true`) recalcula os números de acesso só com quem o User-Agent marca como pessoa |
 | Telemetria (API) | `/telemetria/api/*` | GET/POST | `resumo`, `dashboard`, `console`, `console/limpar`, `exportar`, `pasta`, `dataset/estado`, `dataset/sincronizar` — as que alteram estado ou extraem dado são só do dono |
 | Login da telemetria | `/login/`, `/login/chave`, `/login/github`, `/login/github/callback`, `/login/sair` | GET/POST | Login pelo GitHub (OAuth) e acesso de contingência por chave (`/login/?modo=contingencia`) |
 | Documentação | `/documentacao` | GET | Este README renderizado |
