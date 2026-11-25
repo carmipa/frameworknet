@@ -30,7 +30,7 @@
 
     {#if activeTabPre == 'wildcard'}
     <div class="card-tech p-4 shadow mb-3">
-        <h2 class="h6 text-warning mb-3 d-flex align-items-center gap-2" title="Só os valores essenciais do bloco descrito pela wildcard, para conferir a resposta sem as tabelas didáticas"><span class="material-symbols-outlined" translate="no" aria-hidden="true">table_chart</span> Modo Wildcard — resumo limpo</h2>
+        <h2 class="h6 text-warning mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">table_chart</span> Modo Wildcard — resumo limpo</h2>
         <table class="table table-dark table-bordered table-sm resultados-table mb-0">
             <tbody>
                 <tr><th title="A wildcard usada no cálculo: bits 0 precisam casar com o endereço, bits 1 podem variar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">filter_alt</span>Wildcard informada</th><td class="fw-bold">{#if wildcardPre}{wildcardPre}{#else}{res.wildcard}{/if}</td></tr>
@@ -268,7 +268,7 @@
         </div>
         <div class="col-md-6">
             <div class="card-tech p-4 h-100 resumo-box" style="border-left-color:#238636;">
-                <h2 class="h6 text-info mb-3 d-flex align-items-center gap-2" title="Quantos bits sobram para host e quantos endereços isso dá: 2 elevado a esse número, menos rede e broadcast"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Capacidade e hosts</h2>
+                <h2 class="h6 text-info mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span> Capacidade e hosts</h2>
                 <p>Zeros (host bits): <span class="fw-bold">{res.zeros}</span></p>
                 <p>IPs no bloco: 2<sup>{res.zeros}</sup> = <span class="text-warning fw-bold">{res.total}</span></p>
                 <p>IPs úteis: <span class="text-success fw-bold" style="font-size:1.2rem;">{res.uteis}</span></p>
@@ -294,7 +294,8 @@
 
     {#if !res.somente_mascara && res.abertura_intervalos}
     <div class="card-tech p-3 mb-3">
-        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Como o octeto que varia se divide em blocos iguais e em qual deles o IP digitado está"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Abertura dos intervalos</h2>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Abertura dos intervalos</h2>
+        <p class="small text-secondary mb-2 aed-explicacao">Como o octeto que varia se divide em blocos iguais e em qual deles o IP digitado está.</p>
         <table class="table table-dark table-bordered table-sm interval-table mb-2">
             <thead><tr><th title="Natureza da linha: o conceito do intervalo ou a faixa em que o IP está"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">category</span>Tipo</th><th title="Explicação curta do que a linha representa"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">info</span>Detalhe</th><th title="Tamanho de cada bloco em endereços, ou a faixa calculada do primeiro ao último"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">text_snippet</span>Valor</th></tr></thead>
             <tbody>
@@ -321,7 +322,8 @@
 
     {#if !res.somente_mascara && res.proximas_subredes.size > 0}
     <div class="card-tech p-3 mb-3">
-        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Esta sub-rede e as seguintes de mesmo tamanho; a quantidade de linhas vem do campo Régua do formulário"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {res.regua_count})</h2>
+        <h2 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span> Régua de sub-redes (próximas {res.regua_count})</h2>
+        <p class="small text-secondary mb-2 aed-explicacao">Esta sub-rede e as seguintes de mesmo tamanho; a quantidade de linhas vem do campo Régua do formulário.</p>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm regua-table mb-0">
                 <thead><tr><th title="Número de ordem da sub-rede; a primeira linha é a que contém o IP"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Subnet</th><th title="Endereço que identifica cada sub-rede, com os bits de host em 0"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lan</span>Rede</th><th title="Primeiro endereço utilizável por uma máquina em cada sub-rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">first_page</span>1º host</th><th title="Último endereço utilizável por uma máquina em cada sub-rede"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">last_page</span>Último host</th><th title="Endereço que alcança todos os hosts de cada sub-rede, com os bits de host em 1"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">campaign</span>Broadcast</th></tr></thead>
@@ -395,7 +397,8 @@
 
     {#if res.grc_resumo || res.seguranca_dicas.size > 0}
     <div class="card-tech p-4 shadow mb-3">
-        <h2 class="h6 text-danger mb-3 d-flex align-items-center gap-2" title="Leitura de governança, risco e conformidade sobre o bloco calculado, com cuidados práticos"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span> Cyber segurança (GRC + contexto)</h2>
+        <h2 class="h6 text-danger mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span> Cyber segurança (GRC + contexto)</h2>
+        <p class="small text-secondary mb-3 aed-explicacao">Leitura de governança, risco e conformidade sobre o bloco calculado, com cuidados práticos.</p>
         {#if res.grc_resumo}
         <h2 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h2>
         <ul class="small mb-3 grc-list">{#for linha in res.grc_resumo}<li>{linha}</li>{/for}</ul>

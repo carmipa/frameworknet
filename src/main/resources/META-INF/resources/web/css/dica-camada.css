@@ -8,7 +8,7 @@
  * aed-command-center.css) vence a do canônico — o canônico só decide onde o site não diz nada, que é o que ele
  * precisa decidir (posição, visibilidade, foco, toque, Esc).
  */
-@import url("/web/css/dica.css?v=20261025") layer(dica-canonica);
+@import url("/web/css/dica.css?v=20261125") layer(dica-canonica);
 
 /* Tema escuro do site: o balão segue as cores do design system (contraste 4,5:1 conferido no fundo #0b1220). */
 :root {

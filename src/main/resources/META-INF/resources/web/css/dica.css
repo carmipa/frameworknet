@@ -1,4 +1,4 @@
-/* dica.css v1.4 (2026-10-25) — tooltip explicativo acessível. Componente compartilhado: não editar no projeto; mudança só na origem.
+/* dica.css v1.5 (2026-11-04) — tooltip explicativo acessível. Componente compartilhado: não editar no projeto; mudança só na origem.
    v1.1 (revisão de boa-fé, 18/10/2026): a dica que aparece sem estar sob o mouse — no toque, e a de um campo com o foco —
    deixa o toque e o clique passarem para o que está embaixo. Ela cobria o campo de cima e os itens de menu seguintes, e
    tocar neles caía na dica (3 de 3 toques num item de menu; 4 de 8 nas abas). Com o mouse sobre o "?", ela continua
@@ -13,11 +13,14 @@
    v1.4 (25/10/2026, "o tooltip ficava no '?' e era melhor"): a dica de um botão, link ou item de menu com texto
    ganha a marca "?" à vista logo depois do controle (.dica__marca). A marca não é botão: não entra no Tab nem no
    nome acessível (o próprio controle já abre a dica pelo foco e já é descrito por ela), mas mostra que há dica, abre
-   no mouse e alterna no toque. Botão só com ícone continua sem marca: a dica dele é o nome. */
+   no mouse e alterna no toque. Botão só com ícone continua sem marca: a dica dele é o nome.
+   v1.5 (04/11/2026, "está feio" e "só onde é necessário"): o "?" fica leve e neutro. O desenho cai para .875rem com traço
+   mais fino e a cor nasce do texto ao redor (funciona em tema claro e escuro sem ajuste), ganhando força total só no hover
+   ou no foco. A área de toque não muda. A marca fica apenas para a migração de telas antigas; a tag dica não a põe mais. */
 :root {
   --dica-bg: #1f2937;
   --dica-fg: #ffffff;
-  --dica-gatilho: #1d4ed8;
+  --dica-gatilho: color-mix(in srgb, currentColor 70%, transparent); /* o texto ao redor define a cor */
   --dica-largura: 20rem;
   --dica-alvo: 1.5rem;            /* WCAG 2.5.8: mínimo 24px */
 }
@@ -30,14 +33,15 @@
   display: inline-grid; place-items: center; padding: 0; border: 0;
   background: transparent; color: var(--dica-gatilho); cursor: help; border-radius: 50%;
 }
-.dica__gatilho svg { inline-size: 1rem; block-size: 1rem; }
+.dica__gatilho svg, .dica__marca svg { inline-size: .875rem; block-size: .875rem; }
+.dica__gatilho svg :is(circle, path), .dica__marca svg :is(circle, path) { stroke-width: 1.75; }
+.dica__gatilho:is(:hover, :focus-visible), .dica__marca:hover { color: inherit; }
 
 /* marca "?" ao lado de um controle com texto: avisa que há dica; o controle continua sendo quem recebe o foco */
 .dica__marca {
   inline-size: var(--dica-alvo); block-size: var(--dica-alvo); flex: none;
   display: inline-grid; place-items: center; color: var(--dica-gatilho); cursor: help;
 }
-.dica__marca svg { inline-size: 1rem; block-size: 1rem; }
 .dica__gatilho:focus-visible, .dica :is(a, button, input, select, textarea):focus-visible {
   outline: 2px solid currentColor; outline-offset: .125rem;
 }

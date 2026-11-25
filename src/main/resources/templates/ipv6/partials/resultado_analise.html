@@ -166,7 +166,8 @@
                     </tbody>
                 </table>
                 <hr class="border-secondary">
-                <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2" title="Comandos IOS de exemplo para usar este endereço no roteador, conforme o tipo; alguns tipos não se configuram em interface"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco (IPv6 / OSPFv3)</h3>
+                <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span> Dica Cisco (IPv6 / OSPFv3)</h3>
+                <p class="small text-secondary mb-2 aed-explicacao">Comandos IOS de exemplo para usar este endereço no roteador, conforme o tipo; alguns tipos não se configuram em interface.</p>
                 <pre class="small bg-dark border border-secondary rounded p-2 mb-0 text-light" translate="no">{r.ciscoOspfv3}</pre>
             </div>
         </div>
@@ -174,7 +175,7 @@
 
     {! ---------- 11. Delegação de prefixo ---------- !}
     <div class="card-tech p-3 mb-3">
-        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2" title="Quantos blocos /48, /56 e /64 cabem neste prefixo, os tamanhos usuais de entrega a clientes e LANs"><span class="material-symbols-outlined" translate="no" aria-hidden="true">account_tree</span> Delegação de prefixo — quantas sub-redes menores cabem</h3>
+        <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">account_tree</span> Delegação de prefixo — quantas sub-redes menores cabem</h3>
         <table class="table table-dark table-bordered table-sm interval-table mb-0">
             <thead><tr><th title="Tamanho do bloco menor a delegar"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">tag</span>Prefixo</th><th title="Número de blocos desse tamanho dentro do prefixo analisado"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">table_chart</span>Quantas cabem</th><th title="Para quem esse tamanho costuma ser entregue"><span class="material-symbols-outlined aed-inline-icon" aria-hidden="true" translate="no">lightbulb</span>Uso típico</th></tr></thead>
             <tbody>
@@ -238,7 +239,8 @@
 
     {! ---------- 15. Cyber segurança (GRC) ---------- !}
     <div class="card-tech p-4 shadow mb-3">
-        <h3 class="h6 text-danger mb-3 d-flex align-items-center gap-2" title="Riscos e controles recomendados conforme o tipo e o tamanho deste endereço"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span> Cyber segurança (GRC + contexto)</h3>
+        <h3 class="h6 text-danger mb-3 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">lock</span> Cyber segurança (GRC + contexto)</h3>
+        <p class="small text-secondary mb-3 aed-explicacao">Riscos e controles recomendados conforme o tipo e o tamanho deste endereço.</p>
         <h3 class="h6 text-info mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">push_pin</span> Resumo executivo GRC</h3>
         <ul class="small mb-3 grc-list">{#for linha in r.grcResumo}<li>{linha}</li>{/for}</ul>
         <h3 class="h6 text-warning mb-2 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">warning</span> Alertas e recomendações</h3>

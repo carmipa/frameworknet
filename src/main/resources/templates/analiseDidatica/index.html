@@ -24,44 +24,28 @@
     <div class="card-tech p-4 shadow analise-didatica-wrap aed-card" data-active-tab="{activeTabPre}">
         <span class="aed-eyebrow">Modo de análise</span>
         <div class="aed-mode-grid tab-nav mb-3" role="tablist">
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="cidr" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Calcula rede, broadcast, faixa de hosts e máscara a partir de um IPv4 e do prefixo">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="cidr" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span><span>CIDR</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="mask" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Converta máscara decimal ↔ CIDR e visualize os bits de rede/host">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="mask" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">straighten</span><span>Máscara</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="wildcard" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Calcule/valide a máscara curinga usada em ACL, OSPF e EIGRP">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="wildcard" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">table_chart</span><span>Wildcard</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="autoip" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Descobre automaticamente o melhor prefixo para um endereço IPv4">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="autoip" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">auto_fix_high</span><span>Auto CIDR</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dominio" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Resolva um domínio/hostname para IP e analise a rede resultante">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="dominio" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">translate</span><span>Domínio</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="ipv6" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Expande, comprime e analisa endereços IPv6">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="ipv6" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">filter_6</span><span>IPv6</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="comparador" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Compare o mesmo IP sob dois prefixos CIDR lado a lado">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="comparador" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">compare_arrows</span><span>Comparador</span>
             </button>
-            <button type="button" class="aed-mode-btn tab-trigger" data-tab="calculadora" role="tab"
-                    data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="Divida um bloco em sub-redes e veja quantas redes cabem (ex.: /21 em /24 = 8)">
+            <button type="button" class="aed-mode-btn tab-trigger" data-tab="calculadora" role="tab">
                 <span class="material-symbols-outlined" translate="no" aria-hidden="true">calculate</span><span>Calculadora</span>
             </button>
         </div>
@@ -101,8 +85,7 @@
     {#if comparadorOnly && comparadorCards}
     <div class="aed-card card-tech p-4 shadow mt-4">
         <span class="aed-eyebrow">Comparador</span>
-        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);"
-            title="O mesmo endereço recortado pelos dois prefixos, lado a lado, para ver o efeito de mudar a máscara">
+        <h2 class="h5 mb-3 d-flex align-items-center gap-2" style="font-family:var(--aed-font-display);">
             <span class="material-symbols-outlined text-warning" translate="no" aria-hidden="true">compare_arrows</span>
             Comparador — IP {comparadorIp}
         </h2>
@@ -155,7 +138,7 @@
 
     <div class="card-tech p-3 shadow mt-4 history-box">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-            <h2 class="h6 text-info mb-0 d-flex align-items-center gap-2" title="O site guarda estas consultas no servidor, ligadas à sessão deste navegador: só ele as vê, e ao fechar o navegador o acesso costuma se perder (alguns navegadores restauram a sessão). Ficam as 60 mais recentes da sessão e no máximo 500 no total; as mais antigas saem primeiro. O seu próprio IP não entra no histórico."><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico desta sessão</h2>
+            <h2 class="h6 text-info mb-0 d-flex align-items-center gap-2"><span class="material-symbols-outlined" translate="no" aria-hidden="true">history</span> Histórico desta sessão</h2>
             <form method="GET" action="/analise" class="d-flex flex-wrap align-items-center gap-2 small">
                 <input type="hidden" name="tab" value="{activeTabPre}">
                 <label class="text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">format_list_numbered</span> Por página</label>
@@ -169,6 +152,7 @@
                 <button type="submit" class="btn btn-sm btn-outline-info" title="Recarrega a tabela do histórico mostrando a quantidade de linhas escolhida ao lado"><span class="material-symbols-outlined" translate="no" aria-hidden="true">check</span> Aplicar</button>
             </form>
         </div>
+        <p class="small text-secondary mb-2 aed-explicacao">O site guarda estas consultas no servidor, ligadas à sessão deste navegador: só ele as vê, e ao fechar o navegador o acesso costuma se perder (alguns navegadores restauram a sessão). Ficam as 60 mais recentes da sessão e no máximo 500 no total; as mais antigas saem primeiro. O seu próprio IP não entra no histórico.</p>
         <p class="small text-secondary mb-2">Página {historyPage} de {totalHistoryPages} · {historyPageItems.size} registro(s) nesta página</p>
         <div class="table-responsive">
             <table class="table table-dark table-sm table-bordered mb-0">

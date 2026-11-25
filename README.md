@@ -170,10 +170,14 @@ Desde 22/10/2026:
   `gradlew test`) reprova contêiner de página com `max-width` centralizado, `px` fora de
   borda/sombra, `100vw`, espaço entre linhas de grade em `%` e fonte abaixo de `.75rem`.
 - **Dicas (tooltip acessível)** — `node scripts/verificar-dicas.mjs [base]` varre todas as
-  páginas, abas e painéis de resultado com a varredura do componente de tooltip. Dica só onde
-  há o que explicar, e sempre com um "?" à vista: reprova a que falta (botão só com ícone, campo
-  com formato, desabilitado), a que sobra (card clicável, texto corrido, repetindo o que está
-  escrito) e a marcação fora do padrão (dica dentro do próprio controle, texto fora da `.dica`).
+  páginas, abas e painéis de resultado com a varredura do componente de tooltip. "?" à vista só
+  em campo com formato, limite ou regra e em sigla, unidade ou métrica; controle só com ícone e
+  controle desabilitado levam a dica sem "?" (no desabilitado, o motivo; ele usa
+  `aria-disabled="true"`, nunca o atributo `disabled`, que tira o botão do Tab e do mouse); botão,
+  link, aba, item de menu e título com texto não levam dica, e a explicação útil vira texto na tela
+  (classe `aed-explicacao`). Reprova a dica que falta, a que sobra (card clicável, texto corrido,
+  repetindo o que está escrito, "?" em título ou menu) e a marcação fora do padrão (dica dentro do
+  próprio controle, texto fora da `.dica`).
   As dicas escritas como `title` viram a marcação do componente pelo `web/js/field-tooltips.js`;
   grupo com um "?" só leva `data-dica-grupo` + `data-dica-excecao`. Para cada rota, com axe WCAG 2.2 AA:
   `cd scripts && BASE_URL=http://localhost:8081 ROTAS=/,/calculadora npx playwright test dica-rotas.spec.mjs`.

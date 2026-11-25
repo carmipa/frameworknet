@@ -250,3 +250,9 @@
         margin-top: 0.2rem;
     }
 }
+
+/* Localidade única: o Remover segue focável (aria-disabled) para mostrar o motivo na dica, e só parece desativado. */
+#locations-container .btn-remove-location[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

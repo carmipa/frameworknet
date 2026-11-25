@@ -9,11 +9,11 @@
  * direcoes do erro:
  *  - FALHA: dica que falta onde ha o que explicar (controle so com icone sem nome ou sem dica, desabilitado sem
  *    motivo, campo com formato ou limite declarado sem dica), dica de ma qualidade (vazia, acima de 160
- *    caracteres, repetindo o rotulo, gatilho "?" sem nome), dica sem "?" a vista, dica dentro do proprio controle e
- *    texto de dica fora da .dica;
- *  - AVISO: dica onde nao se usa (em card clicavel, em texto corrido, repetindo o texto visivel). Aqui o aviso
- *    tambem reprova: um novo so entra com exceção registrada (data-dica-excecao="motivo"). Dica em titulo que
- *    acrescenta o que o texto abaixo dele nao diz e permitida, com o "?" a vista.
+ *    caracteres, repetindo o rotulo, gatilho "?" sem nome), dica em botao, link, menu ou aba habilitados com texto
+ *    (com ou sem a marca "?", que saiu do padrao em 04/11/2026), "?" em titulo, menu ou navegacao, dica de campo sem
+ *    "?", dica dentro do proprio controle e texto de dica fora da .dica;
+ *  - AVISO: dica onde nao se usa (em card clicavel, em texto corrido) e "?" fora de campo (fica so em sigla, unidade
+ *    ou metrica). Aqui o aviso tambem reprova: um novo so entra com exceção registrada (data-dica-excecao="motivo").
  *
  * UNIVERSO: cada pagina do inventario (node scripts/inventario.mjs) e as variantes, no estado inicial, em cada aba
  * (role=tab, data-bs-toggle=tab/pill, clicada em ordem de documento, inclusive aba dentro de aba), no painel de
@@ -86,9 +86,10 @@ try {
 }
 const { navegador, abrir, medirRota } = percurso;
 
-// Calibracao (A1, na fronteira) do estado inicial. Pares com o MESMO sinal: botao so com icone sem dica (acusa) x o
-// mesmo botao com aria-label e dica canonica (aceita); dica num titulo (avisa) x dica de campo num painel com a classe
-// "card" que nao e clicavel (nao avisa).
+// Calibracao (na fronteira) do estado inicial. Pares com o MESMO sinal: botao so com icone sem dica (acusa) x o mesmo
+// botao com aria-label e dica canonica (aceita); "?" num titulo (acusa) x "?" de campo num painel com a classe "card"
+// que nao e clicavel (aceita); botao com texto e dica, com ou sem a marca (acusa) x o mesmo botao DESABILITADO com a
+// dica do motivo (aceita).
 {
   const { contexto, pagina, status } = await abrir('/');
   if (status !== 200) { console.log('NAO VERIFICOU: / respondeu ' + status); process.exit(2); }
@@ -111,6 +112,8 @@ const { navegador, abrir, medirRota } = percurso;
       + '<span id="d-calib-f" role="tooltip" class="dica__texto">Salva a calibracao.</span>'
       + '<div data-dica-excecao="calibracao: grupo com um so &quot;?&quot;"><button type="button" aria-describedby="d-calib-x">CalibracaoExcecao</button>'
       + '<span id="d-calib-x" role="tooltip" class="dica__texto">Envia a calibracao.</span></div>'
+      + '<span class="dica"><button type="button" aria-disabled="true" aria-describedby="d-calib-d">CalibracaoDesabilitado</button>'
+      + '<span id="d-calib-d" role="tooltip" class="dica__texto">Desabilitado: preencha o campo de calibracao antes.</span></span>'
       + '<div class="card"><div class="campo"><label for="calib-cep">CalibracaoCampo</label>'
       + '<span class="dica"><button type="button" class="dica__gatilho" aria-label="Ajuda sobre CalibracaoCampo" aria-describedby="d-calib-c">?</button>'
       + '<span id="d-calib-c" role="tooltip" class="dica__texto">Oito numeros, sem o hifen.</span></span>'
@@ -121,19 +124,20 @@ const { navegador, abrir, medirRota } = percurso;
   await contexto.close();
   const tem = (s) => achados.some((a) => a.includes(s));
   const ok = tem('CalibracaoSemDica') && !tem('CalibracaoComDica') && tem('CalibracaoTitulo') && !tem('CalibracaoCampo')
-    && tem('CalibracaoSemMarca') && !tem('CalibracaoComMarca')
+    && tem('CalibracaoSemMarca') && tem('CalibracaoComMarca') && !tem('CalibracaoDesabilitado')
     && tem('CalibracaoDentro') && tem('CalibracaoFora') && !tem('CalibracaoExcecao');
   if (!ok) {
     console.log(`NAO VERIFICOU: calibracao falhou (sem dica acusado=${tem('CalibracaoSemDica')}, com dica poupado=${!tem('CalibracaoComDica')}, `
-      + `titulo que repete avisado=${tem('CalibracaoTitulo')}, campo em painel poupado=${!tem('CalibracaoCampo')}, `
-      + `botao sem "?" acusado=${tem('CalibracaoSemMarca')}, botao com "?" poupado=${!tem('CalibracaoComMarca')}, `
+      + `"?" em titulo acusado=${tem('CalibracaoTitulo')}, campo em painel poupado=${!tem('CalibracaoCampo')}, `
+      + `botao com texto e dica acusado=${tem('CalibracaoSemMarca')}, botao com marca "?" acusado=${tem('CalibracaoComMarca')}, `
+      + `desabilitado com dica poupado=${!tem('CalibracaoDesabilitado')}, `
       + `dica dentro do controle acusada=${tem('CalibracaoDentro')}, dica fora da .dica acusada=${tem('CalibracaoFora')}, `
       + `fora da .dica com excecao poupada=${!tem('CalibracaoExcecao')})`);
     process.exit(2);
   }
-  console.log('calibracao: icone sem dica acusado e com dica aceito; dica de titulo que repete o texto abaixo avisada e dica de '
-    + 'campo em painel "card" aceita; botao com dica sem "?" acusado e com a marca "?" aceito; dica dentro do controle e '
-    + 'texto fora da .dica acusados, o mesmo com excecao registrada aceito');
+  console.log('calibracao: icone sem dica acusado e com dica aceito; "?" em titulo acusado e "?" de campo em painel "card" '
+    + 'aceito; botao com texto e dica acusado (com e sem marca) e o mesmo desabilitado com o motivo aceito; dica dentro '
+    + 'do controle e texto fora da .dica acusados, o mesmo com excecao registrada aceito');
 }
 
 // Calibracao do universo ampliado: dentro da aba OCULTA "vlan" da calculadora, o botao so com icone sem dica tem de

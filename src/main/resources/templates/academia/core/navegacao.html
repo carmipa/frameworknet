@@ -19,8 +19,9 @@
             <span class="acad-aba-estado" data-acad-aba-estado></span>
         </a>
         {#else}
-        {! Nível anunciado e ainda sem lições não tem página: sem link, para ninguém cair num 404. !}
-        <span class="aed-mode-btn acad-aba estado-em-breve" aria-disabled="true" title="O nível {n.titulo} ainda não tem lições">
+        {! Nível anunciado e ainda sem lições não tem página: sem link, para ninguém cair num 404. Sem dica: o
+           "em breve" à vista já diz o estado (regra de dicas de 04/11: menu e abas sem dica). !}
+        <span class="aed-mode-btn acad-aba estado-em-breve" aria-disabled="true">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">{n.icone}</span>
             <span>{n.titulo}</span>
             <span class="acad-aba-estado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">schedule</span><span>em breve</span></span>

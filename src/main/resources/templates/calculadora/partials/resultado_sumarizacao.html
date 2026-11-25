@@ -1,6 +1,6 @@
 <div class="calc-resultado">
     <div class="calc-resumo-head">
-        <h3 class="h5 mb-1" title="Menor prefixo único que cobre todas as redes informadas, pronto para anunciar no lugar delas">
+        <h3 class="h5 mb-1">
             <span class="material-symbols-outlined text-info" aria-hidden="true" translate="no">merge</span>
             Rota resumo: {resultado.resumo}/{resultado.prefixoResumo}
         </h3>
@@ -8,6 +8,7 @@
             {#if resultado.exata}Agregação exata{#else}Cobre espaço extra{/if}
         </span>
     </div>
+    <p class="small text-secondary mb-2 aed-explicacao">Menor prefixo único que cobre todas as redes informadas, pronto para anunciar no lugar delas.</p>
 
     <div class="calc-kpis">
         <div class="calc-kpi calc-kpi-destaque">
@@ -74,7 +75,7 @@
         </table>
     </div>
 
-    <h4 class="h6 calc-secao-titulo mt-4" title="Comandos Cisco para usar o resumo em OSPF, EIGRP, rota estática e ACL no lugar das redes individuais">
+    <h4 class="h6 calc-secao-titulo mt-4">
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">terminal</span>
         Como anunciar
         <button type="button" class="aed-btn aed-btn-neutral btn-sm calc-copiar" data-alvo="cliResumo"

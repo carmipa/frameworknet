@@ -3,24 +3,25 @@
  *
  * PROPÓSITO DE NEGÓCIO: o site tem centenas de dicas escritas como title="…" nos templates, nos JSON de
  * conteúdo e no JS que monta tela. Este arquivo converte cada title na marcação do componente compartilhado
- * (web/css/dica.css + web/js/dica.js, copiados sem edição) e deixa um "?" à vista em toda dica, para a pessoa
- * saber que ela existe: a marca "?" ao lado do botão, link ou aba com texto (fora do Tab, porque o foco do
- * próprio controle já abre a dica), e o gatilho "?" (um botão) junto do campo, do título, da coluna e do texto que
- * não recebe foco. O comportamento (foco, mouse, toque, Esc, posição) fica todo com o dica.js.
+ * (web/css/dica.css + web/js/dica.js, copiados sem edição), e só onde a dica é necessária: desde 25/11/2026 (regra
+ * de 04/11) botão, link, aba, item de menu e título com texto não levam dica nem "?" (o texto já diz, e o "?" ao
+ * lado de cada um sujava a tela); o gatilho "?" (um botão) continua junto do campo, da coluna e do texto que não
+ * recebe foco. O comportamento (foco, mouse, toque, Esc, posição) fica todo com o dica.js.
  *
  * INVARIANTES DO DOMÍNIO:
  *  - a .dica ENVOLVE o controle; o texto da dica nunca fica dentro do botão, do link ou do campo (entraria no nome
  *    que o leitor de tela lê) e nunca fica fora de uma .dica;
- *  - toda dica tem um "?" à vista, menos a do controle só com ícone (lá a dica é o próprio nome) e a dos itens de um
- *    grupo marcado com data-dica-grupo, que ganha UM "?" para o grupo antes dele (o contêiner leva
- *    data-dica-excecao com o motivo); item dentro de um contêiner com data-dica-excecao sem grupo segue a exceção
- *    registrada naquele contêiner (o "?" fica no título dele);
+ *  - controle com texto: habilitado, sem dica e sem "?"; desabilitado, a dica do motivo (o texto que veio no
+ *    title, guardado em data-dica-desab), sem "?"; título (h1-h6, legend, caption): sem dica;
+ *  - nenhuma marca "?" ao lado de controle; o "?" fica no campo, na coluna e no texto que não recebe foco, e um só
+ *    para os itens de um grupo marcado com data-dica-grupo (o contêiner leva data-dica-excecao com o motivo); item
+ *    dentro de um contêiner com data-dica-excecao sem grupo segue a exceção registrada naquele contêiner;
  *  - o rótulo visível continua sendo o nome acessível: a dica entra como DESCRIÇÃO; botão só com ícone, cujo único
  *    nome era o title, ganha aria-label com o mesmo texto antes do title sair;
  *  - dica igual ao rótulo não é dica: vira só o nome, sem balão repetindo o que já está escrito;
- *  - menu suspenso do Bootstrap acha o menu pelo irmão do botão: ali a .dica (marca + texto) entra logo depois do
- *    botão, sem envolvê-lo; nos demais controles, o envoltório mantém o desenho (bloco quando o controle ocupava a
- *    linha, em linha quando não);
+ *  - menu suspenso do Bootstrap acha o menu pelo irmão do botão: ali a .dica entra logo depois do botão, sem
+ *    envolvê-lo; nos demais controles, o envoltório mantém o desenho (bloco quando o controle ocupava a linha, em
+ *    linha quando não);
  *  - o title sai depois da conversão (sem balão nativo duplicado), e o texto fica em data-dica-texto para o
  *    balão ser atualizado se o JS da página regravar o title;
  *  - texto copiado pela página (botões "Copiar") não leva o texto das dicas: use FieldTooltips.textoLimpo.
@@ -39,6 +40,11 @@
     const FOCAVEL = "a[href], button, summary, " + CAMPO
         + ", [tabindex]:not([tabindex='-1']), [role=button], [role=tab], [role=menuitem], [role=switch], [role=radio]";
     const SO_GATILHO = "th, td, label, legend, caption, h1, h2, h3, h4, h5, h6, dt, dd, li";
+    // Regra de 04/11/2026: botão, link, aba, item de menu e título com texto não levam dica nem "?" (o texto já diz;
+    // a explicação útil vai para a tela). Controle aqui é controle de verdade, não um bloco que só ganhou tabindex.
+    const CONTROLE = "a[href], button, summary, [role=button], [role=tab], [role=menuitem], [role=switch], "
+        + "[role=radio], [role=link], [role=checkbox]";
+    const TITULO = "h1, h2, h3, h4, h5, h6, legend, caption";
     const IRMAO = "[data-bs-toggle=dropdown], .dropdown-toggle";
     const SVG_AJUDA = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" '
         + 'fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 '
@@ -302,6 +308,93 @@
         return gatilho ? document.getElementById(gatilho.getAttribute("aria-describedby") || "") : null;
     }
 
+    /** Controle desabilitado: atributo nativo, aria-disabled ou a classe disabled do Bootstrap. */
+    function desabilitado(el) {
+        return el.getAttribute("aria-disabled") === "true" || el.disabled === true
+            || !!(el.classList && el.classList.contains("disabled"));
+    }
+
+    function semDescricao(el, id) {
+        const resto = (el.getAttribute("aria-describedby") || "").split(/\s+/).filter((i) => i && i !== id);
+        if (resto.length) {
+            el.setAttribute("aria-describedby", resto.join(" "));
+        } else {
+            el.removeAttribute("aria-describedby");
+        }
+    }
+
+    function fecharBootstrap(el) {
+        if (w.bootstrap && w.bootstrap.Tooltip && w.bootstrap.Tooltip.getInstance(el)) {
+            w.bootstrap.Tooltip.getInstance(el).dispose();
+        }
+    }
+
+    /** Muda o DOM em volta do controle sem tirar o foco do teclado dele (a .dica nova envolve o próprio controle). */
+    function mantendoFoco(el, mudar) {
+        const tinhaFoco = document.activeElement === el;
+        mudar();
+        if (tinhaFoco && document.activeElement !== el) {
+            el.focus({ preventScroll: true });
+        }
+    }
+
+    /** Desfaz a .dica que este adaptador pôs em volta do controle (ou ao lado dele, no menu suspenso). */
+    function desembrulhar(el) {
+        const pai = el.parentElement;
+        if (pai && pai.matches(".dica[data-dica-adaptador]") && pai.firstElementChild === el) {
+            const balao = pai.querySelector(":scope > .dica__texto");
+            mantendoFoco(el, () => {
+                pai.parentNode.insertBefore(el, pai);
+                pai.remove();
+            });
+            if (balao) {
+                semDescricao(el, balao.id);
+            }
+            return;
+        }
+        const irmao = el.nextElementSibling;
+        if (el.hasAttribute("data-dica-irmao") && irmao && irmao.matches(".dica-irmao")) {
+            const balao = irmao.querySelector(".dica__texto");
+            irmao.remove();
+            el.removeAttribute("data-dica-irmao");
+            if (balao) {
+                semDescricao(el, balao.id);
+            }
+        }
+    }
+
+    /**
+     * Botão, link, aba ou item de menu com texto visível.
+     *
+     * PROPÓSITO DE NEGÓCIO: o texto do controle já diz o que ele faz; a dica e o "?" ao lado só repetiam e sujavam a
+     *   tela (25/11/2026, as abas da Análise). Desabilitado, a pessoa precisa saber POR QUE ele não anda.
+     * INVARIANTES DO DOMÍNIO: habilitado, sem dica, sem "?" e sem envoltório (o layout fica como o do item sem dica);
+     *   desabilitado, a dica do motivo sem "?", envolvendo o controle (ao lado dele no menu suspenso), sem tirar o
+     *   foco do teclado; o texto que veio no title fica em data-dica-desab e volta se a página desabilitar o controle
+     *   depois (o anterior e o próximo do laboratório trocam de estado a cada etapa); o nome acessível é o texto visível.
+     * COMPORTAMENTO EM CASO DE FALHA: desabilitado sem texto guardado fica sem dica (a varredura de dicas acusa).
+     */
+    function controleComTexto(el, texto) {
+        if (texto) {
+            fecharBootstrap(el);
+            tirarTitle(el);
+            el.setAttribute("data-dica-desab", texto);
+        }
+        const motivo = el.getAttribute("data-dica-desab") || "";
+        if (!desabilitado(el) || !motivo) {
+            desembrulhar(el);
+            return;
+        }
+        const balao = balaoExistente(el);
+        if (balao) {
+            balao.textContent = motivo;
+        } else if (el.matches(IRMAO)) {
+            aoLado(el, motivo, false);
+        } else {
+            mantendoFoco(el, () => embrulhar(el, motivo, false));
+        }
+    }
+
     /** UM "?" antes de cada grupo marcado com data-dica-grupo (bits, campos de uma saída, opções, filtros, idiomas). */
     function gatilhoDoGrupo(grupo) {
         const texto = limpo(grupo.getAttribute("data-dica-grupo"));
@@ -364,9 +457,17 @@
             tirarTitle(el);
             return;
         }
-        if (w.bootstrap && w.bootstrap.Tooltip && w.bootstrap.Tooltip.getInstance(el)) {
-            w.bootstrap.Tooltip.getInstance(el).dispose();
+        if (visivel && el.matches(CONTROLE) && !el.matches(CAMPO)) {
+            controleComTexto(el, texto);
+            return;
         }
+        if (el.matches(TITULO)) {
+            // Título não leva dica: o que ela dizia de útil vai em texto logo abaixo dele, no template.
+            fecharBootstrap(el);
+            tirarTitle(el);
+            return;
+        }
+        fecharBootstrap(el);
         tirarTitle(el);
         el.setAttribute("data-dica-texto", texto);
         // Item de grupo (um "?" para todos) ou de contêiner com exceção registrada (o "?" fica no título dele): a dica
@@ -398,6 +499,18 @@
         embrulhar(el, texto, !!visivel);
     }
 
+    /**
+     * Converte as dicas de um trecho da página: o documento inteiro, ou o que a página acabou de pôr nela.
+     *
+     * PROPÓSITO DE NEGÓCIO: toda dica escrita como title vira a dica acessível do kit (teclado, toque, leitor de
+     *   tela); e o controle com texto que a página desabilitou enquanto este adaptador ainda não vigiava (o Remover
+     *   da Resolução de Problemas, desabilitado pelo script da página no carregamento) mostra o motivo mesmo assim.
+     * INVARIANTES DO DOMÍNIO: chamar de novo no mesmo trecho não duplica nada (cada conversão confere o que já
+     *   existe); o "?" de cada grupo entra antes das dicas dos itens dele; o controle que guarda o motivo em
+     *   data-dica-desab fica com a dica do motivo, sem "?", enquanto está desabilitado, e sem dica quando habilitado.
+     * COMPORTAMENTO EM CASO DE FALHA: raiz sem querySelectorAll vale o documento inteiro; elemento sem texto de dica
+     *   fica como está.
+     */
     function init(raiz) {
         const escopo = raiz && raiz.querySelectorAll ? raiz : document;
         const grupos = [];
@@ -413,6 +526,14 @@
         }
         escopo.querySelectorAll(COM_DICA).forEach((el) => alvos.push(el));
         alvos.forEach(converter);
+        // Controle que mudou de estado sem ninguém vigiar (antes do vigiar() começar, ou fora do documento, num nó
+        // ainda solto): a dica do motivo aparece ou some conforme o estado de agora.
+        const comMotivo = [];
+        if (escopo.nodeType === 1 && escopo.matches("[data-dica-desab]")) {
+            comMotivo.push(escopo);
+        }
+        escopo.querySelectorAll("[data-dica-desab]").forEach((el) => comMotivo.push(el));
+        comMotivo.forEach((el) => controleComTexto(el, ""));
     }
 
     function vigiar() {
@@ -422,8 +543,17 @@
         new MutationObserver((mudancas) => {
             for (const m of mudancas) {
                 if (m.type === "attributes") {
-                    if (m.target.nodeType === 1 && m.target.hasAttribute("title")) {
-                        converter(m.target);
+                    const alvo = m.target;
+                    if (alvo.nodeType !== 1) {
+                        continue;
+                    }
+                    if (m.attributeName === "title") {
+                        if (alvo.hasAttribute("title")) {
+                            converter(alvo);
+                        }
+                    } else if (alvo.hasAttribute("data-dica-desab")) {
+                        // A página habilitou ou desabilitou um controle com texto: a dica do motivo aparece ou some.
+                        controleComTexto(alvo, "");
                     }
                     continue;
                 }
@@ -433,7 +563,9 @@
                     }
                 });
             }
-        }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["title"] });
+        }).observe(document.body, {
+            childList: true, subtree: true, attributes: true, attributeFilter: ["title", "aria-disabled", "disabled"]
+        });
     }
 
     /**

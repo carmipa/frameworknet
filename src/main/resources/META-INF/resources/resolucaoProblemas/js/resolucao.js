@@ -127,11 +127,22 @@
     const addButton = document.getElementById("btn-add-location");
     if (!container || !addButton) return;
 
+    /**
+     * Estado do botão Remover de cada localidade do cenário.
+     *
+     * PROPÓSITO DE NEGÓCIO: o cálculo do cenário precisa de ao menos uma localidade; com uma só, o Remover fica
+     *   desativado e diz por quê na dica (regra de dicas de 04/11: controle desabilitado mostra o motivo).
+     * INVARIANTES DO DOMÍNIO: desativado por aria-disabled="true", nunca pelo atributo disabled, que tiraria o botão
+     *   do Tab e do mouse e a dica do motivo nunca abriria; o clique num Remover desativado não faz nada (o ouvinte
+     *   de clique do contêiner confere o aria-disabled e a contagem de linhas); com duas ou mais localidades, todos
+     *   habilitados.
+     * COMPORTAMENTO EM CASO DE FALHA: linha sem o botão Remover é ignorada; as outras recebem o estado normalmente.
+     */
     function updateRemoveButtonsState() {
         const rows = [...container.querySelectorAll(".location-row")];
         rows.forEach((row) => {
             const removeButton = row.querySelector(".btn-remove-location");
-            if (removeButton) removeButton.disabled = rows.length <= 1;
+            if (removeButton) removeButton.setAttribute("aria-disabled", String(rows.length <= 1));
         });
     }
 
@@ -183,7 +194,7 @@
 
     container.addEventListener("click", (event) => {
         const button = event.target.closest(".btn-remove-location");
-        if (!button) return;
+        if (!button || button.getAttribute("aria-disabled") === "true") return;
         const rows = container.querySelectorAll(".location-row");
         if (rows.length <= 1) return;
         button.closest(".location-row").remove();

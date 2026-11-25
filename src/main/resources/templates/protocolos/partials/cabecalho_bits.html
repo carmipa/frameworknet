@@ -4,9 +4,10 @@
     Uso: {#include protocolos/partials/cabecalho_bits.html cabecalho=conteudo.cabecalho /} !}
 {#if cabecalho}
 <section id="cabecalho" class="aprof-secao">
-    <h2 class="aprof-secao-titulo" title="Os campos do cabeçalho na ordem em que vão no fio; passe o mouse, toque ou use Tab num campo para ver o que ele carrega."><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> {cabecalho.titulo}</h2>
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">memory</span> {cabecalho.titulo}</h2>
     {#if cabecalho.nota}<p class="small text-secondary">{cabecalho.nota}</p>{/if}
-    <div class="aprof-regua" role="list" aria-label="Campos do cabeçalho, na ordem em que vão no fio" data-dica-excecao="campos da régua do cabeçalho: o &quot;?&quot; do título explica como ler; cada campo mantém a sua dica no foco, no mouse e no toque">
+    <p class="small text-secondary aprof-regua-como-ler">Os campos estão na ordem em que vão no fio; passe o mouse, toque ou use Tab num campo para ver o que ele carrega.</p>
+    <div class="aprof-regua" role="list" aria-label="Campos do cabeçalho, na ordem em que vão no fio" data-dica-excecao="campos da régua do cabeçalho: o texto acima dela explica como ler; cada campo mantém a sua dica no foco, no mouse e no toque">
         {#for campo in cabecalho.campos}
         <div class="aprof-regua-campo" role="listitem"
              style="flex-grow: {campo.bits}; {#if campo.cor}--aprof-campo-cor: {campo.cor};{/if}"

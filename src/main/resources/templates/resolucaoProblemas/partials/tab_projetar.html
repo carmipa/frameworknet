@@ -191,7 +191,7 @@
             </div>
             <hr class="border-secondary">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                <h3 class="h6 text-warning mb-0 problem-title" title="As unidades do cenário; cada linha vira uma LAN com tamanho calculado pela quantidade de hosts"><span class="material-symbols-outlined" translate="no" aria-hidden="true">apartment</span><span>Localidades dinâmicas (N cenários)</span></h3>
+                <h3 class="h6 text-warning mb-0 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">apartment</span><span>Localidades dinâmicas (N cenários)</span></h3>
                 <button
                     type="button"
                     class="aed-btn aed-btn-indigo btn-sm"
@@ -199,7 +199,7 @@
                 ><span class="material-symbols-outlined" translate="no" aria-hidden="true">add</span> Adicionar localidade</button>
             </div>
             <div class="small text-secondary mb-2">
-                Dica: mantenha o nome da localidade e informe a quantidade de hosts. Você pode adicionar quantas linhas precisar.
+                As unidades do cenário; cada linha vira uma LAN com tamanho calculado pela quantidade de hosts. Dica: mantenha o nome da localidade e informe a quantidade de hosts. Você pode adicionar quantas linhas precisar.
             </div>
             <div id="locations-container" class="{#if invalidFields.contains('loc_hosts') || invalidFields.contains('loc_name')}border border-danger rounded p-2{/if}">
                 {#for loc in locations}
@@ -513,7 +513,8 @@
     </div>
 
     <div class="problem-box p-3 mb-3">
-        <h2 class="h5 text-info mb-3 problem-title" title="Prefixo que cada LAN precisaria se o número de hosts crescer, e se ainda cabe no bloco atual"><span class="material-symbols-outlined" translate="no" aria-hidden="true">trending_up</span><span>Projeção de crescimento (25%, 50%, 100%)</span></h2>
+        <h2 class="h5 text-info mb-3 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">trending_up</span><span>Projeção de crescimento (25%, 50%, 100%)</span></h2>
+        <p class="small text-secondary mb-3 aed-explicacao">Prefixo que cada LAN precisaria se o número de hosts crescer, e se ainda cabe no bloco atual.</p>
         <div class="table-responsive">
             <table class="table table-dark table-bordered table-sm mb-0">
                 <thead>
@@ -641,7 +642,7 @@
     </div>
 
     <div class="problem-box p-3 mb-3">
-        <h2 class="h5 text-info mb-3 problem-title" title="Ordem recomendada de montagem e a lista de testes para validar o laboratório"><span class="material-symbols-outlined" translate="no" aria-hidden="true">science</span><span>Sequência sugerida no Packet Tracer</span></h2>
+        <h2 class="h5 text-info mb-3 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">science</span><span>Sequência sugerida no Packet Tracer</span></h2>
         <ol class="mb-0">
             {#for step in scenario.packetTracerSteps}
             <li class="mb-1">{step}</li>
@@ -660,7 +661,8 @@
         {#for entry in scenario.routerCommands.entrySet()}
         <div class="col-12 col-md-6 col-xl-4">
             <div class="problem-box p-3 h-100 cli-box">
-                <h3 class="h6 text-warning mb-2 problem-title" title="Comandos do IOS gerados para este roteador, na ordem em que devem ser colados no modo de configuração"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span><span>CLI {entry.key.toUpperCase()}</span></h3>
+                <h3 class="h6 text-warning mb-2 problem-title"><span class="material-symbols-outlined" translate="no" aria-hidden="true">terminal</span><span>CLI {entry.key.toUpperCase()}</span></h3>
+                <p class="small text-secondary mb-2 aed-explicacao">Comandos do IOS gerados para este roteador, na ordem em que devem ser colados no modo de configuração.</p>
                 <div class="mb-2">
                     <span class="section-chip chip-warning"><span class="material-symbols-outlined" translate="no" aria-hidden="true">content_copy</span> Script pronto para copiar</span>
                 </div>

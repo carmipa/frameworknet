@@ -1,4 +1,4 @@
-// dica-rotas.spec.mjs v1.2 (2026-10-24) — componente compartilhado: não editar no projeto; mudança só na origem.
+// dica-rotas.spec.mjs v1.3 (2026-11-04) — componente compartilhado: não editar no projeto; mudança só na origem.
 // Roda a varredura das dicas (falhas reprovam; avisos só são listados) e o axe (WCAG 2.2 AA) em cada rota do projeto.
 // Uso:  BASE_URL=http://localhost:8080 ROTAS=/,/clientes,/pedidos npx playwright test dica-rotas.spec.mjs
 // Exceções: data-dica-excecao="motivo" no elemento, com o motivo registrado.
@@ -17,7 +17,7 @@ for (const rota of ROTAS) {
     const falhas = await page.evaluate(() => varreduraDica());
     const avisos = await page.evaluate(() => avisosDica());
     for (const a of avisos) { test.info().annotations.push({ type: 'aviso de dica', description: `${a.elemento}: ${a.problema}` }); console.log(`[aviso de dica] ${rota} ${a.elemento}: ${a.problema}`); }
-    expect(falhas, 'falhas de dica (dica que falta onde há o que explicar, ou dica de má qualidade)').toEqual([]);
+    expect(falhas, 'falhas de dica (dica obrigatória que falta, "?" ou dica fora do lugar, ou dica de má qualidade)').toEqual([]);
     const r = await page.evaluate(() => axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa'] } }));
     expect(r.violations.map(v => v.id + ': ' + v.nodes.map(n => n.target).join('|'))).toEqual([]);
   });

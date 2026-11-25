@@ -13,17 +13,12 @@
     {! No celular o menu inteiro (grade de rótulos) tem perto de 20rem de altura: ele recolhe atrás
        deste botão. Sai escondido do servidor e só aparece quando o aed-shell.js liga o recolhimento —
        sem JavaScript, o menu fica sempre aberto e nada fica inalcançável. !}
-    <button type="button" class="aed-nav-recolher" aria-expanded="false" aria-controls="aed-nav-itens" hidden
-            title="Mostra ou esconde os itens do menu do site">
+    <button type="button" class="aed-nav-recolher" aria-expanded="false" aria-controls="aed-nav-itens" hidden>
         <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu</span>
         <span>Menu</span>
     </button>
-    {! Um "?" para a barra inteira (25/10/2026): com um por item o menu ia a três linhas e, grudado no topo,
-       cobria 21% da tela ao rolar. Cada item mantém a sua dica no foco, no mouse e no leitor de tela. !}
-    <div class="aed-nav-tabs" id="aed-nav-itens"
-         data-dica-grupo="Cada item abre uma área do site; passe o mouse, toque ou use Tab num item para ver o que há nele."
-         data-dica-grupo-rotulo="o menu principal"
-         data-dica-excecao="itens do menu principal: um &quot;?&quot; para a barra; cada item mantém a dica no foco e no mouse">
+    {! Menu sem dica e sem "?" (25/11/2026): o nome de cada item já diz para onde ele leva. !}
+    <div class="aed-nav-tabs" id="aed-nav-itens">
         <a href="/"
            class="aed-nav-link {#if activeMainMenu == 'home'}is-active{/if}">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">home</span>
@@ -32,8 +27,7 @@
         {! Academia logo depois de Início, da esquerda para a direita: ordem de Paulo (01/10/2026,
             corrigindo a anterior que a punha antes de Início). MenuRotasHttpTest congela a posição. !}
         <a href="/academia"
-           class="aed-nav-link {#if activeMainMenu == 'academia'}is-active{/if}"
-           title="Lições de redes do básico ao avançado, com animação, cálculo ao vivo e exercício corrigido">
+           class="aed-nav-link {#if activeMainMenu == 'academia'}is-active{/if}">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">school</span>
             <span>Academia</span>
         </a>
@@ -43,8 +37,7 @@
         <div class="dropdown aed-nav-drop">
             <button type="button"
                     class="aed-nav-drop-toggle {#if activeMainMenu == 'analise' || activeMainMenu == 'calculadora' || activeMainMenu == 'resolucao'}is-active{/if}"
-                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"
-                    title="Análise didática, calculadora de sub-redes/VLAN e resolução VLSM">
+                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_4</span>
                 <span>IPv4</span>
                 <span class="material-symbols-outlined aed-nav-drop-caret" aria-hidden="true" translate="no">expand_more</span>
@@ -73,8 +66,7 @@
         <div class="dropdown aed-nav-drop">
             <button type="button"
                     class="aed-nav-drop-toggle {#if activeMainMenu == 'ipv6' || activeMainMenu == 'ipv6-analise' || activeMainMenu == 'ipv6-resolucao'}is-active{/if}"
-                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"
-                    title="Análise didática, calculadora de sub-redes e resolução (delegação de prefixo)">
+                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">filter_6</span>
                 <span>IPv6</span>
                 <span class="material-symbols-outlined aed-nav-drop-caret" aria-hidden="true" translate="no">expand_more</span>
@@ -98,8 +90,7 @@
             </div>
         </div>
         <a href="/laboratorios"
-           class="aed-nav-link {#if activeMainMenu == 'laboratorios'}is-active{/if}"
-           title="Laboratórios interativos: acompanhe passo a passo, com animação e explicações, o que acontece numa comunicação de rede">
+           class="aed-nav-link {#if activeMainMenu == 'laboratorios'}is-active{/if}">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">science</span>
             <span>Laboratórios</span>
         </a>
@@ -111,8 +102,7 @@
         <div class="dropdown aed-nav-drop">
             <button type="button"
                     class="aed-nav-drop-toggle {#if activeMainMenu == 'portas' || activeMainMenu == 'protocolos' || activeMainMenu == 'certificados' || activeMainMenu == 'camadas' || activeMainMenu == 'criptografia' || activeMainMenu == 'wifi'}is-active{/if}"
-                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"
-                    title="Portas, protocolos, certificados, camadas, criptografia e Wi-Fi">
+                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">lan</span>
                 <span>Topologia</span>
                 <span class="material-symbols-outlined aed-nav-drop-caret" aria-hidden="true" translate="no">expand_more</span>
@@ -157,8 +147,7 @@
         <div class="dropdown aed-nav-drop">
             <button type="button"
                     class="aed-nav-drop-toggle {#if activeMainMenu == 'localizacao' || activeMainMenu == 'trafego' || activeMainMenu == 'ferramentas' || activeMainMenu == 'diagnostico' || activeMainMenu == 'seguranca'}is-active{/if}"
-                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"
-                    title="Localização, tráfego, ferramentas, diagnóstico e segurança">
+                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                 <span class="material-symbols-outlined" aria-hidden="true" translate="no">network_check</span>
                 <span>Operações</span>
                 <span class="material-symbols-outlined aed-nav-drop-caret" aria-hidden="true" translate="no">expand_more</span>
@@ -192,20 +181,17 @@
             </div>
         </div>
         <a href="/telemetria" rel="nofollow"
-           class="aed-nav-link {#if activeMainMenu == 'telemetria'}is-active{/if}"
-           title="Dashboard de telemetria e console ao vivo">
+           class="aed-nav-link {#if activeMainMenu == 'telemetria'}is-active{/if}">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">monitoring</span>
             <span>Telemetria</span>
         </a>
         <a href="/documentacao"
-           class="aed-nav-link {#if activeMainMenu == 'documentacao'}is-active{/if}"
-           title="Documentação técnica do projeto">
+           class="aed-nav-link {#if activeMainMenu == 'documentacao'}is-active{/if}">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span>
             <span>Documentação</span>
         </a>
         <a href="/sobre"
-           class="aed-nav-link {#if activeMainMenu == 'sobre'}is-active{/if}"
-           title="Sobre o projeto, o autor e as tecnologias usadas">
+           class="aed-nav-link {#if activeMainMenu == 'sobre'}is-active{/if}">
             <span class="material-symbols-outlined" aria-hidden="true" translate="no">badge</span>
             <span>Sobre</span>
         </a>

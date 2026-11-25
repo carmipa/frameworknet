@@ -1,15 +1,18 @@
-/* dica-varredura.js v1.7 (2026-10-25) — componente compartilhado: não editar no projeto; mudança só na origem.
-   Tooltip ONDE HÁ O QUE EXPLICAR (o que o rótulo e o texto visível não dizem), sempre com um "?" à vista.
+/* dica-varredura.js v2.0 (2026-11-04) — componente compartilhado: não editar no projeto; mudança só na origem.
+   Tooltip SÓ ONDE É NECESSÁRIO. "?" à vista só em campo e em sigla, unidade ou métrica; sem "?" em controle só com ícone
+   e em desabilitado; sem dica em botão, link, menu ou aba habilitados com texto, nem em título.
    varreduraDica()  -> FALHAS (reprovam a entrega). Retorna [] quando está tudo certo. Acusa:
      1. controle só com ícone (sem texto visível) sem nome acessível ou sem dica;
      2. controle desabilitado (aria-disabled="true" ou o atributo disabled num botão) sem dica dizendo o motivo;
      3. campo com restrição DECLARADA (pattern, min, max, minlength, step ou type de data/hora/número) sem dica;
      4. qualidade de TODA dica existente: vazia, acima de 160 caracteres, repetindo o rótulo, gatilho "?" sem aria-label;
-     5. dica sem "?" à vista: nem o gatilho (.dica__gatilho) nem a marca (.dica__marca) — a pessoa não sabe que ela existe.
-        Controle só com ícone fica de fora: a dica dele é o nome.
-   avisosDica()     -> AVISOS (não reprovam; são para remover): dica em título que REPETE o texto visível logo abaixo dele,
-                       dica em card CLICÁVEL e dica em texto corrido (o "?" ou o trecho com dica dentro de um parágrafo;
-                       botão e campo não contam).
+     5. dica de campo sem "?" à vista;
+     8. marca "?" (.dica__marca) ao lado de um controle;
+     9. dica em botão, link, menu ou aba habilitados com texto;
+     10. "?" em título, legenda ou resumo, ou dentro de menu, navegação ou abas.
+   avisosDica()     -> AVISOS (não reprovam; são para conferir): dica em card CLICÁVEL, dica em texto corrido (o "?" ou o
+                       trecho com dica dentro de um parágrafo; botão e campo não contam) e "?" fora de campo, que só fica
+                       se explica sigla, unidade ou métrica (a máquina não sabe se o termo é autoexplicativo).
    v1.2: o nome acessível conta o <label> associado ao controle (um interruptor role=switch com <label for> era acusado
    como "sem nome"); o aviso de card vale só para card clicável — painel que usa a classe "card" como moldura de
    formulário ou tabela não é card a explicar, e acusava toda dica de campo e de coluna dentro dele.
@@ -28,7 +31,16 @@
         que o leitor de tela lê, e a conferência do "?" errava o nome e a isenção do que está escondido;
      7. texto de dica (role=tooltip) fora de qualquer .dica: nem o "?" nem o texto são conferidos.
    Os dois aparecem em adaptadores que geram a dica a partir do title; o conserto é o adaptador gerar a marcação do kit.
+   v2.0: inverte a conferência do "?": em vez de exigi-lo em toda dica, reprova o que está fora do lugar (itens 8 a 10).
+   A dica em título deixa de ser aviso e passa a reprovar.
    Exceção: data-dica-excecao="motivo" no elemento, com o motivo registrado. */
+const DICA_TITULO = 'h1, h2, h3, h4, h5, h6, [role=heading], legend, summary, caption';
+// "?" de campo: dentro do bloco do campo ou do rótulo, ou o campo aponta para o mesmo texto da dica.
+const dicaDeCampo = (g, t) => !!g.closest('.campo, label') ||
+  (!!t.id && !!document.querySelector(`:is(input, select, textarea)[aria-describedby~="${CSS.escape(t.id)}"]`));
+const tituloDaDica = (g) => g.closest(DICA_TITULO) ||
+  (g.parentElement?.previousElementSibling?.matches(DICA_TITULO) ? g.parentElement.previousElementSibling : null);
+
 function varreduraDica(raiz = document) {
   const falhas = [];
   const visivel = (el) => !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
@@ -89,16 +101,27 @@ function varreduraDica(raiz = document) {
     if (!txt) falhas.push({ elemento: nome(dono), problema: 'tooltip vazio' });
     else if (txt.length > 160) falhas.push({ elemento: nome(dono), problema: `tooltip com ${txt.length} caracteres (máx. 160)` });
     else if (rotulo && txt.toLowerCase() === rotulo.toLowerCase()) falhas.push({ elemento: rotulo.slice(0, 40), problema: 'tooltip repete o rótulo' });
-    const aVista = [...d.querySelectorAll('.dica__gatilho, .dica__marca')].some(visivel);
     const controle = d.querySelector(':scope > [aria-describedby]') || d.querySelector('[aria-describedby]');
-    // Só botão e link podem ser "só com ícone"; um campo de texto não tem texto próprio e nem por isso dispensa o "?".
-    const soIcone = controle && controle.matches(controles) && !textoVisivel(controle);
-    // Controle fora da tela agora (ele ou um ancestral escondido, como um menu recolhido): a marca some junto com ele, e
-    // isso não é falta de "?". Quem mede abre o que está fechado; o que segue fechado não foi avaliado.
+    // Controle fora da tela agora (ele ou um ancestral escondido, como um menu recolhido) não é avaliado.
     if (controle && !naTela(controle)) return;
+    const marca = d.querySelector('.dica__marca');
+    if (marca && visivel(marca)) { falhas.push({ elemento: nome(controle || dono), problema: 'marca "?" ao lado de controle: a tag dica não a põe mais; tire a marca' }); return; }
+    if (controle && controle.matches(controles)) {
+      const desab = controle.getAttribute('aria-disabled') === 'true' || (controle.matches('button') && controle.disabled);
+      if (textoVisivel(controle) && !desab) falhas.push({ elemento: nome(controle), problema: 'dica em controle habilitado com texto: tire a dica ou explique em texto na tela' });
+      return;
+    }
+    if (g) {
+      if (!visivel(g)) return;
+      if (dicaDeCampo(g, t)) return;
+      const titulo = tituloDaDica(g);
+      if (titulo) falhas.push({ elemento: textoVisivel(titulo).slice(0, 40), problema: '"?" em título: explique em texto na tela ou tire a dica' });
+      else if (g.closest('nav, [role=menu], [role=menubar], [role=tablist]')) falhas.push({ elemento: nome(g.closest('nav, [role=menu], [role=menubar], [role=tablist]')), problema: '"?" em menu, navegação ou abas: tire a dica' });
+      return;
+    }
     // Um "?" de fora da .dica só vale se aponta para ESTE texto (aria-describedby com o id dele), não para outra dica.
     const aVistaFora = !!t.id && [...document.querySelectorAll('.dica__gatilho')].some((x) => (x.getAttribute('aria-describedby') || '').split(/\s+/).includes(t.id) && visivel(x));
-    if (!aVista && !soIcone && !aVistaFora) falhas.push({ elemento: nome(controle || dono), problema: 'dica sem "?" à vista: a pessoa não sabe que ela existe' });
+    if (!aVistaFora) falhas.push({ elemento: nome(controle || dono), problema: 'dica de campo sem "?" à vista: a pessoa não sabe que ela existe' });
   });
   // Texto de dica fora de qualquer .dica (ex.: gerado por um adaptador à parte): não dá para conferir o "?" nem o texto.
   raiz.querySelectorAll('[role=tooltip]').forEach((t) => {
@@ -117,31 +140,18 @@ function avisosDica(raiz = document) {
   const clicavel = (card) => card.matches('a[href], [role=link]') || !!card.closest('a[href]') ||
     [...card.querySelectorAll('a[href]')].some((a) => a.classList.contains('stretched-link') ||
       (getComputedStyle(a, '::after').content !== 'none' && getComputedStyle(a, '::after').position === 'absolute'));
-  // Texto visível logo depois do título (até o próximo título, no máximo 3 blocos), sem as dicas.
-  const palavras = (s) => (s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').match(/[a-z0-9]{4,}/g) || []);
-  const repeteOTextoAbaixo = (titulo, d) => {
-    const dica = palavras(d.querySelector('.dica__texto').textContent);
-    if (!dica.length) return false;
-    let texto = '', el = titulo.nextElementSibling, n = 0;
-    while (el && n < 3 && !el.matches('h1, h2, h3, h4, h5, h6, [role=heading]')) {
-      if (!el.matches('.dica')) { const c = el.cloneNode(true); c.querySelectorAll('.dica__texto').forEach((x) => x.remove()); texto += ' ' + c.textContent; n++; }
-      el = el.nextElementSibling;
-    }
-    const abaixo = new Set(palavras(texto));
-    return dica.filter((w) => abaixo.has(w)).length / dica.length >= 0.7;
-  };
   raiz.querySelectorAll('.dica').forEach((d) => {
     if (d.closest('[data-dica-excecao]') || !d.querySelector('.dica__texto')) return;
-    const titulo = d.closest('h1, h2, h3, h4, h5, h6, [role=heading]') ||
-      (d.querySelector(':scope > .dica__gatilho') && d.previousElementSibling?.matches('h1, h2, h3, h4, h5, h6, [role=heading]') ? d.previousElementSibling : null);
+    const g = d.querySelector(':scope > .dica__gatilho');
+    if (g && (tituloDaDica(g) || g.closest('nav, [role=menu], [role=menubar], [role=tablist]'))) return; // já é falha
     const card = d.closest('article, .card, [class*="card"]');
     // Texto corrido: o "?" ou o trecho de texto com dica no meio de um parágrafo. Botão ou campo dentro de <p> é controle, não texto.
     const CTRL = 'button:not(.dica__gatilho), a[href], input, select, textarea, [role=button], [role=link]';
     const controle = d.matches(CTRL) || !!d.querySelector(':scope > :is(' + CTRL + ')');
     const paragrafo = controle ? null : d.closest('p');
-    if (titulo) { if (repeteOTextoAbaixo(titulo, d)) avisos.push({ elemento: semDica(titulo), problema: 'dica em título repete o texto visível logo abaixo' }); }
-    else if (card && clicavel(card)) { const h = card.querySelector('h1, h2, h3, h4, h5, h6'); avisos.push({ elemento: h ? semDica(h) : String(card.className).slice(0, 40), problema: 'dica dentro de card clicável: no toque ela disputa o toque com o card' }); }
+    if (card && clicavel(card)) { const h = card.querySelector('h1, h2, h3, h4, h5, h6'); avisos.push({ elemento: h ? semDica(h) : String(card.className).slice(0, 40), problema: 'dica dentro de card clicável: no toque ela disputa o toque com o card' }); }
     else if (paragrafo) avisos.push({ elemento: semDica(paragrafo), problema: 'dica em texto corrido: o próprio texto é a explicação' });
+    else if (g && !dicaDeCampo(g, d.querySelector('.dica__texto'))) avisos.push({ elemento: semDica(d.parentElement || d), problema: '"?" fora de campo: confira se explica sigla, unidade ou métrica' });
   });
   return avisos;
 }

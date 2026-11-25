@@ -175,9 +175,21 @@
     }
 
     /**
-     * Navegação das páginas de nível e de lição (academia/core/navegacao.html): cada aba de nível
-     * ganha ícone e texto do estado; nível bloqueado (que não seja o aberto agora) perde o link e diz
-     * qual nível concluir; cada sub-aba de lição mostra se foi concluída. Ícone sempre com texto.
+     * Navegação das páginas de nível e de lição (academia/core/navegacao.html).
+     *
+     * PROPÓSITO DE NEGÓCIO: cada aba de nível mostra, com ícone e texto, se o nível está concluído,
+     *   liberado ou bloqueado, e cada sub-aba de lição mostra se foi concluída; a aba de um nível
+     *   bloqueado não abre pelo clique e diz, numa dica sem "?", qual nível concluir antes (regra de
+     *   dicas de 04/11: controle desabilitado mostra o motivo).
+     * INVARIANTES DO DOMÍNIO: a aba do nível aberto agora nunca trava; a aba bloqueada continua link
+     *   (href intacto, na ordem do Tab, lida pelo leitor de tela) com aria-disabled="true", e o clique
+     *   nela não navega (travarNivelBloqueado); o nome lido é o texto visível, e o motivo vai no title,
+     *   que o adaptador de dicas converte na dica do controle desabilitado; ao desbloquear, o
+     *   aria-disabled sai e a dica some; ícone sempre com texto.
+     * COMPORTAMENTO EM CASO DE FALHA: sem a navegação na página ou sem AcademiaProgresso, nada é
+     *   pintado nem travado (as abas continuam links, como vieram do servidor); abrir a aba bloqueada
+     *   por "abrir em nova aba" leva à página do nível, que continua aberta para leitura e mostra o
+     *   próprio aviso de bloqueio (pintarAvisos).
      */
     function pintarNavegacao() {
         var nav = document.querySelector('[data-acad-nav]');
@@ -200,23 +212,11 @@
                 var aqui = link.hasAttribute('aria-current');
                 var req = e.requisito ? porId(atual.niveis, e.requisito) : null;
                 if (e.estado === 'bloqueado' && !aqui) {
-                    if (link.hasAttribute('href')) {
-                        link.setAttribute('data-acad-href', link.getAttribute('href'));
-                        link.removeAttribute('href');
-                    }
                     link.setAttribute('aria-disabled', 'true');
+                    // O adaptador de dicas troca este title pela dica do motivo, sem "?" (controle desabilitado).
                     link.setAttribute('title', (e.titulo || '') + ': bloqueado — conclua ' + (req ? req.titulo : 'o nível anterior') + ' para abrir');
-                    // ACAD-16: sem href o link sai da ordem do Tab, e o motivo morava só no title.
-                    link.setAttribute('tabindex', '0');
-                    link.setAttribute('role', 'link');
-                    link.setAttribute('aria-label', link.getAttribute('title'));
-                } else if (link.hasAttribute('data-acad-href')) {
-                    link.setAttribute('href', link.getAttribute('data-acad-href'));
-                    link.removeAttribute('data-acad-href');
+                } else if (link.getAttribute('aria-disabled') === 'true') {
                     link.removeAttribute('aria-disabled');
-                    link.removeAttribute('tabindex');
-                    link.removeAttribute('role');
-                    link.removeAttribute('aria-label');
                 }
             });
         }
@@ -243,6 +243,28 @@
         pintarNavegacao();
         pintarAvisos();
     }
+
+    /**
+     * Clique na aba de um nível bloqueado.
+     *
+     * PROPÓSITO DE NEGÓCIO: a aba bloqueada continua link, para o Tab e o leitor de tela a alcançarem
+     *   e lerem o motivo; mas a trilha é feita em ordem, e o clique, o Enter e o clique do meio nela
+     *   não abrem o nível.
+     * INVARIANTES DO DOMÍNIO: só a aba de nível com aria-disabled="true" é travada; qualquer outro link
+     *   segue normal; destravar é só tirar o aria-disabled (pintarNavegacao).
+     * COMPORTAMENTO EM CASO DE FALHA: navegador sem Element.closest não trava nada, e o link abre a
+     *   página do nível, que continua aberta para leitura e mostra o próprio aviso de bloqueio.
+     */
+    function travarNivelBloqueado(ev) {
+        var alvo = ev.target && ev.target.closest
+            ? ev.target.closest('[data-acad-nav-nivel][aria-disabled="true"]') : null;
+        if (alvo) {
+            ev.preventDefault();
+        }
+    }
+
+    document.addEventListener('click', travarNivelBloqueado);
+    document.addEventListener('auxclick', travarNivelBloqueado);
 
     raiz.AcademiaNiveis = {
         calcularEstados: calcularEstados,

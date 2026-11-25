@@ -1,4 +1,4 @@
-/* dica.js v1.5 (2026-10-25) — comportamento do tooltip. Componente compartilhado: não editar no projeto; mudança só na origem.
+/* dica.js v1.7 (2026-11-04) — comportamento do tooltip. Componente compartilhado: não editar no projeto; mudança só na origem.
    Sem dependências. Delegação de eventos: vale para conteúdo dinâmico.
    v1.1 (Paulo, 18/10/2026: "o tooltip está ficando muito tempo sobre os locais, cobrindo os locais de digitação"):
    - a dica de um CAMPO nunca cobre o campo: com o foco ou o mouse no campo, ela fica acima dele (ou abaixo, se não
@@ -17,19 +17,30 @@
    marca os dois; a saída do foco e do ponteiro só desmarcava o mais próximo. Agora desmarca todos os que ficaram para trás.
    v1.5 (25/10/2026): a marca "?" ao lado de um controle com texto (.dica__marca) alterna a dica no toque, como o
    gatilho; no mouse o hover já cuida, e no teclado quem abre é o foco do próprio controle. Aberta pela marca, a dica
-   nasce embaixo DELA (não no começo do controle): assim o mouse desce da marca ao texto sem passar pelo vizinho. */
+   nasce embaixo DELA (não no começo do controle): assim o mouse desce da marca ao texto sem passar pelo vizinho.
+   v1.6 (Paulo, 28/10/2026, menu lateral do painel: "os tooltips dos menus estão atrapalhando a leitura e estão saindo
+   fora do ?"): o controle de linha inteira (item de menu, cabeçalho de seção) abria a dica no COMEÇO da linha, por
+   baixo dos itens seguintes e longe do "?". Agora, havendo marca "?" no envoltório, a dica nasce junto da marca
+   também no MOUSE — e não só no toque. Pelo teclado continua embaixo do controle (decisão da v1.5: quem chega pelo Tab
+   lê a partir do controle focado). Sem marca (controle só com ícone, gatilho), nada muda.
+   v1.7 (04/11/2026, medido no celular: tocar no sol/lua deixava "Alterna o site entre o tema claro e o escuro" aberto
+   por cima da página, e o mesmo em item de menu e botão): toque num controle é AÇÃO, não pedido de dica. O navegador
+   deixa o :hover grudado no último elemento tocado e o foco do toque reabria a dica; agora o toque fora do "?" e fora
+   de campo fecha a dica daquele envoltório até o foco ou o ponteiro sair. Só a marca "?", o gatilho e o campo abrem a
+   dica no toque. Teclado e mouse não mudam. */
 (() => {
   const W = '.dica, .campo';
   const CAMPO = 'input:not([type=hidden]), select, textarea';
   const tip = (w) => w.querySelector('.dica__texto');
   const ancoras = new WeakMap();   // envoltório -> o campo em que a dica está ancorada (quando há um)
   const marcas = new WeakMap();    // envoltório -> a marca "?" que abriu a dica (quando foi ela)
+  let tipoPonteiro = 'mouse';      // o último ponteiro que apertou (mouse, touch, pen)
 
   function posicionar(w) {
     const t = tip(w); if (!t) return;
     const campo = ancoras.get(w);
     const noCampo = campo && campo.isConnected && w.contains(campo);
-    const marca = !noCampo && marcas.get(w);
+    const marca = !noCampo && (marcas.get(w) || (w.matches(':hover') ? w.querySelector(':scope > .dica__marca') : null));
     const ancora = (noCampo ? campo : (marca && marca.isConnected && w.contains(marca) ? marca : (t.closest('.dica') || w))).getBoundingClientRect();
     const m = 8, g = 6, vw = document.documentElement.clientWidth, vh = innerHeight;
     t.style.left = '0px'; t.style.top = '0px';
@@ -69,10 +80,15 @@
     if (daDica && e.target.closest?.(CAMPO)) return;
     abrir(w, e.target);
   });
-  document.addEventListener('focusin',     (e) => { const w = e.target.closest?.(W); if (w) abrir(w, e.target); });
+  document.addEventListener('focusin',     (e) => {
+    const w = e.target.closest?.(W); if (!w) return;
+    // Foco que veio de um toque num controle (não campo): a dica continua fechada (ver o pointerdown abaixo).
+    if (tipoPonteiro === 'touch' && w.hasAttribute('data-fechada') && !e.target.closest?.(CAMPO)) return;
+    abrir(w, e.target);
+  });
   // O "?" de um campo mora em dois envoltórios (.dica dentro do .campo): sair dele desmarca todos os que ficaram para trás.
   const envoltorios = (el) => { const l = []; for (let w = el?.closest?.(W); w; w = w.parentElement?.closest(W)) l.push(w); return l; };
-  document.addEventListener('pointerout',  (e) => { envoltorios(e.target).forEach((w) => { if (!w.contains(e.relatedTarget)) w.removeAttribute('data-fechada'); }); });
+  document.addEventListener('pointerout',  (e) => { if (e.pointerType === 'touch') return; envoltorios(e.target).forEach((w) => { if (!w.contains(e.relatedTarget)) w.removeAttribute('data-fechada'); }); });
   document.addEventListener('focusout',    (e) => { envoltorios(e.target).forEach((w) => { if (!w.contains(e.relatedTarget)) { w.removeAttribute('data-fechada'); w.removeAttribute('data-aberta'); } }); });
 
   // Digitar (ou escolher uma opção) dispensa a dica do campo: ela já foi lida no foco, e a pessoa precisa ver o que escreve.
@@ -92,10 +108,13 @@
   addEventListener('scroll', reposicionar, true); addEventListener('resize', reposicionar);
 
   // Toque/caneta e teclado no gatilho "?" (e toque na marca "?"): alterna. Mouse não alterna (o hover já cuida).
-  let tipoPonteiro = 'mouse';
   document.addEventListener('pointerdown', (e) => {
     tipoPonteiro = e.pointerType || 'mouse';
     document.querySelectorAll('[data-aberta]').forEach((w) => { if (!w.contains(e.target)) fechar(w); });
+    // Toque num controle é ação: o :hover gruda no tocado e a dica ficava aberta por cima do vizinho.
+    if (tipoPonteiro === 'touch' && !e.target.closest?.('.dica__gatilho, .dica__marca, ' + CAMPO)) {
+      envoltorios(e.target).forEach((w) => w.setAttribute('data-fechada', ''));
+    }
   }, true);
   document.addEventListener('click', (e) => {
     const g = e.target.closest?.('.dica__gatilho, .dica__marca'); if (!g) return;

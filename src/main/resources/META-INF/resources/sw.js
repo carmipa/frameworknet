@@ -34,8 +34,9 @@
    v6: a página offline passa a sair do template das páginas de erro (mesmo visual de todas elas);
        a casca leva o CSS, a fonte, o script e as bandeiras que ela usa, e o offline.css sai.
    v9: as fontes de texto passam a ser do próprio site (C21): a casca leva o fontes.css e o subconjunto
-       latin de cada família, o bastante para a página offline em português. */
-const VERSAO = 'framework-net-v9';
+       latin de cada família, o bastante para a página offline em português.
+   v10: a página offline sai sem o "?" do seletor de idioma (regra de dicas de 04/11). */
+const VERSAO = 'framework-net-v10';
 const CACHE_ESTATICO = `${VERSAO}-estatico`;
 const PAGINA_OFFLINE = '/offline.html';
 
