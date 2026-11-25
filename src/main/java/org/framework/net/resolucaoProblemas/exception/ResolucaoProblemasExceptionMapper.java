@@ -22,13 +22,24 @@ public class ResolucaoProblemasExceptionMapper implements ExceptionMapper<Resolu
     @Context
     ContainerRequestContext requestContext;
 
+    /**
+     * Converte a exceção de domínio do Resolução de Problemas na resposta JSON e registra conforme o status.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> entrada inválida volta como 400 com o que corrigir; qualquer outra falha do
+     * módulo volta como 500.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> o status é decidido antes do registro: 4xx vira uma linha WARN sem pilha
+     * (erro de quem enviou); 5xx continua ERROR com a pilha saneada (falha nossa precisa da pilha).</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; o corpo é sempre JSON com {@code erro}.</p>
+     */
     @Override
     public Response toResponse(ResolucaoProblemasException exception) {
-        TelemetriaExceptionSupport.registrar(
-                telemetriaLogger, "resolucaoProblemas", "domain_exception", requestContext, exception);
         int status = exception instanceof EntradaInvalidaException
                 ? Response.Status.BAD_REQUEST.getStatusCode()
                 : Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+        TelemetriaExceptionSupport.registrar(
+                telemetriaLogger, "resolucaoProblemas", "domain_exception", requestContext, exception, status);
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("erro", exception.getMessage());
         return Response.status(status)

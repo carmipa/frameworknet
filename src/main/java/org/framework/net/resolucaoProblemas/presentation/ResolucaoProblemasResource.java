@@ -258,12 +258,12 @@ public class ResolucaoProblemasResource {
             if (isExportAction(action)) {
                 erro = "Não foi possível exportar: " + erro;
             }
-            telemetriaLogger.logEvent("warn", "resolucaoProblemas", "problem_solve",
-                    camposDaFalha("invalid_input", ex));
+            telemetriaLogger.logEvent("warn", "resolucaoProblemas", "problem_solve", "invalid_input",
+                    camposDaFalha(ex));
         } catch (ResolucaoProblemasException ex) {
             erro = ex.getMessage();
-            telemetriaLogger.logEvent("warn", "resolucaoProblemas", "problem_solve",
-                    camposDaFalha("error", ex));
+            telemetriaLogger.logEvent("warn", "resolucaoProblemas", "problem_solve", "error",
+                    camposDaFalha(ex));
         } catch (Exception ex) {
             erro = "Erro interno ao processar a resolução de problemas. Tente novamente.";
             telemetriaLogger.logException("resolucaoProblemas", "problem_solve", null, ex);
@@ -310,13 +310,13 @@ public class ResolucaoProblemasResource {
         } catch (org.framework.net.resolucaoProblemas.exception.PacoteTurmaOcupadoException ex) {
             // Servidor ocupado não é erro da colagem: a colagem não é marcada e a telemetria separa o caso.
             erro = ex.getMessage();
-            telemetriaLogger.logEvent("warn", "resolucaoProblemas", "problem_export_class_zip",
-                    Map.of("status", "sem_vaga"));
+            telemetriaLogger.logEvent("warn", "resolucaoProblemas", "problem_export_class_zip", "sem_vaga",
+                    Map.of());
         } catch (EntradaInvalidaException ex) {
             erro = ex.getMessage();
             invalidFields.add("class_roster_paste");
-            telemetriaLogger.logEvent("warn", "resolucaoProblemas", "problem_export_class_zip",
-                    camposDaFalha("invalid_input", ex));
+            telemetriaLogger.logEvent("warn", "resolucaoProblemas", "problem_export_class_zip", "invalid_input",
+                    camposDaFalha(ex));
         } catch (Exception ex) {
             erro = "Erro ao gerar ZIP da turma. Verifique a colagem e os parâmetros WAN/roteamento.";
             invalidFields.add("class_roster_paste");
@@ -689,11 +689,13 @@ public class ResolucaoProblemasResource {
      * código); o texto da mensagem, que pode ecoar a colagem (nome de aluno, endereço), vai em {@code mensagem}, que
      * não está no esquema publicável e no log sai pela regra única de neutralização.</p>
      *
+     * <p>O status vai no próprio evento (sobrecarga com {@code status}): como campo, a linha de log o omitia e o
+     * dataset publicava a falha com o status padrão {@code ok}.</p>
+     *
      * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; mensagem nula simplesmente não entra no mapa.</p>
      */
-    static Map<String, Object> camposDaFalha(String status, Exception ex) {
+    static Map<String, Object> camposDaFalha(Exception ex) {
         Map<String, Object> campos = new java.util.LinkedHashMap<>();
-        campos.put("status", status);
         campos.put("erro", ex.getClass().getSimpleName());
         if (ex.getMessage() != null) {
             campos.put("mensagem", ex.getMessage());

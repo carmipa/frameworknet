@@ -26,10 +26,23 @@ public class SegurancaExceptionMapper implements ExceptionMapper<SegurancaExcept
     @Context
     ContainerRequestContext requestContext;
 
+    /**
+     * Converte a exceção de domínio do módulo na resposta 400 e registra a recusa.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> a pessoa digitou algo que o módulo não aceita; ela recebe a mensagem que
+     * explica o que corrigir.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> a resposta é sempre 400, com a mensagem da exceção; o registro é uma linha
+     * WARN com o nome da classe e a mensagem saneada, sem pilha — recusa de entrada não é falha do servidor, e a
+     * pilha a cada pedido girava o log e apagava a evidência de incidente real.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> não lança; pedido do htmx recebe o fragmento de erro, os demais o
+     * texto puro.</p>
+     */
     @Override
     public Response toResponse(SegurancaException exception) {
-        TelemetriaExceptionSupport.registrar(
-                telemetriaLogger, "seguranca", "domain_exception", requestContext, exception);
+        TelemetriaExceptionSupport.registrar(telemetriaLogger, "seguranca", "domain_exception", requestContext,
+                exception, Response.Status.BAD_REQUEST.getStatusCode());
 
         if (HtmxRespostas.veioDoHtmx(requestContext)) {
             return HtmxRespostas.erro(erroFragmento, exception.getMessage());

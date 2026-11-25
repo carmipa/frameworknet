@@ -167,9 +167,9 @@ class DatasetEsquemaFechadoTest {
         TelemetriaEvent evento = store.snapshotEventos().stream()
                 .filter(e -> "problem_export_class_zip".equals(e.evento()))
                 .filter(e -> e.timestamp() != null && !e.timestamp().isBefore(antes))
-                .filter(e -> e.fields() != null && "invalid_input".equals(e.fields().get("status")))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("o evento da falha da colagem não foi gravado"));
+        assertEquals("invalid_input", evento.status(), "a falha da colagem saiu com outro status: " + evento.status());
         assertEquals("EntradaInvalidaException", evento.fields().get("erro"),
                 "erro deve ser o nome da classe, nunca o texto: " + evento.fields());
         assertTrue(String.valueOf(evento.fields().get("mensagem")).contains(nome),
@@ -181,5 +181,6 @@ class DatasetEsquemaFechadoTest {
         assertNotNull(linha, "o evento precisa estar no pacote para o teste valer");
         assertFalse(linha.contains(nome), "nome do aluno publicado: " + linha);
         assertTrue(linha.contains("EntradaInvalidaException"), linha);
+        assertTrue(linha.contains("invalid_input"), "a falha saiu publicada com outro status: " + linha);
     }
 }
