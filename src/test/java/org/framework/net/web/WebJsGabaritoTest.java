@@ -19,9 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Gabarito, em JavaScript, dos scripts globais do site (hoje: os atalhos de teclado de {@code web/js/atalhos.js}).
+ * Gabarito, em JavaScript, dos scripts globais do site (hoje: os atalhos de teclado de {@code web/js/atalhos.js}
+ * e o link direto para uma aba, {@code ?aba=}, de {@code web/js/aed-tabs.js}).
  *
- * <p><b>PROPÓSITO DE NEGÓCIO:</b> a decisão de cada tecla é uma função pura no navegador; o gabarito escrito à mão
+ * <p><b>PROPÓSITO DE NEGÓCIO:</b> a decisão de cada tecla e a escolha da aba pela URL são funções puras no
+ * navegador; o gabarito escrito à mão
  * (A3) mora em {@code src/test/js/web} e roda com {@code node --test}, nativo e sem dependência — como o da
  * Academia.</p>
  *
@@ -35,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WebJsGabaritoTest {
 
     private static final Path TESTES_JS = Path.of("src", "test", "js", "web");
-    private static final int PISO_DE_TESTES = 13;
+    private static final int PISO_DE_TESTES = 19;
     private static final Pattern PASS = Pattern.compile("(?m)^# pass (\\d+)");
     private static final Pattern FAIL = Pattern.compile("(?m)^# fail (\\d+)");
 

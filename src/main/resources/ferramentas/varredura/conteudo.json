@@ -209,7 +209,7 @@
       "sintoma": "Quero ver o mecanismo do SYN scan sem varrer nenhuma rede real",
       "causa_provavel": "Ainda não tem um laboratório autorizado montado, ou só quer entender a lógica antes.",
       "leitura": "A rota /diagnostico do próprio site traz um SYN scan simulado: ele encena os três casos (aberta, fechada, filtrada) de forma didática, sem enviar um único pacote a terceiros.",
-      "comando": "# acesse a rota didatica /diagnostico no navegador"
+      "comando": "# acesse a rota didatica /diagnostico?aba=scan no navegador"
     }
   ],
   "ataques": [

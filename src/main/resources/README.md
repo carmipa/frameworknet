@@ -90,10 +90,10 @@ O framework cobre um fluxo didático completo para aula, laboratório e revisão
 | Academia | `/academia/fundamentos` (+ `/academia/fundamentos/{binario,hexadecimal,camadas}`) | GET | Nível Fundamentos e as três lições; contas no navegador, progresso só no navegador (`localStorage`) |
 | Academia | `/academia/ipv4` (+ `/academia/ipv4/{mascara,subredes}`) | GET | Nível IPv4: régua de 32 bits, máscara, rede, broadcast e hosts (com /31 e /32), divisão em sub-redes; contas próprias no navegador |
 | Academia (API) | `/academia/api/eventos` | POST | Resumo da visita (faixas de tempo e interações) e erro de JavaScript da lição, esquema fechado, corpo ≤ 8 KB; erro de JS fica fora do dataset público |
-| Localização | `/localizacao` | GET | Localização por IP e por CEP no mapa |
+| Localização | `/localizacao` | GET | Localização por IP e por CEP no mapa; abre direto numa aba com `?aba=geoip\|privacidade\|cep` |
 | Localização (API) | `/localizacao/api/gps`, `/localizacao/api/inspecao` | GET | JSON: endereço reverso das coordenadas do GPS (Nominatim, com cache e freio de 1 req/s) / cadeia de cabeçalhos e IP visto pelo servidor (teste de privacidade) |
 | Localização (API) | `/localizacao/api/ip`, `/localizacao/api/cep` | GET | JSON: geolocalização por IP / endereço por CEP (ViaCEP + OSM) |
-| Tráfego | `/trafego` | GET | Sub-abas: painel ao vivo (simulação), decodificador (hex), encapsulamento, handshake TCP, **anomalias TCP** (SYN flood, sequestro de sequência), **construtor de pacotes** e **lab DNS/ICMP** |
+| Tráfego | `/trafego` | GET | Sub-abas (abrem direto com `?aba=aovivo\|decodificador\|encapsulamento\|handshake\|anomalias\|construtor\|lab`): painel ao vivo (simulação), decodificador (hex), encapsulamento, handshake TCP, **anomalias TCP** (SYN flood, sequestro de sequência), **construtor de pacotes** e **lab DNS/ICMP** |
 | Tráfego (API) | `/trafego/api/decodificar` | POST | JSON: camadas Ethernet/IP/TCP/UDP/ICMP decodificadas |
 | Tráfego (API) | `/trafego/api/aovivo` | GET | JSON: snapshot do painel ao vivo (simulação demo) |
 | Tráfego (API) | `/trafego/api/construir` | POST | Fragmento HTML: monta os bytes (Ethernet/IPv4/TCP-UDP) com comprimentos e checksums corretos + botão para decodificar de volta (round-trip) |
@@ -101,9 +101,9 @@ O framework cobre um fluxo didático completo para aula, laboratório e revisão
 | Simuladores (API) | `/simuladores/api/encapsular` | POST | JSON: encapsulamento camada a camada (App→Enlace) |
 | Simuladores (API) | `/simuladores/api/handshake` | GET | JSON: sequência do handshake TCP (`?dados=&encerramento=`) |
 | Simuladores (API) | `/simuladores/api/anomalia-tcp` | GET | JSON: cenário de anomalia TCP (`?tipo=syn-flood\|sequence-hijack`) — passos, KPIs e defesas |
-| Diagnóstico | `/diagnostico` | GET | Sub-abas de ferramentas do analista, **resultado dissecado**: Ping, DNS (dig), Traceroute, Ping Sweep, Varredura SYN e DNS Spoofing |
+| Diagnóstico | `/diagnostico` | GET | Sub-abas de ferramentas do analista (abrem direto com `?aba=ping\|dns\|traceroute\|sweep\|scan\|spoofing`), **resultado dissecado**: Ping, DNS (dig), Traceroute, Ping Sweep, Varredura SYN e DNS Spoofing |
 | Diagnóstico (API) | `/diagnostico/api/{ping,dns,traceroute,ping-sweep,scan,dns-spoofing}` | POST | Fragmento HTML dissecado (KPIs, tabela, legenda, como funciona, o que observar) + saída bruta. Tudo simulado |
-| Segurança | `/seguranca` | GET | Sub-abas: Firewall (ACL) com pacote forjado, **Inspetor TLS/Certificado**, **com estado × sem estado**, **handshake TLS 1.3**, **alcança o destino?** e **montar topologia** (texto ou **canvas de arrastar**) |
+| Segurança | `/seguranca` | GET | Sub-abas (abrem direto com `?aba=acl\|tls\|estado\|handshake\|fluxo\|topologia\|canvas`): Firewall (ACL) com pacote forjado, **Inspetor TLS/Certificado**, **com estado × sem estado**, **handshake TLS 1.3**, **alcança o destino?** e **montar topologia** (texto ou **canvas de arrastar**) |
 | Segurança (API) | `/seguranca/api/testar` | POST | Fragmento HTML: veredito MATCH/DENY da regra ACL (parser tipado: porta exata, IP origem/destino por wildcard) |
 | Segurança (API) | `/seguranca/api/tls` | POST | Fragmento HTML: veredito por checagem (nome, validade, cadeia, protocolo, cipher) |
 | Segurança (API) | `/seguranca/api/estado` | GET | Fragmento HTML: firewall com estado × sem estado, passo a passo (`?cenario=`) |
