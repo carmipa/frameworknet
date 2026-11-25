@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Files;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
@@ -160,5 +162,47 @@ class TelemetriaLoggerTest {
         assertTrue(gravados.contains("dentro_warn_" + marca), "warn dentro do escopo sumiu");
         assertTrue(gravados.contains("outra_thread_" + marca), "o escopo calou outra thread");
         assertTrue(gravados.contains("depois_info_" + marca), "o escopo ficou ligado depois de sair (ou da exceção)");
+    }
+
+    /**
+     * D27: o sobrecarregado de 4 argumentos gravava "ok" mesmo quando o mapa dizia outro status (38 chamadas), e o
+     * dataset público mostrava timeout e erro de DNS, erro do IPv6 e recusa de CSRF como sucesso.
+     * A3: o esperado é o status que a chamada escreveu. A6: conferido no evento guardado e na mensagem.
+     * A1: sem "status" no mapa o evento continua "ok", como antes.
+     */
+    @Test
+    void statusDoEventoVemDoCampoStatus() {
+        String marca = "d27-" + java.util.UUID.randomUUID();
+        telemetriaLogger.logEvent("warn", "teste", "evento_d27", Map.of("status", "erro", "marca", marca));
+        telemetriaLogger.logEvent("info", "teste", "evento_d27", Map.of("marca", marca + "-sem"));
+
+        TelemetriaEvent comStatus = doStore(marca);
+        assertEquals("erro", comStatus.status(), "o evento saiu com status diferente do que a chamada escreveu");
+        assertTrue(comStatus.message().startsWith("evento=evento_d27 status=erro"), comStatus.message());
+        assertEquals("ok", doStore(marca + "-sem").status(), "sem campo status o evento deixou de ser ok");
+    }
+
+    /** Regra única do status tirado do campo: texto não vazio, saneado e com teto; o resto é "ok". */
+    @Test
+    void statusDosCamposRegra() {
+        assertEquals("timeout", TelemetriaLogger.statusDosCampos(Map.of("status", " timeout ")));
+        assertEquals("bloqueado", TelemetriaLogger.statusDosCampos(Map.of("status", "bloqueado", "x", 1)));
+        assertEquals("ok", TelemetriaLogger.statusDosCampos(null));
+        assertEquals("ok", TelemetriaLogger.statusDosCampos(Map.of()));
+        assertEquals("ok", TelemetriaLogger.statusDosCampos(Map.of("status", "   ")));
+        assertEquals("ok", TelemetriaLogger.statusDosCampos(Map.of("status", 5)));
+        assertFalse(TelemetriaLogger.statusDosCampos(Map.of("status", "a\nb")).contains("\n"),
+                "quebra de linha crua no status forjaria linha no console");
+        String longo = TelemetriaLogger.statusDosCampos(Map.of("status", "x".repeat(5000)));
+        assertTrue(longo.endsWith(TelemetriaContext.MARCA_TRUNCADO)
+                && longo.length() <= TelemetriaLogger.MAX_VALOR_CAMPO + TelemetriaContext.MARCA_TRUNCADO.length(),
+                "status sem teto (contrato do paraLog: no máximo o teto antes da marca de corte)");
+    }
+
+    private TelemetriaEvent doStore(String marca) {
+        return store.snapshotEventos().stream()
+                .filter(e -> e.fields() != null && marca.equals(e.fields().get("marca")))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("evento " + marca + " não entrou no armazenamento"));
     }
 }

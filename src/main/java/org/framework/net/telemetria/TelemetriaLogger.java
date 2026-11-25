@@ -85,8 +85,41 @@ public class TelemetriaLogger {
         logEvent("info", "sistema", "app_start", Map.of("status", "ok"));
     }
 
+    /**
+     * Evento cujo status vem do próprio mapa de campos.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> 38 chamadas passam o status em {@code Map.of("status", …)}; antes este
+     * sobrecarregado gravava sempre {@code ok}, e o dataset público mostrava timeout e erro de DNS, erro do IPv6 e
+     * recusa de CSRF como sucesso.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> o status do evento é o mesmo valor do campo {@code status} (ver
+     * {@link #statusDosCampos}); sem esse campo, {@code ok}, como sempre foi.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> mapa nulo, sem {@code status}, com valor em branco ou que não é texto
+     * grava {@code ok}; não lança.</p>
+     */
     public void logEvent(String level, String modulo, String evento, Map<String, Object> fields) {
-        logEvent(level, modulo, evento, "ok", null, fields, false, null);
+        logEvent(level, modulo, evento, statusDosCampos(fields), null, fields, false, null);
+    }
+
+    /**
+     * Status do evento tirado do campo {@code status}.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> uma fonte só para o status: o que a chamada escreveu no campo é o que o evento,
+     * a mensagem e o dataset dizem.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> só texto não vazio vira status, com o mesmo saneamento e teto dos demais campos
+     * ({@link #valorParaEvento}); espaços das pontas saem.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> devolve {@code ok} para mapa nulo, campo ausente, em branco ou não
+     * textual; não lança.</p>
+     */
+    static String statusDosCampos(Map<String, Object> fields) {
+        Object valor = fields == null ? null : fields.get("status");
+        if (valor instanceof CharSequence texto && !texto.toString().isBlank()) {
+            return String.valueOf(valorParaEvento(texto.toString().strip()));
+        }
+        return "ok";
     }
 
     public void logEvent(String level, String modulo, String evento, String status, Map<String, Object> fields) {
