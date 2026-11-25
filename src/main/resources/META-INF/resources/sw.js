@@ -32,8 +32,10 @@
    v5: CSS em largura cheia e rem e Bootstrap/mermaid/Chart.js/Leaflet servidos pelo próprio site —
        mesma origem, então entram no cache na primeira visita e o menu funciona offline.
    v6: a página offline passa a sair do template das páginas de erro (mesmo visual de todas elas);
-       a casca leva o CSS, a fonte, o script e as bandeiras que ela usa, e o offline.css sai. */
-const VERSAO = 'framework-net-v8';
+       a casca leva o CSS, a fonte, o script e as bandeiras que ela usa, e o offline.css sai.
+   v9: as fontes de texto passam a ser do próprio site (C21): a casca leva o fontes.css e o subconjunto
+       latin de cada família, o bastante para a página offline em português. */
+const VERSAO = 'framework-net-v9';
 const CACHE_ESTATICO = `${VERSAO}-estatico`;
 const PAGINA_OFFLINE = '/offline.html';
 
@@ -54,6 +56,11 @@ const PRE_CACHE = [
   // Fonte de ícones local: sem ela, offline, o glifo aparece como a palavra do nome.
   '/web/css/material-symbols.css?v=20261022',
   '/web/fonts/material-symbols-outlined.woff2?v=20260925',
+  // Fontes de texto locais (C21): o CSS e o subconjunto latin de cada família.
+  '/web/css/fontes.css?v=20261125',
+  '/web/fonts/inter-tight-latin.woff2?v=20261125',
+  '/web/fonts/jetbrains-mono-latin.woff2?v=20261125',
+  '/web/fonts/space-grotesk-latin.woff2?v=20261125',
 ];
 
 /* Prefixos que nunca entram no cache — conteudo autenticado ou volatil. */

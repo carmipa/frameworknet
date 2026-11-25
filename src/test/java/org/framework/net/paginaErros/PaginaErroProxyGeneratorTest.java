@@ -152,6 +152,13 @@ class PaginaErroProxyGeneratorTest {
     private static final Pattern VALOR_DO_TRACE =
             Pattern.compile("<span class=\"tv tv-id\">([^<]*)</span>");
 
+    /**
+     * Fontes de texto do site (C21): com a aplicação fora, o arquivo delas também está fora. A página do proxy
+     * fica com a fonte do sistema; embutir as três famílias somaria cerca de 130 KB a cada página.
+     */
+    private static final Pattern FONTES_DE_TEXTO =
+            Pattern.compile("<link rel=\"stylesheet\" href=\"/web/css/fontes\\.css[^\"]*\">\\s*");
+
     /** Sobra proibida: qualquer href/src apontando para arquivo servido pelo app. */
     private static final Pattern RECURSO_DO_APP =
             Pattern.compile("(?:href|src)=\"(/[^\"]*\\.(?:css|js|png|jpg|svg|webmanifest)[^\"]*)\"");
@@ -177,6 +184,7 @@ class PaginaErroProxyGeneratorTest {
                     .replaceAll(Matcher.quoteReplacement("<style>\n" + css + "\n</style>"));
             html = CSS_ICONES.matcher(html)
                     .replaceAll(Matcher.quoteReplacement("<style>\n" + cssIconesEmbutido() + "\n</style>"));
+            html = FONTES_DE_TEXTO.matcher(html).replaceAll("");
             html = JS_MATRIX.matcher(html)
                     .replaceAll(Matcher.quoteReplacement("<script>\n" + matrix + "\n</script>"));
             html = FAVICON_DO_APP.matcher(html)

@@ -5,8 +5,6 @@
         media queries em em; px apenas em bordas, sombras e blur.
    ============================================================================= */
 
-@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap");
-
 :root {
     --aed-bg: #06080f;
     --aed-text: #eef2f8;

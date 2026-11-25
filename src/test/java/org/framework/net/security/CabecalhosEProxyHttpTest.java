@@ -47,8 +47,6 @@ class CabecalhosEProxyHttpTest {
 
         // Quebrar qualquer uma destas some com um recurso da tela sem erro no servidor.
         for (String origem : new String[]{
-                "https://fonts.googleapis.com",      // fontes de texto
-                "https://fonts.gstatic.com",         // arquivos das fontes
                 "tile.openstreetmap.org",            // tiles do mapa
                 "https://translate.google.com"}) {   // widget de tradução
             org.junit.jupiter.api.Assertions.assertTrue(csp.contains(origem),
@@ -60,6 +58,9 @@ class CabecalhosEProxyHttpTest {
         // as duas origens de CDN saíram do CSP, e voltar com elas reabriria a dependência externa.
         org.junit.jupiter.api.Assertions.assertFalse(csp.contains("cdn.jsdelivr.net"), csp);
         org.junit.jupiter.api.Assertions.assertFalse(csp.contains("unpkg.com"), csp);
+        // Fontes de texto são do próprio site desde 25/11/2026 (C21, web/fonts): o Google Fonts saiu do CSP.
+        org.junit.jupiter.api.Assertions.assertFalse(csp.contains("fonts.googleapis.com"), csp);
+        org.junit.jupiter.api.Assertions.assertFalse(csp.contains("fonts.gstatic.com"), csp);
 
         // Trava as diretivas que independem de origem externa.
         org.junit.jupiter.api.Assertions.assertTrue(csp.contains("object-src 'none'"), csp);
