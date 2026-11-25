@@ -36,7 +36,8 @@ public record ProtocoloAprofundamento(
         List<Ataque> ataques,
         List<Mitigacao> mitigacoes,
         List<Laboratorio> laboratorios,
-        List<Diagnostico> diagnosticos) {
+        List<Diagnostico> diagnosticos,
+        List<Pergunta> autoavaliacao) {
 
     /** Um par rótulo/valor da ficha rápida do cabeçalho (RFC, porta, camada…). */
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -92,5 +93,56 @@ public record ProtocoloAprofundamento(
     /** Sintoma, causa provável, comando e leitura da saída. */
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public record Diagnostico(String sintoma, String causaProvavel, String comando, String leitura) {
+    }
+
+    /**
+     * Pergunta do teste rápido do fim da página (piloto de autoavaliação, proposta C03).
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> quem leu confere o que entendeu na hora, e cada alternativa explica por que está
+     * certa ou errada; a fonte diz de onde vem o gabarito, porque pergunta errada ensina errado.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> enunciado não vazio; de 2 a 6 alternativas de texto distinto, exatamente uma
+     * correta, todas com o seu porquê; a fonte cita a norma de onde sai a resposta (RFC, IETF, IEEE, ISO, ITU, IANA,
+     * W3C ou WHATWG). A
+     * fonte única dessas regras é {@code AutoavaliacaoGuardTest}, que as confere em todo conteúdo com a seção.</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> record puro; a seção é opcional e a página sem ela não muda.</p>
+     */
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    public record Pergunta(String enunciado, List<Alternativa> alternativas, String fonte) {
+
+        /**
+         * Posição da alternativa correta.
+         *
+         * <p><b>PROPÓSITO DE NEGÓCIO:</b> o gabarito com que o servidor confere a resposta da pessoa.</p>
+         *
+         * <p><b>INVARIANTES DO DOMÍNIO:</b> a primeira alternativa marcada como correta, a mesma regra do
+         * {@code avaliar()} do navegador.</p>
+         *
+         * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> sem alternativas ou sem correta, devolve -1 (nenhuma escolha acerta);
+         * a guarda de conteúdo impede que isso chegue ao ar.</p>
+         */
+        public int indiceCorreta() {
+            for (int i = 0; alternativas != null && i < alternativas.size(); i++) {
+                if (alternativas.get(i).correta()) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+    }
+
+    /**
+     * Alternativa de uma pergunta do teste rápido.
+     *
+     * <p><b>PROPÓSITO DE NEGÓCIO:</b> o que a pessoa pode escolher e a explicação que ela lê depois de escolher.</p>
+     *
+     * <p><b>INVARIANTES DO DOMÍNIO:</b> texto e porquê não vazios; {@code correta} é booleano explícito no JSON
+     * (conferido por {@code AutoavaliacaoGuardTest}).</p>
+     *
+     * <p><b>COMPORTAMENTO EM CASO DE FALHA:</b> record puro; {@code correta} ausente no JSON vale {@code false}.</p>
+     */
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    public record Alternativa(String texto, boolean correta, String porque) {
     }
 }

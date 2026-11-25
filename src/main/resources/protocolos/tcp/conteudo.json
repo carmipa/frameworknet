@@ -499,5 +499,111 @@
       "leitura": "Se as quedas coincidem com uma rede específica, suspeite de RST forjado. Se ocorrem após ficar ocioso, é mais provável a expiração de estado no NAT/firewall. O tcpdump revela quem enviou o RST.",
       "comando": "sudo tcpdump -ni any 'tcp[tcpflags] & tcp-rst != 0'"
     }
+  ],
+  "autoavaliacao": [
+    {
+      "enunciado": "No aperto de mão de três vias, o que o servidor responde ao SYN do cliente?",
+      "alternativas": [
+        {
+          "texto": "Só um ACK; o SYN do servidor vem num segmento depois",
+          "correta": false,
+          "porque": "Os dois vão juntos: o servidor liga SYN e ACK no mesmo segmento. Por isso são três mensagens, e não quatro."
+        },
+        {
+          "texto": "Um SYN-ACK, que confirma o número de sequência inicial do cliente mais 1",
+          "correta": true,
+          "porque": "O servidor manda o próprio número de sequência inicial (SYN) e, no mesmo segmento, confirma o do cliente somando 1 (ACK)."
+        },
+        {
+          "texto": "Um FIN, para combinar como a conexão vai terminar",
+          "correta": false,
+          "porque": "FIN serve para encerrar uma conexão aberta; não participa da abertura."
+        },
+        {
+          "texto": "Um RST, pedindo que o cliente repita o SYN",
+          "correta": false,
+          "porque": "RST recusa ou derruba a conexão (por exemplo, porta fechada); não faz parte do aperto de mão normal."
+        }
+      ],
+      "fonte": "RFC 9293, seção 3.5 (Establishing a Connection)"
+    },
+    {
+      "enunciado": "Para que serve o campo Window do cabeçalho TCP?",
+      "alternativas": [
+        {
+          "texto": "Diz quantos bytes o receptor ainda aceita além do último confirmado (controle de fluxo)",
+          "correta": true,
+          "porque": "O Window anuncia o espaço livre no buffer de quem recebe; o emissor não pode deixar mais que isso sem confirmação."
+        },
+        {
+          "texto": "Marca a prioridade do segmento na fila do roteador",
+          "correta": false,
+          "porque": "O TCP não tem campo de prioridade; marcação de prioridade fica no campo DSCP do cabeçalho IP."
+        },
+        {
+          "texto": "Informa o tamanho máximo de segmento (MSS)",
+          "correta": false,
+          "porque": "O MSS é uma opção anunciada no SYN; a janela muda ao longo da conexão, a cada segmento."
+        },
+        {
+          "texto": "Conta quantos segmentos se perderam no caminho",
+          "correta": false,
+          "porque": "Perda se descobre por ACKs repetidos ou por tempo esgotado, não pela janela."
+        }
+      ],
+      "fonte": "RFC 9293, seção 3.8.6 (Managing the Window)"
+    },
+    {
+      "enunciado": "Numa conexão estabelecida chega um segmento RST válido. O que acontece?",
+      "alternativas": [
+        {
+          "texto": "A conexão entra em pausa até o outro lado mandar um SYN novo",
+          "correta": false,
+          "porque": "Depois do RST a conexão deixa de existir; para conversar de novo é preciso abrir outra."
+        },
+        {
+          "texto": "A contagem dos números de sequência recomeça do zero",
+          "correta": false,
+          "porque": "O RST não reinicia a numeração: ele termina a conexão."
+        },
+        {
+          "texto": "A conexão é encerrada na hora, sem entregar o que estava pendente",
+          "correta": true,
+          "porque": "O RST aborta: não há o encerramento ordenado com FIN, e os dados ainda não entregues são descartados."
+        },
+        {
+          "texto": "A conexão é encerrada com a troca de FIN e ACK nos dois sentidos",
+          "correta": false,
+          "porque": "A troca de FIN e ACK é o encerramento ordenado; o RST é justamente o encerramento abrupto."
+        }
+      ],
+      "fonte": "RFC 9293, seções 3.5.3 (Reset Processing) e 3.10.7.4 (Other States)"
+    },
+    {
+      "enunciado": "Um receptor manda ACK com número de confirmação 1001. O que ele está dizendo?",
+      "alternativas": [
+        {
+          "texto": "Que recebeu o segmento de número 1001",
+          "correta": false,
+          "porque": "O TCP numera bytes, não segmentos."
+        },
+        {
+          "texto": "Que ainda faltam 1001 bytes para completar a mensagem",
+          "correta": false,
+          "porque": "O ACK não conta o que falta; ele aponta o próximo byte esperado."
+        },
+        {
+          "texto": "Que aceita receber mais 1001 bytes",
+          "correta": false,
+          "porque": "Quanto ainda cabe é o papel do campo Window, não do número de confirmação."
+        },
+        {
+          "texto": "Que recebeu tudo até o byte 1000 e espera o 1001",
+          "correta": true,
+          "porque": "A confirmação é cumulativa e aponta o próximo número de sequência que o receptor espera."
+        }
+      ],
+      "fonte": "RFC 9293, seção 3.4 (Sequence Numbers)"
+    }
   ]
 }

@@ -116,9 +116,10 @@ O framework cobre um fluxo didático completo para aula, laboratório e revisão
 | Portas | `/portas` | GET | Catálogo interativo TCP/UDP (com régua das 3 faixas e cross-link para os aprofundamentos de protocolo) |
 | Portas — aprofundamentos | `/portas/{anatomia,web,email,acesso-remoto,arquivos,banco-de-dados,infra}` | GET | Página conceitual (Anatomia: 16 bits, socket, faixas, efêmeras, NAT/PAT) + famílias de serviço, com diagrama e (na Anatomia) a régua binária dos campos de porta |
 | Protocolos | `/protocolos` | GET | Catálogo + troubleshooting de roteamento (aba Geral) |
-| Protocolos — Aplicação | `/protocolos/{http,dns,ssh,tls,ftp,smtp,telnet}` | GET | Aprofundamentos da camada de Aplicação (HTTP/HTTPS, DNS, SSH, TLS, FTP/TFTP, e-mail, Telnet) |
+| Protocolos — Aplicação | `/protocolos/{http,dns,ssh,tls,ftp,smtp,telnet,dhcp}` | GET | Aprofundamentos da camada de Aplicação (HTTP/HTTPS, DNS, SSH, TLS, FTP/TFTP, e-mail, Telnet, DHCP) |
 | Protocolos — Transporte | `/protocolos/{tcp,udp,handshake}` | GET | Camada de Transporte: TCP, UDP e a seção Handshake (TCP 3-vias, TLS, SSH) |
-| Protocolos — Rede | `/protocolos/{ipv4,ipv6,arp,icmp,bgp}` | GET | Camada de Rede: IPv4, IPv6, ARP, ICMP/ICMPv6 e BGP-4 |
+| Protocolos — Rede | `/protocolos/{ipv4,ipv6,arp,icmp,nat,ospf,bgp}` | GET | Camada de Rede: IPv4, IPv6, ARP, ICMP/ICMPv6, NAT, OSPF e BGP-4 |
+| Protocolos (API) | `/protocolos/api/autoavaliacao` | POST | Resposta do teste rápido dos aprofundamentos (piloto em TCP, IPv4 e HTTP): esquema fechado `{protocolo, pergunta, alternativa}`, corpo ≤ 1 KB; o servidor confere o gabarito do `conteudo.json`, devolve `{"acertou": …}` (202) e conta um evento anônimo `autoavaliacao_resposta`; fora do contrato, 422 |
 | Certificados | `/certificados` (+ `/certificados/{x509,cadeia,tipos,formatos,ciclo-de-vida,revogacao,usos,ataques}`) | GET | X.509/PKI: catálogo de 3 tabelas (formatos, campos, tipos) + 8 aprofundamentos por grupo; Anatomia com régua binária ASN.1/DER |
 | Camadas | `/camadas` (+ `/camadas/{osi,tcpip,encapsulamento,dispositivos}`) | GET | Modelo OSI × TCP/IP: tabela das 7 camadas (PDU, protocolos, dispositivos) + aprofundamentos |
 | Criptografia | `/criptografia` (+ `/criptografia/{simetrica,assimetrica,hash,troca-de-chaves,assinatura}`) | GET | Algoritmos e forças + **playground de hash** (WebCrypto, client-side) e comparador de força |
@@ -298,13 +299,13 @@ Como isso é montado:
   catálogo. É ele que gera o sub-menu por camada, a rota, o botão "Aprofundar", as
   entradas do `sitemap.xml` e a cobertura da varredura — nenhum escrito à mão.
 - **Dois modelos de página, conteúdo sempre em JSON**:
-  - **Genérico** (11 protocolos): um único template `protocolos/aprofundamento.html` +
+  - **Genérico** (todos, menos os quatro dedicados): um único template `protocolos/aprofundamento.html` +
     um CSS `protocolos/aprofundamento/css/aprofundamento.css`, alimentados por
     `resources/protocolos/<slug>/conteudo.json` (record `ProtocoloAprofundamento`).
     Protocolo novo custa **um JSON + uma linha** no registro.
   - **Dedicado** (BGP, SSH, DNS, TLS): template e CSS próprios, para o conteúdo que foge
     do molde (seleção de melhor rota do BGP, cadeia DNSSEC, cipher suites do TLS…).
-- **Diagrama e cabeçalho são compartilhados por todas as 15**: os records
+- **Diagrama e cabeçalho são compartilhados por todas as páginas**: os records
   `DiagramaArquitetura` e `CabecalhoBinario` e os partials `protocolos/partials/diagrama.html`
   e `cabecalho_bits.html` desenham o mesmo Mermaid e a mesma régua de bits, tanto nas
   páginas genéricas quanto nas dedicadas.
@@ -319,6 +320,16 @@ Como isso é montado:
   apontando para arquivo inexistente reprova o build; página órfã reprova; nome divergente
   do catálogo reprova; e cada página precisa abrir (200), marcar a aba da sua camada e
   trazer o conteúdo essencial (incluindo diagrama e régua onde há cabeçalho).
+- **Teste rápido (piloto em TCP, IPv4 e HTTP)**: o campo `autoavaliacao` do `conteudo.json`
+  traz perguntas de múltipla escolha, cada alternativa com o seu porquê e cada pergunta com a
+  fonte (seção da RFC). Ao clicar, a página diz na hora se acertou e qual é a certa, com a
+  explicação da escolhida e a da certa (`protocolos/aprofundamento/js/autoavaliacao.js`). Vale
+  a primeira escolha; depois dela, cada outra alternativa clicada mostra o próprio porquê, sem
+  contar de novo. A contagem acontece no clique, pelo `POST /protocolos/api/autoavaliacao`: o
+  servidor confere o gabarito e grava o evento `autoavaliacao_resposta` só com protocolo,
+  pergunta, alternativa e acerto. `AutoavaliacaoGuardTest` reprova pergunta sem exatamente uma
+  certa, sem o porquê ou sem fonte normativa, e confere o gabarito do piloto contra as RFCs.
+  Protocolo sem o campo não mostra a seção.
 
 Para adicionar o próximo protocolo genérico: um `conteudo.json` e uma linha no registro
 com a sua camada. Ele entra sozinho no sub-menu, no `sitemap.xml` e na varredura.

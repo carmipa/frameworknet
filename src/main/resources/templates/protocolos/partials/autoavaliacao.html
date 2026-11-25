@@ -1,0 +1,30 @@
+{! Teste rápido do aprofundamento (piloto de autoavaliação, proposta C03). Perguntas vêm do conteudo.json; cada
+   alternativa leva o seu porquê e cada pergunta a fonte do gabarito. Quem marca é o navegador
+   (protocolos/aprofundamento/js/autoavaliacao.js), que conta a resposta no servidor no clique, não na saída da página.
+   Variáveis: conteudo (ProtocoloAprofundamento) e item (AprofundamentoProtocolo). !}
+{#if conteudo.autoavaliacao}
+<section id="autoavaliacao" class="aprof-secao aval" data-autoavaliacao="{item.slug}">
+    <h2 class="aprof-secao-titulo"><span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span> Teste rápido</h2>
+    <p class="small text-secondary">Escolha uma alternativa em cada pergunta: a explicação aparece na hora, com a fonte da resposta. Vale a primeira escolha; depois dela, as outras alternativas mostram o porquê de cada uma. O site conta só a primeira escolha de cada pergunta, sem guardar nada de quem respondeu.</p>
+    {#for p in conteudo.autoavaliacao}
+    <fieldset class="aval-pergunta" data-pergunta="{p_index}">
+        <legend class="aval-enunciado"><span class="material-symbols-outlined" aria-hidden="true" translate="no">quiz</span> {p.enunciado}</legend>
+        <div class="aval-alternativas">
+            {#for a in p.alternativas}
+            <button type="button" class="aval-alternativa" data-alternativa="{a_index}" data-correta="{a.correta}">
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">arrow_right</span>
+                <span class="aval-texto">{a.texto}</span>
+            </button>
+            {/for}
+        </div>
+        <div class="aval-explicacoes">
+            {#for a in p.alternativas}
+            <p class="aval-porque" data-porque="{a_index}" id="aval-{item.slug}-{p_index}-{a_index}" hidden><strong>{a.texto}:</strong> {a.porque}</p>
+            {/for}
+        </div>
+        <p class="aval-retorno" role="status" aria-live="polite"></p>
+        <p class="aval-fonte small text-secondary"><span class="material-symbols-outlined" aria-hidden="true" translate="no">menu_book</span> Fonte: {p.fonte}</p>
+    </fieldset>
+    {/for}
+</section>
+{/if}

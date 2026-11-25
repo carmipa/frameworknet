@@ -462,5 +462,111 @@
       "comando": "netstat -s | grep -i reasm",
       "leitura": "Contadores altos de 'reassembly failed' ou 'fragments dropped' indicam remontagens que falham — inspecione offsets sobrepostos e limite a taxa de fragmentos."
     }
+  ],
+  "autoavaliacao": [
+    {
+      "enunciado": "O que acontece com um pacote quando o TTL chega a zero num roteador?",
+      "alternativas": [
+        {
+          "texto": "É descartado, e o roteador avisa a origem com ICMP Time Exceeded",
+          "correta": true,
+          "porque": "O TTL limita a vida do pacote; zerado, o roteador descarta e manda à origem um ICMP Time Exceeded (alguns roteadores limitam ou filtram esse aviso). É isso que o traceroute aproveita."
+        },
+        {
+          "texto": "Volta para quem o enviou",
+          "correta": false,
+          "porque": "O pacote não volta; o que volta, quando o roteador envia, é a mensagem ICMP de aviso."
+        },
+        {
+          "texto": "Segue em frente com o TTL reiniciado em 255",
+          "correta": false,
+          "porque": "O TTL só diminui; nenhum roteador o restaura."
+        },
+        {
+          "texto": "Fica guardado no roteador até a rota melhorar",
+          "correta": false,
+          "porque": "Roteador não guarda pacote por causa do TTL: ele descarta."
+        }
+      ],
+      "fonte": "RFC 791 (campo Time to Live); RFC 792 (Time Exceeded); RFC 1812, seção 5.3.1"
+    },
+    {
+      "enunciado": "Qual destes endereços é privado pela RFC 1918?",
+      "alternativas": [
+        {
+          "texto": "172.32.0.1",
+          "correta": false,
+          "porque": "O bloco privado 172.16.0.0/12 vai de 172.16.0.0 a 172.31.255.255; 172.32 já é endereço público."
+        },
+        {
+          "texto": "172.20.5.10",
+          "correta": true,
+          "porque": "Está dentro de 172.16.0.0/12, um dos três blocos privados (com 10.0.0.0/8 e 192.168.0.0/16)."
+        },
+        {
+          "texto": "192.169.1.1",
+          "correta": false,
+          "porque": "O bloco privado é 192.168.0.0/16; 192.169 fica fora dele."
+        },
+        {
+          "texto": "100.64.0.1",
+          "correta": false,
+          "porque": "100.64.0.0/10 é o espaço compartilhado das operadoras para CGNAT (RFC 6598), não um bloco da RFC 1918."
+        }
+      ],
+      "fonte": "RFC 1918, seção 3; RFC 6598"
+    },
+    {
+      "enunciado": "Quantos endereços de host utilizáveis tem uma rede /26?",
+      "alternativas": [
+        {
+          "texto": "64",
+          "correta": false,
+          "porque": "64 é o total do bloco, com o endereço da rede e o de broadcast incluídos."
+        },
+        {
+          "texto": "126",
+          "correta": false,
+          "porque": "126 é o de uma rede /25 (128 endereços menos 2)."
+        },
+        {
+          "texto": "62",
+          "correta": true,
+          "porque": "Um /26 tem 2 elevado a (32 - 26) = 64 endereços; tirando o da rede e o de broadcast, sobram 62."
+        },
+        {
+          "texto": "30",
+          "correta": false,
+          "porque": "30 é o de uma rede /27 (32 endereços menos 2)."
+        }
+      ],
+      "fonte": "RFC 4632, seção 3.1 (prefixo CIDR); RFC 1122, seção 3.2.1.3 (endereço de rede e de broadcast)"
+    },
+    {
+      "enunciado": "Para que serve o campo Protocol do cabeçalho IPv4?",
+      "alternativas": [
+        {
+          "texto": "Indica a versão do IP usada no pacote",
+          "correta": false,
+          "porque": "A versão está no campo Version, que vale 4 no IPv4."
+        },
+        {
+          "texto": "Escolhe a porta de destino do serviço",
+          "correta": false,
+          "porque": "Porta é campo do TCP ou do UDP, não do IP."
+        },
+        {
+          "texto": "Marca a prioridade do pacote",
+          "correta": false,
+          "porque": "Marcação de prioridade fica no campo DSCP (o antigo Type of Service)."
+        },
+        {
+          "texto": "Diz qual protocolo vai dentro do pacote: 6 para TCP, 17 para UDP, 1 para ICMP",
+          "correta": true,
+          "porque": "É por esse número que o destino entrega o conteúdo ao protocolo certo."
+        }
+      ],
+      "fonte": "RFC 791 (campo Protocol); registro IANA Assigned Internet Protocol Numbers"
+    }
   ]
 }

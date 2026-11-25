@@ -394,5 +394,111 @@
       "comando": "curl -I -H \"Origin: https://app.example.com\" https://api.example.com",
       "leitura": "Sem um Access-Control-Allow-Origin que case com a Origin, o navegador bloqueia; note que o curl não impõe CORS, quem aplica a regra é o navegador."
     }
+  ],
+  "autoavaliacao": [
+    {
+      "enunciado": "Que código de status diz que o recurso pedido não existe naquele endereço?",
+      "alternativas": [
+        {
+          "texto": "403 Forbidden",
+          "correta": false,
+          "porque": "403 quer dizer que o servidor entendeu o pedido, mas recusa: falta permissão."
+        },
+        {
+          "texto": "404 Not Found",
+          "correta": true,
+          "porque": "404 diz que o servidor não encontrou nada para o endereço pedido (ou prefere não revelar que existe)."
+        },
+        {
+          "texto": "500 Internal Server Error",
+          "correta": false,
+          "porque": "500 é falha do próprio servidor ao atender, não ausência do recurso."
+        },
+        {
+          "texto": "301 Moved Permanently",
+          "correta": false,
+          "porque": "301 diz que o recurso mudou de endereço e informa o novo, no cabeçalho Location."
+        }
+      ],
+      "fonte": "RFC 9110, seções 15.5.5 (404), 15.5.4 (403), 15.6.1 (500) e 15.4.2 (301)"
+    },
+    {
+      "enunciado": "Qual destes métodos HTTP é seguro, isto é, não deve mudar nada no servidor?",
+      "alternativas": [
+        {
+          "texto": "POST",
+          "correta": false,
+          "porque": "POST processa o que foi enviado e pode criar ou alterar dados: não é seguro nem idempotente."
+        },
+        {
+          "texto": "DELETE",
+          "correta": false,
+          "porque": "DELETE é idempotente (repetir dá o mesmo resultado), mas não é seguro: ele apaga."
+        },
+        {
+          "texto": "GET",
+          "correta": true,
+          "porque": "GET, HEAD, OPTIONS e TRACE são definidos como seguros: pedir não deve alterar o estado do servidor."
+        },
+        {
+          "texto": "PUT",
+          "correta": false,
+          "porque": "PUT também é idempotente, mas grava: não é seguro."
+        }
+      ],
+      "fonte": "RFC 9110, seções 9.2.1 (Safe Methods) e 9.2.2 (Idempotent Methods)"
+    },
+    {
+      "enunciado": "O que o HTTPS acrescenta ao HTTP?",
+      "alternativas": [
+        {
+          "texto": "Uma versão nova do protocolo, com métodos e códigos diferentes",
+          "correta": false,
+          "porque": "Métodos e códigos continuam os mesmos; muda o transporte, que passa a ser cifrado."
+        },
+        {
+          "texto": "Esconde de quem está no caminho qual site está sendo acessado",
+          "correta": false,
+          "porque": "O endereço IP de destino continua visível, e o nome do site em geral também aparece no SNI."
+        },
+        {
+          "texto": "A garantia de que o site não é malicioso",
+          "correta": false,
+          "porque": "O certificado prova quem controla o domínio, não que ele é confiável."
+        },
+        {
+          "texto": "Um canal TLS: a conversa vai cifrada e o servidor prova a identidade com um certificado",
+          "correta": true,
+          "porque": "O HTTP por dentro é o mesmo; o TLS cifra a conversa e autentica o servidor."
+        }
+      ],
+      "fonte": "RFC 9110, seção 4.2.2 (https URI Scheme); RFC 8446 (TLS 1.3)"
+    },
+    {
+      "enunciado": "Para que serve o cabeçalho Host num pedido HTTP/1.1?",
+      "alternativas": [
+        {
+          "texto": "Diz qual site se quer, porque vários sites podem morar no mesmo endereço IP",
+          "correta": true,
+          "porque": "Com hospedagem virtual o servidor escolhe o site pelo Host; no HTTP/1.1 o cliente é obrigado a mandá-lo."
+        },
+        {
+          "texto": "Informa o endereço IP de quem está pedindo",
+          "correta": false,
+          "porque": "O IP de quem pede vem no próprio pacote; o Host é o nome do destino."
+        },
+        {
+          "texto": "Escolhe a porta TCP da conexão",
+          "correta": false,
+          "porque": "A porta já foi usada para abrir a conexão; o Host só a repete quando não é a padrão."
+        },
+        {
+          "texto": "Identifica o navegador que fez o pedido",
+          "correta": false,
+          "porque": "Quem identifica o programa cliente é o cabeçalho User-Agent."
+        }
+      ],
+      "fonte": "RFC 9110, seção 7.2 (Host e :authority); RFC 9112, seção 3.2"
+    }
   ]
 }

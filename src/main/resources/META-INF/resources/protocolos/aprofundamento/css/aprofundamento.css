@@ -374,3 +374,77 @@
     vertical-align: -0.18em;
     margin-right: 0.2em;
 }
+
+/* Teste rápido (piloto de autoavaliação, C03): alternativas em grade que preenche a largura; certo e errado aparecem
+   também pelo ícone (check_circle, cancel), não só pela cor. */
+.aval-pergunta {
+    border: 1px solid var(--aed-border);
+    border-radius: 0.75rem;
+    padding: 1rem 2%;
+    margin: 0 0 1.25rem;
+}
+
+.aval-enunciado {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--aed-text);
+}
+
+.aval-alternativas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 0.5rem;
+}
+
+.aval-alternativa {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-block-size: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    color: var(--aed-text);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--aed-border);
+    border-radius: 0.6rem;
+    cursor: pointer;
+}
+
+.aval-alternativa:hover,
+.aval-alternativa:focus-visible {
+    border-color: var(--aed-teal);
+}
+
+.aval-alternativa.aval-certa {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.12);
+}
+
+.aval-alternativa.aval-errada {
+    border-color: #f87171;
+    background: rgba(248, 113, 113, 0.12);
+}
+
+.aval-porque {
+    margin: 0.75rem 0 0;
+    font-size: 0.9rem;
+    color: var(--aed-text-secondary);
+}
+
+.aval-retorno {
+    margin: 0.5rem 0 0;
+    font-weight: 600;
+}
+
+.aval-fonte {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0.5rem 0 0;
+}
