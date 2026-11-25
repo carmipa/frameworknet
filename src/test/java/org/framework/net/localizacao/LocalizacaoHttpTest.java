@@ -64,4 +64,28 @@ class LocalizacaoHttpTest {
                 .contentType(containsString("json"))
                 .body("origem", equalTo("ip"));
     }
+
+    /**
+     * D17 (privacidade): o CEP digitado não entra no histórico de digitação do navegador (localStorage), que a próxima
+     * pessoa do mesmo PC de laboratório veria. A1: o campo de IP da mesma página continua com histórico (decisão de
+     * 04/08: o histórico de IP é o que dá utilidade ao recurso).
+     */
+    @Test
+    void cepForaDoHistoricoDeDigitacaoEIpDentro() {
+        String html = io.restassured.RestAssured.given().when().get("/localizacao").then().statusCode(200)
+                .extract().asString();
+        java.util.regex.Matcher cep = java.util.regex.Pattern.compile("<input[^>]*id=\"loc-cep\"[^>]*>").matcher(html);
+        org.junit.jupiter.api.Assertions.assertTrue(cep.find(), "campo de CEP não encontrado na página");
+        org.junit.jupiter.api.Assertions.assertTrue(cep.group().contains("data-history=\"off\""),
+                "o CEP entra no histórico de digitação: " + cep.group());
+        java.util.regex.Matcher ip = java.util.regex.Pattern.compile("<input[^>]*type=\"text\"[^>]*>").matcher(html);
+        boolean algumCampoComHistorico = false;
+        while (ip.find()) {
+            if (!ip.group().contains("data-history=\"off\"")) {
+                algumCampoComHistorico = true;
+            }
+        }
+        org.junit.jupiter.api.Assertions.assertTrue(algumCampoComHistorico,
+                "nenhum campo de texto ficou com histórico: o instrumento não discrimina");
+    }
 }
