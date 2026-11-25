@@ -1,0 +1,44 @@
+/* Aviso dos atalhos de teclado (web/js/atalhos.js): "Pressione Esc de novo para voltar à Início". */
+.atalho-aviso {
+    position: fixed;
+    left: 50%;
+    bottom: 3%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 92%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: 0.6rem;
+    background: var(--aed-card-top);
+    color: var(--aed-text);
+    border: 1px solid var(--aed-teal-dim);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    font-size: 0.95rem;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.atalho-aviso.visivel {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.atalho-aviso a {
+    color: var(--aed-teal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .atalho-aviso {
+        transition: none;
+    }
+}
+
+@media print {
+    .atalho-aviso {
+        display: none;
+    }
+}

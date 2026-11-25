@@ -442,6 +442,17 @@ Nome | Rede base | Hosts1 | Hosts2
 
 ---
 
+### Atalhos de teclado (todas as páginas)
+
+| Entrada | O que faz |
+|---|---|
+| `F1` | Abre esta documentação em nova aba, de qualquer página — o que estava digitado na página continua lá. |
+| `Esc` | Fecha o que estiver aberto: dica, menu, diálogo ou o painel do campo. |
+| `Esc` duas vezes | Com nada aberto e o foco fora de um campo de digitação, o primeiro `Esc` avisa e o segundo, em até 2 segundos, volta à Início. |
+
+A tecla `Home` continua com o navegador (rola até o topo da página e, num campo, leva ao começo do texto).
+Código em `web/js/atalhos.js`; o gabarito da decisão de cada tecla está em `src/test/js/web/atalhos.test.js`.
+
 ## 🏗️ Arquitetura
 
 Estilo arquitetural: **monólito modular** (*modular monolith*) em **Java 25 + Quarkus**, migrado do projeto original em Python/Flask. A aplicação é implantada como **um único artefato** (Quarkus fast-jar), mas o código é organizado por **domínios autocontidos** (*bounded contexts*) — cada módulo funciona como um "microserviço interno", com fronteiras claras e baixo acoplamento, pronto para ser extraído para um serviço independente caso o projeto evolua nesse sentido.
