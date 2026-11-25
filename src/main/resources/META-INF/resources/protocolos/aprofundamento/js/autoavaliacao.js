@@ -145,7 +145,12 @@
         if (retorno) {
             var resultado = r.acertou ? 'Certo.'
                 : (r.certa >= 0 ? 'Não é essa. A certa é: ' + textoDe(botoes[r.certa]) + '.' : 'Não é essa.');
-            retorno.textContent = resultado + ' Clique nas outras alternativas para ver o porquê de cada uma.';
+            var icone = retorno.querySelector('.material-symbols-outlined');
+            if (icone) {
+                icone.textContent = r.acertou ? 'check_circle' : 'cancel';
+            }
+            (retorno.querySelector('.aval-retorno-texto') || retorno).textContent =
+                resultado + ' Clique nas outras alternativas para ver o porquê de cada uma.';
         }
         enviar(protocolo, Number(campo.getAttribute('data-pergunta')), escolhida);
     }

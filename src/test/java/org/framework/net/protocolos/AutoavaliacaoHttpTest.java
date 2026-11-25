@@ -106,6 +106,8 @@ class AutoavaliacaoHttpTest {
         }
         assertEquals(16, ids.size(), "cada porquê precisa de id único (o botão aponta para ele): " + ids);
         assertTrue(html.contains("/protocolos/aprofundamento/js/autoavaliacao.js?v="), "sem o script em " + slug);
+        assertEquals(4, contar(html, "role=\"status\" aria-live=\"polite\"><span class=\"material-symbols-outlined\""),
+                "o resultado de cada pergunta é um selo de estado: precisa do lugar do ícone junto do texto em " + slug);
         int inicio = html.indexOf("<section id=\"autoavaliacao\"");
         String secao = html.substring(inicio, html.indexOf("</section>", inicio));
         assertTrue(!secao.contains("aria-disabled") && !secao.contains(" disabled"),
