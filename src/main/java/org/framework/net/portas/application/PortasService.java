@@ -47,7 +47,25 @@ public class PortasService {
             Map.entry("imaps", "IMAPS com TLS forte"),
             Map.entry("pop3s", "POP3S com TLS forte"),
             Map.entry("ssh", "SSH com chave pública e MFA"),
-            Map.entry("tftp", "SFTP/HTTPS para transferência segura"));
+            Map.entry("tftp", "SFTP/HTTPS para transferência segura"),
+            Map.entry("kerberos", "Kerberos só na rede interna, com AES e senhas longas nas contas de serviço"),
+            Map.entry("snmp", "SNMPv3 com autenticação e criptografia (authPriv)"),
+            Map.entry("snmp trap", "Traps SNMPv3 (authPriv) só na rede de gerência"),
+            Map.entry("bgp", "Sessão autenticada (TCP-AO) e GTSM, só com vizinhos conhecidos"),
+            Map.entry("ike (ipsec)", "IKEv2 com certificados ou chave forte"),
+            Map.entry("ipsec nat-t", "IKEv2 com certificados ou chave forte"),
+            Map.entry("syslog", "Syslog sobre TLS (6514, RFC 5425)"),
+            Map.entry("ldaps", "Manter TLS 1.2/1.3 e certificados válidos"),
+            Map.entry("dns sobre tls (dot)", "Manter TLS 1.2/1.3 e validar o certificado do resolvedor"),
+            Map.entry("openvpn", "Versão atualizada, certificado por cliente e tls-crypt"),
+            Map.entry("wireguard", "Chave por par e AllowedIPs restrito"),
+            Map.entry("radius", "RADIUS sobre TLS (RadSec, RFC 6614)"),
+            Map.entry("mqtt", "MQTT sobre TLS (8883)"),
+            Map.entry("mqtt sobre tls", "Manter TLS 1.2/1.3 e autenticação por dispositivo"),
+            Map.entry("nfs", "NFSv4 com Kerberos (sec=krb5p) só na rede interna"),
+            Map.entry("stun/turn", "TURN com credencial temporária e sem repasse para a rede interna"),
+            Map.entry("sip", "SIP sobre TLS (5061) com SRTP"),
+            Map.entry("mdns", "Bloquear o mDNS na borda da rede"));
 
     @Inject
     PortasCatalog portasCatalog;
@@ -80,7 +98,9 @@ public class PortasService {
             Map.entry("http", "http"),
             Map.entry("http alternativo", "http"),
             Map.entry("https", "tls"),
-            Map.entry("https alternativo", "tls"));
+            Map.entry("https alternativo", "tls"),
+            Map.entry("dns sobre tls (dot)", "dns"),
+            Map.entry("bgp", "bgp"));
 
     public List<PortaItemExibicao> montarPortasCatalogoExibicao() {
         telemetriaLogger.logEvent("info", "portas", "catalog_load",

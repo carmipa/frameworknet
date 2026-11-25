@@ -41,7 +41,7 @@
   },
   {
     "porta": "53",
-    "protocolo_transporte": "UDP/TCP",
+    "protocolo_transporte": "TCP/UDP",
     "servico": "DNS",
     "categoria": "Well-known (0-1023)",
     "risco": "Atenção (amplificação DDoS)",
@@ -78,6 +78,16 @@
     "recomendacao": "Redirecionar para HTTPS (443)",
     "badge": "🔴 Crítico",
     "badge_color": "danger"
+  },
+  {
+    "porta": "88",
+    "protocolo_transporte": "TCP/UDP",
+    "servico": "Kerberos",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Atenção (expõe o controlador de domínio)",
+    "recomendacao": "Só na rede interna; senhas longas nas contas de serviço (Kerberoasting)",
+    "badge": "🟡 Atenção",
+    "badge_color": "warning"
   },
   {
     "porta": "110",
@@ -120,6 +130,36 @@
     "badge_color": "danger"
   },
   {
+    "porta": "161",
+    "protocolo_transporte": "UDP",
+    "servico": "SNMP",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Alto (community em texto claro no v1/v2c)",
+    "recomendacao": "Usar SNMPv3 com autenticação e criptografia e restringir por ACL",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "162",
+    "protocolo_transporte": "UDP",
+    "servico": "SNMP Trap",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Atenção (texto claro no v1/v2c)",
+    "recomendacao": "Receber traps só da rede de gerência; usar SNMPv3",
+    "badge": "🟡 Atenção",
+    "badge_color": "warning"
+  },
+  {
+    "porta": "179",
+    "protocolo_transporte": "TCP",
+    "servico": "BGP",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Atenção (vizinho falso injeta rotas)",
+    "recomendacao": "Aceitar só vizinhos configurados, com TCP-AO e GTSM",
+    "badge": "🟡 Atenção",
+    "badge_color": "warning"
+  },
+  {
     "porta": "389",
     "protocolo_transporte": "TCP/UDP",
     "servico": "LDAP",
@@ -160,12 +200,52 @@
     "badge_color": "success"
   },
   {
+    "porta": "500",
+    "protocolo_transporte": "UDP",
+    "servico": "IKE (IPsec)",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Baixo (se bem configurado)",
+    "recomendacao": "Preferir IKEv2; evitar IKEv1 em modo agressivo com chave pré-compartilhada",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
+    "porta": "514",
+    "protocolo_transporte": "UDP",
+    "servico": "Syslog",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Atenção (texto claro, sem autenticação)",
+    "recomendacao": "Syslog sobre TLS na 6514 (RFC 5425) ou só na rede de gerência",
+    "badge": "🟡 Atenção",
+    "badge_color": "warning"
+  },
+  {
     "porta": "587",
     "protocolo_transporte": "TCP",
     "servico": "Submission",
     "categoria": "Well-known (0-1023)",
     "risco": "Baixo",
     "recomendacao": "Exigir STARTTLS para submissão",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
+    "porta": "636",
+    "protocolo_transporte": "TCP",
+    "servico": "LDAPS",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Baixo (se bem configurado)",
+    "recomendacao": "TLS 1.2/1.3 e certificado válido; não expor à internet",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
+    "porta": "853",
+    "protocolo_transporte": "TCP",
+    "servico": "DNS sobre TLS (DoT)",
+    "categoria": "Well-known (0-1023)",
+    "risco": "Baixo (consulta cifrada)",
+    "recomendacao": "Validar o certificado do resolvedor (perfil estrito, RFC 8310)",
     "badge": "🟢 Seguro",
     "badge_color": "success"
   },
@@ -190,6 +270,16 @@
     "badge_color": "success"
   },
   {
+    "porta": "1194",
+    "protocolo_transporte": "TCP/UDP",
+    "servico": "OpenVPN",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Baixo (se bem configurado)",
+    "recomendacao": "Certificado por cliente, tls-crypt e versão atualizada",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
     "porta": "1433",
     "protocolo_transporte": "TCP",
     "servico": "SQL Server",
@@ -206,6 +296,36 @@
     "categoria": "Registered (1024-49151)",
     "risco": "Alto se exposta à internet",
     "recomendacao": "Restringir acesso e exigir criptografia",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "1812",
+    "protocolo_transporte": "UDP",
+    "servico": "RADIUS",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Atenção (segredo compartilhado, atributos em claro)",
+    "recomendacao": "Só entre o equipamento e o servidor; RADIUS sobre TLS (RadSec, RFC 6614)",
+    "badge": "🟡 Atenção",
+    "badge_color": "warning"
+  },
+  {
+    "porta": "1883",
+    "protocolo_transporte": "TCP",
+    "servico": "MQTT",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Alto (texto claro, muitas vezes sem senha)",
+    "recomendacao": "MQTT sobre TLS (8883) com autenticação de cada dispositivo",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "2049",
+    "protocolo_transporte": "TCP/UDP",
+    "servico": "NFS",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Alto se exposto (arquivos sem autenticação forte)",
+    "recomendacao": "Exportar só para a rede interna; NFSv4 com Kerberos (sec=krb5p)",
     "badge": "🔴 Crítico",
     "badge_color": "danger"
   },
@@ -228,6 +348,46 @@
     "recomendacao": "Restringir por VPN/firewall, exigir MFA",
     "badge": "🔴 Crítico",
     "badge_color": "danger"
+  },
+  {
+    "porta": "3478",
+    "protocolo_transporte": "TCP/UDP",
+    "servico": "STUN/TURN",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Baixo (revela o IP público; base do teste de vazamento WebRTC)",
+    "recomendacao": "No TURN, exigir credencial temporária e não repassar para a rede interna",
+    "badge": "🔵 Didático",
+    "badge_color": "info"
+  },
+  {
+    "porta": "4500",
+    "protocolo_transporte": "UDP",
+    "servico": "IPsec NAT-T",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Baixo (se bem configurado)",
+    "recomendacao": "Mesmas regras do IKE: é o túnel IPsec atravessando NAT",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
+    "porta": "5060",
+    "protocolo_transporte": "TCP/UDP",
+    "servico": "SIP",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Alto (texto claro; varredura e fraude de ligação)",
+    "recomendacao": "SIP sobre TLS (5061) com SRTP; não expor a central sem filtro",
+    "badge": "🔴 Crítico",
+    "badge_color": "danger"
+  },
+  {
+    "porta": "5353",
+    "protocolo_transporte": "UDP",
+    "servico": "mDNS",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Baixo (rede local)",
+    "recomendacao": "Não deixar sair da rede local; bloquear na borda (amplificação)",
+    "badge": "🔵 Didático",
+    "badge_color": "info"
   },
   {
     "porta": "5432",
@@ -280,6 +440,16 @@
     "badge_color": "success"
   },
   {
+    "porta": "8883",
+    "protocolo_transporte": "TCP",
+    "servico": "MQTT sobre TLS",
+    "categoria": "Registered (1024-49151)",
+    "risco": "Baixo (se bem configurado)",
+    "recomendacao": "TLS 1.2/1.3 e autenticação de cada dispositivo",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
+  },
+  {
     "porta": "9200",
     "protocolo_transporte": "TCP",
     "servico": "Elasticsearch",
@@ -298,5 +468,15 @@
     "recomendacao": "Habilitar auth, vincular ao localhost",
     "badge": "🔴 Crítico",
     "badge_color": "danger"
+  },
+  {
+    "porta": "51820",
+    "protocolo_transporte": "UDP",
+    "servico": "WireGuard",
+    "categoria": "Dynamic/Private (49152-65535)",
+    "risco": "Baixo (se bem configurado)",
+    "recomendacao": "Chave por par e AllowedIPs restrito; a porta é só um padrão",
+    "badge": "🟢 Seguro",
+    "badge_color": "success"
   }
 ]

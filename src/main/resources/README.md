@@ -257,8 +257,8 @@ como proteger). Reaproveitam a mesma infraestrutura dos aprofundamentos de proto
 o record `ProtocoloAprofundamento`, os partials `corpo_aprofundamento.html`,
 `diagrama.html` e `cabecalho_bits.html`, o CSS e o Mermaid — o acoplamento
 `portas -> protocolos` está registrado em `ArquiteturaCamadasTest`. O catálogo ainda
-**cruza** 16 das 30 portas de serviço conhecido (22→SSH, 53→DNS, 443→TLS, 25→SMTP…)
-para o aprofundamento de protocolo correspondente, via
+**cruza** cada porta de serviço que tem aprofundamento de protocolo (22→SSH, 53→DNS, 179→BGP,
+443→TLS, 25→SMTP…) para essa página, via
 `AprofundamentoProtocolo.porSlug`. Registro único: `PortaAprofundamento`.
 
 #### Aprofundamentos por protocolo — organizados por camada
