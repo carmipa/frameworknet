@@ -1,0 +1,112 @@
+/*
+ * Impressão de qualquer página (Ctrl+P). O site não gera PDF: imprimir é só a janela do navegador, e esta folha é o
+ * que faz o papel sair legível. O tema é escuro e o navegador não imprime fundo por padrão, então o texto claro
+ * saía quase branco no papel branco. Aqui o papel fica branco, o texto escuro e as bordas visíveis, e sai o que só
+ * serve na tela: menu, rodapé, dicas, avisos, a barra de abas e o tradutor.
+ *
+ * Carregada no shared/base.html com media="print": não pesa na tela. Os botões ficam (na Academia os bits são
+ * botões); some só a barra de abas, e sai impressa a aba que está aberta.
+ */
+@page {
+    margin: 1.5cm;
+}
+
+html,
+body.aed-app {
+    background: #fff !important;
+    color: #111 !important;
+}
+
+/* O tema tem centenas de cores fixas pensadas para fundo escuro; no papel tudo vira tinta escura sobre branco. */
+body.aed-app *,
+body.aed-app *::before,
+body.aed-app *::after {
+    background: transparent !important;
+    color: #111 !important;
+    border-color: #999 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+body.aed-app svg text,
+body.aed-app svg tspan {
+    fill: #111 !important;
+}
+
+/* Só da tela. */
+.aed-topnav,
+.aed-footer,
+.aed-pular,
+.aed-nav-recolher,
+#google_translate_element,
+.skiptranslate,
+.goog-te-banner-frame,
+.dica__gatilho,
+.dica__texto,
+.fn-input-history-panel,
+.atalho-aviso,
+.tab-nav {
+    display: none !important;
+}
+
+/* O conteúdo usa a folha inteira. */
+main,
+.container,
+.container-fluid {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* O que rola na tela sai inteiro no papel. */
+pre,
+.table-responsive,
+[class*="scroll"] {
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+pre {
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere;
+}
+
+img {
+    max-width: 100% !important;
+}
+
+/* Quebras de página: título não fica sozinho no pé da folha; linha de tabela, imagem e bloco de código não partem. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    break-after: avoid;
+}
+
+tr,
+img,
+svg,
+figure,
+pre {
+    break-inside: avoid;
+}
+
+thead {
+    display: table-header-group;
+}
+
+p,
+li {
+    orphans: 3;
+    widows: 3;
+}
+
+/* Link externo do conteúdo leva o endereço junto: no papel não dá para clicar na RFC citada. */
+main a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    overflow-wrap: anywhere;
+}
